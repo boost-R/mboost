@@ -1,0 +1,46 @@
+
+    o  na.action defaults checken
+
+    o  wpbc3 mit na.action = na.omit ODER na.pass???
+
+    o  data$x NACH center = TRUE: alles checken!
+
+    o  use better colours
+
+    o  fire a warning when AIC is called in cases the hat matrix is
+       meaningless
+
+    o  update benchmarks in cache with cvrisk
+
+    o  use col = rgb(0, 0, 0, 0.1) for lines in plot.cvrisk
+
+    o  AIC(..., "classical") as default???
+
+    o  use extractAIC instead of AIC
+
+    o  adjust control$M when subsetting
+    
+    o  names in predict and fitted
+
+    o  multivariate responses
+
+    o  reweight generic?
+
+    o  hatvalues + AIC geht so nur fuer GaussReg!
+    o  hat matrices fuer GAMS (Hastie & Tib)
+
+    o  weighted median for offset in Huber / Laplace, see Hmisc:::wtd.quantile
+
+    o  boost_control(trace = FALSE) implementieren
+
+    o  family@check_y part of family objects
+
+    o  AIC(..., "corrected") monoton steigend???
+
+    o  need party?
+
+    o  better separation of dpp and fitting (response updates in blackboost
+       and centering in gamboost / glmboost)
+
+    o  look at coffee dataset
+       http://sensor.ing.unibs.it/_people/pardo/dataset.html
