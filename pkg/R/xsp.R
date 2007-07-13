@@ -93,7 +93,7 @@ bbs <- function(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2,
     newX <- function(x, z = NULL, na.rm = TRUE) {
         if (na.rm) {
             x <- x[cc]
-            if (is.null(z))
+            if (!is.null(z))
                 z <- z[cc]
         }
         X <- bs(x, knots = knots, degree = degree, intercept = TRUE, 
@@ -447,28 +447,47 @@ bols <- function(x, z = NULL, xname = NULL, zname = NULL) {
     if (is.null(xname)) xname = deparse(substitute(x))
     if (is.null(zname)) zname = deparse(substitute(z))
 
-    newX <- function(x, z = NULL) {
+    cc <- complete_cases(x = x, z = z)
+
+    newX <- function(x, z = NULL, na.rm = TRUE) {
+        if (na.rm) {
+            x <- x[cc]
+            if (!is.null(z))
+                z <- z[cc]
+        }
         X <- model.matrix(~ x)
+        if (any(!cc) & !na.rm) {
+            Xtmp <- matrix(NA, ncol = ncol(X), nrow = length(cc))
+            Xtmp[cc,] <- X
+            X <- Xtmp
+        }
         if (!is.null(z)) X <- X * z
         X
     }
     X <- newX(x, z)
+    Xna <- X
+    if (any(!cc))
+        Xna <- newX(x, z, na.rm = FALSE)
 
     dpp <- function(weights) {
 
+        if (any(!cc)) weights <- weights[cc]
         Xw <- X * weights
         Xsolve <- tcrossprod(solve(crossprod(Xw, X)), Xw)
 
         fitfun <- function(y) {
+           
+            if (any(!cc)) y <- y[cc]
             coef <- Xsolve %*% y
 
             predictfun <- function(newdata = NULL) {
-                if (is.null(newdata)) return(X %*% coef)
-                nX <- newX(x = newdata[[xname]], z = newdata[[zname]])
+                if (is.null(newdata)) return(Xna %*% coef)
+                nX <- newX(x = newdata[[xname]], z = newdata[[zname]], 
+                           na.rm = FALSE)
                 nX %*% coef
             }
             ret <- list(model = coef, predict = predictfun, 
-                        fitted = X %*% coef)
+                        fitted = Xna %*% coef)
             class(ret) <- "basefit"
             ret
         }
