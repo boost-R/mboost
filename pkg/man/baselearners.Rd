@@ -14,7 +14,7 @@ bbs(x, z = NULL, df = 4, knots = NULL,
 degree = 3, differences = 2, center = FALSE, xname = NULL, zname = NULL)
 
 bns(x, z = NULL, df = 4, knots = NULL, differences = 2,
-xname = deparse(substitute(x)), zname = deparse(substitute(z)))
+xname = NULL, zname = NULL)
 
 bss(x, df = 4, xname = NULL)
 

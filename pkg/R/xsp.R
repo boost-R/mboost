@@ -199,10 +199,11 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 }
 
 bns <- function(x, z = NULL, df = 4, knots = NULL, differences = 2,
-                xname = deparse(substitute(x)), zname = deparse(substitute(z))) {
+                xname = NULL, zname = NULL) {
 
-    xname <- deparse(substitute(x))
-    zname <- deparse(substitute(z))
+    if (is.null(xname)) xname <- deparse(substitute(x))
+    if (is.null(zname)) zname <- deparse(substitute(z))
+
     if (is.factor(x) || df <= 2) 
         return(bols(x = x, z = z, xname = xname, zname = zname))
 
