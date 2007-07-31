@@ -166,7 +166,7 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
     # singular value decomposition
     A <- crossprod(X * weights, X)
-    decomp <- svd(A)
+    decomp <- svd(A+0.0001)
     # A is equal to decomp$u %*% diag(decomp$d) %*% t(decomp$v)
     u <- decomp$u
     v <- decomp$v
