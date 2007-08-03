@@ -248,7 +248,9 @@ bns <- function(x, z = NULL, df = 4, knots = NULL, differences = 2,
         #knots <- c(min(x)-sd(x),knots,max(x)+sd(x))
     }
     newX <- function(x, z = NULL) {
-        X <- ns(x, knots = knots, intercept = TRUE, Boundary.knots = c(min(x)-sd(x),max(x)+sd(x)) )
+        epsilon <- diff(range(x)) / 10
+        X <- ns(x, knots = knots, intercept = TRUE, Boundary.knots = c(min(x)-epsilon,
+        max(x)+epsilon) )
         if (!is.null(z))
             X <- X * z
         return(X)
