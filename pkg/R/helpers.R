@@ -125,9 +125,15 @@ gm.gamboost <- function(object) {
 }
 
 ### partial fits
-gamplot <- function(object) {
+gamplot <- function(object, newdata = NULL) {
 
-     x <- object$data$input
+     if (is.null(newdata)) {
+         x <- object$data$input
+         pr <- function(obj) fitted(obj)
+     } else {
+         x <- newdata
+         pr <- function(obj) predict(obj, newdata = x)
+     }
      lp <- matrix(0, ncol = length(x), nrow = NROW(x[[1]]))
      ens <- object$ensemble
      ensss <- object$ensembless
@@ -135,7 +141,7 @@ gamplot <- function(object) {
      mstop <- nrow(ens)
      for (m in 1:mstop) {
          xselect <- ens[m,"xselect"]
-         lp[,xselect] <- lp[,xselect] + nu * fitted(ensss[[m]])
+         lp[,xselect] <- lp[,xselect] + nu * pr(ensss[[m]])
      }
      colnames(lp) <- colnames(x)
      lp
