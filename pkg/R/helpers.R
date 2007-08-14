@@ -134,7 +134,8 @@ gamplot <- function(object, newdata = NULL) {
          x <- newdata
          pr <- function(obj) predict(obj, newdata = x)
      }
-     lp <- matrix(0, ncol = length(x), nrow = NROW(x[[1]]))
+     lp <- matrix(0, ncol = length(object$data$input), 
+                  nrow = NROW(x[[1]]))
      ens <- object$ensemble
      ensss <- object$ensembless
      nu <- object$control$nu
@@ -143,7 +144,7 @@ gamplot <- function(object, newdata = NULL) {
          xselect <- ens[m,"xselect"]
          lp[,xselect] <- lp[,xselect] + nu * pr(ensss[[m]])
      }
-     colnames(lp) <- colnames(x)
+     colnames(lp) <- colnames(object$data$input)
      lp
 }
 
