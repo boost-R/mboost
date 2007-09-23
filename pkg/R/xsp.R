@@ -166,7 +166,7 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
     # singular value decomposition
     A <- crossprod(X * weights, X)
-    decomp <- svd(A+0.0001)
+    decomp <- svd(A)
     # A is equal to decomp$u %*% diag(decomp$d) %*% t(decomp$v)
     u <- decomp$u
     v <- decomp$v
@@ -184,16 +184,24 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
     while (lambda >= upper.l - 200 ) {
         upper.l <- upper.l * 1.5
-        lambda <- optimize(df2l, interval=c(lower.l,upper.l))$minimum
+
+        tl <- try(lambda <- optimize(df2l, interval=c(lower.l,upper.l))$minimum, silent=T)
+        if (class(tl)=="try-error") stop("problem of
+        converting df into lambda cannot be solved - please increase value of df")
         lower.l <- upper.l-200
-        if (lower.l > 1e+06)
-            stop("Maximum size of lambda reached")
+        if (lower.l > 1e+06){
+            lambda <- 1e+06
+            warning("lambda needs to be larger than 1e+06 for given value of df,
+            setting lambda = 1e+06 \n trace of hat matrix differs from df by ",
+            round(sum(diag(d * solve( (dd+lambda*K) ) ))-df,6))
+            break
+            }
     }
 
     tmp <- sum(diag(X %*% solve(crossprod(X * weights, X) + 
                     lambda*dmat) %*% t(X * weights))) - df
-    if (abs(tmp) > sqrt(.Machine$double.eps)) 
-        warning("trace of hat matrix is not equal df with difference", tmp)
+    #if (abs(tmp) > sqrt(.Machine$double.eps))
+    #    warning("trace of hat matrix is not equal df with difference", tmp)
 
     lambda
 }
