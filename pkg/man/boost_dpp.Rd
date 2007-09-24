@@ -5,13 +5,15 @@
   Formula parsing and model matrix computations for gradient boosting functions.
 }
 \usage{
-boost_dpp(formula, data, weights = NULL, ...)
+boost_dpp(formula, data, weights = NULL,  na.action = na.omit, ...)
 }
 \arguments{
   \item{formula}{ a symbolic description of the model to be fit. }
   \item{data}{ a data frame containing the variables in the model. }
   \item{weights}{ an optional vector of weights to be used in the fitting
                   process. }
+  \item{na.action}{a function which indicates what should happen when the data
+          contain \code{NA}s.}
   \item{\dots}{ additional arguments passed to callies. }
 }
 \details{

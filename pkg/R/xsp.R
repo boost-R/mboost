@@ -54,7 +54,7 @@ bbs <- function(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2,
     if (is.factor(x) || (df <= 2 && !center)) 
         return(bols(x = x, z = z, xname = xname, zname = zname))
 
-    if (differences < 1 || differences > 3) 
+    if (!differences %in% 1:3)
         stop(sQuote("differences"), " are not in 1:3")
     if ((!center) && (df < differences))
         stop(sQuote("df"), " is less than ", sQuote("differences"))
@@ -76,12 +76,16 @@ bbs <- function(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2,
         })
     }
     
-    if(is.null(knots)) {
+    if (is.null(knots)) {
         n <- length(x)
         nk <- n.kn(n)    
         knots <- seq(from = min(x, na.rm = TRUE), 
                      to = max(x, na.rm = TRUE), length = nk)
         knots <- knots[2:(length(knots) - 1)]   
+    } else {
+        if (length(unique(diff(knots))) > 1)
+            warning("non-equidistant ", sQuote("knots"), 
+                    " might be inappropriate")
     }
 
     if (length(knots) == 1) {
@@ -215,7 +219,7 @@ bns <- function(x, z = NULL, df = 4, knots = NULL, differences = 2,
     if (is.factor(x) || df <= 2) 
         return(bols(x = x, z = z, xname = xname, zname = zname))
 
-    if (differences < 1 || differences > 3) 
+    if (!differences %in% 1:3) 
         stop(sQuote("differences"), " are not in 1:3")
     if (df < differences)
         stop(sQuote("df"), " is less than ", sQuote("differences"))
@@ -245,8 +249,11 @@ bns <- function(x, z = NULL, df = 4, knots = NULL, differences = 2,
         knots <- seq(from = min(x, na.rm = TRUE), 
                      to = max(x, na.rm = TRUE), length = nk)
         knots <- knots[2:(length(knots) - 1)]   
-    }
-    
+    } else {
+        if (length(unique(diff(knots))) > 1)
+            warning("non-equidistant ", sQuote("knots"), 
+                    " might be inappropriate")
+    }    
     
     
     if (length(knots) == 1) {
@@ -340,7 +347,7 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = NULL, yknots = NULL,
     if (is.null(zname)) zname = deparse(substitute(z))
 
 #    if (df <= 2) stop(sQuote("df"), " must be greater two")
-    if (differences < 1 || differences > 3) 
+    if (!differences %in% 1:3)
         stop(sQuote("differences"), " are not in 1:3")
     if ((!center) && (df < differences^2))
         stop(sQuote("df"), " is less than ", sQuote("differences^2"))

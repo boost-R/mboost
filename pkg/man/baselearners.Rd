@@ -14,7 +14,7 @@ bols(x, z = NULL, xname = NULL, zname = NULL)
 bbs(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2, 
     center = FALSE, xname = NULL, zname = NULL)
 bns(x, z = NULL, df = 4, knots = NULL, differences = 2, 
-    name = NULL, zname = NULL)
+    xname = NULL, zname = NULL)
 bss(x, df = 4, xname = NULL)
 bspatial(x, y, z = NULL, df = 5, xknots = NULL, yknots = NULL,
          degree = 3, differences = 2, center = FALSE, xname = NULL,

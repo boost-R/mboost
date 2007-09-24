@@ -11,7 +11,7 @@
 }
 \usage{
 \method{glmboost}{formula}(formula, data = list(), weights = NULL, 
-             contrasts.arg = NULL, ...)
+             contrasts.arg = NULL, na.action = na.pass, ...)
 \method{glmboost}{matrix}(x, y, weights = NULL, ...)
 glmboost_fit(object, family = GaussReg(), 
              control = boost_control(), weights = NULL)
@@ -26,6 +26,8 @@ glmboost_fit(object, family = GaussReg(),
           to the \code{contrasts} replacement function and whose names are
           the names of columns of \code{data} containing factors. 
           See \code{\link{model.matrix.default}}.}
+  \item{na.action}{a function which indicates what should happen when the data
+          contain \code{NA}s.}
   \item{x}{ design matrix or an object of class \code{glmboost} for plotting. }
   \item{y}{ vector of responses. }
   \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}.} 

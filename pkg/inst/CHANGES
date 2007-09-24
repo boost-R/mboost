@@ -3,6 +3,10 @@
 
   o  move `mboost' to R-forge
 
+  o  improvements in `gamboost':
+     - P-splines as base learners available
+     - new formula interface for specifying the base learner
+     - new plot.gamboost
 
 		CHANGES in `mboost' VERSION 0.6-1 (internal)
 

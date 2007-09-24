@@ -2,6 +2,7 @@
     o  na.action defaults checken
 
     o  wpbc3 mit na.action = na.omit ODER na.pass???
+       default in glmboost.formula!!!
 
     o  data$x NACH center = TRUE: alles checken!
 
@@ -44,3 +45,5 @@
 
     o  look at coffee dataset
        http://sensor.ing.unibs.it/_people/pardo/dataset.html
+
+    o  use StatSci url in references

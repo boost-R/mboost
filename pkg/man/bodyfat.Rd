@@ -63,5 +63,11 @@
     fmod <- lm(DEXfat ~ hipcirc + anthro3a + kneebreadth, data = bodyfat)
     coef(fmod)  
 
+    ### plot additive model for same variables
+    amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth, 
+                     data = bodyfat, baselearner = "bbs")
+    layout(matrix(1:3, ncol = 3))
+    plot(amod[mstop(AIC(amod, "corrected"))], ask = FALSE)
+
 }
 \keyword{datasets}

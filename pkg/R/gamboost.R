@@ -227,3 +227,26 @@ print.gamboost <- function(x, ...) {
     invisible(x)
 
 }
+
+plot.gamboost <- function(x, which = NULL, ask = TRUE && dev.interactive(), 
+    type = "b", ylab = expression(f[partial]), add_rug = TRUE, ...) {
+
+    lp <- mboost:::gamplot(x)
+    input <- x$data$input
+    if (is.null(which)) which <- colnames(input)
+
+    if (ask) {
+        op <- par(ask = TRUE)
+        on.exit(par(op))
+    }
+
+    out <- sapply(which, function(w) {
+        xp <- input[[w]]
+        yp <- lp[,w]
+        ox <- order(xp)
+        plot(xp[ox], yp[ox], xlab = w, type = type, 
+             ylab = ylab, ylim = range(lp[,which]), ...)
+        abline(h = 0, lty = 3)
+        if (add_rug) rug(input[[w]])
+    })
+}

@@ -3,24 +3,31 @@
 \alias{gamboost.formula}
 \alias{gamboost.matrix}
 \alias{gamboost_fit}
+\alias{plot.gamboost}
 \title{ Gradient Boosting with Component-wise Smoothing Splines }
 \description{
   Gradient boosting for optimizing arbitrary loss functions where component-wise
   smoothing splines are utilized as base learners.
 }
 \usage{
-\method{gamboost}{formula}(formula, data = list(), weights = NULL, ...)
+\method{gamboost}{formula}(formula, data = list(), weights = NULL, 
+        na.action = na.omit, ...)
 \method{gamboost}{matrix}(x, y, weights = NULL, ...)
-gamboost_fit(object, baselearner = c("ssp", "bsp", "ols"), 
+gamboost_fit(object, baselearner = c("bss", "bbs", "bols"), 
              dfbase = 4, family = GaussReg(), 
              control = boost_control(), weights = NULL)
+\method{plot}{gamboost}(x, which = NULL, ask = TRUE && dev.interactive(), 
+    type = "b", ylab = expression(f[partial]), add_rug = TRUE, ...)
 }
 \arguments{
   \item{formula}{ a symbolic description of the model to be fit. }
   \item{data}{ a data frame containing the variables in the model. }
   \item{weights}{ an optional vector of weights to be used in the fitting
                   process. }
-  \item{x}{ design matrix.}
+  \item{na.action}{a function which indicates what should happen when the data
+          contain \code{NA}s.}
+  \item{x}{ design matrix (for \code{gamboost.matrix}) or an object returned
+            by \code{gamboost} to be plotted via \code{plot}.}
   \item{y}{ vector of responses. }
   \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}. }
   \item{baselearner}{ an character specifying the component-wise base-learner to be used: 
@@ -36,6 +43,13 @@ gamboost_fit(object, baselearner = c("ssp", "bsp", "ols"),
                 to the loss function to be optimized, by default, squared error loss
                 for continuous responses is used.}
   \item{control}{ an object of class \code{\link{boost_control}}.}
+  \item{which}{ if a subset of the plots is required, specify a subset of the
+                variables. }
+  \item{ask}{ logical; if \code{TRUE}, the user is \emph{ask}ed before each plot, see
+          \code{par(ask=.)}.}
+  \item{type}{what type of plot should be drawn: see \code{\link{plot}}.}
+  \item{ylab}{a title for the y axis: see \code{\link{title}}.}
+  \item{add_rug}{ logical; if \code{TRUE}, \code{\link{rug}}s are added.}
   \item{\dots}{ additional arguments passed to callies. }
 }
 \details{
