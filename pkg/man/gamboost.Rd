@@ -13,8 +13,8 @@
 \method{gamboost}{formula}(formula, data = list(), weights = NULL, 
         na.action = na.omit, ...)
 \method{gamboost}{matrix}(x, y, weights = NULL, ...)
-gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns",
-             "bspatial"), dfbase = 4, family = GaussReg(), 
+gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns"), 
+             dfbase = 4, family = GaussReg(), 
              control = boost_control(), weights = NULL)
 \method{plot}{gamboost}(x, which = NULL, ask = TRUE && dev.interactive(), 
     type = "b", ylab = expression(f[partial]), add_rug = TRUE, ...)
