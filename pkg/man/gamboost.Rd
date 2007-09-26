@@ -13,8 +13,8 @@
 \method{gamboost}{formula}(formula, data = list(), weights = NULL, 
         na.action = na.omit, ...)
 \method{gamboost}{matrix}(x, y, weights = NULL, ...)
-gamboost_fit(object, baselearner = c("bss", "bbs", "bols"), 
-             dfbase = 4, family = GaussReg(), 
+gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns",
+             "bspatial"), dfbase = 4, family = GaussReg(), 
              control = boost_control(), weights = NULL)
 \method{plot}{gamboost}(x, which = NULL, ask = TRUE && dev.interactive(), 
     type = "b", ylab = expression(f[partial]), add_rug = TRUE, ...)
@@ -31,10 +31,14 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols"),
   \item{y}{ vector of responses. }
   \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}. }
   \item{baselearner}{ an character specifying the component-wise base-learner to be used: 
-      \code{ssp} means smoothing splines, \code{bsp} B-splines (see \code{\link[splines]{bs}}
-      and \code{ols} means linear models. Please note that only 
+      \code{\link{bss}} means smoothing splines, \code{\link{bbs}} P-splines with
+      a B-spline basis, \code{\link{bns}} P-splines with a natural spline basis, 
+      \code{\link{bols}} linear models, and \code{\link{bspatial}} means bivariate tensor
+      product penalised splines. Please note that only 
       the characteristics of component-wise smoothing
-      splines have been investigated theoretically and practically until now.}
+      splines (Buhlmann and Yu, 2003) and P-splines with a B-spline basis
+      (Schmid and Hothorn, 2007) have been investigated theoretically and
+      practically until now.}
   \item{dfbase}{ an integer vector giving the degrees of freedom for the smoothing 
                  spline, either globally for all variables (when its length is one)
                  or separately for each single covariate. }
@@ -54,11 +58,12 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols"),
 }
 \details{
 
-  A (generalized) additive model is fitted using a boosting algorithm based on component-wise
-  univariate smoothing splines. The methodology is described in
-  Buhlmann and Yu (2003). If \code{dfbase = 1}, a univariate 
-  linear model is used as base learner (resulting in a linear partial fit
-  for this variable).
+  A (generalized) additive model is fitted using a boosting algorithm based on
+  component-wise univariate base learners. The base-learner can either be
+  specified via the \code{formula} object or via the \code{baselearner} argument
+  (see \code{\link{bbs}} for an example). If the baselearners specified in
+  \code{formula} differ from \code{baselearner}, the latter argument will be
+  ignored.
 
   The function \code{gamboost_fit} provides access to the fitting
   procedure without data pre-processing, e.g. for cross-validation.
@@ -79,6 +84,10 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols"),
   Boosting algorithms: regularization, prediction and model fitting.
   Statistical Science, accepted.
   \url{ftp://ftp.stat.math.ethz.ch/Research-Reports/Other-Manuscripts/buhlmann/BuehlmannHothorn_Boosting-rev.pdf}
+  
+  Matthias Schmid and Torsten Hothorn (2007),
+  Boosting additive models using component-wise P-splines as
+  base-learners. Unpublished manuscript.
 
 }
 \examples{

@@ -21,9 +21,10 @@ basedef <- function(x, baselearner, dfbase) {
 }
 
 ### Fitting function
-gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols"), 
-                         dfbase = 4, family = GaussReg(), nsurrogate = 3,
-                         control = boost_control(), weights = NULL) {
+gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns",
+                         "bspatial"), dfbase = 4, family = GaussReg(),
+                         nsurrogate = 3, control = boost_control(),
+                         weights = NULL) {
 
     baselearner <- match.arg(baselearner)
     if (control$center) 
