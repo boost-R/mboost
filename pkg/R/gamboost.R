@@ -21,8 +21,8 @@ basedef <- function(x, baselearner, dfbase) {
 }
 
 ### Fitting function
-gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns",
-                         "bspatial"), dfbase = 4, family = GaussReg(),
+gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"), 
+                         dfbase = 4, family = GaussReg(),
                          nsurrogate = 3, control = boost_control(),
                          weights = NULL) {
 
@@ -234,6 +234,13 @@ plot.gamboost <- function(x, which = NULL, ask = TRUE && dev.interactive(),
 
     lp <- mboost:::gamplot(x)
     input <- x$data$input
+    ### <FIXME>: y ~ bbs(x) means that we only have access to x via
+    ### the environment of its dpp function
+    tmp <- lapply(input, function(x) 
+        eval(expression(x), envir = environment(attr(x, "dpp"))))
+    input <- as.data.frame(tmp)
+    names(input) <- names(tmp)
+    ### </FIXME>
     if (is.null(which)) which <- colnames(input)
 
     if (ask) {
