@@ -59,30 +59,8 @@ gb_xyw <- function(x, y, w) {
 }
 
 ### check measurement scale of response for some losses
-check_y_family <- function(y, family) {
-
-    if (isTRUE(all.equal(attributes(family), 
-                  attributes(Binomial())))) {
-        if (!is.factor(y))
-            warning("response is not a factor but ", 
-                    sQuote("family = Binomial()"))
-        if (nlevels(y) != 2)
-            warning("response is not a factor at two levels but ", 
-                    sQuote("family = Binomial()"))
-    }
-    if (isTRUE(all.equal(attributes(family), 
-                  attributes(CoxPH())))) {
-        if (!inherits(y, "Surv"))
-            stop("response is not an object of class ", sQuote("Surv"), 
-                 " but ", sQuote("family = CoxPH()"))
-    }
-    if (isTRUE(all.equal(attributes(family), 
-                  attributes(Poisson())))) {
-        if (any(y < 0) || any((y - round(y)) > 0))
-            stop("response is not an integer variable but ", 
-                 sQuote("family = Poisson()"))
-    }
-}
+check_y_family <- function(y, family)
+    family@check_y(y)
 
 ### check for negative gradient corresponding to L2 loss
 checkL2 <- function(object)
@@ -287,7 +265,7 @@ sknotl <- function(x, nk = NULL) {
 	    a4 <- log(200, 2)
 	    if	(n < 200) 2^(a1+(a2-a1)*(n-50)/150)
 	    else if (n < 800) 2^(a2+(a3-a2)*(n-200)/600)
-	    else if (n < 3200)2^(a3+(a4-a3)*(n-800)/2400)
+    else if (n < 3200)2^(a3+(a4-a3)*(n-800)/2400)
 	    else  200 + (n-3200)^0.2
         })
     }
@@ -426,4 +404,21 @@ predict.lmfit <- function(object, newdata) {
     if (length(object$coef) == 2)
         return(as.vector(cbind(1, x) %*% object$coef))
     return(as.vector(x * object$coef))
+}
+
+### trace boosting iterations
+do_trace <- function(m, risk, step = options("width")$width / 2, 
+                     width = 1000) {
+
+    if ((m - 1) %/% step == (m - 1) / step) {
+        mchr <- formatC(m, format = "d", width = nchar(width) + 1, 
+                        big.mark = "'")
+        cat(paste("[", mchr, "] ",sep = ""))
+    } else {
+        if ((m %/% step != m / step) && m != width) {
+            cat("*")
+        } else {
+            cat("* -- risk:", risk[m], "\n")
+        }
+    }
 }

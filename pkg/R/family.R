@@ -5,6 +5,7 @@ setClass("boost_family", representation = representation(
     risk       = "function",
     offset     = "function",
     fW         = "function",
+    check_y    = "function",
     weights    = "logical",
     name       = "character",
     charloss   = "character"
@@ -17,7 +18,7 @@ setMethod("show", "boost_family", function(object) {
 
 Family <- function(ngradient, loss = NULL, risk = NULL, 
                    offset = function(y, w) 0, 
-                   fW = function(f) rep(1, length(f)),
+                   fW = function(f) rep(1, length(f)), check_y = function(y) TRUE,
                    weights = TRUE, name = "user-specified") {
 
     if (is.null(loss))
@@ -25,7 +26,8 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
     if (is.null(risk))
         risk <- function(y, f, w = 1) sum(w * loss(y, f))
     RET <- new("boost_family", ngradient = ngradient, loss = loss, 
-               risk = risk, offset = offset, fW = fW, weights = weights, 
+               risk = risk, offset = offset, fW = fW, check_y = check_y, 
+               weights = weights, 
                name = name, charloss = paste(deparse(body(loss)), "\n"))
     RET
 }
@@ -35,12 +37,28 @@ GaussReg <- function()
     Family(ngradient = function(y, f, w = 1) y - f,
            loss = function(y, f) (y - f)^2,
            offset = weighted.mean,
+           check_y = function(y) {
+               if (!is.numeric(y) || !is.null(dim(y)))
+                   stop("response is not a numeric vector but ",
+                        sQuote("family = GaussReg()"))
+               TRUE
+           },
            name = "Squared Error (Regression)")
 
 ### Gaussian (-1 / 1 Binary Classification)
 GaussClass <- function()
     Family(ngradient = function(y, f, w = 1) - 2 * y + 2 * y * f,
            loss = function(y, f) 1 - 2 * y * f + (y * f)^2,
+           check_y = function(y) {
+               if (!is.factor(y))
+                   stop("response is not a factor but ",
+                           sQuote("family = GaussClass()"))  
+               if (nlevels(y) != 2)
+                   stop("response is not a factor at two levels but ",
+                           sQuote("family = GaussClass()"))
+               TRUE
+           },
+
            name = "Squared Error (Classification)")
 
 ### Laplace
@@ -48,6 +66,12 @@ Laplace <- function()
     Family(ngradient = function(y, f, w = 1) sign(y - f),
            loss = function(y, f) abs(y - f),
            offset = function(y, w) median(y),
+           check_y = function(y) {
+               if (!is.numeric(y) || !is.null(dim(y)))
+                   stop("response is not a numeric vector but ",
+                        sQuote("family = Laplace()"))
+               TRUE
+           },
            name = "Absolute Error")
 
 ### Binomial
@@ -69,6 +93,15 @@ Binomial <- function()
                p <- exp(f) / (exp(f) + exp(-f))
                4 * p * (1 - p)
            },
+           check_y = function(y) {
+               if (!is.factor(y))
+                   stop("response is not a factor but ",
+                           sQuote("family = Binomial()"))  
+               if (nlevels(y) != 2)
+                   stop("response is not a factor at two levels but ",
+                           sQuote("family = Binomial()"))
+               TRUE
+           },
            name = "Negative Binomial Likelihood")
 
 ### Poisson
@@ -77,6 +110,12 @@ Poisson <- function()
            loss = function(y, f) -dpois(y, exp(f), log = TRUE),
            offset = function(y, w) log(weighted.mean(y, w)),
            fW = function(f) exp(f),
+           check_y = function(y) {
+               if (any(y < 0) || any((y - round(y)) > 0))
+                   stop("response is not an integer variable but ",
+                        sQuote("family = Poisson()"))
+               TRUE
+           },
            name = "Poisson Likelihood")
 
 ### L1Huber
@@ -97,6 +136,12 @@ Huber <- function(d = NULL) {
                ifelse((a <- abs(y - f)) < d, a^2/2, d*(a - d/2))
            },
            offset = function(y, w) median(y),
+           check_y = function(y) {
+               if (!is.numeric(y) || !is.null(dim(y)))
+                   stop("response is not a numeric vector but ",
+                        sQuote("family = Huber()"))
+               TRUE
+           },
            name = paste("Huber Error", 
                ifelse(is.null(d), "(with adaptive d)", 
                                   paste("(with d = ", dtxt, ")", sep = ""))))
@@ -109,6 +154,15 @@ AdaExp <- function()
            offset = function(y, w) {
                p <- weighted.mean(y > 0, w)
                1/2 * log(p / (1 - p))
+           },
+           check_y = function(y) {
+               if (!is.factor(y))
+                   stop("response is not a factor but ",
+                           sQuote("family = AdaExp()"))  
+               if (nlevels(y) != 2)
+                   stop("response is not a factor at two levels but ",
+                           sQuote("family = AdaExp()"))
+               TRUE
            },
            name = "Adaboost Exponential Error")
 
@@ -144,5 +198,11 @@ CoxPH <- function()
                event * (f - log(risk))
            },
            risk = function(y, f, w = 1) -sum(plloss(y, f, w)),
+           check_y = function(y) {
+               if (!inherits(y, "Surv"))
+                   stop("response is not an object of class ", sQuote("Surv"),
+                        " but ", sQuote("family = CoxPH()"))
+               TRUE
+           },
            weights = TRUE, 
            name = "Partial Likelihood")

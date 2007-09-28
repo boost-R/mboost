@@ -2,7 +2,8 @@
 \alias{print.glmboost}
 \alias{coef.glmboost}
 \alias{print.gamboost}
-\alias{AIC.gb}
+\alias{AIC.gamboost}
+\alias{AIC.glmboost}
 \alias{predict.gb}
 \alias{mstop}
 \alias{mstop.gbAIC}
@@ -19,7 +20,9 @@
 \method{print}{glmboost}(x, ...)
 \method{print}{gamboost}(x, ...)
 \method{coef}{glmboost}(object, ...)
-\method{AIC}{gb}(object, method = c("corrected", "classical"), ...)
+\method{AIC}{gamboost}(object, method = c("corrected", "classical"), ..., k = 2)
+\method{AIC}{glmboost}(object, method = c("corrected", "classical"), 
+    df = c("trace", "actset"), ..., k = 2)
 \method{mstop}{gbAIC}(object, ...)
 \method{mstop}{gb}(object, ...)
 \method{mstop}{cvrisk}(object, ...)
@@ -37,7 +40,13 @@
                (classes) should be predicted in case of classification 
                problems. }
   \item{method}{ a character specifying if the corrected AIC criterion or
-                 a classical (-2 logLik + 2 * df) should be computed.}
+                 a classical (-2 logLik + k * df) should be computed.}
+  \item{df}{ a character specifying how degrees of freedom should be computed:
+             \code{trace} defines degrees of freedom by the trace of the
+             boosting hat matrix and \code{actset} uses the number of
+             non-zero coefficients for each boosting iteration.}
+  \item{k}{  numeric, the \emph{penalty} per parameter to be used; the default
+             \code{k = 2} is the classical AIC. Only used when \code{method = "classical"}.}
   \item{\dots}{ additional arguments passed to callies. }
 }
 \details{
@@ -56,7 +65,11 @@
   when \code{family = GaussReg()} was used), 
   which is useful for the determination
   of the optimal number of boosting iterations to be applied (which can be extracted via
-  \code{mstop}).
+  \code{mstop}). The degrees of freedom are either computed via the trace of the
+  boosting hat matrix (which is rather slow even for moderate sample sizes)
+  or the number of variables (non-zero coefficients) that entered the model so far 
+  (faster but only meaningful for linear models fitted via \code{\link{gamboost}} 
+  (see the discussion of Buhlmann & Hothorn, 2007, by Hastie).
 
   Note that \code{logLik} and \code{AIC} only make sense when the corresponding
   \code{\link{Family}} implements the appropriate loss function.  

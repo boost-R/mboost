@@ -202,10 +202,10 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
             }
     }
 
-    tmp <- sum(diag(X %*% solve(crossprod(X * weights, X) + 
-                    lambda*dmat) %*% t(X * weights))) - df
-    #if (abs(tmp) > sqrt(.Machine$double.eps))
-    #    warning("trace of hat matrix is not equal df with difference", tmp)
+    ### tmp <- sum(diag(X %*% solve(crossprod(X * weights, X) + 
+    ###                   lambda*dmat) %*% t(X * weights))) - df
+    ### if (abs(tmp) > sqrt(.Machine$double.eps))
+    ###   warning("trace of hat matrix is not equal df with difference", tmp)
 
     lambda
 }

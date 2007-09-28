@@ -40,11 +40,9 @@ if (!inherits(tst, "try-error")) {
 }
 
 ### check different interfaces
-data("iris")
-x <- as.matrix(iris[,colnames(iris) != "Species"])
-y <- iris$Species
-p1 <- predict(blackboost(x = x, y = y), newdata = x)
-p2 <- predict(blackboost(Species ~ ., data = iris), newdata = iris)
+x <- as.matrix(BostonHousing[,colnames(BostonHousing) != "medv"])
+y <- BostonHousing$medv
+p1 <- predict(blackboost(x = x, y = y, family = Laplace()), newdata = x)
+p2 <- predict(blackboost(medv ~ ., data = BostonHousing, family = Laplace()),
+              newdata = BostonHousing)
 stopifnot(identical(abs(max(p1 - p2)), 0))
-
-

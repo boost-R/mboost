@@ -31,6 +31,8 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
     risk <- control$risk
     constraint <- control$constraint
     nu <- control$nu
+    trace <- control$trace
+    tracestep <- options("width")$width / 2
 
     ### extract negative gradient and risk functions
     ngradient <- family@ngradient
@@ -98,6 +100,10 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
 
         ### save the model, i.e., the selected coefficient and variance
         ens[m,] <- c(xselect, coef)
+
+        ### print status information
+        if (trace) 
+            do_trace(m, risk = mrisk, step = tracestep, width = mstop)
     }
 
     updatefun <- function(object, control, weights)
@@ -156,6 +162,12 @@ glmboost <- function(x, ...) UseMethod("glmboost")
 ### formula interface
 glmboost.formula <- function(formula, data = list(), weights = NULL, 
                              contrasts.arg = NULL, na.action = na.pass, ...) {
+
+    ### control and contrasts.arg might be confused here
+    if (!is.null(contrasts.arg)) {
+        if (extends(class(contrasts.arg), "boost_control"))
+            stop(sQuote("contrasts.arg"), " is not a list of contrasts")
+    }
 
     ### construct design matrix etc.
     object <- boost_dpp(formula, data, weights, contrasts.arg = contrasts.arg, 

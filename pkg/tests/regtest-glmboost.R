@@ -33,6 +33,7 @@ mydf <- dgp(beta = c(1, 2.5, rep(0, 38)))
 mydf.gb <- glmboost(y ~ ., data = mydf, family = fm, 
                     control = boost_control(mstop = 1000, nu = 1))
 aic <- AIC(mydf.gb, method = "corrected")
+ht <- hatvalues(mydf.gb)
 mstop(aic)
 mydf.lm <- lm(y ~ ., data = mydf)
 
@@ -40,12 +41,13 @@ mydf.lm <- lm(y ~ ., data = mydf)
 which(abs(coef(mydf.lm)) < abs(coef(mydf.gb[mstop(aic)])))
 
 #### check boosting hat matrix and subsetting / predict
-stopifnot(isTRUE(all.equal(drop(attr(aic, "hatmat") %*% mydf$y),
+stopifnot(isTRUE(all.equal(drop(attr(ht, "hatmatrix") %*% mydf$y),
                            as.vector(predict(mydf.gb)))))
-stopifnot(isTRUE(all.equal(drop(attr(AIC(mydf.gb[255]), "hatmat") %*% mydf$y),
-                           as.vector(predict(mydf.gb[255])))))
-stopifnot(isTRUE(all.equal(drop(attr(AIC(mydf.gb[255]), "hatmat") %*% mydf$y),
-                           as.vector(fitted(mydf.gb[255])))))
+ht25 <- hatvalues(mydf.gb[25])
+stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
+                           as.vector(predict(mydf.gb[25])))))
+stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
+                           as.vector(fitted(mydf.gb[25])))))
 
 ### a simple two-dimensional example from `glmboost.Rd'
 data("cars")
@@ -96,7 +98,7 @@ stopifnot(max(abs(fitted(lmmod) -fitted(lmb))) < sqrt(.Machine$double.eps))
 stopifnot(max(abs(hatvalues(lmmod) - hatvalues(lmb))) < sqrt(.Machine$double.eps))      
 
 ### compare boosting hat matrix with fitted values
-stopifnot(max(abs(attr(AIC(lmb), "hatmatrix") %*% (df$y - lmb$offset) + lmb$offset -
+stopifnot(max(abs(attr(hatvalues(lmb), "hatmatrix") %*% (df$y - lmb$offset) + lmb$offset -
         fitted(lmb))) < sqrt(.Machine$double.eps)) 
 
 ### Cox model (check for CoxPH family)

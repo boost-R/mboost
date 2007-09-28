@@ -17,7 +17,7 @@
 \usage{
 Family(ngradient, loss = NULL, risk = NULL, 
        offset = function(y, w) 0, 
-       fW = function(f) rep(1, length(f)), 
+       fW = function(f) rep(1, length(f)), check_y = function(y) TRUE,
        weights = TRUE, name = "user-specified")
 AdaExp()
 Binomial()
@@ -40,6 +40,7 @@ CoxPH()
   \item{fW}{ transformation of the fit for the diagonal weights matrix for an
              approximation of the boosting hat matrix for loss functions other than
              squared error.}
+  \item{check_y}{ a function for checking the class / mode of a response variable.}
   \item{weights}{ a logical indicating if weights are allowed. }
   \item{name}{ a character giving the name of the loss function for pretty printing. }
   \item{d}{ delta parameter for Huber loss function. If omitted, it is chosen adaptively.}

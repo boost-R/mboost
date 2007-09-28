@@ -35,6 +35,8 @@ blackboost_fit <- function(object,
     risk <- control$risk
     constraint <- control$constraint
     nu <- control$nu
+    trace <- control$trace
+    tracestep <- options("width")$width / 2
 
     ### the ensemble, essentially a list of trees
     ens <- vector(mode = "list", length = mstop)
@@ -90,6 +92,9 @@ blackboost_fit <- function(object,
         if (risk == "inbag") mrisk[m] <- riskfct(y, fit, weights)
         if (risk == "oobag") mrisk[m] <- riskfct(y, fit, oobweights)
 
+        ### print status information
+        if (trace) 
+            do_trace(m, risk = mrisk, step = tracestep, width = mstop)
     }
 
     updatefun <- function(object, control, weights)

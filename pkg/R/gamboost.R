@@ -23,8 +23,7 @@ basedef <- function(x, baselearner, dfbase) {
 ### Fitting function
 gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"), 
                          dfbase = 4, family = GaussReg(),
-                         nsurrogate = 3, control = boost_control(),
-                         weights = NULL) {
+                         control = boost_control(), weights = NULL) {
 
     baselearner <- match.arg(baselearner)
     if (control$center) 
@@ -51,6 +50,11 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"),
     risk <- control$risk
     constraint <- control$constraint
     nu <- control$nu
+    trace <- control$trace
+    tracestep <- options("width")$width / 2
+
+    ### surrogate variables for handling missing values: add later
+    nsurrogate <- 0
     nsurrogate <- min(nsurrogate, length(x))
 
     ### extract negative gradient and risk functions
@@ -69,7 +73,12 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"),
 
     ### the ensemble
     ens <- matrix(NA, nrow = mstop, ncol = nsurrogate + 1)
-    colnames(ens) <- c("xselect", paste("xselect_surr", 1:nsurrogate, sep = "_"))
+    if (nsurrogate > 0) {
+        colnames(ens) <- c("xselect", 
+            paste("xselect_surr", 1:nsurrogate, sep = "_"))
+    } else {
+        colnames(ens) <- "xselect"
+    }
     ensss <- vector(mode = "list", length = mstop)
 
     ### vector of empirical risks for all boosting iterations
@@ -123,6 +132,9 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"),
         ens[m,] <- xselect
         ensss[[m]] <- basess
 
+        ### print status information
+        if (trace) 
+            do_trace(m, risk = mrisk, step = tracestep, width = mstop)
     }
 
     updatefun <- function(object, control, weights) 
@@ -257,4 +269,5 @@ plot.gamboost <- function(x, which = NULL, ask = TRUE && dev.interactive(),
         abline(h = 0, lty = 3)
         if (add_rug) rug(input[[w]])
     })
+    rm(out)
 }

@@ -17,8 +17,6 @@
 
     o  AIC(..., "classical") as default???
 
-    o  use extractAIC instead of AIC
-
     o  adjust control$M when subsetting
     
     o  names in predict and fitted
@@ -31,10 +29,6 @@
     o  hat matrices fuer GAMS (Hastie & Tib)
 
     o  weighted median for offset in Huber / Laplace, see Hmisc:::wtd.quantile
-
-    o  boost_control(trace = FALSE) implementieren
-
-    o  family@check_y part of family objects
 
     o  AIC(..., "corrected") monoton steigend???
 

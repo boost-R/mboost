@@ -84,9 +84,40 @@ hatvalues.gb <- function(model, ...) {
     RET
 }
 
-
 ### methods: AIC
-AIC.gb <- function(object, method = c("corrected", "classical"), ...) {
+AIC.glmboost <- function(object, method = c("corrected", "classical"), 
+                         df = c("trace", "actset"), ..., k = 2) {
+
+    df <- match.arg(df)
+    if (df == "trace") {
+        hatval <- hatvalues(object)
+        RET <- AICboost(object, method = method, 
+                        df = attr(hatval, "trace"), k = k)
+    }
+    if (df == "actset") {
+        ### compute active set: number of non-zero coefficients
+        ### for each boosting iteration
+        xs <- object$ensemble[,"xselect"]
+        xu <- sort(sapply(unique(xs), function(i) which(xs == i)[1]))
+        xu <- c(xu, mstop(object) + 1)
+        df <- rep(1:(length(xu) - 1), diff(xu))
+        ### <FIXME>: offset = 0 may mean hat(offset) = 0 or 
+        ### no offset computed at all!
+        if (object$offset != 0) df <- df + 1
+        ### </FIXME>
+        RET <- AICboost(object, method = method, 
+                        df = df, k = k)
+    }
+    return(RET)
+}
+
+AIC.gamboost <- function(object, method = c("corrected", "classical"), ...,
+                         k = 2)
+    return(AICboost(object, method = method, 
+                    df = attr(hatvalues(object), "trace"), k = k))
+
+
+AICboost <- function(object, method = c("corrected", "classical"), df, k = 2) {
 
     if (object$control$risk != "inbag")
         return(NA)
@@ -97,25 +128,20 @@ AIC.gb <- function(object, method = c("corrected", "classical"), ...) {
     if (!checkL2(object) && method == "corrected")
         stop("corrected AIC method not implemented for non-Gaussian family")
 
-    hatval <- hatvalues(object)
-    hatmat <- attr(hatval, "hatmatrix")
-    trace <- attr(hatval, "trace")
-
     sumw <- sum(object$weights)
     if (method == "corrected")
         AIC <- log(object$risk / sumw) + 
-               (1 + trace/sumw) / (1 - (trace + 2)/sumw)
+               (1 + df/sumw) / (1 - (df + 2)/sumw)
 
     ### loss-function is to be MINIMIZED, take -2 * logLik == 2 * risk
     if (method == "classical")
-        AIC <- 2 * object$risk + 2 * trace
+        AIC <- 2 * object$risk + k * df
 
     mstop <- which.min(AIC)
     RET <- AIC[mstop]
 
-    attr(RET, "hatmatrix") <- hatmat
     attr(RET, "mstop") <- which.min(AIC)
-    attr(RET, "df") <- trace
+    attr(RET, "df") <- df
     attr(RET, "AIC") <- AIC
     attr(RET, "corrected") <- method == "corrected"
 
@@ -161,12 +187,3 @@ mstop.gbAIC <- function(object, ...) attr(object, "mstop")
 mstop.gb <- function(object, ...) nrow(object$ensemble)
 
 mstop.blackboost <- function(object, ...) length(object$ensemble)
-
-### methods: variance of predictions (!)
-vcov.gb <- function(object, ...) {
-    aic <- AIC(object)
-    Bhat <- attr(aic, "hatmatrix")
-    df <- attr(aic, "df")[length(attr(aic, "df"))]
-    sigma2 <- sum(resid(object)^2) / (length(object$yfit) - df)
-    return(sigma2 * colSums(Bhat^2))
-}

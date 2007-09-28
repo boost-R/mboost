@@ -8,7 +8,7 @@
 \usage{
 boost_control(mstop = 100, nu = 0.1, constraint = FALSE, 
               risk = c("inbag", "oobag", "none"), 
-              savedata = TRUE, center = FALSE)
+              savedata = TRUE, center = FALSE, trace = FALSE)
 }
 \arguments{
   \item{mstop}{ an integer giving the number of initial boosting iterations. }
@@ -25,6 +25,8 @@ boost_control(mstop = 100, nu = 0.1, constraint = FALSE,
   \item{center}{ a logical indicating if the numerical covariates should be mean 
                  centered before fitting. Only implemented for \code{\link{glmboost}} and
                  \code{\link{gamboost}}.}
+  \item{trace}{ a logical triggering printout of status information during 
+                the fitting process.}
 }
 \details{
 
