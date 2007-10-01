@@ -102,18 +102,18 @@ bspatial(x, y, z = NULL, df = 5, xknots = NULL, yknots = NULL,
 }
 \references{
 
-Paul H. C. Eilers and Brian D. Marx (1996), Flexible smoothing with B-splines
-and penalties. \emph{Statistical Science}, {\bf11}(2), 89-121.
+  Paul H. C. Eilers and Brian D. Marx (1996), Flexible smoothing with B-splines
+  and penalties. \emph{Statistical Science}, {\bf11}(2), 89-121.
 
-Ludwig Fahrmeir, Thomas Kneib and Stefan Lang (2004), Penalized structured
-additive regression for space-time data: a Bayesian perspective.
-\emph{Statistica Sinica}, {\bf14}, 731-761.
+  Ludwig Fahrmeir, Thomas Kneib and Stefan Lang (2004), Penalized structured
+  additive regression for space-time data: a Bayesian perspective.
+  \emph{Statistica Sinica}, {\bf14}, 731-761.
 
-Trevor Hastie and Robert Tibshirani (1990). Generalized Additive Models, Chapman
-and Hall.
+  Trevor Hastie and Robert Tibshirani (1990), \emph{Generalized Additive Models}. Chapman
+  and Hall.
 
-Thomas Kneib, Torsten Hothorn, and G. Tutz (2007), \emph{Variable selection in
-geoadditive regression based on boosting}, unpublished manuscript.
+  Thomas Kneib, Torsten Hothorn, and G. Tutz (2007), Variable selection in
+  geoadditive regression based on boosting. Unpublished manuscript.
 
 }
 \examples{

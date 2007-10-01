@@ -17,7 +17,8 @@
 \usage{
 Family(ngradient, loss = NULL, risk = NULL, 
        offset = function(y, w) 0, 
-       fW = function(f) rep(1, length(f)), check_y = function(y) TRUE,
+       fW = function(f) rep(1, length(f)), 
+       check_y = function(y) TRUE,
        weights = TRUE, name = "user-specified")
 AdaExp()
 Binomial()
