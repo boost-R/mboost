@@ -82,8 +82,8 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns"),
 
   Peter Buhlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
-  Statistical Science, accepted.
-  \url{ftp://ftp.stat.math.ethz.ch/Research-Reports/Other-Manuscripts/buhlmann/BuehlmannHothorn_Boosting-rev.pdf}
+  \emph{Statistical Science}, accepted.
+  \url{http://www.imstat.org/sts/future_papers.html}
   
   Matthias Schmid and Torsten Hothorn (2007),
   Boosting additive models using component-wise P-splines as
