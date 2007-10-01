@@ -69,7 +69,7 @@
   boosting hat matrix (which is rather slow even for moderate sample sizes)
   or the number of variables (non-zero coefficients) that entered the model so far 
   (faster but only meaningful for linear models fitted via \code{\link{gamboost}} 
-  (see the discussion of Buhlmann & Hothorn, 2007, by Hastie).
+  (see Hastie, 2007).
 
   Note that \code{logLik} and \code{AIC} only make sense when the corresponding
   \code{\link{Family}} implements the appropriate loss function.  
