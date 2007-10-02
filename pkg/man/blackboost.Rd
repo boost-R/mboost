@@ -59,9 +59,10 @@ blackboost_fit(object, tree_controls =
   The regression fit is a black box prediction machine and thus 
   hardly interpretable. 
 
-  Usually, the formula based interface \code{blackboost} should be used,
-  the fitting procedure without data preprocessing is assessible
-  via \code{blackboost_fit}, for example for cross-validation.
+  Usually, the formula based interface \code{blackboost} should be used.
+  When necessary (for example for cross-validation), function
+  \code{blackboost_fit} operating on objects of class \code{boost_data} 
+  is faster alternative.
 
 }
 \value{

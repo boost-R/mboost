@@ -44,8 +44,9 @@
 }
 \source{
 
-    A. L. Garcia, K. Wagner, T. Hothorn, C. Koebnick, H.-J. F. Zunft and
-    U. Tippo (2005), Improved prediction of body fat by measuring skinfold
+    Ada L. Garcia, Karen Wagner, Torsten Hothorn, Corinna Koebnick, 
+    Hans-Joachim F. Zunft and Ulrike Trippo (2005),
+    Improved prediction of body fat by measuring skinfold
     thickness, circumferences, and bone breadths. \emph{Obesity Research},
     \bold{13}(3), 626--634.
 

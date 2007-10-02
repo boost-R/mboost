@@ -46,11 +46,10 @@ glmboost_fit(object, family = GaussReg(),
   A (generalized) linear model is fitted using a boosting algorithm based on component-wise 
   univariate linear models. The fit, i.e., the regression coefficients, can be
   interpreted in the usual way. The methodology is described in 
-  Buhlmann and Yu (2003) and Buhlmann (2006).
+  Buhlmann and Yu (2003), Buhlmann (2006), and Buhlmann and Hothorn (2007).
 
   The function \code{glmboost_fit} provides access to the fitting
   procedure without data pre-processing, e.g. for cross-validation.
-
 
 }
 \value{

@@ -25,8 +25,8 @@ FP(x, p = c(-2, -1, -0.5, 0.5, 1, 2, 3))
 
 }
 \value{
-  A matrix including all powers \code{p} of \code{x}, all powers \code{p} of \code{log(x)} and
-  \code{log(x)}.
+  A matrix including all powers \code{p} of \code{x}, 
+  all powers \code{p} of \code{log(x)}, and \code{log(x)}.
 }
 \references{ 
 

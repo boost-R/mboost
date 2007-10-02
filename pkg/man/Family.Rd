@@ -32,7 +32,7 @@ CoxPH()
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{ngradient}{ a function with arguments \code{y}, \code{f} and \code{w} implementing the
-                    \emph{negative} gradient of the \code{loss} function (which is to be minimized!). }
+                    \emph{negative} gradient of the \code{loss} function (which is to be minimized). }
   \item{loss}{ an optional loss function with arguments \code{y} and \code{f} to be minimized (!). }
   \item{risk}{ an optional risk function with arguments \code{y}, \code{f} and \code{w},
                the weighted mean of the loss function by default. }
