@@ -16,7 +16,7 @@
   A data frame with 198 observations on the following 34 variables.
   \describe{
     \item{\code{status}}{a factor with levels \code{N} (nonrecur) and 
-                         \code{R} recur}
+                         \code{R} (recur)}
     \item{\code{time}}{recurrence time (for \code{status == "R"}) or
                        disease-free time (for \code{status == "N"}). }
     \item{\code{mean_radius}}{radius (mean of distances from center to points on the perimeter) (mean).}
@@ -79,7 +79,7 @@
 }
 \source{
 
-  W. N. Street, O. L. Mangasarian, and W. H. Wolberg (1995). 
+  W. Nick Street, Olvi L. Mangasarian and William H. Wolberg (1995). 
   An inductive learning approach to prognostic prediction. 
   In A. Prieditis and S. Russell, editors, \emph{Proceedings of the
   Twelfth International Conference on Machine Learning}, pages

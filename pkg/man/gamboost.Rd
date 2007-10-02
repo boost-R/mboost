@@ -6,8 +6,8 @@
 \alias{plot.gamboost}
 \title{ Gradient Boosting with Component-wise Smoothing Splines }
 \description{
-  Gradient boosting for optimizing arbitrary loss functions where component-wise
-  smoothing splines are utilized as base learners.
+  Gradient boosting for optimizing arbitrary loss functions, where component-wise
+  smoothing and regression splines are utilized as base learners.
 }
 \usage{
 \method{gamboost}{formula}(formula, data = list(), weights = NULL, 
@@ -30,11 +30,11 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns"),
             by \code{gamboost} to be plotted via \code{plot}.}
   \item{y}{ vector of responses. }
   \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}. }
-  \item{baselearner}{ an character specifying the component-wise base-learner to be used: 
+  \item{baselearner}{ an character specifying the component-wise base learner to be used: 
       \code{\link{bss}} means smoothing splines, \code{\link{bbs}} P-splines with
       a B-spline basis, \code{\link{bns}} P-splines with a natural spline basis, 
       \code{\link{bols}} linear models, and \code{\link{bspatial}} means bivariate tensor
-      product penalised splines. Please note that only 
+      product penalized splines. Please note that only 
       the characteristics of component-wise smoothing
       splines (Buhlmann and Yu, 2003) and P-splines with a B-spline basis
       (Schmid and Hothorn, 2007) have been investigated theoretically and
@@ -59,9 +59,9 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns"),
 \details{
 
   A (generalized) additive model is fitted using a boosting algorithm based on
-  component-wise univariate base learners. The base-learner can either be
+  component-wise univariate base learners. The base learner can either be
   specified via the \code{formula} object or via the \code{baselearner} argument
-  (see \code{\link{bbs}} for an example). If the baselearners specified in
+  (see \code{\link{bbs}} for an example). If the base learners specified in
   \code{formula} differ from \code{baselearner}, the latter argument will be
   ignored.
 

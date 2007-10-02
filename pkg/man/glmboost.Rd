@@ -33,7 +33,7 @@ glmboost_fit(object, family = GaussReg(),
   \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}.} 
   \item{family}{ an object of class \code{\link{boost_family-class}}, 
                 implementing the negative gradient corresponding
-                to the loss function to be optimized, by default, squared error loss
+                to the loss function to be minimized. By default, squared error loss
                 for continuous responses is used.}
   \item{control}{ an object of class \code{\link{boost_control}}.}
   \item{main}{ a title for the plot.}
@@ -68,8 +68,8 @@ glmboost_fit(object, family = GaussReg(),
   324--339.
 
   Peter Buhlmann (2006), Boosting for high-dimensional linear models. 
-  \emph{The Annals of Statistics}, \bold{34}.
-
+  \emph{The Annals of Statistics}, \bold{34}(2), 559--583.
+  
   Peter Buhlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, accepted.

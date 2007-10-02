@@ -15,7 +15,7 @@ FP(x, p = c(-2, -1, -0.5, 0.5, 1, 2, 3))
 
     A fractional polynomial refers to a model 
     \eqn{\sum_{j = 1}^k (\beta_j x^{p_j} + \gamma_j x^{p_j} \log(x)) + 
-    \beta_{k + 1} \log(x)  + \gamma_{k + 1} \log(x)^2}
+    \beta_{k + 1} \log(x)  + \gamma_{k + 1} \log(x)^2},
     where the degree of the fractional polynomial is the number of non-zero regression coefficients
     \eqn{\beta} and \eqn{\gamma}. See \code{\link[mfp]{mfp}} for the
     reference implementation.

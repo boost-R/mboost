@@ -36,11 +36,11 @@ blackboost_fit(object, tree_controls =
   \item{fitmem}{ an object of class \code{\link[party]{TreeFitMemory}}.}
   \item{family}{ an object of class \code{\link{boost_family-class}},
                 implementing the negative gradient corresponding
-                to the loss function to be optimized, by default, 
+                to the loss function to be optimized. By default, 
                 squared error loss
                 for continuous responses is used.}
   \item{control}{ an object of class \code{\link{boost_control}}
-                  which defines the hyper parameters of the
+                  which defines the hyperparameters of the
                   boosting algorithm.}
   \item{\dots}{ additional arguments passed to callies. }
 }

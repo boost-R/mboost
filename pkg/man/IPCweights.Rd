@@ -31,7 +31,7 @@ IPCweights(x, maxweight = 5)
     Springer, New York.
 
     Torsten Hothorn, Peter Buhlmann, Sandrine Dudoit,
-    Annette Molinaro and Mark J. van der Laan (2006), Survival Ensembles.
+    Annette Molinaro and Mark J. van der Laan (2006), Survival ensembles.
     \emph{Biostatistics} \bold{7}(3), 355--373.
 
     Peter Buhlmann and Torsten Hothorn (2007),

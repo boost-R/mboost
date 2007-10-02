@@ -36,7 +36,7 @@
   methodological efforts needed. Therefore, a simple regression equation
   for predicting DXA measurements of body fat is of special interest for the practitioner.
   Backward-elimination was applied to select
-  important variables from the available anthropometrical measurements and
+  important variables from the available anthropometrical measurements, and
   Garcia (2005) report a final linear model utilizing
   hip circumference, knee breadth and a compound covariate which is defined as
   the sum of log chin skinfold, log triceps skinfold and log subscapular skinfold.
@@ -45,8 +45,8 @@
 \source{
 
     A. L. Garcia, K. Wagner, T. Hothorn, C. Koebnick, H.-J. F. Zunft and
-    U. Tippo (2005). Improved Prediction of Body Fat by Measuring Skinfold
-    Thickness, Circumferences, and Bone Breadths. \emph{Obesity Research},
+    U. Tippo (2005), Improved prediction of body fat by measuring skinfold
+    thickness, circumferences, and bone breadths. \emph{Obesity Research},
     \bold{13}(3), 626--634.
 
     Peter Buhlmann and Torsten Hothorn (2007),
