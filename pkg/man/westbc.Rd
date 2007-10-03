@@ -29,10 +29,9 @@
 
 }
 \source{
-
-  M. West, C. Blanchette, H. Dressman, E. Huang,
-  S. Ishida, R. Spang, H. Zuzan, J. Olson,
-  J. Marks and J. Nevins (2001), 
+  Mike West, Carrie Blanchette, Holly Dressman, Erich Huang,
+  Seiichi Ishida, Rainer Spang, Harry Zuzan, John A. Olson Jr.,
+  Jeffrey R. Marks and Joseph R. Nevins (2001), 
   Predicting the clinical status of human breast cancer by using
   gene expression profiles, \emph{Proceedings of the National Academy of Sciences},
   \bold{98}, 11462-11467.

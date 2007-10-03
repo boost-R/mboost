@@ -14,7 +14,7 @@ boost_control(mstop = 100, nu = 0.1, constraint = FALSE,
   \item{mstop}{ an integer giving the number of initial boosting iterations. }
   \item{nu}{ a double (between 0 and 1) defining the step size or shrinkage parameter. } 
   \item{constraint}{ a logical indicating whether the working responses
-                     should be restricted to \eqn{(-1, +1)}. }
+                     should be restricted to \newline \eqn{(-1, +1)}. }
   \item{risk}{ a character indicating how the empirical risk should be 
                computed for each boosting iteration. \code{inbag} leads to
                risks computed for the learning sample (i.e., all non-zero weights),
