@@ -33,8 +33,8 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns"),
   \item{baselearner}{ a character specifying the component-wise base learner to be used: 
       \code{\link{bss}} means smoothing splines, \code{\link{bbs}} P-splines with
       a B-spline basis, \code{\link{bns}} P-splines with a natural spline basis, 
-      \code{\link{bols}} linear models, and \code{\link{bspatial}} means bivariate tensor
-      product penalized splines. Please note that only 
+      \code{\link{bols}} linear models, \code{\link{bspatial}} bivariate tensor
+      product penalized splines, and \code{brandom} random effects. Please note that only 
       the characteristics of component-wise smoothing
       splines (Buhlmann and Yu, 2003) and P-splines with a B-spline basis
       (Schmid and Hothorn, 2007) have been investigated theoretically and
