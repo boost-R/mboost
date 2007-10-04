@@ -58,6 +58,8 @@ bbs <- function(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2,
         stop(sQuote("differences"), " are not in 1:3")
     if ((!center) && (df < differences))
         stop(sQuote("df"), " is less than ", sQuote("differences"))
+    if(center && (degree < (differences-1)))
+        stop(sQuote("degree"), " is less than ", sQuote("differences"), "-1")
     if (length(unique(x)) < 6)
         stop(sQuote(xname), " has less than 6 unique values")
     

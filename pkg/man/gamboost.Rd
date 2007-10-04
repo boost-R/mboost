@@ -4,10 +4,10 @@
 \alias{gamboost.matrix}
 \alias{gamboost_fit}
 \alias{plot.gamboost}
-\title{ Gradient Boosting with Component-wise Smoothing Splines }
+\title{ Gradient Boosting with Smooth Components }
 \description{
   Gradient boosting for optimizing arbitrary loss functions, where component-wise
-  smoothing and regression splines are utilized as base learners.
+  smoothing procedures are utilized as base learners.
 }
 \usage{
 \method{gamboost}{formula}(formula, data = list(), weights = NULL, 
@@ -30,7 +30,7 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns"),
             by \code{gamboost} to be plotted via \code{plot}.}
   \item{y}{ vector of responses. }
   \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}. }
-  \item{baselearner}{ an character specifying the component-wise base learner to be used: 
+  \item{baselearner}{ a character specifying the component-wise base learner to be used: 
       \code{\link{bss}} means smoothing splines, \code{\link{bbs}} P-splines with
       a B-spline basis, \code{\link{bns}} P-splines with a natural spline basis, 
       \code{\link{bols}} linear models, and \code{\link{bspatial}} means bivariate tensor
@@ -85,6 +85,9 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns"),
   \emph{Statistical Science}, accepted.
   \url{http://www.imstat.org/sts/future_papers.html}
   
+  Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2007), Variable selection and
+  Model Choice in Geoadditive Regression Models. Unpublished manuscript.
+
   Matthias Schmid and Torsten Hothorn (2007),
   Boosting additive models using component-wise P-splines as
   base-learners. Unpublished manuscript.
