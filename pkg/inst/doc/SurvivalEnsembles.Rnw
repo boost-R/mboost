@@ -11,7 +11,7 @@
 %%\usepackage{Sweave}
 
 %%\VignetteIndexEntry{Survival Ensembles}
-%%\VignetteDepends{mboost,ipred}
+%%\VignetteDepends{ipred}
 
 \newcommand{\Rpackage}[1]{{\normalfont\fontseries{b}\selectfont #1}}
 \newcommand{\Robject}[1]{\texttt{#1}}

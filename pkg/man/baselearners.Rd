@@ -81,7 +81,7 @@ brandom(x, z = NULL, df = 4, xname = NULL, zname = NULL)
   \code{bspatial} implements bivariate tensor product P-splines for the estimation
   of either spatial effects (if \code{x} and \code{y} correspond to coordinates)
   or interaction surfaces. The penalty term is constructed based on bivariate extensions
-  of the univariate penalties in \code[x} and \code{y} directions, see Kneib, Hothorn 
+  of the univariate penalties in \code{x} and \code{y} directions, see Kneib, Hothorn 
   and Tutz (2007) for details.
 
   \code{brandom} specifies a random effects base learner based on a factor variable 
