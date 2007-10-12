@@ -4,6 +4,7 @@
 \alias{bns}
 \alias{bss}
 \alias{bspatial}
+\alias{brandom}
 \title{ Base learners for Gradient Boosting with Smooth Components }
 \description{
   Base learners to be utilized in the formula specification of \code{gamboost()}.
@@ -27,36 +28,36 @@ brandom(x, z = NULL, df = 4, xname = NULL, zname = NULL)
   \item{y}{ a vector containing numeric data }
   \item{z}{ an optional vector containing numeric data.}
   \item{xname}{ an optional string indicating the name of the variable whose
-  data values are given by the vector \code{x}.}
+                data values are given by the vector \code{x}.}
   \item{yname}{ an optional string indicating the name of the variable whose
-  data values are given by the vector \code{y}.}
+                data values are given by the vector \code{y}.}
   \item{zname}{ an optional string indicating the name of the variable whose
-  data values are given by the vector \code{z}.}
+                data values are given by the vector \code{z}.}
   \item{df}{ trace of the hat matrix for the base learner defining the base learner 
-  complexity. Low values of \code{df} correspond to a large amount of smoothing and 
-  thus to "weaker" base learners. Certain restrictions have to be kept for the 
-  specification of \code{df} since most of the base learners rely on penalisation 
-  approaches with a non-trivial null space. For example, for p-splines fitted with 
-  \code{bbs}, \code{df} has to be larger than the order of differences employed in
-  the construction of the penalty term. However, when option \code{center=TRUE}, 
-  the effect is centered around its unpenalised part and therefore any positive number
-  is admissible for \code{df}. 
+             complexity. Low values of \code{df} correspond to a large amount of smoothing and 
+             thus to "weaker" base learners. Certain restrictions have to be kept for the 
+             specification of \code{df} since most of the base learners rely on penalisation 
+             approaches with a non-trivial null space. For example, for p-splines fitted with 
+             \code{bbs}, \code{df} has to be larger than the order of differences employed in
+             the construction of the penalty term. However, when option \code{center=TRUE}, 
+             the effect is centered around its unpenalised part and therefore any positive number
+             is admissible for \code{df}.}
   \item{knots}{ either the number of (equidistant) interior knots to be used for
-  the regression spline fit or a vector including the positions of the interior
-  knots. If \code{knots=NULL}, the interior knots are chosen to be equidistant,
-  where the number of interior knots is defined in the same way as in
-  \code{smooth.spline}.}
+                the regression spline fit or a vector including the positions of the interior
+                knots. If \code{knots=NULL}, the interior knots are chosen to be equidistant,
+                where the number of interior knots is defined in the same way as in
+                \code{smooth.spline}.}
   \item{xknots}{ knots in \code{x}-direction when fitting a bivariate surface
-  with \code{bspatial}. See \code{knots} for details.}
+                 with \code{bspatial}. See \code{knots} for details.}
   \item{yknots}{ knots in \code{y}-direction when fitting a bivariate surface
-  with \code{bspatial}. See \code{knots} for details.}
+                 with \code{bspatial}. See \code{knots} for details.}
   \item{degree}{ degree of the regression spline.}
   \item{differences}{ natural number between 1 and 3. If \code{differences} =
-  \emph{k}, \emph{k}-th-order differences are used as a penalty.}
+                     \emph{k}, \emph{k}-th-order differences are used as a penalty.}
   \item{center}{ If \code{center=TRUE}, the corresponding effect is
-  reparameterised such that the unpenalized part of the fit is substracted and
-  only the deviation effect is fitted. The unpenalized, parametric part has then
-  to be included in separate base learners using \code{bols} (see the examples below).}
+                reparameterised such that the unpenalized part of the fit is substracted and
+                only the deviation effect is fitted. The unpenalized, parametric part has then
+               to be included in separate base learners using \code{bols} (see the examples below).}
 }
 \details{
 
