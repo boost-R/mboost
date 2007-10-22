@@ -35,9 +35,11 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns"),
       \code{\link{bbs}} P-splines with a B-spline basis (see Schmid and Hothorn
       2007), \code{\link{bns}} P-splines with a natural spline basis, 
       \code{\link{bols}} linear models, \code{\link{bspatial}} bivariate tensor
-      product penalized splines, and \code{\link{brandom}} random effects.
-      Please note that the characteristics of component-wise P-splines with a
-      natural spline basis have not been investigated until now.}
+      product penalized splines, and \code{\link{brandom}} random effects. Component-wise smoothing splines
+      have been considered in Buhlmann and Yu (2003) and Schmid and Hothorn investigate P-splines with 
+      a B-spline basis. Kneib, Hothorn and Tutz (2007) also utilise P-splines with a B-spline basis,
+      supplement them with their bivariate tensor product version to estimate interaction surfaces and spatial effects
+      and also consider random effects base learners.}
   \item{dfbase}{ an integer vector giving the degrees of freedom for the smoothing 
                  spline, either globally for all variables (when its length is one)
                  or separately for each single covariate. }
