@@ -31,14 +31,13 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns"),
   \item{y}{ vector of responses. }
   \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}. }
   \item{baselearner}{ a character specifying the component-wise base learner to be used: 
-      \code{\link{bss}} means smoothing splines, \code{\link{bbs}} P-splines with
-      a B-spline basis, \code{\link{bns}} P-splines with a natural spline basis, 
+      \code{\link{bss}} means smoothing splines (see Buhlmann and Yu 2003),
+      \code{\link{bbs}} P-splines with a B-spline basis (see Schmid and Hothorn
+      2007), \code{\link{bns}} P-splines with a natural spline basis, 
       \code{\link{bols}} linear models, \code{\link{bspatial}} bivariate tensor
-      product penalized splines, and \code{brandom} random effects. Please note that only 
-      the characteristics of component-wise smoothing
-      splines (Buhlmann and Yu, 2003) and P-splines with a B-spline basis
-      (Schmid and Hothorn, 2007) have been investigated theoretically and
-      practically until now.}
+      product penalized splines, and \code{\link{brandom}} random effects.
+      Please note that the characteristics of component-wise P-splines with a
+      natural spline basis have not been investigated until now.}
   \item{dfbase}{ an integer vector giving the degrees of freedom for the smoothing 
                  spline, either globally for all variables (when its length is one)
                  or separately for each single covariate. }

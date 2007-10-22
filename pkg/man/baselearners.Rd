@@ -72,7 +72,7 @@ brandom(x, z = NULL, df = 4, xname = NULL, zname = NULL)
   With \code{bbs}, the P-spline approach of Eilers and Marx (1996) is used. 
   \code{bns} uses the same penalty and interior knots as \code{bbs}, 
   but operates with a constrained natural spline basis instead of an
-  unconstrained B-spline basis. P-splines use a suqared \emph{k}-th-order difference
+  unconstrained B-spline basis. P-splines use a squared \emph{k}-th-order difference
   penalty which can be interpreted as an approximation of the integrated squared
   \emph{k}-th derivative of the spline. This approximation is only valid
   if the knots are equidistant, so is not recommended to use non-equidistant
