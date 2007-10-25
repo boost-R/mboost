@@ -1,5 +1,5 @@
 
-R version 2.5.0 (2007-04-23)
+R version 2.6.0 (2007-10-03)
 Copyright (C) 2007 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -48,7 +48,6 @@ Loading required package: strucchange
 Loading required package: vcd
 Loading required package: MASS
 Loading required package: colorspace
-[1] TRUE
 > 
 > set.seed(290875)
 > 
@@ -82,6 +81,7 @@ Loading required package: colorspace
 > mydf.gb <- glmboost(y ~ ., data = mydf, family = fm, 
 +                     control = boost_control(mstop = 1000, nu = 1))
 > aic <- AIC(mydf.gb, method = "corrected")
+> ht <- hatvalues(mydf.gb)
 > mstop(aic)
 [1] 44
 > mydf.lm <- lm(y ~ ., data = mydf)
@@ -92,12 +92,13 @@ Loading required package: colorspace
   2  36 
 > 
 > #### check boosting hat matrix and subsetting / predict
-> stopifnot(isTRUE(all.equal(drop(attr(aic, "hatmat") %*% mydf$y),
+> stopifnot(isTRUE(all.equal(drop(attr(ht, "hatmatrix") %*% mydf$y),
 +                            as.vector(predict(mydf.gb)))))
-> stopifnot(isTRUE(all.equal(drop(attr(AIC(mydf.gb[255]), "hatmat") %*% mydf$y),
-+                            as.vector(predict(mydf.gb[255])))))
-> stopifnot(isTRUE(all.equal(drop(attr(AIC(mydf.gb[255]), "hatmat") %*% mydf$y),
-+                            as.vector(fitted(mydf.gb[255])))))
+> ht25 <- hatvalues(mydf.gb[25])
+> stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
++                            as.vector(predict(mydf.gb[25])))))
+> stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
++                            as.vector(fitted(mydf.gb[25])))))
 > 
 > ### a simple two-dimensional example from `glmboost.Rd'
 > data("cars")
@@ -170,7 +171,7 @@ attr(,"offset")
 > stopifnot(max(abs(hatvalues(lmmod) - hatvalues(lmb))) < sqrt(.Machine$double.eps))      
 > 
 > ### compare boosting hat matrix with fitted values
-> stopifnot(max(abs(attr(AIC(lmb), "hatmatrix") %*% (df$y - lmb$offset) + lmb$offset -
+> stopifnot(max(abs(attr(hatvalues(lmb), "hatmatrix") %*% (df$y - lmb$offset) + lmb$offset -
 +         fitted(lmb))) < sqrt(.Machine$double.eps)) 
 > 
 > ### Cox model (check for CoxPH family)

@@ -1,5 +1,10 @@
 
-		CHANGES in `mboost' VERSION 0.6-2 (2007-10-xx)
+		CHANGES in `mboost' VERSION 0.9-0 (2007-10-25)
+
+  o  tests update and release the new version on CRAN
+
+
+		CHANGES in `mboost' VERSION 0.6-2 (internal)
 
   o  move `mboost' to R-forge
 

@@ -418,6 +418,7 @@ do_trace <- function(m, risk, step = options("width")$width / 2,
         if ((m %/% step != m / step) && m != width) {
             cat("*")
         } else {
+            if (m == width) cat(rep(" ", step - width %% step - 1))
             cat("* -- risk:", risk[m], "\n")
         }
     }

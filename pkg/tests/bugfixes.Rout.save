@@ -1,5 +1,5 @@
 
-R version 2.5.0 (2007-04-23)
+R version 2.6.0 (2007-10-03)
 Copyright (C) 2007 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -48,7 +48,6 @@ Loading required package: strucchange
 Loading required package: vcd
 Loading required package: MASS
 Loading required package: colorspace
-[1] TRUE
 > 
 > set.seed(290875)
 > 
@@ -60,13 +59,14 @@ Loading required package: colorspace
 > 
 > ### predict for g{al}mboost.matrix did not work
 > ctrl <- boost_control(mstop = 10)
-> gb <- glmboost(x = cbind(1, dummy$x), y = dummy$y, family = Binomial(), 
+> X <- cbind(int = 1, x = dummy$x)
+> gb <- glmboost(x = X, y = dummy$y, family = Binomial(), 
 +                control = ctrl)
-> stopifnot(all.equal(predict(gb), predict(gb, newdata = cbind(1, dummy$x))))
+> stopifnot(all.equal(predict(gb), predict(gb, newdata = X)))
 > 
-> gb <- gamboost(x = cbind(1, dummy$x), y = dummy$y, family = Binomial(), 
+> gb <- gamboost(x = X, y = dummy$y, family = Binomial(), 
 +                control = ctrl)
-> stopifnot(all.equal(predict(gb), predict(gb, newdata = cbind(1, dummy$x))))
+> stopifnot(all.equal(predict(gb), predict(gb, newdata = X)))
 > 
 > ### blackboost _did_ touch the response, arg!
 > 
@@ -112,6 +112,8 @@ Loading required package: colorspace
 > data("bodyfat", package = "mboost")
 > ctrl <- boost_control(mstop = 100, center = TRUE)
 > ga <- gamboost(DEXfat ~ ., data = bodyfat, dfbase = 1, control = ctrl)
+Warning message:
+In gamboost_fit(object, ...) : inputs are not centered in ‘gamboost’
 > gl <- glmboost(DEXfat ~ ., data = bodyfat, control = ctrl)
 > stopifnot(max(abs(predict(ga) - predict(gl))) < 1e-8)
 > AIC(gl)
@@ -122,6 +124,7 @@ Degrees of freedom (for mstop = 45): 1.917234
 > ### prediction with matrices was broken for gamboost,
 > ### spotted by <Max.Kuhn@pfizer.com>
 > x <- matrix(rnorm(1000), ncol = 10)
+> colnames(x) <- 1:ncol(x)
 > y <- rnorm(100)
 > fit <- gamboost(x = x, y = y, control = boost_control(mstop = 10))
 > a <- predict(fit, newdata = x[1:10,])
@@ -143,15 +146,20 @@ Degrees of freedom (for mstop = 45): 1.917234
 > 
 > gc <- gamboost(y ~ xn + xf, control = boost_control(center = TRUE), 
 +                family = Binomial())
+Warning message:
+In gamboost_fit(object, ...) : inputs are not centered in ‘gamboost’
 > g <- gamboost(y ~ xnm + xf, family = Binomial())
 > stopifnot(all.equal(mstop(AIC(gc, "classical")), mstop(AIC(g, "classical"))))
 > 
 > y <- rnorm(20)
 > gc <- gamboost(y ~ xn + xf, control = boost_control(center = TRUE))
+Warning message:
+In gamboost_fit(object, ...) : inputs are not centered in ‘gamboost’
 > g <- gamboost(y ~ xnm + xf)
 > stopifnot(all.equal(mstop(AIC(gc, "corrected")), mstop(AIC(g, "corrected"))))
 > 
-> ### check gamboost with weights (use weighted some of residuals for variable selection)
+> ### check gamboost with weights (use weighted some of residuals 
+> ### for variable selection)
 > data("bodyfat", package = "mboost")
 > 
 > set.seed(290875)
@@ -185,4 +193,11 @@ Degrees of freedom (for mstop = 45): 1.917234
 > 
 > ratio <- mod1$risk / mod2$risk
 > stopifnot(ratio[1] > 0.95 && ratio[2] < 1.05)
+> 
+> ### df <= 2
+> mod1 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, dfbase = 2)
+> mod2 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bbs", dfbase = 2)
+> mod3 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bols")
+> stopifnot(max(abs(predict(mod1) - predict(mod2))) < .Machine$double.eps)
+> stopifnot(max(abs(predict(mod1) - predict(mod3))) < .Machine$double.eps)
 > 

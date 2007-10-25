@@ -40,4 +40,3 @@
     o  look at coffee dataset
        http://sensor.ing.unibs.it/_people/pardo/dataset.html
 
-    o  use StatSci url in references

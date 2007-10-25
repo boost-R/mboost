@@ -1,5 +1,5 @@
 
-R version 2.5.0 (2007-04-23)
+R version 2.6.0 (2007-10-03)
 Copyright (C) 2007 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -163,7 +163,7 @@ R> bf_gam <- bf_gam[mstop(aic)]
 R> fpartial <- mboost:::gamplot(bf_gam)
 R> layout(matrix(1:4, ncol = 2, byrow = TRUE))
 R> par(mai = par("mai") * c(1, 1, 0.5, 1))
-R> x <- boost_dpp(DEXfat ~ ., data = bodyfat)$x
+R> x <- bf_gam$data$input
 R> varorder <- rev(order(colMeans(abs(fpartial))))[1:4]
 R> 
 R> out <- sapply(varorder, function(i) {
@@ -302,16 +302,16 @@ R> ###################################################
 R> wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial())
 R> mopt <- mstop(aic <- AIC(wpbc_gam, "classical"))
 R> aic
-[1] 199.76
-Optimal number of boosting iterations: 99 
-Degrees of freedom (for mstop = 99): 14.583 
+[1] 196.33
+Optimal number of boosting iterations: 84 
+Degrees of freedom (for mstop = 84): 13.754 
 R> 
 R> 
 R> ###################################################
 R> ### chunk number 24: wpbc-gamboost-plot
 R> ###################################################
 R> fpartial <- mboost:::gamplot(wpbc_gam[mopt])
-R> x <- boost_dpp(status ~ ., data = wpbc2)$x
+R> x <- wpbc_gam$data$input
 R> layout(matrix(1:4, nrow = 2, byrow = TRUE))
 R> par(mai = par("mai") * c(1, 1, 0.5, 1))
 R> out <- sapply(rev(order(colMeans(abs(fpartial))))[1:4], function(i) {
@@ -335,8 +335,8 @@ R> ###################################################
 R> ### chunk number 26: wpbc-glmboost-PIC
 R> ###################################################
 R> ### calculate IPC weights
-R> zensored <- wpbc$status == "R"
-R> iw <- IPCweights(Surv(wpbc$time, zensored))
+R> censored <- wpbc$status == "R"
+R> iw <- IPCweights(Surv(wpbc$time, censored))
 R> wpbc3 <- wpbc[,names(wpbc) != "status"]
 R> 
 R> 
@@ -370,14 +370,6 @@ R> plot(log(wpbc3$time), predict(wpbc_surv),
           xlab = "Time to recurrence (log-scale)", 
           ylab = "Predicted time to recurrence")
 R> abline(a = 0, b = 1, lty = 2, lwd = 0.5)
-R> 
-R> 
-R> ###################################################
-R> ### chunk number 30: wpbc-CoxPH eval=FALSE
-R> ###################################################
-R> ## ctrl <- boost_control(center = TRUE)
-R> ## glmboost(Surv(wpbc$time, wpbc$status == "N") ~ ., data = wpbc, family = CoxPH(), 
-R> ##          control = ctrl)
 R> 
 R> 
 R> 
