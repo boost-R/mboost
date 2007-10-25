@@ -40,7 +40,7 @@ brandom(x, z = NULL, df = 4, xname = NULL, zname = NULL)
              approaches with a non-trivial null space. For example, for p-splines fitted with 
              \code{bbs}, \code{df} has to be larger than the order of differences employed in
              the construction of the penalty term. However, when option \code{center=TRUE}, 
-             the effect is centered around its unpenalised part and therefore any positive number
+             the effect is centered around its unpenalized part and therefore any positive number
              is admissible for \code{df}.}
   \item{knots}{ either the number of (equidistant) interior knots to be used for
                 the regression spline fit or a vector including the positions of the interior
@@ -55,15 +55,15 @@ brandom(x, z = NULL, df = 4, xname = NULL, zname = NULL)
   \item{differences}{ natural number between 1 and 3. If \code{differences} =
                      \emph{k}, \emph{k}-th-order differences are used as a penalty.}
   \item{center}{ If \code{center=TRUE}, the corresponding effect is
-                reparameterised such that the unpenalized part of the fit is substracted and
+                re-parameterized such that the unpenalized part of the fit is substracted and
                 only the deviation effect is fitted. The unpenalized, parametric part has then
                to be included in separate base learners using \code{bols} (see the examples below).}
 }
 \details{
 
   \code{bols} refers to linear base learners (ordinary least squares fit), while
-  \code{bbs}, \code{bns}, and \code{bss} refer to penalised regression splines, 
-  penalised natural splines, and smoothing splines, respectively. \code{bspatial} 
+  \code{bbs}, \code{bns}, and \code{bss} refer to penalized regression splines, 
+  penalized natural splines, and smoothing splines, respectively. \code{bspatial} 
   fits bivariate surfaces and \code{brandom} defines random effects base learners.
   In combination with option \code{z}, all base learners can be turned into varying 
   coefficient terms.

@@ -3,7 +3,7 @@
 \title{ Cross-Validation }
 \description{
   Cross-validated estimation of the empirical risk 
-  for hyper parameter selection.
+  for hyper-parameter selection.
 }
 \usage{
 cvrisk(object, folds, 
@@ -20,7 +20,7 @@ cvrisk(object, folds,
 }
 \details{
 
-  The number of boosting iterations is a hyper parameter of the
+  The number of boosting iterations is a hyper-parameter of the
   boosting algorithms implemented in this package. Honest, 
   i.e., cross-validated, estimates of the empirical risk
   for different stopping parameters \code{mstop} are computed by

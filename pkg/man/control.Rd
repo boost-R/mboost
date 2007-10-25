@@ -1,9 +1,9 @@
 \name{boost_control}
 \alias{boost_control}
-\title{ Control Hyperparameters for Boosting Algorithms }
+\title{ Control Hyper-parameters for Boosting Algorithms }
 \description{
   Definition of the initial number of boosting iterations, step size 
-  and other hyper parameters for boosting algorithms.
+  and other hyper-parameters for boosting algorithms.
 }
 \usage{
 boost_control(mstop = 100, nu = 0.1, constraint = FALSE, 
@@ -30,7 +30,7 @@ boost_control(mstop = 100, nu = 0.1, constraint = FALSE,
 }
 \details{
 
-  Objects returned by this function specify hyperparameters of the
+  Objects returned by this function specify hyper-parameters of the
   boosting algorithms implemented in \code{\link{glmboost}}, 
   \code{\link{gamboost}} and \code{\link{blackboost}} 
   (via the \code{control} argument).

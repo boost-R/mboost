@@ -29,7 +29,7 @@ blackboost_fit(object, tree_controls =
   \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}. }
   \item{tree_controls}{ an object of class \code{\link[party]{TreeControl}}, which can be
                   obtained using \code{\link[party]{ctree_control}}. 
-                  Defines hyper parameters for the trees which are used as base learners. 
+                  Defines hyper-parameters for the trees which are used as base learners. 
                   It is wise
                   to make sure to understand the consequences of altering any of its
                   arguments.}
@@ -40,7 +40,7 @@ blackboost_fit(object, tree_controls =
                 squared error loss
                 for continuous responses is used.}
   \item{control}{ an object of class \code{\link{boost_control}}
-                  which defines the hyperparameters of the
+                  which defines the hyper-parameters of the
                   boosting algorithm.}
   \item{\dots}{ additional arguments passed to callies. }
 }
