@@ -226,7 +226,7 @@ coefpath.glmboost <- function(object, ...) {
 
     vars <- colnames(object$data$x)
     xselect <- object$ensemble[,"xselect"]
-    svars <- vars[tabulate(xselect) > 0]
+    svars <- vars[tabulate(xselect, nbins = length(vars)) > 0]
     ret <- matrix(0, nrow = mstop(object), ncol = length(svars))
     colnames(ret) <- svars
     for (j in unique(xselect)) {
