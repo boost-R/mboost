@@ -119,7 +119,7 @@ mdplot <- function(obs, pred, main = "", ...) {
 <<loaddata, echo = FALSE, results = tex>>=
 ### load data from internet. See `mboost/inst/datapreproc/readAML_Bullinger.R' for
 ### how the data were generated from the raw data.
-handle <- try(url("http://www.imbe.med.uni-erlangen.de/~hothorn/AML_Bullinger.rda", open = "r"))
+handle <- try(url("http://www.stat.uni-muenchen.de/~hothorn/data/AML_Bullinger.rda", open = "r"))
 if (inherits(handle, "try-error"))
     cat("Cannot download data from the net. This vignette needs a working internet connection. \n \\end{document} \n")
 load(handle)
