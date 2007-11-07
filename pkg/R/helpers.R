@@ -1,4 +1,3 @@
-
 ### two possible interpretations of weights:
 ### 1) case counts: observation i is w_i times in the sample
 ### 2) relative weights: observation i is given weight w_i
@@ -422,4 +421,68 @@ do_trace <- function(m, risk, step = options("width")$width / 2,
             cat("* -- risk:", risk[m], "\n")
         }
     }
+}
+
+### compute the predictor for all boosting iterations fast
+fastp <- function(object, newdata) UseMethod("fastp")
+
+fastp.glmboost <- function(object, newdata = NULL) {
+
+     if (!is.null(newdata)) {
+         if (is.null(object$data)) {
+             x <- newdata
+         } else {
+             mf <- object$data$menv@get("input", data = newdata)
+             x <- model.matrix(attr(mf, "terms"), data = mf)
+         }
+         if (object$control$center) x <- object$center(x)
+    } else {
+         mf <- object$data$menv@get("input")
+         x <- model.matrix(attr(mf, "terms"), data = mf)
+         if (object$control$center) x <- object$center(x)
+    }
+
+    lp <- matrix(0, nrow = NROW(x), ncol = mstop(object))
+    jsel <- object$ensemble[,"xselect"]
+    cf <- object$ensemble[,"coef"] * object$control$nu
+
+    tmp <- object$offset
+    for (m in 1:mstop(object)) {
+        lp[,m] <- tmp + cf[m] * x[,jsel[m]]
+        tmp <- lp[,m]
+    }
+    return(lp)
+}
+
+fastp.gamboost <- function(object, newdata = NULL) {
+
+    n <- length(predict(object$ensembless[[1]], newdata = newdata))
+    lp <- matrix(0, nrow = n, ncol = mstop(object))
+    nu <- object$control$nu
+
+    tmp <- object$offset
+    for (m in 1:mstop(object)) {
+        lp[,m] <- tmp + nu * predict(object$ensembless[[m]], 
+                   newdata = newdata)
+        tmp <- lp[,m]
+    }
+    return(lp)
+}
+
+fastp.blackboost <- function(object, newdata = NULL) {
+
+    newinp <- party:::newinputs(object$data, newdata)
+    lp <- matrix(0, nrow = newinp@nobs, ncol = mstop(object))
+    for (m in 1:mstop(object)) {
+        wh <- .Call("R_get_nodeID", object$ensemble[[m]], newinp, 0.0,
+                    PACKAGE = "party")
+        if (m == 1) {
+            tmp <- object$offset   
+        } else {
+            tmp <- lp[,m-1]
+        }
+        lp[,m] <- tmp + object$control$nu * unlist(.Call("R_getpredictions",
+            object$ensemble[[m]], wh, PACKAGE = "party"))
+    }
+    lp
 }

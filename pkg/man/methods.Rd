@@ -5,6 +5,7 @@
 \alias{AIC.gamboost}
 \alias{AIC.glmboost}
 \alias{predict.gb}
+\alias{predict.blackboost}
 \alias{mstop}
 \alias{mstop.gbAIC}
 \alias{mstop.gb}
@@ -27,7 +28,10 @@
 \method{mstop}{gb}(object, ...)
 \method{mstop}{cvrisk}(object, ...)
 \method{mstop}{blackboost}(object, ...)
-\method{predict}{gb}(object, newdata = NULL, type = c("lp", "response"), ...)
+\method{predict}{gb}(object, newdata = NULL, type = c("lp", "response"), 
+       allIterations = FALSE, ...)
+\method{predict}{blackboost}(object, newdata = NULL, type = c("lp", "response"), 
+       allIterations = FALSE, ...)
 \method{fitted}{gb}(object, type = c("lp", "response"), ...)
 \method{logLik}{gb}(object, ...)
 }
@@ -39,6 +43,8 @@
   \item{type}{ a character indicating whether the fit or the response
                (classes) should be predicted in case of classification 
                problems. }
+  \item{allIterations}{ computes the (linear) predictor for all boosting
+               iterations simultaneously and returns a matrix.}
   \item{method}{ a character specifying if the corrected AIC criterion or
                  a classical \newline (-2 logLik + k * df) should be computed.}
   \item{df}{ a character specifying how degrees of freedom should be computed:
@@ -58,7 +64,8 @@
   
   The \code{predict} function can be used to predict the status of the response variable
   for new observations whereas \code{fitted} extracts the regression fit for the observations
-  in the learning sample.
+  in the learning sample. When \code{allIterations = TRUE}, the matrix
+  of all (linear) predictors for boosting iterations 1 to \code{mstop} is returned.
 
   For (generalized) linear and additive models, the \code{AIC} function can be used
   to compute both the classical and corrected AIC (Hurvich et al., 1998, only available

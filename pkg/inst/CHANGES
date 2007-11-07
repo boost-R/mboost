@@ -3,6 +3,9 @@
 
   o  tests update and release the new version on CRAN
 
+  o  predict(..., allIterations = TRUE) returns the matrix
+     of predictors for all boosting iterations
+
 
 		CHANGES in `mboost' VERSION 0.6-2 (internal)
 

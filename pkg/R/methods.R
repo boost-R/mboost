@@ -20,8 +20,15 @@
 }
 
 ### methods: prediction
-predict.gb <- function(object, newdata = NULL, type = c("lp", "response"), ...) {
+predict.gb <- function(object, newdata = NULL, type = c("lp", "response"), 
+                       allIterations = FALSE, ...) {
     type <- match.arg(type)
+    if (allIterations) {
+        if (type != "lp") 
+            stop(sQuote("allIterations"), " only available for ", 
+                 sQuote("type = \"lp\""))
+        return(fastp(object, newdata))
+    }
     y <- object$data$y
     lp <- object$predict(newdata = newdata, mstop = mstop(object), ...)
     if (type == "response" && is.factor(y))

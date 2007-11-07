@@ -157,9 +157,15 @@ blackboost_fit <- function(object,
 
 ### methods: prediction
 predict.blackboost <- function(object, newdata = NULL, 
-                              type = c("lp", "response"), ...) {
+                              type = c("lp", "response"), allIterations = FALSE, ...) {
     y <- party:::get_variables(object$data@responses)[[1]]
     type <- match.arg(type)
+    if (allIterations) {
+        if (type != "lp") 
+            stop(sQuote("allIterations"), " only available for ", 
+                 sQuote("type = \"lp\""))
+        return(fastp(object, newdata))
+    }
     lp <- object$predict(newdata = newdata, mstop = mstop(object), ...)
     if (type == "response" && is.factor(y))
         return(factor(levels(y)[(lp > 0) + 1], levels = levels(y)))

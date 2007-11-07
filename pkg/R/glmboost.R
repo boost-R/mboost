@@ -144,7 +144,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
         }
 
         tmp <- RET
-        tmp$ensemble <- tmp$ensemble[1:mstop,,drop = TRUE]
+        tmp$ensemble <- tmp$ensemble[1:mstop,,drop = FALSE]
         lp <- offset + x %*% coef(tmp)
         if (constraint) lp <- sign(lp) * pmin(abs(lp), 1)    
         return(drop(lp))

@@ -201,3 +201,20 @@ In gamboost_fit(object, ...) : inputs are not centered in ‘gamboost’
 > stopifnot(max(abs(predict(mod1) - predict(mod2))) < .Machine$double.eps)
 > stopifnot(max(abs(predict(mod1) - predict(mod3))) < .Machine$double.eps)
 > 
+> ### not really a bug, a new feature; test fastp
+> df <- data.frame(y = rnorm(100), x = runif(100), z = runif(100))
+> eps <- sqrt(.Machine$double.eps)
+> s <- seq(from = 1, to = 100, by = 3) 
+> 
+> x <- glmboost(y ~ ., data = df)
+> for (i in s)   
++     stopifnot(max(abs(predict(x[i]) - predict(x, all = TRUE)[,i])) < eps)
+> 
+> x <- gamboost(y ~ ., data = df)
+> for (i in s)   
++     stopifnot(max(abs(predict(x[i]) - predict(x, all = TRUE)[,i])) < eps)
+> 
+> x <- blackboost(y ~ ., data = df)
+> for (i in s)   
++     stopifnot(max(abs(predict(x[i]) - predict(x, all = TRUE)[,i])) < eps)
+> 
