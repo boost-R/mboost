@@ -1,4 +1,6 @@
 
+    o  move Bullinger.rda from Erlangen to Munich
+
     o  na.action defaults checken
 
     o  wpbc3 mit na.action = na.omit ODER na.pass???
