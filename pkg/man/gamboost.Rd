@@ -91,7 +91,8 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns"),
 
   Matthias Schmid and Torsten Hothorn (2007),
   Boosting additive models using component-wise P-splines as
-  base-learners. Unpublished manuscript.
+  base-learners. Technical Report No. 2, Institut fuer Statistik, LMU Muenchen.
+  \url{http://epub.ub.uni-muenchen.de/2057/}
 
 }
 \examples{
