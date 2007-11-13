@@ -97,14 +97,6 @@ Loading required package: grid
 Loading required package: coin
 Loading required package: mvtnorm
 Loading required package: zoo
-
-Attaching package: 'zoo'
-
-
-	The following object(s) are masked from package:base :
-
-	 rapply 
-
 Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: vcd
@@ -317,7 +309,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0x86b02e4>
+<environment: 0x8881280>
 
 > spline2 <- bns(x2,knots=knots.x2,df=5)
 Warning in bns(x2, knots = knots.x2, df = 5) :
@@ -374,7 +366,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0x8da0aa0>
+<environment: 0x8477cd4>
 
 > olsfit <- bols(x3)
 > attributes(olsfit)
@@ -432,7 +424,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0x8c5fcb4>
+<environment: 0x8baed8c>
 
 > 
 > form1 <- y ~ bbs(x1,knots=20,df=4) + bns(x2,knots=knots.x2,df=5)
@@ -477,7 +469,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0x88fd6f0>
+<environment: 0x8c3475c>
 
 > 
 > form2 <- y ~ bspatial(x1, x2, xknots=12, yknots=12)
@@ -538,7 +530,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0x8d7b6d0>
+<environment: 0x8402930>
 
 > 
 > # random slope
@@ -592,7 +584,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0x8c76f10>
+<environment: 0x8dd7964>
 
 > 
 > 
@@ -1056,7 +1048,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  15.465 0.412 17.393 0 0 
+Time elapsed:  18.373 0.396 19.85 0 0 
 > grDevices::dev.off()
 null device 
           1 
