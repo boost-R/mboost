@@ -36,7 +36,7 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns"),
       2007), \code{\link{bns}} P-splines with a natural spline basis, 
       \code{\link{bols}} linear models, \code{\link{bspatial}} bivariate tensor
       product penalized splines, and \code{\link{brandom}} random effects. Component-wise smoothing splines
-      have been considered in Buhlmann and Yu (2003) and Schmid and Hothorn investigate P-splines with 
+      have been considered in Buhlmann and Yu (2003) and Schmid and Hothorn (2007) investigate P-splines with 
       a B-spline basis. Kneib, Hothorn and Tutz (2007) also utilise P-splines with a B-spline basis,
       supplement them with their bivariate tensor product version to estimate interaction surfaces and spatial effects
       and also consider random effects base learners.}
@@ -87,7 +87,9 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns"),
   \url{http://www.imstat.org/sts/future_papers.html}
   
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2007), Variable selection and
-  Model Choice in Geoadditive Regression Models. Unpublished manuscript.
+  model choice in geoadditive regression models. 
+  Technical Report No. 3, Institut fuer Statistik, LMU Muenchen.
+  \url{http://epub.ub.uni-muenchen.de/2063/}
 
   Matthias Schmid and Torsten Hothorn (2007),
   Boosting additive models using component-wise P-splines as

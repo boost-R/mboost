@@ -137,7 +137,10 @@ brandom(x, z = NULL, df = 4, xname = NULL, zname = NULL)
   \emph{Statistica Sinica}, \bold{14}, 731-761.
 
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2007), Variable selection and
-  Model Choice in Geoadditive Regression Models. Unpublished manuscript.
+  model choice in geoadditive regression models. 
+  Technical Report No. 3, Institut fuer Statistik, LMU Muenchen.
+  \url{http://epub.ub.uni-muenchen.de/2063/}
+
 
 }
 \examples{
