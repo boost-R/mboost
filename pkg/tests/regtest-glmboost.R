@@ -176,3 +176,81 @@ stopifnot(all.equal(logLik(gbmod), llg))
 stopifnot(abs(AIC(gmod) - attr(AIC(gbmod, "classical"), "AIC")[mstop(gbmod)]) < 1)
 
 stopifnot(max(abs(predict(gmod) -  predict(gbmod))) < 1e-4)
+
+
+### Weibull model with scale parameter estimation
+
+### random numbers from extreme value distribution
+rextrval <- function(x) log( -log(1-x) )
+
+sigma <- 0.5
+u <- runif(100)
+w <- rextrval(u)
+
+event <- sample(0:1,100,replace=TRUE,prob=c(0.3,0.7))
+x1 <- rnorm(100,sd=1)
+x2 <- x1 + rnorm(100,sd=1)
+X <- cbind(x1,x2)
+beta <- c(1,0.5)
+stime <- exp(X%*%beta + sigma*w)
+
+###
+ctrl <- boost_control(center=T,mstop=300)
+model1 <- glmboost(Surv(stime,event)~x1+x2, family=Weib(), control=ctrl)
+st <- mstop(AIC(model1,"classical"))
+model1 <- model1[st]
+model2 <- survreg(Surv(stime,event)~x1+x2)
+
+stopifnot( max(abs(model2$coef[2:3]-coef(model1)[2:3])) < 1e-1 )
+stopifnot( max(abs( X%*%beta - predict(model1) ) ) / var(X%*%beta) < 0.5 )
+stopifnot( abs( model1$sigma - model2$scale) < 1e-2 )
+
+
+
+### Log logistic model with scale parameter estimation
+
+sigma <- 0.5
+w <- rlogis(100)
+
+event <- sample(0:1,100,replace=TRUE,prob=c(0.3,0.7))
+x1 <- rnorm(100,sd=1)
+x2 <- x1 + rnorm(100,sd=1)
+X <- cbind(x1,x2)
+beta <- c(1,0.5)
+stime <- exp(X%*%beta + sigma*w)
+
+###
+ctrl <- boost_control(center=T,mstop=300)
+model1 <- glmboost(Surv(stime,event)~x1+x2, family=Loglog(), control=ctrl)
+st <- mstop(AIC(model1,"classical"))
+model1 <- model1[st]
+model2 <- survreg(Surv(stime,event)~x1+x2, dist="loglogistic")
+
+stopifnot( max(abs(model2$coef[2:3]-coef(model1)[2:3])) < 1e-1 )
+stopifnot( max(abs( X%*%beta - predict(model1) ) ) / var(X%*%beta) < 0.5 )
+stopifnot( abs( model1$sigma - model2$scale) < 1e-2 )
+
+
+
+### Log normal model with scale parameter estimation
+
+sigma <- 0.5
+w <- rnorm(100)
+
+event <- sample(0:1,100,replace=TRUE,prob=c(0.3,0.7))
+x1 <- rnorm(100,sd=1)
+x2 <- x1 + rnorm(100,sd=1)
+X <- cbind(x1,x2)
+beta <- c(1,0.5)
+stime <- exp(X%*%beta + sigma*w)
+
+###
+ctrl <- boost_control(center=T,mstop=300)
+model1 <- glmboost(Surv(stime,event)~x1+x2, family=LogNormal(), control=ctrl)
+st <- mstop(AIC(model1,"classical"))
+model1 <- model1[st]
+model2 <- survreg(Surv(stime,event)~x1+x2, dist="lognormal")
+
+stopifnot( max(abs(model2$coef[2:3]-coef(model1)[2:3])) < 1e-1 )
+stopifnot( max(abs( X%*%beta - predict(model1) ) ) / var(X%*%beta) < 0.5 )
+stopifnot( abs( model1$sigma - model2$scale) < 1e-2 )
