@@ -243,11 +243,8 @@ Weib <- function()
                },
                       
            offset = function(y, w=NULL) {           
-               #rep(0, length(y[,1]))
                return(1)
            },
-           
-           #SurvFun = function(y,eta,sigma) exp(-exp(-eta/sigma)*y^{1/sigma}),
            
            risk = function(sigma=1, y, f, w = 1) sum(w * plloss(sigma, y, f)),
            
@@ -287,11 +284,8 @@ Loglog <- function()
                },
                       
            offset = function(y, w=NULL) {           
-               #rep(0, length(y[,1]))
                return(1)
            },
-           
-           #SurvFun = function(y,eta,sigma) 1 / (1+exp(-eta/sigma)*y^{1/sigma}),
            
            risk = function(sigma=1, y, f, w = 1) sum(w * plloss(sigma, y, f)),
            
@@ -330,11 +324,8 @@ LogNormal <- function()
                },
                       
            offset = function(y, w=NULL) {           
-               #rep(0, length(y[,1]))
                return(3)
            },
-           
-           #SurvFun = function(y,eta,sigma) 1 / (1+exp(-eta/sigma)*y^{1/sigma}),
            
            risk = function(sigma=1, y, f, w = 1) sum(w * plloss(sigma, y, f)),
            
