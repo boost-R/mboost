@@ -8,8 +8,7 @@ setClass("boost_family", representation = representation(
     check_y    = "function",
     weights    = "logical",
     name       = "character",
-    charloss   = "character",
-    sigmaTF    = "logical"
+    charloss   = "character"
 ))
 
 setMethod("show", "boost_family", function(object) {
@@ -20,23 +19,22 @@ setMethod("show", "boost_family", function(object) {
 Family <- function(ngradient, loss = NULL, risk = NULL, 
                    offset = function(y, w) 0, 
                    fW = function(f) rep(1, length(f)), check_y = function(y) TRUE,
-                   weights = TRUE, name = "user-specified", sigmaTF = NULL) {
+                   weights = TRUE, name = "user-specified") {
 
     if (is.null(loss))
         loss <- function(y, f) NA
     if (is.null(risk))
-        risk <- function(sigma=1, y, f, w = 1) sum(w * loss(y, f))
+        risk <- function(y, f, w = 1) sum(w * loss(y, f))
     RET <- new("boost_family", ngradient = ngradient, loss = loss, 
                risk = risk, offset = offset, fW = fW, check_y = check_y, 
                weights = weights, 
-               name = name, charloss = paste(deparse(body(loss)), "\n"),
-               sigmaTF = sigmaTF)
+               name = name, charloss = paste(deparse(body(loss)), "\n"))
     RET
 }
 
 ### Gaussian (Regression)
 GaussReg <- function()
-    Family(ngradient = function(sigma=1, y, f, w = 1) y - f,
+    Family(ngradient = function(y, f, w = 1) y - f,
            loss = function(y, f) (y - f)^2,
            offset = weighted.mean,
            check_y = function(y) {
@@ -45,12 +43,11 @@ GaussReg <- function()
                         sQuote("family = GaussReg()"))
                TRUE
            },
-           name = "Squared Error (Regression)",
-           sigmaTF=FALSE)
+           name = "Squared Error (Regression)")
 
 ### Gaussian (-1 / 1 Binary Classification)
 GaussClass <- function()
-    Family(ngradient = function(sigma=1, y, f, w = 1) - 2 * y + 2 * y * f,
+    Family(ngradient = function(y, f, w = 1) - 2 * y + 2 * y * f,
            loss = function(y, f) 1 - 2 * y * f + (y * f)^2,
            check_y = function(y) {
                if (!is.factor(y))
@@ -62,12 +59,11 @@ GaussClass <- function()
                TRUE
            },
 
-           name = "Squared Error (Classification)",
-           sigmaTF=FALSE )
+           name = "Squared Error (Classification)")
 
 ### Laplace
 Laplace <- function()
-    Family(ngradient = function(sigma=1, y, f, w = 1) sign(y - f),
+    Family(ngradient = function(y, f, w = 1) sign(y - f),
            loss = function(y, f) abs(y - f),
            offset = function(y, w) median(y),
            check_y = function(y) {
@@ -76,12 +72,11 @@ Laplace <- function()
                         sQuote("family = Laplace()"))
                TRUE
            },
-           name = "Absolute Error",
-           sigmaTF=FALSE )
+           name = "Absolute Error")
 
 ### Binomial
 Binomial <- function()
-    Family(ngradient = function(sigma=1, y, f, w = 1) {
+    Family(ngradient = function(y, f, w = 1) {
                exp2yf <- exp(-2 * y * f)
                -(-2 * y * exp2yf) / (log(2) * (1 + exp2yf))
            },
@@ -107,12 +102,11 @@ Binomial <- function()
                            sQuote("family = Binomial()"))
                TRUE
            },
-           name = "Negative Binomial Likelihood",
-           sigmaTF=FALSE )
+           name = "Negative Binomial Likelihood")
 
 ### Poisson
 Poisson <- function()
-    Family(ngradient = function(sigma=1, y, f, w = 1) y - exp(f),
+    Family(ngradient = function(y, f, w = 1) y - exp(f),
            loss = function(y, f) -dpois(y, exp(f), log = TRUE),
            offset = function(y, w) log(weighted.mean(y, w)),
            fW = function(f) exp(f),
@@ -122,8 +116,7 @@ Poisson <- function()
                         sQuote("family = Poisson()"))
                TRUE
            },
-           name = "Poisson Likelihood",
-           sigmaTF=FALSE )
+           name = "Poisson Likelihood")
 
 ### L1Huber
 Huber <- function(d = NULL) {
@@ -133,7 +126,7 @@ Huber <- function(d = NULL) {
     else
         dtxt <- NULL
     fit <- 0
-    Family(ngradient = function(sigma=1, y, f, w = 1) {
+    Family(ngradient = function(y, f, w = 1) {
                if (is.null(d)) d <- median(abs(y - fit))
                fit <<- f
                ifelse(abs(y - f) < d, y - f, d * sign(y - f))
@@ -151,13 +144,12 @@ Huber <- function(d = NULL) {
            },
            name = paste("Huber Error", 
                ifelse(is.null(d), "(with adaptive d)", 
-                                  paste("(with d = ", dtxt, ")", sep = ""))),
-           sigmaTF=FALSE )
+                                  paste("(with d = ", dtxt, ")", sep = ""))))
 }
 
 ### Adaboost
 AdaExp <- function()
-    Family(ngradient = function(sigma=1, y, f, w = 1) y * exp(-y * f),
+    Family(ngradient = function(y, f, w = 1) y * exp(-y * f),
            loss = function(y, f) exp(-y * f),
            offset = function(y, w) {
                p <- weighted.mean(y > 0, w)
@@ -172,12 +164,11 @@ AdaExp <- function()
                            sQuote("family = AdaExp()"))
                TRUE
            },
-           name = "Adaboost Exponential Error",
-           sigmaTF=FALSE )
+           name = "Adaboost Exponential Error")
 
 ### Cox proportional hazards model (partial likelihood)
 CoxPH <- function()
-    Family(ngradient = function(sigma=1, y, f, w) {
+    Family(ngradient = function(y, f, w) {
                time <- y[,1]
                storage.mode(time) <- "double"
                event <- y[,2]
@@ -206,7 +197,7 @@ CoxPH <- function()
                    risk[i] <- sum((time >= time[i])*ef)
                event * (f - log(risk))
            },
-           risk = function(sigma=1, y, f, w = 1) -sum(plloss(y, f, w)),
+           risk = function(y, f, w = 1) -sum(plloss(y, f, w)),
            check_y = function(y) {
                if (!inherits(y, "Surv"))
                    stop("response is not an object of class ", sQuote("Surv"),
@@ -214,126 +205,4 @@ CoxPH <- function()
                TRUE
            },
            weights = TRUE, 
-           name = "Partial Likelihood",
-           sigmaTF=FALSE )
-           
-
-## Weibull log likelihood for boosting aft models
-Weib <- function()
-    Family(ngradient = function(sigma=1, y, f, w = 1) {
-               lnt <- log(y[,1])
-               event <- y[,2]
-               eta <- (lnt-f) / sigma
-               (event*(exp(eta)-1) + (1-event)*exp(eta)) / sigma               
-           },                      
-           
-           loss = plloss <- function(sigma=1, y, f){
-               fw <- function(w){
-               exp(w-exp(w))
-               }
-               Sw <- function(w){
-               exp(-exp(w))
-               }
-               S.stime <- y[,1]
-               S.event <- y[,2]
-               lnt <- log(S.stime)
-               eta <- (lnt-f)/sigma
-               - S.event * log( fw( eta ) / sigma ) -
-               (1-S.event) * log( Sw( eta ) )
-               },
-                      
-           offset = function(y, w=NULL) {           
-               return(1)
-           },
-           
-           risk = function(sigma=1, y, f, w = 1) sum(w * plloss(sigma, y, f)),
-           
-           check_y = function(y) {
-               if (!inherits(y, "Surv"))
-                   stop("response is not an object of class ", sQuote("Surv"))
-               TRUE
-           },
-               
-           name = "Negative Weibull Likelihood",
-           sigmaTF=TRUE )           
-
-
-## log logistic log likelihood for boosting aft models
-Loglog <- function()
-    Family(ngradient = function(sigma=1, y, f, w = 1) {
-               lnt <- log(y[,1])
-               event <- y[,2]
-               eta <- (lnt-f) / sigma
-               nom <- (exp(-eta)+1)
-               (event*(2/nom-1) + (1-event)/nom) / sigma               
-           },                      
-           
-           loss = plloss <- function(sigma=1, y, f){
-               fw <- function(w){
-               exp(w) / (1+exp(w))^2
-               }
-               Sw <- function(w){
-               1 / (1+exp(w))
-               }
-               S.stime <- y[,1]
-               S.event <- y[,2]
-               lnt <- log(S.stime)
-               eta <- (lnt-f)/sigma
-               - S.event * log( fw( eta ) / sigma ) -
-               (1-S.event) * log( Sw( eta ) )
-               },
-                      
-           offset = function(y, w=NULL) {           
-               return(1)
-           },
-           
-           risk = function(sigma=1, y, f, w = 1) sum(w * plloss(sigma, y, f)),
-           
-           check_y = function(y) {
-               if (!inherits(y, "Surv"))
-                   stop("response is not an object of class ", sQuote("Surv"))
-               TRUE
-           },
-               
-           name = "Negative Log Logistic Likelihood",
-           sigmaTF=TRUE )
-           
-           
-## log normal log likelihood for boosting aft models
-LogNormal <- function()
-    Family(ngradient = function(sigma=1, y, f, w = 1) {
-               lnt <- log(y[,1])
-               event <- y[,2]
-               eta <- (lnt-f) / sigma
-               (event*eta + (1-event) * dnorm(eta) / (1-pnorm(eta)) ) / sigma               
-           },                      
-           
-           loss = plloss <- function(sigma=1, y, f){
-               fw <- function(w){
-               dnorm(w)
-               }
-               Sw <- function(w){
-               1 - pnorm(w)
-               }
-               S.stime <- y[,1]
-               S.event <- y[,2]
-               lnt <- log(S.stime)
-               eta <- (lnt-f)/sigma
-               - S.event * log( fw( eta ) / sigma ) -
-               (1-S.event) * log( Sw( eta ) )
-               },
-                      
-           offset = function(y, w=NULL) {           
-               return(3)
-           },
-           
-           risk = function(sigma=1, y, f, w = 1) sum(w * plloss(sigma, y, f)),
-           
-           check_y = function(y) {
-               if (!inherits(y, "Surv"))
-                   stop("response is not an object of class ", sQuote("Surv"))
-               TRUE
-           },
-               
-           name = "Negative Log Normal Likelihood",
-           sigmaTF=TRUE )
+           name = "Partial Likelihood")

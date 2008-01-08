@@ -157,8 +157,7 @@ AICboost <- function(object, method = c("corrected", "classical"), df, k = 2) {
 }
 
 logLik.gb <- function(object, ...)
-    -object$family@risk(object$sigma, object$data$yfit, fitted(object),
-    object$weights)
+    -object$family@risk(object$data$yfit, fitted(object), object$weights)
 
 print.gbAIC <- function(x, ...) {
     mstop <- mstop(x)
