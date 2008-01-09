@@ -9,6 +9,8 @@
 glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
                       weights = NULL) {
 
+    sigma <- NULL
+    
     ### init data and weights
     x <- object$x
     if (control$center) {
@@ -70,7 +72,15 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
         warning("cannot compute column-wise inverses of design matrix")
 
     fit <- offset <- family@offset(y, weights)
-    u <- ustart <- ngradient(y, fit, weights)
+    u <- ustart <- ngradient(1, y, fit, weights)
+    
+    if (class(y)=="Surv") event <- y[,2]
+    
+    ### log likelihood evaluation function for scale parameter estimation
+    logl <- function(sigma, ff){
+        vec <- family@loss(y, f=ff, sigma=sigma)
+        sum(vec)
+        }
 
     ### start boosting iteration
     for (m in 1:mstop) {
@@ -89,14 +99,19 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
         ### L2 boost with constraints (binary classification)
         if (constraint)
             fit <- sign(fit) * pmin(abs(fit), 1)
+            
+        ### scale parameter estimation for aft models
+        
+        if (family@sigmaTF == TRUE)
+        sigma <- optimize(logl, interval=c(0,1000), ff=fit)$minimum
 
         ### negative gradient vector, the new `residuals'
-        u <- ngradient(y, fit, weights)
+        u <- ngradient(sigma, y, fit, weights)
 
         ### evaluate risk, either for the learning sample (inbag)
         ### or the test sample (oobag)
-        if (risk == "inbag") mrisk[m] <- riskfct(y, fit, weights)
-        if (risk == "oobag") mrisk[m] <- riskfct(y, fit, oobweights)
+        if (risk == "inbag") mrisk[m] <- riskfct(sigma, y, fit, weights)
+        if (risk == "oobag") mrisk[m] <- riskfct(sigma, y, fit, oobweights)
 
         ### save the model, i.e., the selected coefficient and variance
         ens[m,] <- c(xselect, coef)
@@ -112,6 +127,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
 
     RET <- list(ensemble = ens,		### coefficients for selected variables
                 fit = fit,		### vector of fitted values
+                sigma = sigma, ### scale parameter estimate
                 offset = offset,	### offset
                 ustart = ustart,	### first negative gradients
                 risk = mrisk,		### empirical risks for m = 1, ..., mstop

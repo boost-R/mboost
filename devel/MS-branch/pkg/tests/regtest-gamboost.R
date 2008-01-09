@@ -135,3 +135,92 @@ mod1 <- gamboost(fm1, data = tmp)
 mod2 <- gamboost(fm1, data = tmp, base = "bols")
 stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < .Machine$double.eps)
 stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < .Machine$double.eps)
+
+
+### Weibull model with scale parameter estimation
+
+### random numbers from extreme value distribution
+rextrval <- function(x) log( -log(1-x) )
+
+n <- 300
+sigma <- 0.5
+u <- runif(n)
+u.1 <- runif(n)
+w <- rextrval(u)
+w.1 <- rextrval(u.1)
+
+x1 <- runif(n,-3,3)
+x1.1 <- runif(n,-3,3)
+x2 <- x1 + runif(n,-3,3)
+x2.1 <- x1.1 + runif(n,-3,3)
+survtime <- exp(sin(x1) + 0.5*cos(x2) + sigma*w)
+censtime <- exp(sin(x1.1) + 0.5*cos(x2.1) + sigma*w.1)
+event <- survtime<censtime
+stime <- pmin(survtime,censtime)
+
+###
+ctrl <- boost_control(center=T,mstop=1000)
+model1 <- gamboost(Surv(stime,event)~bbs(x1, df=3, knots=40)+bbs(x2, df=3,
+    knots=40), family=Weib(), control=ctrl)
+par(mfrow=c(1,2))
+plot(model1, ask=F)
+model1 <- gamboost(Surv(stime,event)~bss(x1, df=3)+bss(x2, df=3),
+family=Weib(), control=ctrl)
+par(mfrow=c(1,2))
+plot(model1, ask=F)
+
+
+### Log logistic model with scale parameter estimation
+
+sigma <- 0.5
+n <- 300
+w <- rlogis(n)
+w.1 <- rlogis(n)
+
+x1 <- runif(n,-3,3)
+x1.1 <- runif(n,-3,3)
+x2 <- x1 + runif(n,-3,3)
+x2.1 <- x1.1 + runif(n,-3,3)
+survtime <- exp(sin(x1) + 0.5*cos(x2) + sigma*w)
+censtime <- exp(sin(x1.1) + 0.5*cos(x2.1) + sigma*w.1)
+event <- survtime<censtime
+stime <- pmin(survtime,censtime)
+
+###
+ctrl <- boost_control(center=T,mstop=1000)
+model1 <- gamboost(Surv(stime,event)~bbs(x1, df=3, knots=40)+bbs(x2, df=3,
+    knots=40), family=Loglog(), control=ctrl)
+par(mfrow=c(1,2))
+plot(model1, ask=F)
+model1 <- gamboost(Surv(stime,event)~bss(x1, df=3)+bss(x2, df=3),
+family=Loglog(), control=ctrl)
+par(mfrow=c(1,2))
+plot(model1, ask=F)
+
+### Log normal model with scale parameter estimation
+
+sigma <- 0.5
+n <- 300
+w <- rnorm(n)
+w.1 <- rnorm(n)
+
+x1 <- runif(n,-3,3)
+x1.1 <- runif(n,-3,3)
+x2 <- x1 + runif(n,-3,3)
+x2.1 <- x1.1 + runif(n,-3,3)
+survtime <- exp(sin(x1) + 0.5*cos(x2) + sigma*w)
+censtime <- exp(sin(x1.1) + 0.5*cos(x2.1) + sigma*w.1)
+event <- survtime<censtime
+stime <- pmin(survtime,censtime)
+
+###
+ctrl <- boost_control(center=T,mstop=1000)
+model1 <- gamboost(Surv(stime,event)~bbs(x1, df=3, knots=40)+bbs(x2, df=3,
+    knots=40), family=LogNormal(), control=ctrl)
+par(mfrow=c(1,2))
+plot(model1, ask=F)
+model1 <- gamboost(Surv(stime,event)~bss(x1, df=3)+bss(x2, df=3),
+family=LogNormal(), control=ctrl)
+par(mfrow=c(1,2))
+plot(model1, ask=F)
+

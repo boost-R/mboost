@@ -29,6 +29,8 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"),
     if (control$center) 
         warning("inputs are not centered in ", sQuote("gamboost"))
 
+    sigma <- NULL
+    
     ### data and baselearner
     x <- object$input
     class(x) <- "list"
@@ -89,7 +91,14 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"),
     ss <- vector(mode = "list", length = length(x))
 
     fit <- offset <- family@offset(y, weights)
-    u <- ustart <- ngradient(y, fit, weights)
+    u <- ustart <- ngradient(1, y=y, f=fit, w=weights)
+    
+    if (class(y)=="Surv") event <- y[,2]
+    
+    logl <- function(sigma, ff){
+    vec <- family@loss(y, f=ff, sigma=sigma)
+    sum(vec)
+    }
 
     ### dpp
     fitfct <- vector(mode = "list", length = length(x))
@@ -114,19 +123,24 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"),
         class(basess) <- "baselist"
 
         ### update step
-        fit <- fit + nu * fitted(basess)
+        fit <- fit + nu * basess[[1]]$fitted
 
         ### L2 boost with constraints (binary classification)
         if (constraint)
             fit <- sign(fit) * pmin(abs(fit), 1)
+            
+        ### scale parameter estimation for aft models
+        
+        if (family@sigmaTF == TRUE)
+        sigma <- optimize(logl, interval=c(0,1000), ff=fit)$minimum
 
         ### negative gradient vector, the new `residuals'
-        u <- ngradient(y, fit, weights)
+        u <- ngradient(sigma, y=y, f=fit, w=weights)
 
         ### evaluate risk, either for the learning sample (inbag)
         ### or the test sample (oobag)
-        if (risk == "inbag") mrisk[m] <- riskfct(y, fit, weights)
-        if (risk == "oobag") mrisk[m] <- riskfct(y, fit, oobweights)
+        if (risk == "inbag") mrisk[m] <- riskfct(sigma, y=y, f=fit, w=weights)
+        if (risk == "oobag") mrisk[m] <- riskfct(sigma, y=y, f=fit, w=oobweights)
 
         ### save the model, i.e., the selected coefficient and variance
         ens[m,] <- xselect
@@ -142,7 +156,8 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"),
                      control = control, weights = weights)
 
     RET <- list(ensemble = ens,         ### selected variables 
-                ensembless = ensss,	### list of smooth.spline fits
+                ensembless = ensss,	    ### list of smooth.spline fits
+                sigma = sigma,          ### scale parameter estimate
                 fit = fit,              ### vector of fitted values
                 offset = offset,        ### offset
                 ustart = ustart,        ### first negative gradients

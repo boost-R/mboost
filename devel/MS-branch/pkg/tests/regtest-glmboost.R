@@ -176,3 +176,101 @@ stopifnot(all.equal(logLik(gbmod), llg))
 stopifnot(abs(AIC(gmod) - attr(AIC(gbmod, "classical"), "AIC")[mstop(gbmod)]) < 1)
 
 stopifnot(max(abs(predict(gmod) -  predict(gbmod))) < 1e-4)
+
+
+### Weibull model with scale parameter estimation
+
+### random numbers from extreme value distribution
+rextrval <- function(x) log( -log(1-x) )
+
+sigma <- 0.5
+u <- runif(100)
+u.1 <- runif(100)
+w <- rextrval(u)
+w.1 <- rextrval(u.1)
+
+x1 <- rnorm(100,sd=1)
+x2 <- x1 + rnorm(100,sd=1)
+x1.1 <- rnorm(100,sd=1)
+x2.1 <- x1.1 + rnorm(100,sd=1)
+X <- cbind(x1,x2)
+X.1 <- cbind(x1.1,x2.1)
+beta <- c(1,0.5)
+survtime <- exp(X%*%beta + sigma*w)
+censtime <- exp(X.1%*%beta + sigma*w.1)
+event <- survtime<censtime
+stime <- pmin(survtime,censtime)
+
+###
+ctrl <- boost_control(center=T,mstop=300)
+model1 <- glmboost(Surv(stime,event)~x1+x2, family=Weib(), control=ctrl)
+st <- mstop(AIC(model1,"classical"))
+model1 <- model1[st]
+model2 <- survreg(Surv(stime,event)~x1+x2)
+
+stopifnot( max(abs(model2$coef[2:3]-coef(model1)[2:3])) < 1e-1 )
+stopifnot( max(abs( X%*%beta - predict(model1) ) ) / var(X%*%beta) < 0.5 )
+stopifnot( abs( model1$sigma - model2$scale) < 1e-2 )
+
+
+
+### Log logistic model with scale parameter estimation
+
+sigma <- 0.5
+w <- rlogis(100)
+w.1 <- rlogis(100)
+
+x1 <- rnorm(100,sd=1)
+x2 <- x1 + rnorm(100,sd=1)
+x1.1 <- rnorm(100,sd=1)
+x2.1 <- x1.1 + rnorm(100,sd=1)
+X <- cbind(x1,x2)
+X.1 <- cbind(x1.1,x2.1)
+beta <- c(1,0.5)
+survtime <- exp(X%*%beta + sigma*w)
+censtime <- exp(X.1%*%beta + sigma*w.1)
+event <- survtime<censtime
+stime <- pmin(survtime,censtime)
+
+
+###
+ctrl <- boost_control(center=T,mstop=300)
+model1 <- glmboost(Surv(stime,event)~x1+x2, family=Loglog(), control=ctrl)
+st <- mstop(AIC(model1,"classical"))
+model1 <- model1[st]
+model2 <- survreg(Surv(stime,event)~x1+x2, dist="loglogistic")
+
+stopifnot( max(abs(model2$coef[2:3]-coef(model1)[2:3])) < 1e-1 )
+stopifnot( max(abs( X%*%beta - predict(model1) ) ) / var(X%*%beta) < 0.5 )
+stopifnot( abs( model1$sigma - model2$scale) < 1e-2 )
+
+
+
+### Log normal model with scale parameter estimation
+
+sigma <- 0.5
+w <- rnorm(100)
+w.1 <- rnorm(100)
+
+x1 <- rnorm(100,sd=1)
+x2 <- x1 + rnorm(100,sd=1)
+x1.1 <- rnorm(100,sd=1)
+x2.1 <- x1.1 + rnorm(100,sd=1)
+X <- cbind(x1,x2)
+X.1 <- cbind(x1.1,x2.1)
+beta <- c(1,0.5)
+survtime <- exp(X%*%beta + sigma*w)
+censtime <- exp(X.1%*%beta + sigma*w.1)
+event <- survtime<censtime
+stime <- pmin(survtime,censtime)
+           
+###
+ctrl <- boost_control(center=T,mstop=300)
+model1 <- glmboost(Surv(stime,event)~x1+x2, family=LogNormal(), control=ctrl)
+st <- mstop(AIC(model1,"classical"))
+model1 <- model1[st]
+model2 <- survreg(Surv(stime,event)~x1+x2, dist="lognormal")
+
+stopifnot( max(abs(model2$coef[2:3]-coef(model1)[2:3])) < 1e-1 )
+stopifnot( max(abs( X%*%beta - predict(model1) ) ) / var(X%*%beta) < 0.5 )
+stopifnot( abs( model1$sigma - model2$scale) < 1e-2 )
