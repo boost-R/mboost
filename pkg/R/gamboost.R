@@ -253,7 +253,9 @@ plot.gamboost <- function(x, which = NULL, ask = TRUE && dev.interactive(),
     input <- as.data.frame(tmp)
     names(input) <- names(tmp)
     ### </FIXME>
-    if (is.null(which)) which <- colnames(input)
+    if (is.null(which)) which <- (1:ncol(input))[tabulate(x$ensemble, 
+                                                         nbins = ncol(input)) > 0]
+    if (is.numeric(which)) which <- names(input)[which]
 
     if (ask) {
         op <- par(ask = TRUE)
