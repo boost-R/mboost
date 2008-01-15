@@ -49,7 +49,7 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns"),
                 for continuous responses is used.}
   \item{control}{ an object of class \code{\link{boost_control}}.}
   \item{which}{ if a subset of the plots is required, specify a subset of the
-                variables. }
+                variables. Only selected variables are plotted by default.}
   \item{ask}{ logical; if \code{TRUE}, the user is \emph{ask}ed before each plot, see
           \code{par(ask=.)}.}
   \item{type}{what type of plot should be drawn: see \code{\link{plot}}.}
