@@ -204,13 +204,11 @@ stime <- pmin(survtime,censtime)
 ###
 ctrl <- boost_control(center=T,mstop=300)
 model1 <- glmboost(Surv(stime,event)~x1+x2, family=Weib(), control=ctrl)
-st <- mstop(AIC(model1,"classical"))
-model1 <- model1[st]
 model2 <- survreg(Surv(stime,event)~x1+x2)
 
 stopifnot( max(abs(model2$coef[2:3]-coef(model1)[2:3])) < 1e-1 )
 stopifnot( max(abs( X%*%beta - predict(model1) ) ) / var(X%*%beta) < 0.5 )
-stopifnot( abs( model1$sigma - model2$scale) < 1e-2 )
+stopifnot( abs( model1$sigma[300] - model2$scale) < 1e-2 )
 
 
 
@@ -236,13 +234,11 @@ stime <- pmin(survtime,censtime)
 ###
 ctrl <- boost_control(center=T,mstop=300)
 model1 <- glmboost(Surv(stime,event)~x1+x2, family=Loglog(), control=ctrl)
-st <- mstop(AIC(model1,"classical"))
-model1 <- model1[st]
 model2 <- survreg(Surv(stime,event)~x1+x2, dist="loglogistic")
 
 stopifnot( max(abs(model2$coef[2:3]-coef(model1)[2:3])) < 1e-1 )
 stopifnot( max(abs( X%*%beta - predict(model1) ) ) / var(X%*%beta) < 0.5 )
-stopifnot( abs( model1$sigma - model2$scale) < 1e-2 )
+stopifnot( abs( model1$sigma[300] - model2$scale) < 1e-2 )
 
 
 
@@ -267,10 +263,8 @@ stime <- pmin(survtime,censtime)
 ###
 ctrl <- boost_control(center=T,mstop=300)
 model1 <- glmboost(Surv(stime,event)~x1+x2, family=LogNormal(), control=ctrl)
-st <- mstop(AIC(model1,"classical"))
-model1 <- model1[st]
 model2 <- survreg(Surv(stime,event)~x1+x2, dist="lognormal")
 
 stopifnot( max(abs(model2$coef[2:3]-coef(model1)[2:3])) < 1e-1 )
 stopifnot( max(abs( X%*%beta - predict(model1) ) ) / var(X%*%beta) < 0.5 )
-stopifnot( abs( model1$sigma - model2$scale) < 1e-2 )
+stopifnot( abs( model1$sigma[300] - model2$scale) < 1e-2 )

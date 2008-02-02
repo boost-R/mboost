@@ -29,7 +29,7 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"),
     if (control$center) 
         warning("inputs are not centered in ", sQuote("gamboost"))
 
-    sigma <- NULL
+    sigma <- 1
     
     ### data and baselearner
     x <- object$input
@@ -85,6 +85,8 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"),
 
     ### vector of empirical risks for all boosting iterations
     ### (either in-bag or out-of-bag)
+    sigmavec <- numeric(mstop)
+    sigmavec[1:mstop] <- NA
     mrisk <- numeric(mstop)
     mrisk[1:mstop] <- NA   
     tsums <- numeric(length(x))
@@ -93,7 +95,7 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"),
     fit <- offset <- family@offset(y, weights)
     u <- ustart <- ngradient(1, y=y, f=fit, w=weights)
     
-    if (class(y)=="Surv") event <- y[,2]
+    #if (class(y)=="Surv") event <- y[,2]
     
     logl <- function(sigma, ff){
     vec <- family@loss(y, f=ff, sigma=sigma)
@@ -133,6 +135,7 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"),
         
         if (family@sigmaTF == TRUE)
         sigma <- optimize(logl, interval=c(0,1000), ff=fit)$minimum
+        sigmavec[m] <- sigma
 
         ### negative gradient vector, the new `residuals'
         u <- ngradient(sigma, y=y, f=fit, w=weights)
@@ -157,8 +160,8 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"),
 
     RET <- list(ensemble = ens,         ### selected variables 
                 ensembless = ensss,	    ### list of smooth.spline fits
-                sigma = sigma,          ### scale parameter estimate
                 fit = fit,              ### vector of fitted values
+                sigma = sigmavec,       ### scale parameter estimate
                 offset = offset,        ### offset
                 ustart = ustart,        ### first negative gradients
                 risk = mrisk,           ### empirical risks for m = 1, ..., mstop

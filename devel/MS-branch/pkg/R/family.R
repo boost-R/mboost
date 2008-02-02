@@ -20,12 +20,13 @@ setMethod("show", "boost_family", function(object) {
 Family <- function(ngradient, loss = NULL, risk = NULL, 
                    offset = function(y, w) 0, 
                    fW = function(f) rep(1, length(f)), check_y = function(y) TRUE,
-                   weights = TRUE, name = "user-specified", sigmaTF = NULL) {
+                   weights = TRUE, name = "user-specified", sigmaTF=FALSE) {
 
     if (is.null(loss))
         loss <- function(y, f) NA
     if (is.null(risk))
         risk <- function(sigma=1, y, f, w = 1) sum(w * loss(y, f))
+
     RET <- new("boost_family", ngradient = ngradient, loss = loss, 
                risk = risk, offset = offset, fW = fW, check_y = check_y, 
                weights = weights, 

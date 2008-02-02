@@ -9,7 +9,7 @@
 glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
                       weights = NULL) {
 
-    sigma <- NULL
+    sigma <- 1
     
     ### init data and weights
     x <- object$x
@@ -56,6 +56,8 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
 
     ### vector of empirical risks for all boosting iterations 
     ### (either in-bag or out-of-bag)
+    sigmavec <- numeric(mstop)
+    sigmavec[1:mstop] <- NA
     mrisk <- numeric(mstop)
     mrisk[1:mstop] <- NA
 
@@ -74,7 +76,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
     fit <- offset <- family@offset(y, weights)
     u <- ustart <- ngradient(1, y, fit, weights)
     
-    if (class(y)=="Surv") event <- y[,2]
+    #if (class(y)=="Surv") event <- y[,2]
     
     ### log likelihood evaluation function for scale parameter estimation
     logl <- function(sigma, ff){
@@ -104,6 +106,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
         
         if (family@sigmaTF == TRUE)
         sigma <- optimize(logl, interval=c(0,1000), ff=fit)$minimum
+        sigmavec[m] <- sigma
 
         ### negative gradient vector, the new `residuals'
         u <- ngradient(sigma, y, fit, weights)
@@ -127,7 +130,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
 
     RET <- list(ensemble = ens,		### coefficients for selected variables
                 fit = fit,		### vector of fitted values
-                sigma = sigma, ### scale parameter estimate
+                sigma = sigmavec, ### scale parameter estimate
                 offset = offset,	### offset
                 ustart = ustart,	### first negative gradients
                 risk = mrisk,		### empirical risks for m = 1, ..., mstop

@@ -26,6 +26,8 @@ Objects can be created by calls of the form \code{\link{Family}(...)}
     \item{\code{name}:}{ a character giving the name of the loss function 
                          for pretty printing. }
     \item{\code{charloss}:}{ a character, the deparsed loss function.}
+    \item{\code{sigmaTF}:}{ a logical indicating whether the family contains an additional
+    scale parameter.}
   }
 }
 \examples{
