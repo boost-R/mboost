@@ -11,7 +11,7 @@ basedef <- function(x, baselearner, dfbase) {
         if (is.function(dpp)) next()
         if (is.numeric(x[[xn]]) && dfbase > 2) {
             args <- list(x = x[[xn]], df = dfbase, xname = xn)
-            if (baselearner == "bols") args$df <- NULL
+            if (baselearner %in% c("bols", "btree")) args$df <- NULL
             x[[xn]] <- do.call(baselearner, args)
         } else {
             x[[xn]] <- bols(x[[xn]], xname = xn)
@@ -21,7 +21,7 @@ basedef <- function(x, baselearner, dfbase) {
 }
 
 ### Fitting function
-gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"), 
+gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns", "btree"), 
                          dfbase = 4, family = GaussReg(),
                          control = boost_control(), weights = NULL) {
 

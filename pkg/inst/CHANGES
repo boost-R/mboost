@@ -1,4 +1,11 @@
 
+		CHANGES in `mboost' VERSION 1.0-2 (2007-02-xx)
+
+  o  new btree() baselearner for gamboost() available
+
+  o  fix inconsistencies in regression tests
+
+
 		CHANGES in `mboost' VERSION 1.0-1 (2007-12-09)
 
   o  inst/mboost_Bioinf.R was missing from mboost 1.0-0

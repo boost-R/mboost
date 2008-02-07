@@ -13,7 +13,7 @@
 \method{gamboost}{formula}(formula, data = list(), weights = NULL, 
         na.action = na.omit, ...)
 \method{gamboost}{matrix}(x, y, weights = NULL, ...)
-gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns"), 
+gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns", "btree"), 
              dfbase = 4, family = GaussReg(), 
              control = boost_control(), weights = NULL)
 \method{plot}{gamboost}(x, which = NULL, ask = TRUE && dev.interactive(), 
@@ -35,7 +35,9 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns"),
       \code{\link{bbs}} P-splines with a B-spline basis (see Schmid and Hothorn
       2007), \code{\link{bns}} P-splines with a natural spline basis, 
       \code{\link{bols}} linear models, \code{\link{bspatial}} bivariate tensor
-      product penalized splines, and \code{\link{brandom}} random effects. Component-wise smoothing splines
+      product penalized splines, and \code{\link{brandom}} random effects. 
+      In addition, \code{\link{btree}} boosts stumps.
+      Component-wise smoothing splines
       have been considered in Buhlmann and Yu (2003) and Schmid and Hothorn (2007) investigate P-splines with 
       a B-spline basis. Kneib, Hothorn and Tutz (2007) also utilise P-splines with a B-spline basis,
       supplement them with their bivariate tensor product version to estimate interaction surfaces and spatial effects

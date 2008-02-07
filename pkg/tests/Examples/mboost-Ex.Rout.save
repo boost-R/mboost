@@ -1,5 +1,5 @@
 
-R version 2.6.0 (2007-10-03)
+R version 2.6.1 (2007-11-26)
 Copyright (C) 2007 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -236,7 +236,7 @@ Loss function: (y - f)^2
 > 
 > ### Name: baselearners
 > ### Title: Base learners for Gradient Boosting with Smooth Components
-> ### Aliases: bols bbs bns bss bspatial brandom
+> ### Aliases: bols bbs bns bss bspatial brandom btree
 > ### Keywords: models
 > 
 > ### ** Examples
@@ -309,7 +309,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0x8881280>
+<environment: 0x875c6f8>
 
 > spline2 <- bns(x2,knots=knots.x2,df=5)
 Warning in bns(x2, knots = knots.x2, df = 5) :
@@ -366,7 +366,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0x8477cd4>
+<environment: 0x83bdac8>
 
 > olsfit <- bols(x3)
 > attributes(olsfit)
@@ -424,7 +424,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0x8baed8c>
+<environment: 0x8c86c00>
 
 > 
 > form1 <- y ~ bbs(x1,knots=20,df=4) + bns(x2,knots=knots.x2,df=5)
@@ -469,7 +469,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0x8c3475c>
+<environment: 0x8aec31c>
 
 > 
 > form2 <- y ~ bspatial(x1, x2, xknots=12, yknots=12)
@@ -530,7 +530,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0x8402930>
+<environment: 0x8ddd28c>
 
 > 
 > # random slope
@@ -584,7 +584,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0x8dd7964>
+<environment: 0x8d5a408>
 
 > 
 > 
@@ -1048,7 +1048,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  18.373 0.396 19.85 0 0 
+Time elapsed:  9.288 0.04 9.421 0 0 
 > grDevices::dev.off()
 null device 
           1 

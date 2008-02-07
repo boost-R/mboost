@@ -5,6 +5,7 @@
 \alias{bss}
 \alias{bspatial}
 \alias{brandom}
+\alias{btree}
 \title{ Base learners for Gradient Boosting with Smooth Components }
 \description{
   Base learners to be utilized in the formula specification of \code{gamboost()}.
@@ -21,7 +22,8 @@ bspatial(x, y, z = NULL, df = 5, xknots = NULL, yknots = NULL,
          degree = 3, differences = 2, center = FALSE, xname = NULL,
          yname = NULL, zname = NULL)
 brandom(x, z = NULL, df = 4, xname = NULL, zname = NULL)
-
+btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE, 
+      mincriterion = 0), xname = NULL, zname = NULL)
 }
 \arguments{
   \item{x}{ a vector containing data, either numeric or a factor. }
@@ -58,6 +60,10 @@ brandom(x, z = NULL, df = 4, xname = NULL, zname = NULL)
                 re-parameterized such that the unpenalized part of the fit is substracted and
                 only the deviation effect is fitted. The unpenalized, parametric part has then
                to be included in separate base learners using \code{bols} (see the examples below).}
+  \item{tree_controls}{ an object of class \code{\link[party]{TreeControl}}, which can be
+                  obtained using \code{\link[party]{ctree_control}}. 
+                  Defines hyper-parameters for the trees which are used as base learners,
+                  stumps are fitted by default.}
 }
 \details{
 
@@ -119,6 +125,8 @@ brandom(x, z = NULL, df = 4, xname = NULL, zname = NULL)
   equation. More details on centering can be found in Kneib, Hothorn and Tutz
   (2007) and Fahrmeir, Kneib and Lang (2004).  
 
+  \code{btree} fits a stump to one or two variables. Note that 
+  \code{\link{blackboost}} is more efficient for boosting stumps.
 
 }
 \value{

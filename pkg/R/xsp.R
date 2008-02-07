@@ -564,3 +564,54 @@ brandom <- function(x, z = NULL, df = 4, xname = NULL,
     attr(X, "dpp") <- dpp
     return(X)
 }
+
+btree <- function(x, z = NULL, tree_controls = ctree_control(stump = TRUE, 
+    mincriterion = 0), xname = NULL, zname = NULL) {
+
+    if (is.null(xname)) xname <- deparse(substitute(x))
+    if (is.null(zname)) zname <- deparse(substitute(z))
+
+    X <- model.matrix(~x - 1)
+
+    dpp <- function(weights) {
+
+        ### construct design matrix etc.
+        y <- vector(length = length(x), mode = "numeric")
+        fm <- as.formula(paste("y ~ ", 
+            paste(xname, ifelse(!is.null(z), zname, ""), 
+            collapse = "+")))
+        df <- data.frame(y, x)
+        names(df) <- c("y", xname)
+        object <- party:::ctreedpp(fm, data = df)
+        fitmem <- ctree_memory(object, TRUE)
+        where <- rep.int(0, length(x))
+        storage.mode(where) <- "integer"
+        storage.mode(weights) <- "double"
+
+        fitfun <- function(y) {
+            
+            .Call("R_modify_response", as.double(y), object@responses,
+                 PACKAGE = "party")
+            tree <- .Call("R_TreeGrow", object, weights, fitmem, tree_controls,
+                          where, PACKAGE = "party")
+            wh <- .Call("R_get_nodeID", tree, object@inputs, 0.0, PACKAGE = "party")
+            fit <- unlist(.Call("R_getpredictions", tree, wh, PACKAGE = "party"))
+
+            predictfun <- function(newdata = NULL) {
+                if (is.null(newdata)) return(fit)
+                newinp <- party:::newinputs(object, newdata)
+                wh <- .Call("R_get_nodeID", tree, newinp, 0.0,
+                        PACKAGE = "party")
+                unlist(.Call("R_getpredictions", tree, wh, PACKAGE = "party"))
+            }
+            ret <- list(model = tree, predict = predictfun, fitted = fit)
+            class(ret) <- "basefit"
+            ret
+        }
+        ret <- list(fit = fitfun, hatmatrix = function() NA)
+        class(ret) <- "basisdpp"
+        ret	
+    }
+    attr(X, "dpp") <- dpp
+    return(X)
+}
