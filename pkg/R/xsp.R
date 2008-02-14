@@ -144,7 +144,7 @@ bbs <- function(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2,
                 nX %*% coef
             }
             ret <- list(model = coef, predict = predictfun, fitted = Xna %*% coef)
-            class(ret) <- "basefit"
+            class(ret) <- c("basefit", "baselm")
             ret
         }
         ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
@@ -160,6 +160,9 @@ predict.basefit <- function(object, newdata = NULL)
 
 fitted.basefit <- function(object)
     object$fitted
+
+coef.baselm <- function(object)
+    object$model
 
 df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
@@ -294,7 +297,7 @@ bns <- function(x, z = NULL, df = 4, knots = NULL, differences = 2,
                 nX %*% coef
             }
             ret <- list(model = coef, predict = predictfun, fitted = X %*% coef)
-            class(ret) <- "basefit"
+            class(ret) <- c("basefit", "baselm")
             ret
         }
         ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
@@ -451,7 +454,7 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = NULL, yknots = NULL,
             }
             ret <- list(model = coef, predict = predictfun, 
                         fitted = X %*% coef)
-            class(ret) <- "basefit"
+            class(ret) <- c("basefit", "baselm")
             ret
         }
         ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
@@ -508,7 +511,7 @@ bols <- function(x, z = NULL, xname = NULL, zname = NULL) {
             }
             ret <- list(model = coef, predict = predictfun, 
                         fitted = Xna %*% coef)
-            class(ret) <- "basefit"
+            class(ret) <- c("basefit", "baselm")
             ret
         }
         ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
@@ -554,7 +557,7 @@ brandom <- function(x, z = NULL, df = 4, xname = NULL,
                 nX %*% coef
             }
             ret <- list(model = coef, predict = predictfun, fitted = X %*% coef)
-            class(ret) <- "basefit"
+            class(ret) <- c("basefit", "baselm")
             ret
         }
         ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)

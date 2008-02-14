@@ -5,6 +5,8 @@
 
   o  fix inconsistencies in regression tests
 
+  o  add coef.gamboost (when bols is used as baselearner)
+
 
 		CHANGES in `mboost' VERSION 1.0-1 (2007-12-09)
 

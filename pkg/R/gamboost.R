@@ -142,7 +142,7 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns", "b
                      control = control, weights = weights)
 
     RET <- list(ensemble = ens,         ### selected variables 
-                ensembless = ensss,	### list of smooth.spline fits
+                ensembless = ensss,	### list of baselearners
                 fit = fit,              ### vector of fitted values
                 offset = offset,        ### offset
                 ustart = ustart,        ### first negative gradients
@@ -272,4 +272,27 @@ plot.gamboost <- function(x, which = NULL, ask = TRUE && dev.interactive(),
         if (add_rug) rug(input[[w]])
     })
     rm(out)
+}
+
+coef.gamboost <- function(object, ...) {
+
+    ret <- vector(mode = "list", length = length(object$data$input))
+    names(ret) <- colnames(object$data$input)
+    ens <- object$ensemble
+    ensembless <- object$ensembless
+    for (i in 1:length(ret)) {
+        if (!(i %in% ens[,"xselect"])) {
+            ret[[i]] <- NA
+        } else {
+            ret[[i]] <- 0
+        }
+    }
+    nu <- object$control$nu
+
+    for (m in 1:mstop(object)) {
+        cf <- try(drop(coef(ensembless[[m]][[1]])))
+        if (!inherits(cf, "try-error"))
+            ret[[ens[m, "xselect"]]] <- ret[[ens[m, "xselect"]]] + nu * cf
+    }
+    ret
 }
