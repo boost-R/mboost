@@ -12,7 +12,7 @@ if (!require("kidpack")) {
 }
 library("survival")
 data("westbc", package = "mboost")
-data("eset")
+data("eset", package = "kidpack")
 remove <- is.na(pData(phenoData(eset))$survival.time)
 eset <- eset[,!remove]
 library("party")

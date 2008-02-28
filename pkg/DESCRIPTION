@@ -15,4 +15,5 @@ Depends: R (>= 2.4.0), methods, modeltools (>= 0.2.10), party (>= 0.9-10),
   splines
 Suggests: mlbench, ipred, Biobase
 LazyLoad: yes
+LazyData: yes
 License: GPL-2

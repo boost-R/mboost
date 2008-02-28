@@ -1,4 +1,6 @@
 
+    o  check status == "N" in wpbc
+
     o  na.action defaults checken
 
     o  wpbc3 mit na.action = na.omit ODER na.pass???
