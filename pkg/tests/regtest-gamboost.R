@@ -145,14 +145,13 @@ stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp))) 
 
 ## Cox model
 
-fit2 <- gamboost(Surv(futime,fustat)~bbs(age,knots=40)+
-    bols(resid.ds)+bols(rx)+bols(ecog.ps), data=ovarian, family=CoxPH(),
-    control=boost_control(mstop=1000, center=T))
+fit2 <- gamboost(Surv(futime, fustat) ~ bbs(age, knots = 40) +
+    bols(resid.ds) + bols(rx) + bols(ecog.ps), data = ovarian, 
+    family = CoxPH(), control = boost_control(mstop = 1000, center = TRUE))
 
 A2 <- survFit(fit2)
-plot(A2)
+A2
 
 newdata <- ovarian[c(1,3,12),]
-A2 <- survFit(fit2, newdata=newdata)
-plot(A2)
-
+A2 <- survFit(fit2, newdata = newdata)
+A2

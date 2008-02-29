@@ -141,22 +141,27 @@ if (require("survival")) {
 
 ## Cox model with predictions obtained from survFit function
 
-fit <- coxph( Surv(futime,fustat)~age+resid.ds+rx+ecog.ps,data=ovarian)
-fit2 <- glmboost(Surv(futime,fustat)~age+resid.ds+rx+ecog.ps, data=ovarian, family=CoxPH(),
-control=boost_control(mstop=1000, center=T))
+fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps - 1
+fit <- coxph(fm, data = ovarian)
+fit2 <- glmboost(fm, data = ovarian, family = CoxPH(), 
+    control=boost_control(mstop = 1000, center = TRUE))
+fit3 <- glmboost(fm, data = ovarian, family = CoxPH(), 
+    control=boost_control(mstop = 1000, center = FALSE))
 
 A1 <- survfit(fit)
 A2 <- survFit(fit2)
+A3 <- survFit(fit3)
 
 max(A1$surv-A2$surv)
-plot(A2)
+max(A1$surv-A3$surv)
 
 newdata <- ovarian[c(1,3,12),]
-A1 <- survfit(fit, newdata=newdata)
-A2 <- survFit(fit2, newdata=newdata)
+A1 <- survfit(fit, newdata = newdata)
+A2 <- survFit(fit2, newdata = newdata)
+A3 <- survFit(fit3, newdata = newdata)
 
 max(A1$surv-A2$surv)
-plot(A2)
+max(A1$surv-A3$surv)
 
 
 ### check centering
