@@ -39,7 +39,7 @@ blackboost_fit <- function(object,
     tracestep <- options("width")$width / 2
 
     if (control$center)
-        warning("inputs are not centered in ", sQuote("gamboost"))
+        warning("inputs are not centered in ", sQuote("blackboost"))
 
     ### the ensemble, essentially a list of trees
     ens <- vector(mode = "list", length = mstop)

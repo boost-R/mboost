@@ -238,6 +238,7 @@ survFit.blackboost <- survFit.gb
 plot.survFit <- function(x, xlab = "Probability", ylab = "Time", ...) {
     plot(x$time, rep(1, length(x$time)), ylim = c(0, 1), type = "n", 
          ylab = ylab, xlab = xlab, ...)
-    tmp <- apply(rbind(1,x$surv), 2, function(s) lines(c(0,x$time), s, type = "S"))
+    tmp <- apply(rbind(1,x$surv), 2, function(s) lines(c(0,x$time), s, 
+                 type = "s"))
 }
 
