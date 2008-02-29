@@ -143,3 +143,16 @@ mod2 <- gamboost(fm2, data = tmp, base = "btree")
 stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < .Machine$double.eps)
 stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < .Machine$double.eps)
 
+## Cox model
+
+fit2 <- gamboost(Surv(futime,fustat)~bbs(age,knots=40)+
+    bols(resid.ds)+bols(rx)+bols(ecog.ps), data=ovarian, family=CoxPH(),
+    control=boost_control(mstop=1000, center=T))
+
+A2 <- survFit(fit2)
+plot(A2)
+
+newdata <- ovarian[c(1,3,12),]
+A2 <- survFit(fit2, newdata=newdata)
+plot(A2)
+

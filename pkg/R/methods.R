@@ -223,8 +223,8 @@ survFit.gb <- function(object, newdata = NULL, ...)
     
     devent <- n.event > 0
     if (!is.null(newdata)){
-        S <- exp( tcrossprod( -H, exp( predict(object, newdata=newdata)-
-        mean(predict(object))) ))[devent,]
+        S <- exp( tcrossprod( -H, exp(as.numeric(predict(object,
+        newdata=newdata)- mean(predict(object)))) ))[devent,]
         colnames(S) <- rownames(newdata)
     } else S <- matrix(exp(-H)[devent], ncol = 1)
         
@@ -238,6 +238,6 @@ survFit.blackboost <- survFit.gb
 plot.survFit <- function(x, xlab = "Probability", ylab = "Time", ...) {
     plot(x$time, rep(1, length(x$time)), ylim = c(0, 1), type = "n", 
          ylab = ylab, xlab = xlab, ...)
-    tmp <- apply(x$surv, 2, function(s) lines(x$time, s, type = "S"))
+    tmp <- apply(rbind(1,x$surv), 2, function(s) lines(c(0,x$time), s, type = "S"))
 }
 
