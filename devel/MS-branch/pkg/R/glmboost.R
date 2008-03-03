@@ -105,7 +105,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
         ### scale parameter estimation for aft models
         
         if (family@sigmaTF == TRUE)
-        sigma <- optimize(logl, interval=c(0,1000), ff=fit)$minimum
+        sigma <- optimize(logl, interval=c(0,100), ff=fit)$minimum
         sigmavec[m] <- sigma
 
         ### negative gradient vector, the new `residuals'
