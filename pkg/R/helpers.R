@@ -406,20 +406,23 @@ predict.lmfit <- function(object, newdata) {
 }
 
 ### trace boosting iterations
-do_trace <- function(m, risk, step = options("width")$width / 2, 
+do_trace <- function(m, risk, step = options("width")$width / 2,
                      width = 1000) {
 
-    if ((m - 1) %/% step == (m - 1) / step) {
-        mchr <- formatC(m, format = "d", width = nchar(width) + 1, 
-                        big.mark = "'")
-        cat(paste("[", mchr, "] ",sep = ""))
-    } else {
-        if ((m %/% step != m / step) && m != width) {
-            cat("*")
+    if (m != width) {
+        if ((m - 1) %/% step == (m - 1) / step) {
+            mchr <- formatC(m, format = "d", width = nchar(width) + 1,
+                            big.mark = "'")
+            cat(paste("[", mchr, "] ",sep = ""))
         } else {
-            if (m == width) cat(rep(" ", step - width %% step - 1))
-            cat("* -- risk:", risk[m], "\n")
-        }
+            if ((m %/% step != m / step)) {
+                cat(".")
+            } else {
+                cat(" -- risk:", risk[m], "\n")
+            }
+        }    
+    } else {
+        cat("\nFinal risk:", risk[m], "\n")
     }
 }
 
