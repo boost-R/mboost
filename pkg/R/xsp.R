@@ -228,9 +228,7 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
     # Cholesky decomposition
     
-    if (ncol(X)>nrow(X))
-    A <- crossprod(X * weights, X) + dmat*10e-10 else
-    A <- crossprod(X * weights, X)
+    A <- crossprod(X * weights, X) + dmat*10e-10
     Rm <- solve(chol(A))
 
     decomp <- svd(crossprod(Rm,dmat)%*%Rm)
