@@ -163,29 +163,82 @@ fitted.basefit <- function(object)
 
 coef.baselm <- function(object)
     object$model
+    
+    
+#df2lambda <- function(X, df = 4, dmat = NULL, weights) {
+#
+##    if (df <= 2) stop(sQuote("df"), " must be greater than two")
+#
+#    if (is.null(dmat)) {
+#        dmat <- diff(diag(ncol(X)), differences = 2)
+#        dmat <- crossprod(dmat, dmat)
+#    }
+#
+#    # singular value decomposition
+#    A <- crossprod(X * weights, X)
+#    decomp <- svd(A)
+#    # A is equal to decomp$u %*% diag(decomp$d) %*% t(decomp$v)
+#    u <- decomp$u
+#    v <- decomp$v
+#    d <- decomp$d
+#    K <- crossprod(u,dmat)%*%v
+#
+#    # df2lambda
+#    dd <- diag(d)
+#    df2l <- function(lambda)
+#        (sum(diag(d * solve( (dd+lambda*K) ) ))-df)^2
+#
+#    lower.l <- 0
+#    upper.l <- 5000
+#    lambda <- upper.l
+#
+#    while (lambda >= upper.l - 200 ) {
+#        upper.l <- upper.l * 1.5
+#
+#        tl <- try(lambda <- optimize(df2l, interval=c(lower.l,upper.l))$minimum, silent=T)
+#        if (class(tl)=="try-error") stop("problem of
+#        converting df into lambda cannot be solved - please increase value of df")
+#        lower.l <- upper.l-200
+#        if (lower.l > 1e+06){
+#            lambda <- 1e+06
+#            warning("lambda needs to be larger than 1e+06 for given value of df,
+#            setting lambda = 1e+06 \n trace of hat matrix differs from df by ",
+#            round(sum(diag(d * solve( (dd+lambda*K) ) ))-df,6))
+#            break
+#            }
+#    }
+#
+#    ### tmp <- sum(diag(X %*% solve(crossprod(X * weights, X) + 
+#    ###                   lambda*dmat) %*% t(X * weights))) - df
+#    ### if (abs(tmp) > sqrt(.Machine$double.eps))
+#    ###   warning("trace of hat matrix is not equal df with difference", tmp)
+#
+#    lambda
+#}
+
 
 df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
-#    if (df <= 2) stop(sQuote("df"), " must be greater than two")
+#   if (df <= 2) stop(sQuote("df"), " must be greater than two")
 
     if (is.null(dmat)) {
         dmat <- diff(diag(ncol(X)), differences = 2)
         dmat <- crossprod(dmat, dmat)
     }
 
-    # singular value decomposition
+    # Cholesky decomposition
+    
+    if (ncol(X)>nrow(X))
+    A <- crossprod(X * weights, X) + dmat*10e-10 else
     A <- crossprod(X * weights, X)
-    decomp <- svd(A)
-    # A is equal to decomp$u %*% diag(decomp$d) %*% t(decomp$v)
-    u <- decomp$u
-    v <- decomp$v
+    Rm <- solve(chol(A))
+
+    decomp <- svd(crossprod(Rm,dmat)%*%Rm)
     d <- decomp$d
-    K <- crossprod(u,dmat)%*%v
 
     # df2lambda
-    dd <- diag(d)
     df2l <- function(lambda)
-        (sum(diag(d * solve( (dd+lambda*K) ) ))-df)^2
+        (sum( 1/(1+lambda*d) ) - df)^2
 
     lower.l <- 0
     upper.l <- 5000
@@ -194,20 +247,22 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
     while (lambda >= upper.l - 200 ) {
         upper.l <- upper.l * 1.5
 
-        tl <- try(lambda <- optimize(df2l, interval=c(lower.l,upper.l))$minimum, silent=T)
+        tl <- try(lambda <- optimize(df2l, interval=c(lower.l,upper.l))$minimum,
+        silent=T)
         if (class(tl)=="try-error") stop("problem of
-        converting df into lambda cannot be solved - please increase value of df")
+        converting df into lambda cannot be solved - please increase value of
+        df")
         lower.l <- upper.l-200
         if (lower.l > 1e+06){
             lambda <- 1e+06
             warning("lambda needs to be larger than 1e+06 for given value of df,
             setting lambda = 1e+06 \n trace of hat matrix differs from df by ",
-            round(sum(diag(d * solve( (dd+lambda*K) ) ))-df,6))
+            round(sum( 1/(1+lambda*d) )-df,6))
             break
             }
     }
 
-    ### tmp <- sum(diag(X %*% solve(crossprod(X * weights, X) + 
+    ### tmp <- sum(diag(X %*% solve(crossprod(X * weights, X) +
     ###                   lambda*dmat) %*% t(X * weights))) - df
     ### if (abs(tmp) > sqrt(.Machine$double.eps))
     ###   warning("trace of hat matrix is not equal df with difference", tmp)
