@@ -10,7 +10,7 @@ Description: Functional gradient descent algorithms
   componentwise least squares, either of parametric linear form or
   smoothing splines, or regression trees as base learners for fitting
   generalized linear, additive and interaction models to potentially 
-  high-dimensional data..
+  high-dimensional data .
 Depends: R (>= 2.4.0), methods, modeltools (>= 0.2.10), party (>= 0.9-10),
   splines
 Suggests: mlbench, ipred, Biobase
