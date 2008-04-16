@@ -13,6 +13,7 @@ export(glmboost, glmboost_fit,
 exportClasses("boost_family")
 exportMethods("show")
 
+### ### ### ### ### ### ### ###
 S3method(print, glmboost)
 S3method(plot, glmboost)
 S3method(glmboost, formula)
