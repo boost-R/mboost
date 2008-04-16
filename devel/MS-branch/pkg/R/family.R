@@ -340,18 +340,18 @@ LogNormal <- function()
            sigmaTF=TRUE )
            
 
-NBinomial <- function()
-    Family(ngradient = function(sigma=1, y, f, w = 1)
-               y - (y+sigma)/(exp(f)+sigma)*exp(f),
-           loss = plloss <- function(sigma=1, y, f, w=1)
-             - (log(gamma(y+sigma)) - log(gamma(sigma)) - log(gamma(y+1)) +
-                sigma*log(sigma) - sigma*log(exp(f)+sigma) + y*f -
-                y*log(exp(f)+sigma)),
-           risk = function(sigma=1, y, f, w = 1) sum(w * plloss(y=y,
-               f=f, sigma=sigma)),
-           check_y = function(y) TRUE,
-           offset = function(y, w=NULL) {
-               return(3)
-           },
-           name = "Negative Negative Binomial Likelihood",
-           sigmaTF=T)
+#NBinomial <- function()
+#    Family(ngradient = function(sigma=1, y, f, w = 1)
+#               y - (y+sigma)/(exp(f)+sigma)*exp(f),
+#           loss = plloss <- function(sigma=1, y, f, w=1)
+#             - (log(gamma(y+sigma)) - log(gamma(sigma)) - log(gamma(y+1)) +
+#                sigma*log(sigma) - sigma*log(exp(f)+sigma) + y*f -
+#                y*log(exp(f)+sigma)),
+#           risk = function(sigma=1, y, f, w = 1) sum(w * plloss(y=y,
+#               f=f, sigma=sigma)),
+#           check_y = function(y) TRUE,
+#           offset = function(y, w=NULL) {
+#               return(3)
+#           },
+#           name = "Negative Negative Binomial Likelihood",
+#           sigmaTF=T)

@@ -8,7 +8,7 @@
 ### Fitting function
 glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
                       weights = NULL) {
-
+     
     sigma <- 1
     
     ### init data and weights
@@ -76,8 +76,6 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
     fit <- offset <- family@offset(y, weights)
     u <- ustart <- ngradient(1, y, fit, weights)
     
-    #if (class(y)=="Surv") event <- y[,2]
-    
     ### log likelihood evaluation function for scale parameter estimation
     logl <- function(sigma, ff){
         vec <- family@loss(y, f=ff, sigma=sigma)
@@ -130,9 +128,9 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
 
     RET <- list(ensemble = ens,		### coefficients for selected variables
                 fit = fit,		### vector of fitted values
-                sigma = sigmavec, ### scale parameter estimate
                 offset = offset,	### offset
                 ustart = ustart,	### first negative gradients
+                sigmavec = sigmavec,
                 risk = mrisk,		### empirical risks for m = 1, ..., mstop
                 control = control, 	### control parameters
                 family = family,	### family object
