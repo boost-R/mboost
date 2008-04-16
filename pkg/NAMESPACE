@@ -6,7 +6,7 @@ export(glmboost, glmboost_fit,
        gamboost, gamboost_fit,
        blackboost, blackboost_fit, 
        boost_control, mstop, Family, 
-       GaussReg, GaussClass, Laplace, Binomial, Poisson, 
+       GaussReg, GaussClass, Laplace, Binomial, Poisson, Weib, Loglog, LogNormal,
        Huber, AdaExp, CoxPH, boost_dpp, FP, IPCweights, cvrisk, bbs, 
        bss, bns, bols, bspatial, brandom, btree, survFit)
 exportClasses("boost_family")
