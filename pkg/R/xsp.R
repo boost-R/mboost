@@ -1,4 +1,4 @@
-
+ 
 hatMatTH <- function(x, w = NULL, df = 4) {
     n <- NROW(x)
     indx <- diag(n)
@@ -41,7 +41,7 @@ fitted.baselist <- function(object) {
     return(pr)
 }
 
-### what happens to weights
+### what happens to weights ###
 ### when calculating knots etc?
 bbs <- function(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2,
                 center = FALSE, xname = NULL, zname = NULL) {
@@ -163,6 +163,10 @@ fitted.basefit <- function(object)
 
 coef.baselm <- function(object)
     object$model
+<<<<<<< .mine
+    
+    
+=======
     
     
 #df2lambda <- function(X, df = 4, dmat = NULL, weights) {
@@ -216,6 +220,7 @@ coef.baselm <- function(object)
 #    lambda
 #}
 
+>>>>>>> .r78
 
 df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
@@ -267,6 +272,60 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
     lambda
 }
+
+
+#df2lambda <- function(X, df = 4, dmat = NULL, weights) {
+#
+##   if (df <= 2) stop(sQuote("df"), " must be greater than two")
+#
+#    if (is.null(dmat)) {
+#        dmat <- diff(diag(ncol(X)), differences = 2)
+#        dmat <- crossprod(dmat, dmat)
+#    }
+#
+#    # Cholesky decomposition
+#    
+#    if (ncol(X)>nrow(X))
+#    A <- crossprod(X * weights, X) + dmat*10e-10 else
+#    A <- crossprod(X * weights, X)
+#    Rm <- solve(chol(A))
+#
+#    decomp <- svd(crossprod(Rm,dmat)%*%Rm)
+#    d <- decomp$d
+#
+#    # df2lambda
+#    df2l <- function(lambda)
+#        (sum( 1/(1+lambda*d) ) - df)^2
+#
+#    lower.l <- 0
+#    upper.l <- 5000
+#    lambda <- upper.l
+#
+#    while (lambda >= upper.l - 200 ) {
+#        upper.l <- upper.l * 1.5
+#
+#        tl <- try(lambda <- optimize(df2l, interval=c(lower.l,upper.l))$minimum,
+#        silent=T)
+#        if (class(tl)=="try-error") stop("problem of
+#        converting df into lambda cannot be solved - please increase value of
+#        df")
+#        lower.l <- upper.l-200
+#        if (lower.l > 1e+06){
+#            lambda <- 1e+06
+#            warning("lambda needs to be larger than 1e+06 for given value of df,
+#            setting lambda = 1e+06 \n trace of hat matrix differs from df by ",
+#            round(sum( 1/(1+lambda*d) )-df,6))
+#            break
+#            }
+#    }
+#
+#    ### tmp <- sum(diag(X %*% solve(crossprod(X * weights, X) +
+#    ###                   lambda*dmat) %*% t(X * weights))) - df
+#    ### if (abs(tmp) > sqrt(.Machine$double.eps))
+#    ###   warning("trace of hat matrix is not equal df with difference", tmp)
+#
+#    lambda
+#}
 
 bns <- function(x, z = NULL, df = 4, knots = NULL, differences = 2,
                 xname = NULL, zname = NULL) {
