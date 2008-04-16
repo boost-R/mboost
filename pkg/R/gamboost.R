@@ -1,6 +1,6 @@
 
 ### 
-### Experimental version of gradient boosting with componentwise least
+### Experimental version of gradient boosting with componentwise least ###
 ### smoothing splines
 ### 
 
