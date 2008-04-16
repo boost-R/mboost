@@ -1,6 +1,6 @@
 
 ### 
-### Methods for gradient boosting objects
+### Methods for gradient boosting objects ###
 ### 
 
 
