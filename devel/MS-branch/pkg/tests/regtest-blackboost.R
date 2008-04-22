@@ -46,16 +46,3 @@ p1 <- predict(blackboost(x = x, y = y, family = Laplace()), newdata = x)
 p2 <- predict(blackboost(medv ~ ., data = BostonHousing, family = Laplace()),
               newdata = BostonHousing)
 stopifnot(identical(abs(max(p1 - p2)), 0))
-
-## Cox model
-
-fit2 <- blackboost(Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps, 
-    data = ovarian, family = CoxPH(), control = boost_control(mstop = 1000, 
-    center = TRUE))
-
-A2 <- survFit(fit2)
-A2
-
-newdata <- ovarian[c(1,3,12),]
-A2 <- survFit(fit2, newdata = newdata)
-A2

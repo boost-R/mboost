@@ -1,12 +1,4 @@
 
-> Ein kleines Problem gibt es auch noch: Bei räumlichen Effekten müssen wir
-> die
-> plot-Funktion noch davon abhalten, eine Funktion zu zeichnen und
-> stattdessen
-> persp oder image aufrufen.
-
-    o  check status == "N" in wpbc
-
     o  na.action defaults checken
 
     o  wpbc3 mit na.action = na.omit ODER na.pass???

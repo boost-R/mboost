@@ -2,13 +2,14 @@
 import(modeltools)
 import(party)
 
-export(glmboost, glmboost_fit,
+export(glmboost, glmboost_fit, 
        gamboost, gamboost_fit,
-       blackboost, blackboost_fit,
-       boost_control, mstop, Family,
-       GaussReg, GaussClass, Laplace, Binomial, Poisson, Weib, Loglog, LogNormal,
-       Huber, AdaExp, CoxPH, boost_dpp, FP, IPCweights, cvrisk, bbs,
-       bss, bns, bols, bspatial, brandom, btree, survFit)
+       blackboost, blackboost_fit, 
+       boost_control, mstop, Family, 
+       GaussReg, GaussClass, Laplace, Binomial, Poisson, 
+       Huber, AdaExp, CoxPH, Weib, Loglog, LogNormal,
+       boost_dpp, FP, IPCweights, cvrisk, bbs, 
+       bss, bns, bols, bspatial, brandom)
 exportClasses("boost_family")
 exportMethods("show")
 
@@ -22,8 +23,6 @@ S3method(blackboost, formula)
 S3method(blackboost, matrix)
 S3method(print, gamboost)
 S3method(plot, gamboost)
-S3method(plot, survFit)
-S3method(coef, gamboost)
 S3method(hatvalues, gb)
 S3method(hatvalues, glmboost)
 S3method(fitted, gb)
@@ -46,9 +45,8 @@ S3method(mstop, gbAIC)
 S3method(mstop, cvrisk)
 S3method(mstop, gb)
 S3method(mstop, blackboost)
-S3method(survFit, gb)
-S3method(survFit, blackboost)
 S3method("[", gb)
 S3method("[", blackboost)
 
 useDynLib(mboost)
+

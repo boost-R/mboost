@@ -8,7 +8,7 @@
 ### Fitting function
 glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
                       weights = NULL) {
-     
+
     sigma <- 1
     
     ### init data and weights
@@ -60,7 +60,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
     sigmavec[1:mstop] <- NA
     mrisk <- numeric(mstop)
     mrisk[1:mstop] <- NA
-    
+
     ### some calculations independent of mstop and memory allocation
     ### for each _column_ of the design matrix x, compute the corresponding
     ### Moore-Penrose inverse (which is a scalar in this case) for the raw
@@ -72,8 +72,11 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
     MPinvS <- (1 / sxtx) * xw
     if (all(is.na(MPinvS)))
         warning("cannot compute column-wise inverses of design matrix")
+
     fit <- offset <- family@offset(y, weights)
     u <- ustart <- ngradient(1, y, fit, weights)
+    
+    #if (class(y)=="Surv") event <- y[,2]
     
     ### log likelihood evaluation function for scale parameter estimation
     logl <- function(sigma, ff){
@@ -102,7 +105,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
         ### scale parameter estimation for aft models
         
         if (family@sigmaTF == TRUE)
-        sigma <- optimize(logl, interval=c(0,50), ff=fit)$minimum
+        sigma <- optimize(logl, interval=c(0,100), ff=fit)$minimum
         sigmavec[m] <- sigma
 
         ### negative gradient vector, the new `residuals'
@@ -127,9 +130,9 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
 
     RET <- list(ensemble = ens,		### coefficients for selected variables
                 fit = fit,		### vector of fitted values
+                sigma = sigmavec, ### scale parameter estimate
                 offset = offset,	### offset
                 ustart = ustart,	### first negative gradients
-                sigmavec = sigmavec,
                 risk = mrisk,		### empirical risks for m = 1, ..., mstop
                 control = control, 	### control parameters
                 family = family,	### family object

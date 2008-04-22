@@ -8,6 +8,9 @@
 \alias{Laplace}
 \alias{Poisson}
 \alias{CoxPH}
+\alias{Weib}
+\alias{LogNormal}
+\alias{Loglog}
 \title{ Gradient Boosting Families }
 \description{
     \code{boost_family} objects provide a convenient way to specify loss functions
@@ -19,7 +22,8 @@ Family(ngradient, loss = NULL, risk = NULL,
        offset = function(y, w) 0, 
        fW = function(f) rep(1, length(f)), 
        check_y = function(y) TRUE,
-       weights = TRUE, name = "user-specified")
+       weights = TRUE, name = "user-specified",
+       sigmaTF = FALSE)
 AdaExp()
 Binomial()
 GaussClass()
@@ -28,6 +32,9 @@ Huber(d = NULL)
 Laplace()
 Poisson()
 CoxPH()
+Weib()
+Loglog()
+LogNormal()
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -45,6 +52,7 @@ CoxPH()
   \item{weights}{ a logical indicating if weights are allowed. }
   \item{name}{ a character giving the name of the loss function for pretty printing. }
   \item{d}{ delta parameter for Huber loss function. If omitted, it is chosen adaptively.}
+  \item{sigmaTF}{ a logical indicating whether the family contains an additional scale parameter.}
 }
 \details{
 

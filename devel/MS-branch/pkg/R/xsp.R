@@ -144,7 +144,7 @@ bbs <- function(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2,
                 nX %*% coef
             }
             ret <- list(model = coef, predict = predictfun, fitted = Xna %*% coef)
-            class(ret) <- c("basefit", "baselm")
+            class(ret) <- "basefit"
             ret
         }
         ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
@@ -161,10 +161,6 @@ predict.basefit <- function(object, newdata = NULL)
 fitted.basefit <- function(object)
     object$fitted
 
-coef.baselm <- function(object)
-    object$model
-    
-    
 df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
 #    if (df <= 2) stop(sQuote("df"), " must be greater than two")
@@ -215,60 +211,6 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
     lambda
 }
-
-
-#df2lambda <- function(X, df = 4, dmat = NULL, weights) {
-#
-##   if (df <= 2) stop(sQuote("df"), " must be greater than two")
-#
-#    if (is.null(dmat)) {
-#        dmat <- diff(diag(ncol(X)), differences = 2)
-#        dmat <- crossprod(dmat, dmat)
-#    }
-#
-#    # Cholesky decomposition
-#    
-#    if (ncol(X)>nrow(X))
-#    A <- crossprod(X * weights, X) + dmat*10e-10 else
-#    A <- crossprod(X * weights, X)
-#    Rm <- solve(chol(A))
-#
-#    decomp <- svd(crossprod(Rm,dmat)%*%Rm)
-#    d <- decomp$d
-#
-#    # df2lambda
-#    df2l <- function(lambda)
-#        (sum( 1/(1+lambda*d) ) - df)^2
-#
-#    lower.l <- 0
-#    upper.l <- 5000
-#    lambda <- upper.l
-#
-#    while (lambda >= upper.l - 200 ) {
-#        upper.l <- upper.l * 1.5
-#
-#        tl <- try(lambda <- optimize(df2l, interval=c(lower.l,upper.l))$minimum,
-#        silent=T)
-#        if (class(tl)=="try-error") stop("problem of
-#        converting df into lambda cannot be solved - please increase value of
-#        df")
-#        lower.l <- upper.l-200
-#        if (lower.l > 1e+06){
-#            lambda <- 1e+06
-#            warning("lambda needs to be larger than 1e+06 for given value of df,
-#            setting lambda = 1e+06 \n trace of hat matrix differs from df by ",
-#            round(sum( 1/(1+lambda*d) )-df,6))
-#            break
-#            }
-#    }
-#
-#    ### tmp <- sum(diag(X %*% solve(crossprod(X * weights, X) +
-#    ###                   lambda*dmat) %*% t(X * weights))) - df
-#    ### if (abs(tmp) > sqrt(.Machine$double.eps))
-#    ###   warning("trace of hat matrix is not equal df with difference", tmp)
-#
-#    lambda
-#}
 
 bns <- function(x, z = NULL, df = 4, knots = NULL, differences = 2,
                 xname = NULL, zname = NULL) {
@@ -352,7 +294,7 @@ bns <- function(x, z = NULL, df = 4, knots = NULL, differences = 2,
                 nX %*% coef
             }
             ret <- list(model = coef, predict = predictfun, fitted = X %*% coef)
-            class(ret) <- c("basefit", "baselm")
+            class(ret) <- "basefit"
             ret
         }
         ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
@@ -509,7 +451,7 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = NULL, yknots = NULL,
             }
             ret <- list(model = coef, predict = predictfun, 
                         fitted = X %*% coef)
-            class(ret) <- c("basefit", "baselm")
+            class(ret) <- "basefit"
             ret
         }
         ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
@@ -566,7 +508,7 @@ bols <- function(x, z = NULL, xname = NULL, zname = NULL) {
             }
             ret <- list(model = coef, predict = predictfun, 
                         fitted = Xna %*% coef)
-            class(ret) <- c("basefit", "baselm")
+            class(ret) <- "basefit"
             ret
         }
         ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
@@ -612,63 +554,12 @@ brandom <- function(x, z = NULL, df = 4, xname = NULL,
                 nX %*% coef
             }
             ret <- list(model = coef, predict = predictfun, fitted = X %*% coef)
-            class(ret) <- c("basefit", "baselm")
+            class(ret) <- "basefit"
             ret
         }
         ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
         class(ret) <- "basisdpp"
         ret
-    }
-    attr(X, "dpp") <- dpp
-    return(X)
-}
-
-btree <- function(x, z = NULL, tree_controls = ctree_control(stump = TRUE, 
-    mincriterion = 0), xname = NULL, zname = NULL) {
-
-    if (is.null(xname)) xname <- deparse(substitute(x))
-    if (is.null(zname)) zname <- deparse(substitute(z))
-
-    X <- model.matrix(~x - 1)
-
-    dpp <- function(weights) {
-
-        ### construct design matrix etc.
-        y <- vector(length = length(x), mode = "numeric")
-        fm <- as.formula(paste("y ~ ", 
-            paste(xname, ifelse(!is.null(z), zname, ""), 
-            collapse = "+")))
-        df <- data.frame(y, x)
-        names(df) <- c("y", xname)
-        object <- party:::ctreedpp(fm, data = df)
-        fitmem <- ctree_memory(object, TRUE)
-        where <- rep.int(0, length(x))
-        storage.mode(where) <- "integer"
-        storage.mode(weights) <- "double"
-
-        fitfun <- function(y) {
-            
-            .Call("R_modify_response", as.double(y), object@responses,
-                 PACKAGE = "party")
-            tree <- .Call("R_TreeGrow", object, weights, fitmem, tree_controls,
-                          where, PACKAGE = "party")
-            wh <- .Call("R_get_nodeID", tree, object@inputs, 0.0, PACKAGE = "party")
-            fit <- unlist(.Call("R_getpredictions", tree, wh, PACKAGE = "party"))
-
-            predictfun <- function(newdata = NULL) {
-                if (is.null(newdata)) return(fit)
-                newinp <- party:::newinputs(object, newdata)
-                wh <- .Call("R_get_nodeID", tree, newinp, 0.0,
-                        PACKAGE = "party")
-                unlist(.Call("R_getpredictions", tree, wh, PACKAGE = "party"))
-            }
-            ret <- list(model = tree, predict = predictfun, fitted = fit)
-            class(ret) <- "basefit"
-            ret
-        }
-        ret <- list(fit = fitfun, hatmatrix = function() NA)
-        class(ret) <- "basisdpp"
-        ret	
     }
     attr(X, "dpp") <- dpp
     return(X)

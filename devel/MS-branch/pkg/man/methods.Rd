@@ -1,7 +1,6 @@
 \name{methods}
 \alias{print.glmboost}
 \alias{coef.glmboost}
-\alias{coef.gamboost}
 \alias{print.gamboost}
 \alias{AIC.gamboost}
 \alias{AIC.glmboost}
@@ -14,8 +13,6 @@
 \alias{mstop.blackboost}
 \alias{fitted.gb}
 \alias{logLik.gb}
-\alias{survFit.gb}
-\alias{survFit.blackboost}
 \title{ Methods for Gradient Boosting Objects }
 \description{
   Methods for models fitted by boosting algorithms.
@@ -24,7 +21,6 @@
 \method{print}{glmboost}(x, ...)
 \method{print}{gamboost}(x, ...)
 \method{coef}{glmboost}(object, ...)
-\method{coef}{gamboost}(object, ...)
 \method{AIC}{gamboost}(object, method = c("corrected", "classical"), ..., k = 2)
 \method{AIC}{glmboost}(object, method = c("corrected", "classical"), 
     df = c("trace", "actset"), ..., k = 2)
@@ -38,8 +34,6 @@
        allIterations = FALSE, ...)
 \method{fitted}{gb}(object, type = c("lp", "response"), ...)
 \method{logLik}{gb}(object, ...)
-\method{survFit}{gb}(object, newdata = NULL, ...)
-\method{survFit}{blackboost}(object, newdata = NULL, ...)
 }
 \arguments{
   \item{object}{ objects of class \code{glmboost}, \code{gamboost} or \code{gbAIC}. }
@@ -66,8 +60,7 @@
   These functions can be used to extract details from fitted models. \code{print}
   shows a dense representation of the model fit and \code{coef} extracts the
   regression coefficients of a linear model fitted using the \code{\link{glmboost}}
-  function (for \code{\link{gamboost}} objects, \code{coef} only works
-  when \code{\link{bols}} is used as baselearner).
+  function.
   
   The \code{predict} function can be used to predict the status of the response variable
   for new observations whereas \code{fitted} extracts the regression fit for the observations
@@ -82,7 +75,7 @@
   \code{mstop}). The degrees of freedom are either computed via the trace of the
   boosting hat matrix (which is rather slow even for moderate sample sizes)
   or the number of variables (non-zero coefficients) that entered the model so far 
-  (faster but only meaningful for linear models fitted via \code{\link{gamboost}} 
+  (faster but only meaningful for linear models fitted via \code{\link{glmboost}} 
   (see Hastie, 2007).
 
   Note that \code{logLik} and \code{AIC} only make sense when the corresponding

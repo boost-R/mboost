@@ -14,7 +14,9 @@ blackboost_fit <- function(object,
                            fitmem = ctree_memory(object, TRUE), 
                            family = GaussReg(), control = boost_control(), 
                            weights = NULL) {
-
+                           
+    sigma <- 1
+    
     ### number of observations in the learning sample
     ### make sure this gets _copied_
     obj <- .Call("copymem",  object, package = "mboost")
@@ -39,13 +41,15 @@ blackboost_fit <- function(object,
     tracestep <- options("width")$width / 2
 
     if (control$center)
-        warning("inputs are not centered in ", sQuote("blackboost"))
+        warning("inputs are not centered in ", sQuote("gamboost"))
 
     ### the ensemble, essentially a list of trees
     ens <- vector(mode = "list", length = mstop)
 
     ### vector of empirical risks for all boosting iterations
     ### (either in-bag or out-of-bag)
+    sigmavec <- numeric(mstop)
+    sigmavec[1:mstop] <- NA
     mrisk <- numeric(mstop)
     mrisk[1:mstop] <- NA
 
@@ -56,10 +60,16 @@ blackboost_fit <- function(object,
         stop(sQuote("family"), " is not able to deal with weights")
 
     fit <- offset <- family@offset(y, weights)
-    u <- ustart <- ngradient(y, fit, weights)
+    u <- ustart <- ngradient(1, y, fit, weights)
 
     where <- rep(1, obj@nobs)
     storage.mode(where) <- "integer"
+    
+    ### log likelihood evaluation function for scale parameter estimation
+    logl <- function(sigma, ff){
+        vec <- family@loss(y, f=ff, sigma=sigma)
+        sum(vec)
+        }
 
     ### start boosting iteration
     for (m in 1:mstop) {
@@ -86,14 +96,18 @@ blackboost_fit <- function(object,
         ### L2 boost with constraints (binary classification)
         if (constraint)
             fit <- sign(fit) * pmin(abs(fit), 1)
+            
+        if (family@sigmaTF == TRUE)
+        sigma <- optimize(logl, interval=c(0,1000), ff=fit)$minimum
+        sigmavec[m] <- sigma
 
         ### negative gradient vector, the new `residuals'
-        u <- ngradient(y, fit, weights)
+        u <- ngradient(sigma, y, fit, weights)
 
         ### evaluate risk, either for the learning sample (inbag)
         ### or the test sample (oobag)
-        if (risk == "inbag") mrisk[m] <- riskfct(y, fit, weights)
-        if (risk == "oobag") mrisk[m] <- riskfct(y, fit, oobweights)
+        if (risk == "inbag") mrisk[m] <- riskfct(sigma, y, fit, weights)
+        if (risk == "oobag") mrisk[m] <- riskfct(sigma, y, fit, oobweights)
 
         ### print status information
         if (trace) 
@@ -107,6 +121,7 @@ blackboost_fit <- function(object,
     RET <- list(ensemble = ens, 	### list of trees
                 fit = fit,              ### vector of fitted values   
                 offset = offset,        ### offset
+                sigma = sigmavec, ### scale parameter estimate
                 ustart = ustart,        ### first negative gradients
                 risk = mrisk,           ### empirical risks for m = 1, ..., mstop
                 control = control,      ### control parameters   
