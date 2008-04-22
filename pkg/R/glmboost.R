@@ -8,9 +8,7 @@
 ### Fitting function
 glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
                       weights = NULL) {
-     
-    sigma <- 1
-    
+
     ### init data and weights
     x <- object$x
     if (control$center) {
@@ -56,8 +54,6 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
 
     ### vector of empirical risks for all boosting iterations 
     ### (either in-bag or out-of-bag)
-    sigmavec <- numeric(mstop)
-    sigmavec[1:mstop] <- NA
     mrisk <- numeric(mstop)
     mrisk[1:mstop] <- NA
 
@@ -74,13 +70,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
         warning("cannot compute column-wise inverses of design matrix")
 
     fit <- offset <- family@offset(y, weights)
-    u <- ustart <- ngradient(1, y, fit, weights)
-    
-    ### log likelihood evaluation function for scale parameter estimation
-    logl <- function(sigma, ff){
-        vec <- family@loss(y, f=ff, sigma=sigma)
-        sum(vec)
-        }
+    u <- ustart <- ngradient(y, fit, weights)
 
     ### start boosting iteration
     for (m in 1:mstop) {
@@ -99,20 +89,14 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
         ### L2 boost with constraints (binary classification)
         if (constraint)
             fit <- sign(fit) * pmin(abs(fit), 1)
-            
-        ### scale parameter estimation for aft models
-        
-        if (family@sigmaTF == TRUE)
-        sigma <- optimize(logl, interval=c(0,100), ff=fit)$minimum
-        sigmavec[m] <- sigma
 
         ### negative gradient vector, the new `residuals'
-        u <- ngradient(sigma, y, fit, weights)
+        u <- ngradient(y, fit, weights)
 
         ### evaluate risk, either for the learning sample (inbag)
         ### or the test sample (oobag)
-        if (risk == "inbag") mrisk[m] <- riskfct(sigma, y, fit, weights)
-        if (risk == "oobag") mrisk[m] <- riskfct(sigma, y, fit, oobweights)
+        if (risk == "inbag") mrisk[m] <- riskfct(y, fit, weights)
+        if (risk == "oobag") mrisk[m] <- riskfct(y, fit, oobweights)
 
         ### save the model, i.e., the selected coefficient and variance
         ens[m,] <- c(xselect, coef)
@@ -130,7 +114,6 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
                 fit = fit,		### vector of fitted values
                 offset = offset,	### offset
                 ustart = ustart,	### first negative gradients
-                sigmavec = sigmavec,
                 risk = mrisk,		### empirical risks for m = 1, ..., mstop
                 control = control, 	### control parameters
                 family = family,	### family object

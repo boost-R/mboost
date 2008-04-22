@@ -1,4 +1,4 @@
-### two possible interpretations of weights:                 ###
+### two possible interpretations of weights:
 ### 1) case counts: observation i is w_i times in the sample
 ### 2) relative weights: observation i is given weight w_i
 rescale_weights <- function(w) {
