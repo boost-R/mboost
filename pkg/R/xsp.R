@@ -164,59 +164,6 @@ fitted.basefit <- function(object)
 coef.baselm <- function(object)
     object$model
     
-    
-#df2lambda <- function(X, df = 4, dmat = NULL, weights) {
-#
-##    if (df <= 2) stop(sQuote("df"), " must be greater than two")
-#
-#    if (is.null(dmat)) {
-#        dmat <- diff(diag(ncol(X)), differences = 2)
-#        dmat <- crossprod(dmat, dmat)
-#    }
-#
-#    # singular value decomposition
-#    A <- crossprod(X * weights, X)
-#    decomp <- svd(A)
-#    # A is equal to decomp$u %*% diag(decomp$d) %*% t(decomp$v)
-#    u <- decomp$u
-#    v <- decomp$v
-#    d <- decomp$d
-#    K <- crossprod(u,dmat)%*%v
-#
-#    # df2lambda
-#    dd <- diag(d)
-#    df2l <- function(lambda)
-#        (sum(diag(d * solve( (dd+lambda*K) ) ))-df)^2
-#
-#    lower.l <- 0
-#    upper.l <- 5000
-#    lambda <- upper.l
-#
-#    while (lambda >= upper.l - 200 ) {
-#        upper.l <- upper.l * 1.5
-#
-#        tl <- try(lambda <- optimize(df2l, interval=c(lower.l,upper.l))$minimum, silent=T)
-#        if (class(tl)=="try-error") stop("problem of
-#        converting df into lambda cannot be solved - please increase value of df")
-#        lower.l <- upper.l-200
-#        if (lower.l > 1e+06){
-#            lambda <- 1e+06
-#            warning("lambda needs to be larger than 1e+06 for given value of df,
-#            setting lambda = 1e+06 \n trace of hat matrix differs from df by ",
-#            round(sum(diag(d * solve( (dd+lambda*K) ) ))-df,6))
-#            break
-#            }
-#    }
-#
-#    ### tmp <- sum(diag(X %*% solve(crossprod(X * weights, X) + 
-#    ###                   lambda*dmat) %*% t(X * weights))) - df
-#    ### if (abs(tmp) > sqrt(.Machine$double.eps))
-#    ###   warning("trace of hat matrix is not equal df with difference", tmp)
-#
-#    lambda
-#}
-
-
 df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
 #   if (df <= 2) stop(sQuote("df"), " must be greater than two")
@@ -518,61 +465,75 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = NULL, yknots = NULL,
     return(X)
 }
 
-bols <- function(x, z = NULL, xname = NULL, zname = NULL) {
+bols <- function(x, z = NULL, xname = NULL, zname = NULL, center = FALSE, 
+                 df = NULL) {
 
-    if (is.null(xname)) xname = deparse(substitute(x))
-    if (is.null(zname)) zname = deparse(substitute(z))
+     if (is.null(xname)) xname = deparse(substitute(x))
+     if (is.null(zname)) zname = deparse(substitute(z))
 
-    cc <- complete_cases(x = x, z = z)
+     cc <- complete_cases(x = x, z = z)
 
-    newX <- function(x, z = NULL, na.rm = TRUE) {
-        if (na.rm) {
-            x <- x[cc]
-            if (!is.null(z))
-                z <- z[cc]
-        }
-        X <- model.matrix(~ x)
-        if (any(!cc) & !na.rm) {
-            Xtmp <- matrix(NA, ncol = ncol(X), nrow = length(cc))
-            Xtmp[cc,] <- X
-            X <- Xtmp
-        }
-        if (!is.null(z)) X <- X * z
-        X
-    }
-    X <- newX(x, z)
-    Xna <- X
-    if (any(!cc))
-        Xna <- newX(x, z, na.rm = FALSE)
+     newX <- function(x, z = NULL, na.rm = TRUE) {
+         if (na.rm) {
+             x <- x[cc]
+             if (!is.null(z))
+                 z <- z[cc]
+         }
 
-    dpp <- function(weights) {
+         X <- model.matrix(~ x)
+         if (center)
+            X <- X[, -1, drop = FALSE]
+  
+         if (any(!cc) & !na.rm) {
+             Xtmp <- matrix(NA, ncol = ncol(X), nrow = length(cc))
+             Xtmp[cc,] <- X
+             X <- Xtmp
+         }
+         if (!is.null(z)) X <- X * z
+         X
+     }
+     X <- newX(x, z)
+     Xna <- X
+     if (any(!cc))
+         Xna <- newX(x, z, na.rm = FALSE)
 
-        if (any(!cc)) weights <- weights[cc]
-        Xw <- X * weights
-        Xsolve <- tcrossprod(solve(crossprod(Xw, X)), Xw)
+     K <- diag(ncol(X))
 
-        fitfun <- function(y) {
-           
-            if (any(!cc)) y <- y[cc]
-            coef <- Xsolve %*% y
+     dpp <- function(weights) {
 
-            predictfun <- function(newdata = NULL) {
-                if (is.null(newdata)) return(Xna %*% coef)
-                nX <- newX(x = newdata[[xname]], z = newdata[[zname]], 
-                           na.rm = FALSE)
-                nX %*% coef
-            }
-            ret <- list(model = coef, predict = predictfun, 
-                        fitted = Xna %*% coef)
-            class(ret) <- c("basefit", "baselm")
-            ret
-        }
-        ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
-        class(ret) <- "basisdpp"
-        ret
-    }
-    attr(X, "dpp") <- dpp
-    return(X)
+         if (any(!cc)) weights <- weights[cc]
+         Xw <- X * weights
+         XtX <- crossprod(Xw, X)
+         
+         if (is.null(df) || df >= ncol(K)) {
+             Xsolve <- tcrossprod(solve(crossprod(Xw, X)), Xw)
+         } else {
+             lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
+             Xsolve <- tcrossprod(solve(XtX + lambda * K), Xw)
+         }
+
+         fitfun <- function(y) {
+
+             if (any(!cc)) y <- y[cc]
+             coef <- Xsolve %*% y
+
+             predictfun <- function(newdata = NULL) {
+                 if (is.null(newdata)) return(Xna %*% coef)
+                 nX <- newX(x = newdata[[xname]], z = newdata[[zname]],
+                            na.rm = FALSE)
+                 nX %*% coef
+             }
+             ret <- list(model = coef, predict = predictfun,
+                         fitted = Xna %*% coef)
+             class(ret) <- c("basefit", "baselm")
+             ret
+         }
+         ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
+         class(ret) <- "basisdpp"
+         ret
+     }
+     attr(X, "dpp") <- dpp
+     return(X)
 }
 
 brandom <- function(x, z = NULL, df = 4, xname = NULL, 

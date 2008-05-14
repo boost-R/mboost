@@ -64,12 +64,12 @@ resid.blackboost <- resid.gb
 ### methods: hatvalues, either exact (L2) or approximately
 hatvalues.gb <- function(model, ...) {
 
-    n <- nrow(model$data$x)   
-    p <- ncol(model$data$x)
+    n <- length(model$data$y)   
     ens <- model$ensemble
+    p <- max(ens[,"xselect"])
     nu <- model$control$nu
 
-    ### list of hat matices
+    ### list of hat matrices
     H <- vector(mode = "list", length = p)
 
     for (xs in unique(ens[,"xselect"]))

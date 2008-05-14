@@ -141,7 +141,7 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns", "b
         gamboost_fit(object, dfbase = dfbase, family = family,
                      control = control, weights = weights)
 
-    RET <- list(ensemble = ens,         ### selected variables 
+    RET <- list(ensemble = ens,         ### selected base learner
                 ensembless = ensss,	### list of baselearners
                 fit = fit,              ### vector of fitted values
                 offset = offset,        ### offset
@@ -189,7 +189,7 @@ gamboost.formula <- function(formula, data = list(), weights = NULL,
                              na.action = na.omit, ...) {
 
     ### construct design matrix etc.
-    object <- boost_dpp(formula, data, weights, na.action)
+    object <- boost_dpp(formula, data, weights, na.action, designMatrix = FALSE)
 
     ### fit the ensemble
     object$input <- object$menv@get("input")

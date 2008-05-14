@@ -155,3 +155,14 @@ A2
 newdata <- ovarian[c(1,3,12),]
 A2 <- survFit(fit2, newdata = newdata)
 A2
+
+### gamboost with explicit intercept
+df <- data.frame(x = 1:100, y = rnorm(1:100), int = rep(1, 100))
+mod <- gamboost(y ~ bols(int, center = TRUE) + bols(x, center = TRUE), data = df, 
+                control = boost_control(mstop = 2500))
+cf <- unlist(coef(mod))
+cf[1] <- cf[1] + mod$offset
+tmp <- max(abs(cf - coef(lm(y ~ x, data = df))))
+stopifnot(tmp < 1e-5)
+tmp <- max(abs(fitted(mod) - fitted(lm(y ~ x, data = df))))
+stopifnot(tmp < 1e-5)

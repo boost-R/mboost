@@ -22,7 +22,9 @@ boost_dpp <- function(formula, data, weights = NULL, na.action = na.omit, ...) {
     if (length(y) != 1)
         stop("cannot deal with multivariate response variables")
     y <- y[[1]]
-    x <- env@get("designMatrix")
+    x <- NA
+    if (has(env, "designMatrix"))
+        x <- env@get("designMatrix")
 
     if (is.factor(y)) {
         if (nlevels(y) != 2)

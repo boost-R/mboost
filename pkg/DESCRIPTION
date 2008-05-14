@@ -2,8 +2,7 @@ Package: mboost
 Title: Model-Based Boosting
 Date: $Date: 2007/07/08 15:52:23 $
 Version: 1.0-2
-Author: Torsten Hothorn and Peter Buhlmann with
-  contributions by Thomas Kneib and Matthias Schmid
+Author: Torsten Hothorn, Peter Buhlmann, Thomas Kneib and Matthias Schmid
 Maintainer: Torsten Hothorn <Torsten.Hothorn@R-project.org>
 Description: Functional gradient descent algorithms 
   (boosting) for optimizing general loss functions utilizing 

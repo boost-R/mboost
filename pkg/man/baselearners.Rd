@@ -12,7 +12,7 @@
 }
 \usage{
 
-bols(x, z = NULL, xname = NULL, zname = NULL)
+bols(x, z = NULL, xname = NULL, zname = NULL, center = FALSE, df = NULL)
 bbs(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2, 
     center = FALSE, xname = NULL, zname = NULL)
 bns(x, z = NULL, df = 4, knots = NULL, differences = 2, 
@@ -56,10 +56,11 @@ btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
   \item{degree}{ degree of the regression spline.}
   \item{differences}{ natural number between 1 and 3. If \code{differences} =
                      \emph{k}, \emph{k}-th-order differences are used as a penalty.}
-  \item{center}{ If \code{center=TRUE}, the corresponding effect is
+  \item{center}{ If \code{center=TRUE} in \code{bbs}, the corresponding effect is
                 re-parameterized such that the unpenalized part of the fit is substracted and
                 only the deviation effect is fitted. The unpenalized, parametric part has then
-               to be included in separate base learners using \code{bols} (see the examples below).}
+               to be included in separate base learners using \code{bols} (see the examples below).
+               When used in \code{bols}, the intercept in the linear model is omitted.}
   \item{tree_controls}{ an object of class \code{\link[party]{TreeControl}}, which can be
                   obtained using \code{\link[party]{ctree_control}}. 
                   Defines hyper-parameters for the trees which are used as base learners,
@@ -74,6 +75,12 @@ btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
   In combination with option \code{z}, all base learners can be turned into varying 
   coefficient terms.
 
+  Linear base learners can be set-up using \code{bols}. The function
+  can deal with both numeric and factor variables \code{x}. 
+  By default, an intercept term is added to the corresponding design matrix
+  (which can be omitted using \code{center = TRUE}). When \code{df} is
+  given, a Ridge-estimator with \code{df} degrees of freedom (trace of hat matrix) 
+  is used as base learner.
 
   With \code{bbs}, the P-spline approach of Eilers and Marx (1996) is used. 
   \code{bns} uses the same penalty and interior knots as \code{bbs}, 
@@ -125,6 +132,11 @@ btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
   equation. More details on centering can be found in Kneib, Hothorn and Tutz
   (2007) and Fahrmeir, Kneib and Lang (2004).  
 
+  By default, all base learners include an intercept term (which can only
+  be removed using \code{center = TRUE} for \code{bols}, \code{bbs} and \code{bspatial}).
+  In this case, an explicit global intercept term should be added to 
+  \code{gamboost} via \code{bols} (see example below).
+
   \code{btree} fits a stump to one or two variables. Note that 
   \code{\link{blackboost}} is more efficient for boosting stumps.
 
@@ -155,6 +167,7 @@ btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
 x1 <- rnorm(100)
 x2 <- rnorm(100) + 0.25*x1
 x3 <- as.factor(sample(0:1, 100, replace = TRUE))
+x4 <- gl(4, 25)
 y <- 3*sin(x1) + x2^2 + rnorm(100)
 
 knots.x2 <- quantile(x2, c(0.25,0.5,0.75))
@@ -167,6 +180,9 @@ olsfit <- bols(x3)
 attributes(olsfit)
 
 form1 <- y ~ bbs(x1,knots=20,df=4) + bns(x2,knots=knots.x2,df=5)
+
+# example for factors
+attributes(bols(x4))
 
 # example for bspatial
 
@@ -196,6 +212,17 @@ attributes(raneff)
 z <- runif(50)
 raneff <- brandom(id, z=z)
 attributes(raneff)
+
+# remove intercept from base learner
+# and add explicit intercept to the model
+
+tmpdata <- data.frame(x = 1:100, y = rnorm(1:100), int = rep(1, 100))
+mod <- gamboost(y ~ bols(int, center = TRUE) + bols(x, center = TRUE), data = tmpdata,
+                control = boost_control(mstop = 2500))
+cf <- unlist(coef(mod))
+cf[1] <- cf[1] + mod$offset
+cf
+coef(lm(y ~ x, data = tmpdata))
 
 }
 \keyword{models}
