@@ -107,6 +107,7 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"),
     for (i in 1:length(x))
         fitfct[[i]] <- attr(x[[i]], "dpp")(weights)
 
+    #browser()
     ### start boosting iteration
     for (m in 1:mstop) {
   
@@ -115,7 +116,7 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns"),
             tsums[i] <- -1
             ss[[i]] <- try(fitfct[[i]]$fit(y = u))
             if (inherits(ss[[i]], "try-error")) next
-            tsums[i] <- mean(weights * (fitted(ss[[i]]) - u)^2, na.rm = TRUE)
+            tsums[i] <- mean(weights * (fitted(ss[[i]]) - u)^2, na.rm = TRUE)            
         }
 
         if (all(tsums < 0)) 

@@ -340,6 +340,23 @@ LogNormal <- function()
            sigmaTF=TRUE )
            
 
+Hurdle <- function()
+    Family(ngradient = function(sigma=1, y, f, w = 1)
+               y/(1+exp(f)) - 1/(sigma*(1+exp(-f))) -
+               exp(f)/(sigma*((1+exp(f))^{1/sigma}-1)*(1+exp(f))),
+           loss = plloss <- function(sigma=1, y, f, w=1)
+               - y*log(exp(f)/(1+exp(f))) + log(1+exp(f)) / sigma -
+               log(gamma(y+1/sigma)) + log(gamma(1/sigma)) +
+               log(1 - (1+exp(f))^{-1/sigma}),
+           risk = function(sigma=1, y, f, w = 1) sum(w * plloss(y=y,
+               f=f, sigma=sigma)),
+           check_y = function(y) TRUE,
+           offset = function(y, w=NULL) {
+               return(3)
+           },
+           name = "Hurdle Likelihood",
+           sigmaTF=T) 
+           
 NBinomial <- function()
     Family(ngradient = function(sigma=1, y, f, w = 1)
                y - (y+sigma)/(exp(f)+sigma)*exp(f),
@@ -355,3 +372,65 @@ NBinomial <- function()
            },
            name = "Negative Negative Binomial Likelihood",
            sigmaTF=T)
+           
+ZeroInfNull <- function(off, g, theta)
+    Family(ngradient = function(sigma=1, y, f, w = 1)
+               - exp(f) / (1+exp(f)) + (y==0) *
+               exp(f) / ( exp(f) + ( (exp(g)+theta)/theta )^{-theta}),
+           loss = plloss <- function(sigma=1, y, f, w=1)
+               log(1+exp(f)) - (y==0) * log( exp(f) + ( (exp(g)+theta)/
+               theta)^{-theta} ) +
+               (y>0)* ( theta* log( (exp(g)+theta)/theta) + y*
+               log( 1+exp(-g)*theta) ) + (y>0) * ( log(gamma(theta)) +
+               log(gamma(1+y)) - log(gamma(theta+y)) ),
+           risk = function(sigma=1, y, f, w = 1) sum(w * plloss(y=y,
+               f=f, sigma=sigma)),
+           check_y = function(y) TRUE,
+           offset = function(y, w=NULL) {
+               off
+           },
+           name = "Zero-inflated NegBin Likelihood, null part",
+           sigmaTF=F) 
+           
+ZeroInfCount <- function(off, g, theta)
+    Family(ngradient = function(sigma=1, y, f, w = 1)
+               - (y==0) * exp(f) * ( (exp(f)+theta)/theta )^{-theta-1} /
+               ( exp(g) + ( (exp(f)+theta)/theta )^{-theta} ) -
+               (y>0) * theta * ( exp(f)/(theta+exp(f)) - y* exp(-f)/
+               (1+theta*exp(-f)) ),
+           loss = plloss <- function(sigma=1, y, f, w=1)
+               log(1+exp(g)) - (y==0) * log( exp(g) + ( (exp(f)+theta)/
+               theta)^{-theta} ) +
+               (y>0)* ( theta*log( (exp(f)+theta)/theta) + y*
+               log( 1+exp(-f)*theta) ) + (y>0) * ( log(gamma(theta)) +
+               log(gamma(1+y)) - log(gamma(theta+y)) ),
+           risk = function(sigma=1, y, f, w = 1) sum(w * plloss(y=y,
+               f=f, sigma=sigma)),
+           check_y = function(y) TRUE,
+           offset = function(y, w=NULL) {
+               off
+           },
+           name = "Zero-inflated NegBin Likelihood, count part",
+           sigmaTF=F) 
+           
+ZeroInfTheta <- function(off, ff, g)
+    Family(ngradient = function(sigma=1, y, f, w = 1)
+               (y==0) * 1 / ( ((exp(ff)+f)/f)^f * exp(g) + 1 ) *
+               log( (exp(ff)+f)/f ) * exp(ff) / f^2 -
+               (y>0) * ( log((exp(ff)+f)/f) - exp(ff)/(exp(ff)+f) +
+               y * exp(-ff) / (1+exp(-ff)*f) ) -
+               (y>0) * (digamma(f)-digamma(y+f)),
+           loss = plloss <- function(sigma=1, y, f, w=1)
+               log(1+exp(g)) - (y==0) * log( exp(g) + ( (exp(ff)+f)/
+               f)^{-f} ) +
+               (y>0)* ( f*log( (exp(ff)+f)/f) + y*
+               log( 1+exp(-ff)*f) ) + (y>0) * ( log(gamma(f)) +
+               log(gamma(1+y)) - log(gamma(f+y)) ),
+           risk = function(sigma=1, y, f, w = 1) sum(w * plloss(y=y,
+               f=f, sigma=sigma)),
+           check_y = function(y) TRUE,
+           offset = function(y, w=NULL) {
+               off
+           },
+           name = "Zero-inflated NegBin Likelihood, theta part",
+           sigmaTF=F) 

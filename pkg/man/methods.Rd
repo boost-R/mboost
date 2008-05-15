@@ -14,8 +14,6 @@
 \alias{mstop.blackboost}
 \alias{fitted.gb}
 \alias{logLik.gb}
-\alias{survFit.gb}
-\alias{survFit.blackboost}
 \title{ Methods for Gradient Boosting Objects }
 \description{
   Methods for models fitted by boosting algorithms.
@@ -38,8 +36,6 @@
        allIterations = FALSE, ...)
 \method{fitted}{gb}(object, type = c("lp", "response"), ...)
 \method{logLik}{gb}(object, ...)
-\method{survFit}{gb}(object, newdata = NULL, ...)
-\method{survFit}{blackboost}(object, newdata = NULL, ...)
 }
 \arguments{
   \item{object}{ objects of class \code{glmboost}, \code{gamboost} or \code{gbAIC}. }

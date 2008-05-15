@@ -564,3 +564,67 @@ brandom <- function(x, z = NULL, df = 4, xname = NULL,
     attr(X, "dpp") <- dpp
     return(X)
 }
+
+
+bols.pen <- function(x, z = NULL, xname = NULL, zname = NULL,
+            df = 1) {
+
+    if (is.null(xname)) xname = deparse(substitute(x))
+    if (is.null(zname)) zname = deparse(substitute(z))
+
+    cc <- complete_cases(x = x, z = z)
+
+    newX <- function(x, z = NULL, na.rm = TRUE) {
+        if (na.rm) {
+            x <- x[cc]
+            if (!is.null(z))
+                z <- z[cc]
+        }
+        X <- model.matrix(~ x)
+        if (any(!cc) & !na.rm) {
+            Xtmp <- matrix(NA, ncol = ncol(X), nrow = length(cc))
+            Xtmp[cc,] <- X
+            X <- Xtmp
+        }
+        if (!is.null(z)) X <- X * z
+        X
+    }
+    X <- newX(x, z)
+    Xna <- X
+    if (any(!cc))
+        Xna <- newX(x, z, na.rm = FALSE)
+
+    K <- diag(ncol(X))
+
+    dpp <- function(weights) {
+
+        if (any(!cc)) weights <- weights[cc]
+        lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
+
+        Xw <- X * weights
+        XtX <- crossprod(Xw, X)
+        Xsolve <- tcrossprod(solve(XtX + lambda * K), Xw)
+
+        fitfun <- function(y) {
+
+            if (any(!cc)) y <- y[cc]
+            coef <- Xsolve %*% y
+
+            predictfun <- function(newdata = NULL) {
+                if (is.null(newdata)) return(Xna %*% coef)
+                nX <- newX(x = newdata[[xname]], z = newdata[[zname]],
+                           na.rm = FALSE)
+                nX %*% coef
+            }
+            ret <- list(model = coef, predict = predictfun,
+                        fitted = Xna %*% coef)
+            class(ret) <- c("basefit", "baselm")
+            ret
+        }
+        ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
+        class(ret) <- "basisdpp"
+        ret
+    }
+    attr(X, "dpp") <- dpp
+    return(X)
+}
