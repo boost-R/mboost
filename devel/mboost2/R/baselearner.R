@@ -41,7 +41,7 @@ npp <- function(data, index, setup = spDes, differences = 2, ...) {
 
     Xp <- poly(xu, degree = differences - 1)
     Xp <- lapply(1:ncol(Xp), function(i) {
-        ret <- Xp[,i]
+        ret <- Xp[,i , drop = FALSE]
         attr(ret, "index") <- index
         ret
     })
@@ -49,9 +49,11 @@ npp <- function(data, index, setup = spDes, differences = 2, ...) {
     Xone <- matrix(1, ncol = 1, nrow = 1)
 
     ret <- c(Xone, Xp, list(Xnp))
+    ret[[1]] <- as.matrix(ret[[1]])
     attr(ret[[1]], "index") <- rep.int(1, length(x))
-    names(ret) <- c("(Intercept)", paste("poly(", nam, ", ", 1:(length(ret) - 2), ")", sep = ""), 
-                                   paste("s(", nam, ")", sep = ""))
+    names(ret) <- c("(Intercept)", 
+        paste("poly(", nam, ", ", 1:(length(ret) - 2), ")", sep = ""), 
+        paste("s(", nam, ")", sep = ""))
     return(ret)
 }
 
@@ -68,7 +70,7 @@ prebase <- function(data, index, by = NULL, ...) {
 
      dmat <- vector(mode = "list", length = length(x))
      for (i in 1:length(x)) 
-         dmat[[i]] <- npp(data, i, ...)
+         dmat[[i]] <- npp(data, index[i], ...)
 
      ind <- vector(mode = "list", length = length(x))
      for (i in 1:length(x))
@@ -116,12 +118,15 @@ base2fit <- function(base, weights, df = 4) {
         if (is.null(index)) index <- 1:NROW(Xu)
         wu <- as.vector(tapply(weights, index, sum))
 
-        lambda <- mboost:::df2lambda(Xu, df = df, dmat = diag(ncol(Xu)), 
-                      weights = wu)
-
         Xw <- Xu * wu
         XtX <- crossprod(Xw, Xu)
-        Xsolve <- solve(XtX + lambda * diag(ncol(Xu)), t(Xu))
+        if (NCOL(Xu) > 1) {
+            lambda <- mboost:::df2lambda(Xu, df = df, dmat = diag(ncol(Xu)), 
+                          weights = wu)
+            Xsolve <- solve(XtX + lambda * diag(ncol(Xu)), t(Xu))
+        } else {
+            Xsolve <- solve(XtX, t(Xu))
+        }
 
         fit <- function(y) {
             yu <- tapply(y * weights, index, sum)
@@ -168,15 +173,43 @@ Tensor <- function(...) {
     ret
 }
 
-x <- rpois(200, lambda = 2)
-y <- rpois(200, lambda = 2)
-z <- runif(200)
-w <- rep(1, length(x))
+boost <- function(y, data, index, weights = NULL, mstop = 100, ...) {
 
-df <- data.frame(x = x, y = y, z = z)
+    if (is.null(weights)) weights <- rep(1, nrow(data))
 
-b <- prebase(df, 1:3, nknots = 10)
-f <- base2fit(b, w)
+    pb <- list()
+    if (is.list(index)) {
+        for (i in 1:length(index))
+            pb <- c(pb, prebase(data, index[[i]], ...))
+    } else {
+        pb <- prebase(data, index, ...)
+    }
 
+    bf <- base2fit(pb, weights)
 
+    offset <- mean(y)
+    f <- offset
+    u <- y - f
+
+    sel <- numeric(mstop)
+    for (m in 1:mstop) {
+
+       mse <- numeric(length(bf)) 
+       for (i in 1:length(bf)) {
+            beta <- bf[[i]](u)
+            uhat <- pb[[i]] %*% beta
+            mse[i] <- sum((uhat[attr(pb[[i]], "index")] - u)^2)
+       }
+       istar <- sel[m] <- which.min(mse)
+
+       f <- f + 0.1 * (pb[[istar]] %*% bf[[istar]](u))[attr(pb[[istar]], "index")]
+
+       u <- y - f
+    }
+    list(fhat = f, sel = names(pb)[sel])
+}
+
+data("bodyfat", package = "mboost")
+y <- bodyfat$DEXfat
+b <- boost(y, bodyfat, list(1, 3:4, 5, 6))
 
