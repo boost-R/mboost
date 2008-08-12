@@ -16,6 +16,7 @@ spDes <- function(x, nknots = 20, degree = 3) {
                  to = max(x, na.rm = TRUE) + offset + degree * diffs,
                  by = diffs)
 
+    rm(x)
     design <- function(x)
         splineDesign(knots, x, ord = degree + 1, outer.ok = TRUE) 
 
@@ -92,6 +93,8 @@ prebase <- function(data, index, by = NULL, ...) {
          baseX <- do_by(baseX, data, by)
      return(baseX)
 }
+
+pls <- function(data, index, b
 
 do_by <- function(base, data, by) {
 
