@@ -1,6 +1,41 @@
 
 library("splines")
 
+tensor <- function(x, y) {
+
+    xi <- attr(x, "index")
+    yi <- attr(y, "index")
+    if (is.null(xi)) xi <- 1:NROW(x)
+    if (is.null(yi)) yi <- 1:NROW(y)
+    stopifnot(length(xi) == length(yi))
+
+    xiyi <- paste(xi, yi, sep = "_")
+    d <- !duplicated(xiyi)
+    zi <- match(xiyi, xiyi[d])
+
+    if (!is.matrix(x)) x <- matrix(x, ncol = 1)
+    if (!is.matrix(y)) y <- matrix(y, ncol = 1)
+
+    X <- x[xi[d],,drop = FALSE] 
+    Y <- y[yi[d],,drop = FALSE]
+    ret <- NULL
+    for (j in 1:ncol(y))
+        ret <- cbind(ret, X * Y[, j])
+    attr(ret, "index") <- zi   
+    return(ret)
+}
+
+Tensor <- function(...) {
+
+    X <- list(...)[[1]]  
+    if (length(X) == 1) 
+        return(X[[1]])
+    ret <- X[[1]]
+    for (i in 2:length(X))
+        ret <- tensor(ret, X[[i]])
+    ret
+}
+
 get_var <- function(data, varid, classes = c("numeric", "factor")) {
 
     stopifnot(length(varid) == 1 && varid %in% 1:ncol(data))
@@ -38,7 +73,11 @@ polyDes <- function(data, varid, degree = 1) {
     if (degree > 0)
         X <- poly(x, degree = degree)
     function(data) {
-        if (degree == 0) return(matrix(1, nrow = nrow(data)))
+        if (degree == 0) {
+            ret <- matrix(1, nrow = 1, ncol = 1)
+            attr(ret, "index") <- rep(1, nrow(data))
+            return(ret)
+        }
         x <- get_var(data, varid)
         ret <- predict(X, newdata = x)[, degree, drop = FALSE]
         attr(ret, "index") <- attr(x, "index")
@@ -131,7 +170,46 @@ mm2fit <- function(mm, weights, df = 4) {
     ret
 }
 
-tm <- Terms(iris, 1:2)
-mm <- model.matrix(tm, iris)
-w <- rep(1, nrow(iris))
-fit <- mm2fit(mm, w, df = 3)
+mult <- function(x, y) {
+
+    xi <- attr(x, "index")
+    if (is.null(xi)) xi <- 1:NROW(x)
+    
+    (x %*% y)[xi]
+}
+
+boost <- function(y, mm, weights = NULL, mstop = 100, ...) {
+
+    if (is.null(weights)) weights <- rep(1, length(y))
+    bf <- mm2fit(mm, weights, ...)
+
+    offset <- mean(y)
+    f <- offset
+    u <- y - f  
+
+    sel <- numeric(mstop)
+    for (m in 1:mstop) {
+
+       mse <- numeric(length(bf)) 
+       for (i in 1:length(bf)) {
+            beta <- bf[[i]](u)
+            uhat <- mult(mm[[i]], beta)
+            mse[i] <- sum((uhat - u)^2)
+       }
+       istar <- sel[m] <- which.min(mse)
+
+       f <- f + 0.1 * mult(mm[[istar]], bf[[istar]](u))
+
+       u <- y - f
+    }
+    list(fhat = f, sel = names(mm)[sel])
+}
+
+data("bodyfat", package = "mboost")
+y <- bodyfat$DEXfat
+inputs <- which(colnames(bodyfat) != "DEXfat")
+tm <- lapply(inputs, Terms, data = bodyfat)
+names(tm) <- colnames(bodyfat)[inputs]
+tm <- unlist(tm)
+class(tm) <- "Terms"
+b <- boost(y, model.matrix(tm, bodyfat), df = 4)
