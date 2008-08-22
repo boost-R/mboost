@@ -160,6 +160,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
 glmboost <- function(x, ...) UseMethod("glmboost")
 
 ### formula interface
+### FIXME: is na.pass correct here? fails with centering
 glmboost.formula <- function(formula, data = list(), weights = NULL, 
                              contrasts.arg = NULL, na.action = na.pass, ...) {
 
