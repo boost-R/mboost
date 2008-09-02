@@ -102,6 +102,9 @@ PSpline <- function(data, varid, differences = 2, ...) {
 }
 class(PSpline) <- "design_generator"
 
+### koennen wir auch baselearner haben, die aus
+### interactions und haupteffekten bestehen (so dass immer
+### die Haupteffekte mit ausgewaehlt werden) -> GT?
 Terms <- function(data, varids, FUN = PSpline,  ...) {
 
     stopifnot(inherits(FUN, "design_generator"))
