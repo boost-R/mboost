@@ -2,12 +2,12 @@
 import(modeltools)
 import(party)
 
-export(glmboost, glmboost_fit,
+export(glmboost, glmboost2, glmboost_fit, glmboost2_fit,
        gamboost, gamboost_fit,
        blackboost, blackboost_fit,
        boost_control, mstop, Family,
        GaussReg, GaussClass, Laplace, Binomial, Poisson,
-       ZeroInfCount, ZeroInfNull, Hurdle, Huber, AdaExp, CoxPH,
+       ZeroInfCount, ZeroInfNull, ZeroInfTheta, Hurdle, Huber, AdaExp, CoxPH,
        Weib, Loglog, LogNormal, boost_dpp, FP, IPCweights, cvrisk,
        bbs, bss, bns, bols, bols.pen, bspatial, brandom)
 exportClasses("boost_family")
@@ -17,6 +17,8 @@ S3method(print, glmboost)
 S3method(plot, glmboost)
 S3method(glmboost, formula)
 S3method(glmboost, matrix)
+S3method(glmboost2, formula)
+S3method(glmboost2, matrix)
 S3method(gamboost, formula)
 S3method(gamboost, matrix)
 S3method(blackboost, formula)
