@@ -13,16 +13,16 @@
 \usage{
 
 bols(x, z = NULL, xname = NULL, zname = NULL, center = FALSE, df = NULL)
-bbs(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2, 
+bbs(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2,
     center = FALSE, xname = NULL, zname = NULL)
-bns(x, z = NULL, df = 4, knots = NULL, differences = 2, 
+bns(x, z = NULL, df = 4, knots = NULL, differences = 2,
     xname = NULL, zname = NULL)
 bss(x, df = 4, xname = NULL)
 bspatial(x, y, z = NULL, df = 5, xknots = NULL, yknots = NULL,
          degree = 3, differences = 2, center = FALSE, xname = NULL,
          yname = NULL, zname = NULL)
 brandom(x, z = NULL, df = 4, xname = NULL, zname = NULL)
-btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE, 
+btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
       mincriterion = 0), xname = NULL, zname = NULL)
 }
 \arguments{
@@ -35,20 +35,20 @@ btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
                 data values are given by the vector \code{y}.}
   \item{zname}{ an optional string indicating the name of the variable whose
                 data values are given by the vector \code{z}.}
-  \item{df}{ trace of the hat matrix for the base learner defining the base learner 
-             complexity. Low values of \code{df} correspond to a large amount of smoothing and 
-             thus to "weaker" base learners. Certain restrictions have to be kept for the 
-             specification of \code{df} since most of the base learners rely on penalisation 
-             approaches with a non-trivial null space. For example, for p-splines fitted with 
+  \item{df}{ trace of the hat matrix for the base learner defining the base learner
+             complexity. Low values of \code{df} correspond to a large amount of smoothing and
+             thus to "weaker" base learners. Certain restrictions have to be kept for the
+             specification of \code{df} since most of the base learners rely on penalisation
+             approaches with a non-trivial null space. For example, for p-splines fitted with
              \code{bbs}, \code{df} has to be larger than the order of differences employed in
-             the construction of the penalty term. However, when option \code{center=TRUE}, 
+             the construction of the penalty term. However, when option \code{center=TRUE},
              the effect is centered around its unpenalized part and therefore any positive number
              is admissible for \code{df}.}
   \item{knots}{ either the number of (equidistant) interior knots to be used for
                 the regression spline fit or a vector including the positions of the interior
                 knots. If \code{knots=NULL}, the interior knots are chosen to be equidistant,
-                where the number of interior knots is defined in the same way as in
-                \code{smooth.spline}.}
+                where the number of interior knots is defined to be
+		          equal to min(\code{length(x)}, 40).}
   \item{xknots}{ knots in \code{x}-direction when fitting a bivariate surface
                  with \code{bspatial}. See \code{knots} for details.}
   \item{yknots}{ knots in \code{y}-direction when fitting a bivariate surface
@@ -62,61 +62,63 @@ btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
                to be included in separate base learners using \code{bols} (see the examples below).
                When used in \code{bols}, the intercept in the linear model is omitted.}
   \item{tree_controls}{ an object of class \code{\link[party]{TreeControl}}, which can be
-                  obtained using \code{\link[party]{ctree_control}}. 
+                  obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base learners,
                   stumps are fitted by default.}
 }
 \details{
 
   \code{bols} refers to linear base learners (ordinary least squares fit), while
-  \code{bbs}, \code{bns}, and \code{bss} refer to penalized regression splines, 
-  penalized natural splines, and smoothing splines, respectively. \code{bspatial} 
+  \code{bbs}, \code{bns}, and \code{bss} refer to penalized regression splines,
+  penalized natural splines, and smoothing splines, respectively. \code{bspatial}
   fits bivariate surfaces and \code{brandom} defines random effects base learners.
-  In combination with option \code{z}, all base learners can be turned into varying 
+  In combination with option \code{z}, all base learners can be turned into varying
   coefficient terms.
 
   Linear base learners can be set-up using \code{bols}. The function
-  can deal with both numeric and factor variables \code{x}. 
+  can deal with both numeric and factor variables \code{x}.
   By default, an intercept term is added to the corresponding design matrix
   (which can be omitted using \code{center = TRUE}). When \code{df} is
-  given, a Ridge-estimator with \code{df} degrees of freedom (trace of hat matrix) 
+  given, a Ridge-estimator with \code{df} degrees of freedom (trace of hat matrix)
   is used as base learner.
 
-  With \code{bbs}, the P-spline approach of Eilers and Marx (1996) is used. 
-  \code{bns} uses the same penalty and interior knots as \code{bbs}, 
+  With \code{bbs}, the P-spline approach of Eilers and Marx (1996) is used.
+  \code{bns} uses the same penalty and interior knots as \code{bbs},
   but operates with a constrained natural spline basis instead of an
   unconstrained B-spline basis. P-splines use a squared \emph{k}-th-order difference
   penalty which can be interpreted as an approximation of the integrated squared
   \emph{k}-th derivative of the spline. This approximation is only valid
   if the knots are equidistant, so is not recommended to use non-equidistant
   knots for \code{bbs} and \code{bns}. \code{bss} refers to a smoothing spline
-  based on the \code{smooth.spline} function. 
+  based on the \code{smooth.spline} function.
 
   \code{bspatial} implements bivariate tensor product P-splines for the estimation
   of either spatial effects (if \code{x} and \code{y} correspond to coordinates)
   or interaction surfaces. The penalty term is constructed based on bivariate extensions
-  of the univariate penalties in \code{x} and \code{y} directions, see Kneib, Hothorn 
-  and Tutz (2007) for details.
+  of the univariate penalties in \code{x} and \code{y} directions, see Kneib, Hothorn
+  and Tutz (2007) for details. Note that the dimensions of the penalty matrix
+  increase (quickly) with the number of \code{xknots} and \code{yknots}
+  with strong impact on computational time. Thus, both should not be choosen to large.
 
-  \code{brandom} specifies a random effects base learner based on a factor variable 
+  \code{brandom} specifies a random effects base learner based on a factor variable
   \code{x} that defines the grouping structure of the data set. For each level of
-  \code{x}, a separate random intercept is fitted, where the random effects variance is 
+  \code{x}, a separate random intercept is fitted, where the random effects variance is
   governed by the specification of the degrees of freedom \code{df}.
 
   For all base learners except \code{bols}, the amount of smoothing is
-  determined by the trace of the hat matrix, as indicated by \code{df}. If \code{z} 
+  determined by the trace of the hat matrix, as indicated by \code{df}. If \code{z}
   is specified as an additional argument, a varying coefficients term is estimated,
   where \code{z} is the interaction variable and the effect modifier is given by
   either \code{x} or \code{x} and \code{y}. If only \code{x} is specified and one of the
   nonparametric base learners \code{bbs}, \code{bns} or \code{bss} is used, this
   corresponds to the classical situation of varying coefficients, where the
-  effect of \code{z} varies over the domain of \code{x}. In case of \code{bspatial} as 
+  effect of \code{z} varies over the domain of \code{x}. In case of \code{bspatial} as
   base learner, the effect of \code{z} varies with respect to both
   \code{x} and \code{y}, i.e. an interaction surface between \code{x} and
-  \code{y} is specified as effect modifier. For \code{brandom} specification of \code{z} 
+  \code{y} is specified as effect modifier. For \code{brandom} specification of \code{z}
   leads to the estimation of random slopes for covariate \code{z} with grouping structure
   defined by factor \code{x} instead of a simple random intercept.
-  
+
   For \code{bbs} and \code{bspatial}, option \code{center} requests that the
   fitted effect is centered around its parametric, unpenalized part. For
   example, with second order difference penalty, a linear effect of \code{x}
@@ -130,14 +132,14 @@ btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
   \code{y} (\code{bols(y)}), and their interaction (\code{bols(x*y)}) are
   substracted from the effect and have to be added seperately to the model
   equation. More details on centering can be found in Kneib, Hothorn and Tutz
-  (2007) and Fahrmeir, Kneib and Lang (2004).  
+  (2007) and Fahrmeir, Kneib and Lang (2004).
 
   By default, all base learners include an intercept term (which can only
   be removed using \code{center = TRUE} for \code{bols}, \code{bbs} and \code{bspatial}).
-  In this case, an explicit global intercept term should be added to 
+  In this case, an explicit global intercept term should be added to
   \code{gamboost} via \code{bols} (see example below).
 
-  \code{btree} fits a stump to one or two variables. Note that 
+  \code{btree} fits a stump to one or two variables. Note that
   \code{\link{blackboost}} is more efficient for boosting stumps.
 
 }
@@ -145,7 +147,7 @@ btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
  Either a matrix (in case of an ordinary least squares fit) or an object of
  class \code{basis} (in case of a regression or smoothing spline fit) with a
  \code{dpp} function as an additional attribute. The call of \code{dpp} returns
- an object of class \code{basisdpp}.                 
+ an object of class \code{basisdpp}.
 }
 \references{
 
@@ -157,7 +159,7 @@ btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
   \emph{Statistica Sinica}, \bold{14}, 731-761.
 
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2007), Variable selection and
-  model choice in geoadditive regression models. 
+  model choice in geoadditive regression models.
   Technical Report No. 3, Institut fuer Statistik, LMU Muenchen.
   \url{http://epub.ub.uni-muenchen.de/2063/}
 
@@ -198,7 +200,7 @@ form2 <- y ~ bspatial(x1, x2, xknots=12, yknots=12)
 
 # decompose spatial effect into parametric part and deviation with 1 df
 
-form2 <- y ~ bols(x1) + bols(x2) + bols(x1*x2) + 
+form2 <- y ~ bols(x1) + bols(x2) + bols(x1*x2) +
              bspatial(x1, x2, xknots=12, yknots=12, center = TRUE, df=1)
 
 # random intercept
