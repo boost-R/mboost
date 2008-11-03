@@ -391,11 +391,6 @@ smoothbase <- function(x, ux, y, w, df) {
     fit.object <- list(knot = knot, nk = nk, min = ux[1], range = r.ux,
 		       coef = fit$coef)
     class(fit.object) <- "smooth.spline.fit"
-    if (length(ux) == length(x)) {
-        fit.object$yfit <- fit$ty[rank(x)]
-    } else {
-        fit.object$yfit <- predict(fit.object, x = x)$y
-    }
     fit.object
 }
 

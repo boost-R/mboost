@@ -134,7 +134,7 @@ bbs <- function(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2,
                 nX <- newX(x = newdata[[xname]], z = newdata[[zname]], na.rm = FALSE)
                 nX %*% coef
             }
-            ret <- list(model = coef, predict = predictfun, fitted = Xna %*% coef)
+            ret <- list(model = coef, predict = predictfun, fitted = function() Xna %*% coef)
             class(ret) <- c("basefit", "baselm")
             ret
         }
@@ -150,7 +150,7 @@ predict.basefit <- function(object, newdata = NULL)
     object$predict(newdata)
 
 fitted.basefit <- function(object)
-    object$fitted
+    object$fitted()
 
 coef.baselm <- function(object)
     object$model
@@ -277,7 +277,7 @@ bns <- function(x, z = NULL, df = 4, knots = NULL, differences = 2,
                 nX <- newX(x = newdata[[xname]], z = newdata[[zname]])
                 nX %*% coef
             }
-            ret <- list(model = coef, predict = predictfun, fitted = X %*% coef)
+            ret <- list(model = coef, predict = predictfun, fitted = function() X %*% coef)
             class(ret) <- c("basefit", "baselm")
             ret
         }
@@ -304,12 +304,11 @@ bss <- function(x, df = 4, xname = NULL) {
             object <- smoothbase(x = xs, ux = ux, y = y, w = weights, df = df)
 
             predictfun <- function(newdata = NULL) {
-                if (is.null(newdata)) return(object$yfit)
+                if (is.null(newdata)) return(stats:::predict.smooth.spline.fit(object, x = xs)$y)
                 stats:::predict.smooth.spline.fit(object, x = newdata[[xname]])$y
             }
 
-            ret <- list(basemodel = object, predict = predictfun,
-                        fitted = object$yfit)
+            ret <- list(basemodel = object, predict = predictfun, fitted = predictfun)
             class(ret) <- "basefit"
             ret
         }
@@ -425,7 +424,7 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = NULL, yknots = NULL,
                 nX %*% coef
             }
             ret <- list(model = coef, predict = predictfun,
-                        fitted = X %*% coef)
+                        fitted = function() X %*% coef)
             class(ret) <- c("basefit", "baselm")
             ret
         }
@@ -496,7 +495,7 @@ bols <- function(x, z = NULL, xname = NULL, zname = NULL, center = FALSE,
                  nX %*% coef
              }
              ret <- list(model = coef, predict = predictfun,
-                         fitted = Xna %*% coef)
+                         fitted = function() Xna %*% coef)
              class(ret) <- c("basefit", "baselm")
              ret
          }
@@ -542,7 +541,7 @@ brandom <- function(x, z = NULL, df = 4, xname = NULL,
                 nX <- newX(x = newdata[[xname]], z = newdata[[zname]])
                 nX %*% coef
             }
-            ret <- list(model = coef, predict = predictfun, fitted = X %*% coef)
+            ret <- list(model = coef, predict = predictfun, fitted = function() X %*% coef)
             class(ret) <- c("basefit", "baselm")
             ret
         }
@@ -583,17 +582,18 @@ btree <- function(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
                  PACKAGE = "party")
             tree <- .Call("R_TreeGrow", object, weights, fitmem, tree_controls,
                           where, PACKAGE = "party")
-            wh <- .Call("R_get_nodeID", tree, object@inputs, 0.0, PACKAGE = "party")
-            fit <- unlist(.Call("R_getpredictions", tree, wh, PACKAGE = "party"))
 
             predictfun <- function(newdata = NULL) {
-                if (is.null(newdata)) return(fit)
+                if (is.null(newdata)) {
+                    wh <- .Call("R_get_nodeID", tree, object@inputs, 0.0, PACKAGE = "party")
+                    return(unlist(.Call("R_getpredictions", tree, wh, PACKAGE = "party")))
+                }
                 newinp <- party:::newinputs(object, newdata)
                 wh <- .Call("R_get_nodeID", tree, newinp, 0.0,
                         PACKAGE = "party")
                 unlist(.Call("R_getpredictions", tree, wh, PACKAGE = "party"))
             }
-            ret <- list(model = tree, predict = predictfun, fitted = fit)
+            ret <- list(model = tree, predict = predictfun, fitted = predictfun)
             class(ret) <- "basefit"
             ret
         }
