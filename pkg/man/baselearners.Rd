@@ -48,9 +48,7 @@ btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
              is admissible for \code{df}.}
   \item{knots}{ either the number of (equidistant) interior knots to be used for
                 the regression spline fit or a vector including the positions of the interior
-                knots. If \code{knots=NULL}, the interior knots are chosen to be equidistant,
-                where the number of interior knots is defined to be
-		          equal to min(\code{length(x)}, 40).}
+                knots. }
   \item{xknots}{ knots in \code{x}-direction when fitting a bivariate surface
                  with \code{bspatial}. See \code{knots} for details.}
   \item{yknots}{ knots in \code{y}-direction when fitting a bivariate surface
