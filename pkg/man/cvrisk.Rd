@@ -6,9 +6,7 @@
   for hyper-parameter selection.
 }
 \usage{
-cvrisk(object, folds,
-       grid = floor(seq(from = floor(mstop(object)/10),
-                       to = mstop(object), length = 10)))
+cvrisk(object, folds, grid = c(1:mstop(object)))
 }
 \arguments{
   \item{object}{ an object of class \code{gb}.}

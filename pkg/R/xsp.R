@@ -43,7 +43,7 @@ fitted.baselist <- function(object) {
 
 ### what happens to weights
 ### when calculating knots etc?
-bbs <- function(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2,
+bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
                 center = FALSE, xname = NULL, zname = NULL) {
 
     cc <- complete_cases(x = x, z = z)
@@ -54,6 +54,13 @@ bbs <- function(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2,
     if (is.factor(x) || (df <= 2 && !center))
         return(bols(x = x, z = z, xname = xname, zname = zname))
 
+    if (!is.numeric(z) && (is.factor(z) && length(unique(z)) != 2))
+        stop(sQuote("z"), " must be binary or numeric")
+
+    if(is.factor(z) && length(unique(z)) == 2)
+        ## FIXME is there a more elegant way to produce a binary with 0/1?
+        z <- as.numeric(z[, drop=T]) - 1
+
     if (!differences %in% 1:3)
         stop(sQuote("differences"), " are not in 1:3")
     if ((!center) && (df < differences))
@@ -63,23 +70,9 @@ bbs <- function(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2,
     if (length(unique(x)) < 6)
         stop(sQuote(xname), " has less than 6 unique values")
 
-    n.kn <- function(n) {
-        ## Number of inner knots if not user-specified
-        if(n < 40) n
-        else 40
-    }
-
-    if (is.null(knots)) {
-        n <- length(x)
-        nk <- n.kn(n)
-        knots <- seq(from = min(x, na.rm = TRUE),
-                     to = max(x, na.rm = TRUE), length = nk)
-        knots <- knots[2:(length(knots) - 1)]
-    } else {
-        if (length(unique(diff(knots))) > 1)
+    if (length(unique(diff(knots))) > 1)
             warning("non-equidistant ", sQuote("knots"),
                     " might be inappropriate")
-    }
 
     if (length(knots) == 1) {
         knots <- seq(from = min(x, na.rm = TRUE),
@@ -206,7 +199,7 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
     lambda
 }
 
-bns <- function(x, z = NULL, df = 4, knots = NULL, differences = 2,
+bns <- function(x, z = NULL, df = 4, knots = 20, differences = 2,
                 xname = NULL, zname = NULL) {
 
     if (is.null(xname)) xname <- deparse(substitute(x))
@@ -215,6 +208,13 @@ bns <- function(x, z = NULL, df = 4, knots = NULL, differences = 2,
     if (is.factor(x) || df <= 2)
         return(bols(x = x, z = z, xname = xname, zname = zname))
 
+    if (!is.numeric(z) && (is.factor(z) && length(unique(z)) != 2))
+        stop(sQuote("z"), " must be binary or numeric")
+
+    if(is.factor(z) && length(unique(z)) == 2)
+        ## FIXME is there a more elegant way to produce a binary with 0/1?
+        z <- as.numeric(z[, drop=T]) - 1
+
     if (!differences %in% 1:3)
         stop(sQuote("differences"), " are not in 1:3")
     if (df < differences)
@@ -222,25 +222,9 @@ bns <- function(x, z = NULL, df = 4, knots = NULL, differences = 2,
     if (length(unique(x)) < 6)
         stop(sQuote(xname), " has less than 6 unique values")
 
-
-    n.kn <- function(n) {
-        ## Number of inner knots if not user-specified
-        if(n < 40) n
-        else 40
-    }
-
-    if(is.null(knots)) {
-        n <- length(x)
-        nk <- n.kn(n)
-        knots <- seq(from = min(x, na.rm = TRUE),
-                     to = max(x, na.rm = TRUE), length = nk)
-        knots <- knots[2:(length(knots) - 1)]
-    } else {
-        if (length(unique(diff(knots))) > 1)
+    if (length(unique(diff(knots))) > 1)
             warning("non-equidistant ", sQuote("knots"),
                     " might be inappropriate")
-    }
-
 
     if (length(knots) == 1) {
         knots <- seq(from = min(x, na.rm = TRUE),
@@ -323,9 +307,18 @@ bss <- function(x, df = 4, xname = NULL) {
     return(x)
 }
 
-bspatial <- function(x, y, z = NULL, df = 5, xknots = NULL, yknots = NULL,
+bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
                      degree = 3, differences = 2, center = FALSE, xname = NULL,
                      yname = NULL, zname = NULL) {
+
+    if (!is.numeric(x) || !is.numeric(y))
+        stop(sQuote("x"), " and ", sQuote("y"), " must be numeric")
+    if (!is.numeric(z) && (is.factor(z) && length(unique(z)) != 2))
+        stop(sQuote("z"), " must be binary or numeric")
+
+    if(is.factor(z) && length(unique(z)) == 2)
+        ## FIXME is there a more elegant way to produce a binary with 0/1?
+        z <- as.numeric(z[, drop=T]) - 1
 
     if (is.null(xname)) xname = deparse(substitute(x))
     if (is.null(yname)) yname = deparse(substitute(y))
@@ -341,29 +334,12 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = NULL, yknots = NULL,
     if (length(unique(y)) < 6)
         stop(sQuote(yname), " has less than 6 unique values")
 
-
-    n.kn <- function(n) {
-        ## Number of inner knots if not user-specified
-        if(n < 40) n
-        else 40
-    }
-
-
-    if(is.null(xknots)) {
-        n <- length(x)
-        nk <- n.kn(n)
-        xknots <- seq(from = min(x, na.rm = TRUE),
-                     to = max(x, na.rm = TRUE), length = nk + 2)
-        xknots <- xknots[2:(length(xknots) - 1)]
-    }
-    if(is.null(yknots)) {
-        n <- length(y)
-        nk <- n.kn(n)
-        yknots <- seq(from = min(y, na.rm = TRUE),
-                     to = max(y, na.rm = TRUE), length = nk + 2)
-        yknots <- yknots[2:(length(yknots) - 1)]
-    }
-
+    if (length(unique(diff(xknots))) > 1)
+            warning("non-equidistant ", sQuote("xknots"),
+                    " might be inappropriate")
+    if (length(unique(diff(yknots))) > 1)
+            warning("non-equidistant ", sQuote("yknots"),
+                    " might be inappropriate")
 
     if (length(xknots) == 1) {
         xknots <- seq(from = min(x, na.rm = TRUE),
@@ -512,6 +488,13 @@ brandom <- function(x, z = NULL, df = 4, xname = NULL,
 
     if (is.null(xname)) xname = deparse(substitute(x))
     if (is.null(zname)) zname = deparse(substitute(z))
+
+    if (!is.numeric(z) && (is.factor(z) && length(unique(z)) != 2))
+        stop(sQuote("z"), " must be binary or numeric")
+
+    if(is.factor(z) && length(unique(z)) == 2)
+        ## FIXME is there a more elegant way to produce a binary with 0/1?
+        z <- as.numeric(z[, drop=T]) - 1
 
     newX <- function(x, z = NULL) {
         if (!is.factor(x)) stop(sQuote("x"), " is not a factor")

@@ -13,12 +13,12 @@
 \usage{
 
 bols(x, z = NULL, xname = NULL, zname = NULL, center = FALSE, df = NULL)
-bbs(x, z = NULL, df = 4, knots = NULL, degree = 3, differences = 2,
+bbs(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
     center = FALSE, xname = NULL, zname = NULL)
-bns(x, z = NULL, df = 4, knots = NULL, differences = 2,
+bns(x, z = NULL, df = 4, knots = 20, differences = 2,
     xname = NULL, zname = NULL)
 bss(x, df = 4, xname = NULL)
-bspatial(x, y, z = NULL, df = 5, xknots = NULL, yknots = NULL,
+bspatial(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
          degree = 3, differences = 2, center = FALSE, xname = NULL,
          yname = NULL, zname = NULL)
 brandom(x, z = NULL, df = 4, xname = NULL, zname = NULL)
@@ -27,8 +27,10 @@ btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
 }
 \arguments{
   \item{x}{ a vector containing data, either numeric or a factor. }
-  \item{y}{ a vector containing numeric data }
-  \item{z}{ an optional vector containing numeric data.}
+  \item{y}{ a vector containing numeric data. }
+  \item{z}{ an optional vector containing data. \code{z} can be numeric
+    in all cases. For \code{bols} it can also be a factor. For all other
+    baselearners \code{z} can be a binary (factor). }
   \item{xname}{ an optional string indicating the name of the variable whose
                 data values are given by the vector \code{x}.}
   \item{yname}{ an optional string indicating the name of the variable whose
@@ -88,7 +90,7 @@ btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
   unconstrained B-spline basis. P-splines use a squared \emph{k}-th-order difference
   penalty which can be interpreted as an approximation of the integrated squared
   \emph{k}-th derivative of the spline. This approximation is only valid
-  if the knots are equidistant, so is not recommended to use non-equidistant
+  if the knots are equidistant, so it is not recommended to use non-equidistant
   knots for \code{bbs} and \code{bns}. \code{bss} refers to a smoothing spline
   based on the \code{smooth.spline} function.
 

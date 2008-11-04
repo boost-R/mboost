@@ -4,9 +4,7 @@
 ## for boosting algorithms
 ##
 
-cvrisk <- function(object, folds,
-                   grid = floor(seq(from = floor(mstop(object)/10),
-                                    to = mstop(object), length = 10))) {
+cvrisk <- function(object, folds, grid = c(1:mstop(object))) {
 
     fitfct <- object$update
     oobrisk <- matrix(0, nrow = ncol(folds), ncol = length(grid))
@@ -30,7 +28,7 @@ cvrisk <- function(object, folds,
         model <- fitfct(object = data, control = control, weights = weights)
         ret <- model$risk[grid]
         rm("model")
-        print(gc(reset=TRUE))
+        gc(reset=TRUE)
         ret
     }
 
@@ -59,17 +57,14 @@ plot.cvrisk <- function(x, ylab = attr(x, "risk"), ylim = range(x),
 
     cm <- colMeans(x)
     plot(1:ncol(x), cm, ylab = ylab, ylim = ylim,
-         type = "n", lwd = 2, axes = FALSE,
+         type = "n", lwd = 2,
          xlab = "Number of boosting iterations",
          main = main, ...)
-    axis(1, at = 1:ncol(x), labels = colnames(x))
-    axis(2)
-    box()
     out <- apply(x, 1, function(y) lines(1:ncol(x),y, col = "lightgrey"))
     rm(out)
     ms <- which.min(cm)
     lines(c(ms, ms), c(min(c(0, ylim[1] * ifelse(ylim[1] < 0, 2, 0.5))), cm[ms]), lty = 2)
-    lines(1:ncol(x), cm, type = "b")
+    lines(1:ncol(x), cm, type = "l")
 }
 
 mstop.cvrisk <- function(object, ...)
