@@ -13,6 +13,9 @@ cvrisk <- function(object, folds,
     ctrl <- object$control
     ctrl$risk <- "oobag"
 
+    if (!is.null(object$data))
+        stop(sQuote("object"), " doesn't contain data")
+
     for (i in 1:ncol(folds)) {
         model <- fitfct(object = object$data, 
                         control = ctrl, 
