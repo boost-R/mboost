@@ -1,24 +1,24 @@
 
-### 
-### Experimental version of gradient boosting with conditional trees 
+###
+### Experimental version of gradient boosting with conditional trees
 ### as base learner
-### 
+###
 
 
 ### Fitting function
-blackboost_fit <- function(object, 
+blackboost_fit <- function(object,
                            tree_controls = ctree_control(teststat = "max",
                                testtype = "Teststatistic",
                                mincriterion = 0,
                                maxdepth = 2),
-                           fitmem = ctree_memory(object, TRUE), 
-                           family = GaussReg(), control = boost_control(), 
+                           fitmem = ctree_memory(object, TRUE),
+                           family = GaussReg(), control = boost_control(),
                            weights = NULL) {
 
     ### number of observations in the learning sample
     ### make sure this gets _copied_
     obj <- .Call("copymem",  object, package = "mboost")
-    y <- .Call("copymem", party:::get_variables(obj@responses)[[1]], 
+    y <- .Call("copymem", party:::get_variables(obj@responses)[[1]],
                package = "mboost")
     check_y_family(y, family)
     if (is.factor(y)) {
@@ -39,7 +39,7 @@ blackboost_fit <- function(object,
     tracestep <- options("width")$width / 2
 
     if (control$center)
-        warning("inputs are not centered in ", sQuote("blackboost"))
+        warning(sQuote("boost_control(center = TRUE)")," not implemented for ", sQuote("blackboost"), "; inputs are not centered")
 
     ### the ensemble, essentially a list of trees
     ens <- vector(mode = "list", length = mstop)
@@ -63,24 +63,24 @@ blackboost_fit <- function(object,
 
     ### start boosting iteration
     for (m in 1:mstop) {
-  
+
         ### fit tree to residuals
-        .Call("R_modify_response", as.double(u), obj@responses, 
+        .Call("R_modify_response", as.double(u), obj@responses,
               PACKAGE = "party")
         ens[[m]] <- .Call("R_TreeGrow", obj, weights, fitmem, tree_controls,
                           where, PACKAGE = "party")
 
-        ### check if first node is terminal, i.e., if at least 
+        ### check if first node is terminal, i.e., if at least
         ### one split was performed
         if (ens[[m]][[4]])
-            warning("could not split root node in iteration ", m, 
+            warning("could not split root node in iteration ", m,
                     ", with mincriterion ", sQuote("mincriterion"))
 
         ### update step
         if (risk == "oobag")
             where <- .Call("R_get_nodeID", ens[[m]], obj@inputs, 0.0,
                            PACKAGE = "party")
-        fit <- fit + nu * unlist(.Call("R_getpredictions", ens[[m]], where, 
+        fit <- fit + nu * unlist(.Call("R_getpredictions", ens[[m]], where,
                                        PACKAGE = "party"))
 
         ### L2 boost with constraints (binary classification)
@@ -96,7 +96,7 @@ blackboost_fit <- function(object,
         if (risk == "oobag") mrisk[m] <- riskfct(y, fit, oobweights)
 
         ### print status information
-        if (trace) 
+        if (trace)
             do_trace(m, risk = mrisk, step = tracestep, width = mstop)
     }
 
@@ -105,11 +105,11 @@ blackboost_fit <- function(object,
                        fitmem = fitmem, control = control, weights = weights)
 
     RET <- list(ensemble = ens, 	### list of trees
-                fit = fit,              ### vector of fitted values   
+                fit = fit,              ### vector of fitted values
                 offset = offset,        ### offset
                 ustart = ustart,        ### first negative gradients
                 risk = mrisk,           ### empirical risks for m = 1, ..., mstop
-                control = control,      ### control parameters   
+                control = control,      ### control parameters
                 family = family,        ### family object
                 response = y,           ### the response variable
                 weights = weights,      ### weights used for fitting
@@ -127,9 +127,9 @@ blackboost_fit <- function(object,
 
         p <- offset
         for (m in 1:mstop) {
-            wh <- .Call("R_get_nodeID", RET$ensemble[[m]], newinp, 0.0, 
+            wh <- .Call("R_get_nodeID", RET$ensemble[[m]], newinp, 0.0,
                         PACKAGE = "party")
-            p <- p + nu * unlist(.Call("R_getpredictions", 
+            p <- p + nu * unlist(.Call("R_getpredictions",
                  RET$ensemble[[m]], wh, PACKAGE = "party"))
         }
         if (constraint) p <- sign(p) * pmin(abs(p), 1)
@@ -141,7 +141,7 @@ blackboost_fit <- function(object,
 }
 
 ### methods: subset
-"[.blackboost" <- function(x, i, ...) { 
+"[.blackboost" <- function(x, i, ...) {
     mstop <- mstop(x)
     if (i == mstop) return(x)
     if (length(i) != 1)
@@ -156,13 +156,13 @@ blackboost_fit <- function(object,
 }
 
 ### methods: prediction
-predict.blackboost <- function(object, newdata = NULL, 
+predict.blackboost <- function(object, newdata = NULL,
                               type = c("lp", "response"), allIterations = FALSE, ...) {
     y <- party:::get_variables(object$data@responses)[[1]]
     type <- match.arg(type)
     if (allIterations) {
-        if (type != "lp") 
-            stop(sQuote("allIterations"), " only available for ", 
+        if (type != "lp")
+            stop(sQuote("allIterations"), " only available for ",
                  sQuote("type = \"lp\""))
         return(fastp(object, newdata))
     }

@@ -1,55 +1,68 @@
 
 ##
-## cross-validation (bootstrap, k-fold cv etc.) of empirical risk 
+## cross-validation (bootstrap, k-fold cv etc.) of empirical risk
 ## for boosting algorithms
 ##
 
-cvrisk <- function(object, folds, 
-                   grid = floor(seq(from = floor(mstop(object)/10), 
+cvrisk <- function(object, folds,
+                   grid = floor(seq(from = floor(mstop(object)/10),
                                     to = mstop(object), length = 10))) {
 
     fitfct <- object$update
     oobrisk <- matrix(0, nrow = ncol(folds), ncol = length(grid))
     ctrl <- object$control
     ctrl$risk <- "oobag"
+    ctrl$savedata <- FALSE
+    ctrl$saveensss <- FALSE
 
-    if (!is.null(object$data))
-        stop(sQuote("object"), " doesn't contain data")
+    if (is.null(object$data))
+        stop(sQuote("object"), " does not contain data. Estimate model with option ", sQuote("savedata = TRUE"))
 
-    for (i in 1:ncol(folds)) {
-        model <- fitfct(object = object$data, 
-                        control = ctrl, 
-                        weights = folds[,i])
-        oobrisk[i,] <- model$risk[grid]
+    fam_name <- object$family@name
+    call <- deparse(object$call)
+    data <- object$data
+
+    ## free memory
+    rm("object")
+    gc(reset=TRUE)
+
+    dummyfct <- function(weights, control, fct, data, grid){
+        model <- fitfct(object = data, control = control, weights = weights)
+        ret <- model$risk[grid]
+        rm("model")
+        print(gc(reset=TRUE))
+        ret
     }
 
-    oobrisk <- oobrisk / colSums(folds == 0)
+    oobrisk <- apply(folds, 2, dummyfct, control = ctrl, fct = fitfct, data = data, grid = grid)
+    oobrisk <- t(oobrisk)
+    oobrisk <- oobrisk/colSums(folds == 0)
     colnames(oobrisk) <- grid
     rownames(oobrisk) <- 1:nrow(oobrisk)
-    attr(oobrisk, "risk") <- object$family@name
-    attr(oobrisk, "call") <- deparse(object$call)
+    attr(oobrisk, "risk") <- fam_name
+    attr(oobrisk, "call") <- call
     attr(oobrisk, "mstop") <- grid
     class(oobrisk) <- "cvrisk"
     oobrisk
 }
 
 print.cvrisk <- function(x, ...) {
-    cat("\n\t Cross-validated", attr(x, "risk"), "\n\t", 
+    cat("\n\t Cross-validated", attr(x, "risk"), "\n\t",
               attr(x, "call"), "\n\n")
     print(colMeans(x))
     cat("\n\t Optimal number of boosting iterations:", mstop(x), "\n")
     return(invisible(x))
 }
 
-plot.cvrisk <- function(x, ylab = attr(x, "risk"), ylim = range(x), 
+plot.cvrisk <- function(x, ylab = attr(x, "risk"), ylim = range(x),
                         main = attr(x, "call"), ...) {
 
     cm <- colMeans(x)
-    plot(1:ncol(x), cm, ylab = ylab, ylim = ylim, 
-         type = "n", lwd = 2, axes = FALSE, 
+    plot(1:ncol(x), cm, ylab = ylab, ylim = ylim,
+         type = "n", lwd = 2, axes = FALSE,
          xlab = "Number of boosting iterations",
          main = main, ...)
-    axis(1, at = 1:ncol(x), labels = colnames(x))  
+    axis(1, at = 1:ncol(x), labels = colnames(x))
     axis(2)
     box()
     out <- apply(x, 1, function(y) lines(1:ncol(x),y, col = "lightgrey"))
