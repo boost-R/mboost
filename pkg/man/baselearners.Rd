@@ -12,7 +12,8 @@
 }
 \usage{
 
-bols(x, z = NULL, xname = NULL, zname = NULL, center = FALSE, df = NULL)
+bols(x, z = NULL, xname = NULL, zname = NULL, center = FALSE, 
+     df = NULL)
 bbs(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
     center = FALSE, xname = NULL, zname = NULL)
 bns(x, z = NULL, df = 4, knots = 20, differences = 2,
@@ -158,9 +159,8 @@ btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
   additive regression for space-time data: a Bayesian perspective.
   \emph{Statistica Sinica}, \bold{14}, 731-761.
 
-  Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2007), Variable selection and
-  model choice in geoadditive regression models.
-  Technical Report No. 3, Institut fuer Statistik, LMU Muenchen.
+  Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable selection and
+  model choice in geoadditive regression models, \emph{Biometrics}, accepted.
   \url{http://epub.ub.uni-muenchen.de/2063/}
 
 
@@ -219,8 +219,8 @@ attributes(raneff)
 # and add explicit intercept to the model
 
 tmpdata <- data.frame(x = 1:100, y = rnorm(1:100), int = rep(1, 100))
-mod <- gamboost(y ~ bols(int, center = TRUE) + bols(x, center = TRUE), data = tmpdata,
-                control = boost_control(mstop = 2500))
+mod <- gamboost(y ~ bols(int, center = TRUE) + bols(x, center = TRUE), 
+                data = tmpdata, control = boost_control(mstop = 2500))
 cf <- unlist(coef(mod))
 cf[1] <- cf[1] + mod$offset
 cf

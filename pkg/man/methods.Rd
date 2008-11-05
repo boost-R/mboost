@@ -95,12 +95,10 @@
 
   Peter Buhlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
-  \emph{Statistical Science}, accepted.
-  \url{http://www.imstat.org/sts/future_papers.html}
+  \emph{Statistical Science}, \bold{22}(4), 477--505.
 
   Travor Hastie (2007), Discussion of ``Boosting Algorithms: Regularization, Prediction and Model Fitting'' 
-  by Peter Buhlmann and Torsten Hothorn. \emph{Statistical Science}, accepted.
-  \url{http://www.imstat.org/sts/future_papers.html}
+  by Peter Buhlmann and Torsten Hothorn. \emph{Statistical Science}, \bold{22}(4), 505.
 
 }
 \examples{

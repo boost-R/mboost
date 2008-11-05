@@ -1,8 +1,9 @@
 Package: mboost
 Title: Model-Based Boosting
-Date: $Date: 2007/07/08 15:52:23 $
+Date: 2008-11-xx
 Version: 1.0-2
-Author: Torsten Hothorn, Peter Buhlmann, Thomas Kneib and Matthias Schmid
+Author: Torsten Hothorn, Peter Buhlmann, Thomas Kneib, Matthias Schmid and
+  Benjamin Hofner
 Maintainer: Torsten Hothorn <Torsten.Hothorn@R-project.org>
 Description: Functional gradient descent algorithms 
   (boosting) for optimizing general loss functions utilizing 
@@ -12,7 +13,7 @@ Description: Functional gradient descent algorithms
   high-dimensional data.
 Depends: R (>= 2.4.0), methods, modeltools (>= 0.2.10), party (>= 0.9-10),
   splines
-Suggests: mlbench, ipred, Biobase
+Suggests: mlbench, ipred
 LazyLoad: yes
 LazyData: yes
 License: GPL-2

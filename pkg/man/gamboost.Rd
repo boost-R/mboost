@@ -13,8 +13,8 @@
 \method{gamboost}{formula}(formula, data = list(), weights = NULL, 
         na.action = na.omit, ...)
 \method{gamboost}{matrix}(x, y, weights = NULL, ...)
-gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns", "btree"), 
-             dfbase = 4, family = GaussReg(), 
+gamboost_fit(object, baselearner = c("bss", "bbs", "bols", 
+             "bns", "btree"), dfbase = 4, family = GaussReg(), 
              control = boost_control(), weights = NULL)
 \method{plot}{gamboost}(x, which = NULL, ask = TRUE && dev.interactive(), 
     type = "b", ylab = expression(f[partial]), add_rug = TRUE, ...)
@@ -85,17 +85,16 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols", "bns", "btree"),
 
   Peter Buhlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
-  \emph{Statistical Science}, accepted.
-  \url{http://www.imstat.org/sts/future_papers.html}
+  \emph{Statistical Science}, \bold{22}(4), 477--505.
   
-  Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2007), Variable selection and
+  Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable selection and
   model choice in geoadditive regression models. 
-  Technical Report No. 3, Institut fuer Statistik, LMU Muenchen.
+  \emph{Biometrics}, accepted.
   \url{http://epub.ub.uni-muenchen.de/2063/}
 
-  Matthias Schmid and Torsten Hothorn (2007),
+  Matthias Schmid and Torsten Hothorn (2009),
   Boosting additive models using component-wise P-splines as
-  base-learners. Technical Report No. 2, Institut fuer Statistik, LMU Muenchen.
+  base-learners. \emph{Computational Statistics \& Data Analysis}, accepted.
   \url{http://epub.ub.uni-muenchen.de/2057/}
 
 }

@@ -1,6 +1,6 @@
 
-R version 2.6.0 (2007-10-03)
-Copyright (C) 2007 The R Foundation for Statistical Computing
+R version 2.8.0 (2008-10-20)
+Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -23,18 +23,18 @@ Loading required package: stats4
 Loading required package: party
 Loading required package: survival
 Loading required package: splines
-
-Attaching package: 'survival'
-
-
-	The following object(s) are masked from package:modeltools :
-
-	 cluster 
-
 Loading required package: grid
 Loading required package: coin
 Loading required package: mvtnorm
 Loading required package: zoo
+
+Attaching package: 'zoo'
+
+
+	The following object(s) are masked from package:base :
+
+	 as.Date.numeric 
+
 Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: vcd
@@ -202,6 +202,36 @@ attr(,"offset")
 + 
 +     stopifnot(all.equal(cx$loglik[2], logLik(gl)))
 + }
+> 
+> 
+> ## Cox model with predictions obtained from survFit function
+> 
+> fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps - 1
+> fit <- coxph(fm, data = ovarian)
+> fit2 <- glmboost(fm, data = ovarian, family = CoxPH(), 
++     control=boost_control(mstop = 1000, center = TRUE))
+> fit3 <- glmboost(fm, data = ovarian, family = CoxPH(), 
++     control=boost_control(mstop = 1000, center = FALSE))
+> 
+> A1 <- survfit(fit)
+> A2 <- survFit(fit2)
+> A3 <- survFit(fit3)
+> 
+> max(A1$surv-A2$surv)
+[1] 4.991776e-05
+> max(A1$surv-A3$surv)
+[1] 0.07803166
+> 
+> newdata <- ovarian[c(1,3,12),]
+> A1 <- survfit(fit, newdata = newdata)
+> A2 <- survFit(fit2, newdata = newdata)
+> A3 <- survFit(fit3, newdata = newdata)
+> 
+> max(A1$surv-A2$surv)
+[1] 8.23777e-05
+> max(A1$surv-A3$surv)
+[1] 0.1886635
+> 
 > 
 > ### check centering
 > y <- rnorm(20)

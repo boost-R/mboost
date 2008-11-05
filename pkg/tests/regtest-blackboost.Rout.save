@@ -1,6 +1,6 @@
 
-R version 2.6.0 (2007-10-03)
-Copyright (C) 2007 The R Foundation for Statistical Computing
+R version 2.8.0 (2008-10-20)
+Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -23,18 +23,18 @@ Loading required package: stats4
 Loading required package: party
 Loading required package: survival
 Loading required package: splines
-
-Attaching package: 'survival'
-
-
-	The following object(s) are masked from package:modeltools :
-
-	 cluster 
-
 Loading required package: grid
 Loading required package: coin
 Loading required package: mvtnorm
 Loading required package: zoo
+
+Attaching package: 'zoo'
+
+
+	The following object(s) are masked from package:base :
+
+	 as.Date.numeric 
+
 Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: vcd
@@ -78,7 +78,7 @@ Loading required package: colorspace
 +     stopifnot(ae < be)
 +     }
 + }
-[1] 2.579433
+[1] 2.620125
 Loading required package: gbm
 Loading required package: lattice
 Iter   TrainDeviance   ValidDeviance   StepSize   Improve
@@ -107,4 +107,66 @@ Iter   TrainDeviance   ValidDeviance   StepSize   Improve
 > p2 <- predict(blackboost(medv ~ ., data = BostonHousing, family = Laplace()),
 +               newdata = BostonHousing)
 > stopifnot(identical(abs(max(p1 - p2)), 0))
+> 
+> ## Cox model
+> 
+> fit2 <- blackboost(Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps, 
++     data = ovarian, family = CoxPH(), control = boost_control(mstop = 1000, 
++     center = TRUE))
+Warning message:
+In blackboost_fit(object, fitmem = fitmem, weights = weights, ...) :
+  ‘boost_control(center = TRUE)’ not implemented for ‘blackboost’; inputs are not centered
+> 
+> A2 <- survFit(fit2)
+> A2
+$surv
+           [,1]
+ [1,] 0.9830337
+ [2,] 0.9645019
+ [3,] 0.9440464
+ [4,] 0.9211641
+ [5,] 0.8951148
+ [6,] 0.8695054
+ [7,] 0.8395828
+ [8,] 0.8024113
+ [9,] 0.7637985
+[10,] 0.7225923
+[11,] 0.6156246
+[12,] 0.5008241
+
+$time
+ [1]  59 115 156 268 329 353 365 431 464 475 563 638
+
+$n.event
+ [1] 1 1 1 1 1 1 1 1 1 1 1 1
+
+attr(,"class")
+[1] "survFit"
+> 
+> newdata <- ovarian[c(1,3,12),]
+> A2 <- survFit(fit2, newdata = newdata)
+> A2
+$surv
+               1          3        12
+ [1,] 0.90405025 0.90405025 0.9930147
+ [2,] 0.80811010 0.80811010 0.9853030
+ [3,] 0.71218340 0.71218340 0.9766886
+ [4,] 0.61627635 0.61627635 0.9669206
+ [5,] 0.52039967 0.52039967 0.9556246
+ [6,] 0.43855622 0.43855622 0.9443286
+ [7,] 0.35675763 0.35675763 0.9308784
+ [8,] 0.27317710 0.27317710 0.9137695
+ [9,] 0.20426261 0.20426261 0.8954941
+[10,] 0.14730283 0.14730283 0.8753792
+[11,] 0.05728882 0.05728882 0.8197741
+[12,] 0.01697145 0.01697145 0.7533162
+
+$time
+ [1]  59 115 156 268 329 353 365 431 464 475 563 638
+
+$n.event
+ [1] 1 1 1 1 1 1 1 1 1 1 1 1
+
+attr(,"class")
+[1] "survFit"
 > 

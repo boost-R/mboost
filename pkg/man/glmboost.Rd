@@ -71,8 +71,7 @@ glmboost_fit(object, family = GaussReg(),
   
   Peter Buhlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
-  \emph{Statistical Science}, accepted.
-  \url{http://www.imstat.org/sts/future_papers.html}
+  \emph{Statistical Science}, \bold{22}(4), 477--505.
 
 }
 \examples{

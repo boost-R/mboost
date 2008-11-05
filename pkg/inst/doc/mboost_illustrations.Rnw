@@ -82,9 +82,6 @@
 This document reproduces the data analyses presented in
 \cite{BuhlmannHothorn06}. For a description of the theory behind
 applications shown here we refer to the original manuscript.
-Note: The \textit{Breast Cancer Subtypes} example is missing from this
-document because we cannot assume package \Rpackage{Biobase} to be
-installed.
 
 \SweaveOpts{prefix.string=figures/BH} 
 
@@ -347,6 +344,152 @@ out <- sapply(varorder, function(i) {
   functions to mean zero). \label{bodyfat-fpboost-plot}}
 \end{center}
 \end{figure}
+
+
+\SweaveOpts{prefix.string=figures/BH} 
+
+\paragraph{Illustration: Breast cancer subtypes}
+
+<<pkg-attach, echo = FALSE, results = hide>>=
+source("setup.R")
+require("lars")
+
+### OK, this once required Biobase and is a very dirty hack...
+data("Westbc", package = "mboost")
+westbc <- Westbc
+exprs <- function(x) x$assay
+pData <- function(x) x$pheno
+
+p <- nrow(exprs(westbc))
+n <- ncol(exprs(westbc))
+ytab <- table(pData(westbc)$nodal.y)
+@
+
+Variable selection is especially important in high-dimensional situations. 
+As an example, we study a binary classification problem involving $p = \Sexpr{p}$
+gene expression levels in $n = \Sexpr{n}$ breast cancer tumor samples 
+\citep[data taken from][]{west01}. For each sample, a binary response variable
+describes the lymph node status (\Sexpr{ytab[1]} negative and
+\Sexpr{ytab[2]} positive).
+%of the patient is to be explained by the  expression profiles.
+
+The data are stored in form of an \Rclass{exprSet} object \Robject{westbc}
+\citep[see][]{BioC2004}  
+and we first extract the matrix of expression levels and the response variable:
+<<west-data-attach, echo = TRUE>>=
+### extract matrix of expression levels and binary response
+x <- t(exprs(westbc))
+y <- pData(westbc)$nodal.y
+@
+We aim at using $L_2$Boosting for classification, see
+Section~\ref{subsubsec.binclass}, 
+with classical AIC based on the binomial log-likelihood for stopping the
+boosting iterations. Thus, we first 
+transform the factor \Robject{y} to a numeric variable with $0/1$ coding:
+%(different from the $-1/+1$-encoding in Section~\ref{subsec.binclass}):
+<<west-glmboost-ytrans, echo = TRUE>>=
+### numeric 0/1 response variable
+yfit <- as.numeric(y) - 1
+@
+The general framework implemented in \Rpackage{mboost} allows us to specify
+the negative gradient (the
+\Rcmd{ngradient} argument) corresponding to the surrogate loss function, 
+here the squared error loss implemented as a function \Rcmd{rho}, and a different
+evaluating loss function (the \Rcmd{loss} argument), here the negative
+binomial log-likelihood, with the \Rcmd{Family} function as follows:   
+<<west-glmboost-family, echo = TRUE>>=
+### L2 boosting for classification with response in 0/1
+### and binomial log-likelihood as loss function
+### ATTENTION: use offset = 1/2 instead of 0!!!
+rho <- function(y, f, w = 1) {
+    p <- pmax(pmin(1 - 1e-5, f), 1e-5)
+    -y * log(p) - (1 - y) * log(1 - p)
+}
+ngradient <- function(y, f, w = 1) y - f
+offset <- function(y, w) weighted.mean(y, w)
+L2fm <- Family(ngradient = ngradient,
+               loss = rho, offset = offset)
+@
+The resulting object (called \Rcmd{L2fm}), bundling the negative gradient,
+the loss function and a function for computing an offset term (\Rcmd{offset}),
+can now be passed to the \Rcmd{glmboost} function for boosting
+with componentwise linear least squares (here initial $m_\text{stop} = 200$
+iterations are used): 
+<<west-glmboost-fit, echo = TRUE, eval = FALSE>>=
+### fit a linear model with initial mstop = 200 boosting iterations
+ctrl <- boost_control(mstop = 200, center = TRUE)
+west_glm <- glmboost(x, yfit, family = L2fm, 
+                     control = ctrl)
+@
+<<west-glmboost-fit-lars, echo = FALSE>>=
+### fit a linear model with initial mstop = 200 boosting iterations
+### and record time
+time <- system.time(west_glm <- glmboost(x, yfit, family = L2fm, 
+                    control = boost_control(mstop = 200, center = TRUE)))[1]
+x <- t(exprs(westbc) - rowMeans(exprs(westbc)))
+time2 <- system.time(west_lars <- lars(x, yfit, type = "lasso", use.Gram = FALSE))[1]
+@
+Fitting such a linear model to $p = \Sexpr{p}$ covariates for $n = \Sexpr{n}$ 
+observations takes about \Sexpr{formatC(round(time, 1), digits = 2)} 
+seconds on a medium scale desktop computer 
+(Intel Pentium 4, 2.8GHz). Thus, this form of estimation and variable
+selection is computationally very efficient. As a comparison, computing all Lasso
+solutions, using package \Rpackage{lars} \cite{efron04lars,pkg:lars} in
+\textsf{R} (with 
+\texttt{use.Gram=FALSE}), takes about
+\Sexpr{formatC(round(time2, 1), digits = 2)} seconds.
+
+The question how to choose $m_\text{stop}$ can be
+addressed by the 
+classical AIC criterion 
+%(see Section~\ref{subsec.stopping}) 
+as follows
+<<west-glmboost-AIC, echo = TRUE>>=
+### evaluate AIC based on binomial log-likelihood for _all_ boosting
+### iterations m = 1, ..., mstop = 200
+aic <- AIC(west_glm, method = "classical")
+### where should one stop? mstop = 108 or 107
+mstop(aic)
+@
+<<west-glmboost-cf, echo = FALSE>>=
+cf <- coef(west_glm[mstop(aic)])
+ps <- length(cf[abs(cf) > 0])
+@
+where the AIC is computed as -2(log-likelihood) + 2(degrees of freedom) = 2
+(evaluating loss) + 2(degrees of freedom), see Formula~(\ref{aicl2}). 
+The notion of degrees of freedom
+is discussed in Section~\ref{subsec.df}. 
+
+Figure~\ref{west-glmboost-plot} shows the AIC curve depending on 
+the number of boosting iterations. When we stop after $m_\text{stop} =
+\Sexpr{mstop(aic)}$ 
+boosting iterations, we obtain $\Sexpr{ps}$ 
+genes with non-zero regression coefficients whose standardized values
+$\hat{\beta}^{(j)}\sqrt{\widehat{\text{Var}}(X^{(j)})}$ 
+are depicted in the left panel of Figure~\ref{west-glmboost-plot}.
+\setkeys{Gin}{width=0.95\textwidth, keepaspectratio} 
+\begin{figure}
+\begin{center}
+<<west-glmboost-plot, echo = FALSE, fig = TRUE, width = 7, height = 4>>=
+### compute standard deviations of expression levels for each gene
+sdx <- sqrt(rowSums((t(x) - colMeans(x))^2)/(nrow(x) - 1))
+layout(matrix(1:2, ncol = 2))
+cf <- cf * sdx
+plot(sort(cf[abs(cf) > 0]), ylab = "Standardized coefficients")
+abline(h = 0, lty = 2)
+plot(aic, ylim = c(25, 40))  
+@
+\caption{\Robject{westbc} data: Standardized regression coefficients 
+    $\hat{\beta}^{(j)}\sqrt{\widehat{\text{Var}}(X^{(j)})}$ (left panel) for 
+    $m_\text{stop} = \Sexpr{mstop(aic)}$ determined from the classical AIC
+    criterion shown in the right panel. \label{west-glmboost-plot}}
+\end{center}
+\end{figure}
+
+Of course, we could also use BinomialBoosting for analyzing the data: the
+computational CPU time would be of the same order of magnitude, i.e.,
+only a few seconds.
+
 
 \SweaveOpts{prefix.string=figures/BH}
 

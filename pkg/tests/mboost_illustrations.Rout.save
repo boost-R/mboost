@@ -1,6 +1,6 @@
 
-R version 2.6.0 (2007-10-03)
-Copyright (C) 2007 The R Foundation for Statistical Computing
+R version 2.8.0 (2008-10-20)
+Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -24,18 +24,18 @@ Loading required package: stats4
 Loading required package: party
 Loading required package: survival
 Loading required package: splines
-
-Attaching package: 'survival'
-
-
-	The following object(s) are masked from package:modeltools :
-
-	 cluster 
-
 Loading required package: grid
 Loading required package: coin
 Loading required package: mvtnorm
 Loading required package: zoo
+
+Attaching package: 'zoo'
+
+
+	The following object(s) are masked from package:base :
+
+	 as.Date.numeric 
+
 Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: vcd
@@ -87,6 +87,9 @@ R> mopt <- grid[which.min(colMeans(boob))]
 R> layout(matrix(1:2, nrow = 2))
 R> perfplot(boob, grid, ylab = "Out-of-bootstrap squared error", 
          xlab = "Number of boosting iterations", alpha = 0.05)
+Warning message:
+In matplot(x = x, y = y, type = type, lty = lty, lwd = lwd, pch = pch,  :
+  default 'pch' is smaller than number of columns and hence recycled
 R> abline(h = mean(boobrest), lty = 2)
 R> lines(c(which.min(colMeans(boob)), which.min(colMeans(boob))), 
            c(0, min(colMeans(boob))), lty = 2)

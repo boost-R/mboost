@@ -1,6 +1,6 @@
 
-R version 2.6.1 (2007-11-26)
-Copyright (C) 2007 The R Foundation for Statistical Computing
+R version 2.8.0 (2008-10-20)
+Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -23,18 +23,18 @@ Loading required package: stats4
 Loading required package: party
 Loading required package: survival
 Loading required package: splines
-
-Attaching package: 'survival'
-
-
-	The following object(s) are masked from package:modeltools :
-
-	 cluster 
-
 Loading required package: grid
 Loading required package: coin
 Loading required package: mvtnorm
 Loading required package: zoo
+
+Attaching package: 'zoo'
+
+
+	The following object(s) are masked from package:base :
+
+	 as.Date.numeric 
+
 Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: vcd
@@ -161,7 +161,8 @@ Degrees of freedom (for mstop = 35): 5.117497
 > xf <- gl(2, 10)
 > gc <- gamboost(y ~ xn + xf, control = boost_control(center = TRUE))
 Warning message:
-In gamboost_fit(object, ...) : inputs are not centered in ‘gamboost’
+In gamboost_fit(object, ...) :
+  ‘boost_control(center = TRUE)’ not implemented for ‘gamboost’; inputs are not centered
 > g <- gamboost(y ~ xnm + xf)
 > cgc <- coef(gc)
 > cg <- coef(g)  
@@ -205,4 +206,76 @@ In gamboost_fit(object, ...) : inputs are not centered in ‘gamboost’
 > stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < .Machine$double.eps)
 > stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < .Machine$double.eps)
 > 
+> ## Cox model
+> 
+> fit2 <- gamboost(Surv(futime, fustat) ~ bbs(age, knots = 40) +
++     bols(resid.ds) + bols(rx) + bols(ecog.ps), data = ovarian, 
++     family = CoxPH(), control = boost_control(mstop = 1000, center = TRUE))
+Warning message:
+In gamboost_fit(object, ...) :
+  ‘boost_control(center = TRUE)’ not implemented for ‘gamboost’; inputs are not centered
+> 
+> A2 <- survFit(fit2)
+> A2
+$surv
+           [,1]
+ [1,] 0.9980873
+ [2,] 0.9929781
+ [3,] 0.9867334
+ [4,] 0.9768941
+ [5,] 0.9154316
+ [6,] 0.8567420
+ [7,] 0.7968431
+ [8,] 0.7206421
+ [9,] 0.6401860
+[10,] 0.5591371
+[11,] 0.4453696
+[12,] 0.3387993
+
+$time
+ [1]  59 115 156 268 329 353 365 431 464 475 563 638
+
+$n.event
+ [1] 1 1 1 1 1 1 1 1 1 1 1 1
+
+attr(,"class")
+[1] "survFit"
+> 
+> newdata <- ovarian[c(1,3,12),]
+> A2 <- survFit(fit2, newdata = newdata)
+> A2
+$surv
+                  1            3        12
+ [1,]  5.342158e-01 8.936563e-01 0.9991571
+ [2,]  9.949982e-02 6.611135e-01 0.9969011
+ [3,]  1.260646e-02 4.564287e-01 0.9941348
+ [4,]  4.734828e-04 2.533792e-01 0.9897562
+ [5,]  2.712914e-13 5.576930e-03 0.9618288
+ [6,]  1.023472e-22 1.138864e-04 0.9341641
+ [7,]  5.035562e-33 1.613980e-06 0.9048128
+ [8,]  2.551037e-47 4.408263e-09 0.8656279
+ [9,]  3.716160e-64 4.215980e-12 0.8216478
+[10,]  2.082241e-83 1.487476e-15 0.7740910
+[11,] 9.220061e-116 2.346028e-21 0.7002863
+[12,] 1.169240e-154 2.482172e-28 0.6208101
+
+$time
+ [1]  59 115 156 268 329 353 365 431 464 475 563 638
+
+$n.event
+ [1] 1 1 1 1 1 1 1 1 1 1 1 1
+
+attr(,"class")
+[1] "survFit"
+> 
+> ### gamboost with explicit intercept
+> df <- data.frame(x = 1:100, y = rnorm(1:100), int = rep(1, 100))
+> mod <- gamboost(y ~ bols(int, center = TRUE) + bols(x, center = TRUE), data = df, 
++                 control = boost_control(mstop = 2500))
+> cf <- unlist(coef(mod))
+> cf[1] <- cf[1] + mod$offset
+> tmp <- max(abs(cf - coef(lm(y ~ x, data = df))))
+> stopifnot(tmp < 1e-5)
+> tmp <- max(abs(fitted(mod) - fitted(lm(y ~ x, data = df))))
+> stopifnot(tmp < 1e-5)
 > 

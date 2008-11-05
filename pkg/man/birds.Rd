@@ -47,7 +47,8 @@ suitability.
 
   Thomas Kneib and Joerg Mueller and Torsten Hothorn (2008),
   Spatial smoothing techniques for the assessment of habitat suitability,
-  \emph{Environmental and Ecological Statistics}, to appear.
+  \emph{Environmental and Ecological Statistics}, 
+  \bold{15}(3), 343--364.
 
 }
 \keyword{datasets}
