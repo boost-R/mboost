@@ -352,7 +352,6 @@ out <- sapply(varorder, function(i) {
 
 <<pkg-attach, echo = FALSE, results = hide>>=
 source("setup.R")
-require("lars")
 
 ### OK, this once required Biobase and is a very dirty hack...
 data("Westbc", package = "mboost")
@@ -427,17 +426,12 @@ west_glm <- glmboost(x, yfit, family = L2fm,
 time <- system.time(west_glm <- glmboost(x, yfit, family = L2fm, 
                     control = boost_control(mstop = 200, center = TRUE)))[1]
 x <- t(exprs(westbc) - rowMeans(exprs(westbc)))
-time2 <- system.time(west_lars <- lars(x, yfit, type = "lasso", use.Gram = FALSE))[1]
 @
 Fitting such a linear model to $p = \Sexpr{p}$ covariates for $n = \Sexpr{n}$ 
 observations takes about \Sexpr{formatC(round(time, 1), digits = 2)} 
 seconds on a medium scale desktop computer 
 (Intel Pentium 4, 2.8GHz). Thus, this form of estimation and variable
-selection is computationally very efficient. As a comparison, computing all Lasso
-solutions, using package \Rpackage{lars} \cite{efron04lars,pkg:lars} in
-\textsf{R} (with 
-\texttt{use.Gram=FALSE}), takes about
-\Sexpr{formatC(round(time2, 1), digits = 2)} seconds.
+selection is computationally very efficient. 
 
 The question how to choose $m_\text{stop}$ can be
 addressed by the 
