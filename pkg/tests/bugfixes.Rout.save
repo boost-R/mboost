@@ -7,6 +7,8 @@ R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
 Type 'license()' or 'licence()' for distribution details.
 
+  Natural language support but running in an English locale
+
 R is a collaborative project with many contributors.
 Type 'contributors()' for more information and
 'citation()' on how to cite R or R packages in publications.
@@ -213,3 +215,35 @@ In gamboost_fit(object, ...) :
 > for (i in s)   
 +     stopifnot(max(abs(predict(x[i]) - predict(x, all = TRUE)[,i])) < eps)
 > 
+> ### negative gradient of GaussClass was incorrectly specified
+> data("BreastCancer", package = "mlbench")
+> tmp <- BreastCancer[complete.cases(BreastCancer), -1]
+> learn <- sample(1:nrow(tmp), ceiling(nrow(tmp) * 0.7))
+> 
+> stump <- blackboost(Class ~ ., data = tmp[learn,], 
++     tree_controls = ctree_control(teststat = "max",
++         testtype = "Teststatistic", mincriterion = 0, stump = TRUE), 
++     control = boost_control(mstop = 176), family = GaussClass())
+> mean(predict(stump, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
+[1] 0.04411765
+> 
+> stump <- blackboost(Class ~ ., data = tmp[learn,], 
++     tree_controls = ctree_control(teststat = "max",
++         testtype = "Teststatistic", mincriterion = 0, stump = TRUE), 
++     control = boost_control(mstop = 275, constraint = TRUE), family = GaussClass())
+> mean(predict(stump, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
+[1] 0.04411765
+> 
+> cspline <- gamboost(Class ~ ., data = tmp[learn,], 
++     control = boost_control(mstop = 126), family = GaussClass())
+> mean(predict(cspline, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
+[1] 0.07843137
+> 
+> cspline <- gamboost(Class ~ ., data = tmp[learn,], 
++     control = boost_control(mstop = 73, constraint = FALSE), family = GaussClass())
+> mean(predict(cspline, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
+[1] 0.07843137
+> 
+> proc.time()
+   user  system elapsed 
+ 74.972   0.360  75.647 

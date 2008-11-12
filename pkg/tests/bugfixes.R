@@ -160,3 +160,14 @@ for (i in s)
 x <- blackboost(y ~ ., data = df)
 for (i in s)   
     stopifnot(max(abs(predict(x[i]) - predict(x, all = TRUE)[,i])) < eps)
+
+### negative gradient of GaussClass was incorrectly specified
+data("BreastCancer", package = "mlbench")
+tmp <- BreastCancer[complete.cases(BreastCancer), -1]
+learn <- sample(1:ncol(tmp), ceiling(ncol(tmp) * 0.9))
+stump <- blackboost(Class ~ ., data = tmp[learn,], 
+    tree_controls = ctree_control(teststat = "max",
+        testtype = "Teststatistic", mincriterion = 0, stump = TRUE), 
+    control = boost_control(mstop = 176), family = GaussClass())
+
+mean(predict(stump, newdata = tmp[-learn,]) != tmp[-learn, "Class"])

@@ -47,7 +47,7 @@ GaussReg <- function()
 
 ### Gaussian (-1 / 1 Binary Classification)
 GaussClass <- function()
-    Family(ngradient = function(y, f, w = 1) - 2 * y + 2 * y * f,
+    Family(ngradient = function(y, f, w = 1) 2 * y - 2 * y * f,
            loss = function(y, f) 1 - 2 * y * f + (y * f)^2,
            check_y = function(y) {
                if (!is.factor(y))
