@@ -162,12 +162,27 @@ for (i in s)
     stopifnot(max(abs(predict(x[i]) - predict(x, all = TRUE)[,i])) < eps)
 
 ### negative gradient of GaussClass was incorrectly specified
+### negative gradient of GaussClass was incorrectly specified
 data("BreastCancer", package = "mlbench")
 tmp <- BreastCancer[complete.cases(BreastCancer), -1]
-learn <- sample(1:ncol(tmp), ceiling(ncol(tmp) * 0.9))
-stump <- blackboost(Class ~ ., data = tmp[learn,], 
+learn <- sample(1:nrow(tmp), ceiling(nrow(tmp) * 0.7))
+
+stump <- blackboost(Class ~ ., data = tmp[learn,],
     tree_controls = ctree_control(teststat = "max",
         testtype = "Teststatistic", mincriterion = 0, stump = TRUE), 
     control = boost_control(mstop = 176), family = GaussClass())
+mean(predict(stump, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
 
-mean(predict(stump, newdata = tmp[-learn,]) != tmp[-learn, "Class"])
+stump <- blackboost(Class ~ ., data = tmp[learn,],    
+    tree_controls = ctree_control(teststat = "max",
+        testtype = "Teststatistic", mincriterion = 0, stump = TRUE),
+    control = boost_control(mstop = 275, constraint = TRUE), family = GaussClass())
+mean(predict(stump, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
+
+cspline <- gamboost(Class ~ ., data = tmp[learn,],
+    control = boost_control(mstop = 126), family = GaussClass())
+mean(predict(cspline, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
+ 
+cspline <- gamboost(Class ~ ., data = tmp[learn,], 
+    control = boost_control(mstop = 73, constraint = FALSE), family = GaussClass())
+mean(predict(cspline, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
