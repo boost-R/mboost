@@ -22,13 +22,11 @@ cvrisk <- function(object, folds, grid = c(1:mstop(object))) {
 
     ## free memory
     rm("object")
-    gc(reset=TRUE)
 
     dummyfct <- function(weights, control, fct, data, grid){
         model <- fitfct(object = data, control = control, weights = weights)
         ret <- model$risk[grid]
         rm("model")
-        gc(reset=TRUE)
         ret
     }
 

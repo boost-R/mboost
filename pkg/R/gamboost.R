@@ -47,7 +47,6 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns", "b
 
     if (!control$savedata){ ## free memory
         rm("object")
-        gc(reset=TRUE)
     }
 
     ### hyper parameters
@@ -143,7 +142,6 @@ gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns", "b
 
         ## free memory
         rm("basess")
-        gc(reset=TRUE)
 
         ### print status information
         if (trace)
