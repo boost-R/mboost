@@ -413,7 +413,7 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
 }
 
 bols <- function(x, z = NULL, xname = NULL, zname = NULL, center = FALSE,
-                 df = NULL) {
+                 df = NULL, contrasts.arg = "contr.treatment") {
 
      if (is.null(xname)) xname = deparse(substitute(x))
      if (is.null(zname)) zname = deparse(substitute(z))
@@ -426,8 +426,8 @@ bols <- function(x, z = NULL, xname = NULL, zname = NULL, center = FALSE,
              if (!is.null(z))
                  z <- z[cc]
          }
-
-         X <- model.matrix(~ x)
+ 
+         X <- model.matrix(~ x, contrasts.arg = list(x = contrasts.arg))
          if (center)
             X <- X[, -1, drop = FALSE]
 

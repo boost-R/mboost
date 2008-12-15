@@ -13,7 +13,7 @@
 \usage{
 
 bols(x, z = NULL, xname = NULL, zname = NULL, center = FALSE, 
-     df = NULL)
+     df = NULL, contrasts.arg = "contr.treatment")
 bbs(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
     center = FALSE, xname = NULL, zname = NULL)
 bns(x, z = NULL, df = 4, knots = 20, differences = 2,
@@ -62,6 +62,7 @@ btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
                 only the deviation effect is fitted. The unpenalized, parametric part has then
                to be included in separate base learners using \code{bols} (see the examples below).
                When used in \code{bols}, the intercept in the linear model is omitted.}
+  \item{contrasts.arg}{ a character suitable for input to the \code{\link{contrasts}} replacement function.}
   \item{tree_controls}{ an object of class \code{\link[party]{TreeControl}}, which can be
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base learners,
