@@ -426,8 +426,13 @@ bols <- function(x, z = NULL, xname = NULL, zname = NULL, center = FALSE,
              if (!is.null(z))
                  z <- z[cc]
          }
- 
-         X <- model.matrix(~ x, contrasts.arg = list(x = contrasts.arg))
+         
+         if (is.factor(x)) {
+             X <- model.matrix(~ x, contrasts.arg = list(x = contrasts.arg))
+         } else {
+             X <- model.matrix(~ x)
+         }
+
          if (center)
             X <- X[, -1, drop = FALSE]
 
