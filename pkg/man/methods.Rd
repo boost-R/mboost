@@ -48,7 +48,7 @@
   \item{allIterations}{ computes the (linear) predictor for all boosting
                iterations simultaneously and returns a matrix.}
   \item{method}{ a character specifying if the corrected AIC criterion or
-                 a classical \newline (-2 logLik + k * df) should be computed.}
+                 a classical (-2 logLik + k * df) should be computed.}
   \item{df}{ a character specifying how degrees of freedom should be computed:
              \code{trace} defines degrees of freedom by the trace of the
              boosting hat matrix and \code{actset} uses the number of
