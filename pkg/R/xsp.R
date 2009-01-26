@@ -541,26 +541,31 @@ brandom <- function(x, z = NULL, df = 4, xname = NULL,
     return(X)
 }
 
-btree <- function(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
-    mincriterion = 0), xname = NULL, zname = NULL) {
+btree <- function(..., tree_controls = ctree_control(stump = TRUE,
+    mincriterion = 0), xname = NULL) {
 
-    if (is.null(xname)) xname <- deparse(substitute(x))
-    if (is.null(zname)) zname <- deparse(substitute(z))
+    x <- as.data.frame(list(...))
 
-    X <- model.matrix(~x - 1)
+    if (is.null(xname)) {
+        mf <- as.character(match.call(expand.dots = TRUE))[-1]
+        xname <- mf[!(mf %in% names(formals(btree))[-1])] 
+        colnames(x) <- xname
+    } else {
+        colnames(x) <- xname
+    }
+
+    X <- matrix(numeric(nrow(x)))
 
     dpp <- function(weights) {
 
         ### construct design matrix etc.
-        y <- vector(length = length(x), mode = "numeric")
-        fm <- as.formula(paste("y ~ ",
-            paste(xname, ifelse(!is.null(z), zname, ""),
-            collapse = "+")))
-        df <- data.frame(y, x)
-        names(df) <- c("y", xname)
+        y <- vector(length = nrow(x), mode = "numeric")
+        fm <- as.formula(paste("y ~ ", paste(xname, collapse = "+")))
+        df <- x
+        df$y <- y
         object <- party:::ctreedpp(fm, data = df)
         fitmem <- ctree_memory(object, TRUE)
-        where <- rep.int(0, length(x))
+        where <- rep.int(0, nrow(x))
         storage.mode(where) <- "integer"
         storage.mode(weights) <- "double"
 

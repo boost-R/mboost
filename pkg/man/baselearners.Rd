@@ -23,8 +23,8 @@ bspatial(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
          degree = 3, differences = 2, center = FALSE, xname = NULL,
          yname = NULL, zname = NULL)
 brandom(x, z = NULL, df = 4, xname = NULL, zname = NULL)
-btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
-      mincriterion = 0), xname = NULL, zname = NULL)
+btree(..., tree_controls = ctree_control(stump = TRUE,
+      mincriterion = 0), xname = NULL)
 }
 \arguments{
   \item{x}{ a vector containing data, either numeric or a factor. }
@@ -67,6 +67,7 @@ btree(x, z = NULL, tree_controls = ctree_control(stump = TRUE,
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base learners,
                   stumps are fitted by default.}
+  \item{...}{a number of variables to fit a tree to.}
 }
 \details{
 
