@@ -547,8 +547,10 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE,
     x <- as.data.frame(list(...))
 
     if (is.null(xname)) {
-        mf <- names(as.list(match.call(expand.dots = TRUE)))[-1]
-        xname <- mf[!(mf %in% names(formals(btree))[-1])] 
+        mf <- as.list(match.call(expand.dots = TRUE))
+        mf <- mf[!(names(mf) %in% names(formals(btree)))][-1]
+        mf <- sapply(mf, function(x) as.character(x))
+        xname <- mf 
         colnames(x) <- xname
     } else {
         colnames(x) <- xname
