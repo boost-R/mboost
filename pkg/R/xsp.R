@@ -547,10 +547,8 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE,
     x <- as.data.frame(list(...))
 
     if (is.null(xname)) {
-        mf <- as.list(match.call(expand.dots = TRUE))
-        mf <- mf[!(names(mf) %in% names(formals(btree)))][-1]
-        mf <- sapply(mf, function(x) as.character(x))
-        xname <- mf 
+        cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
+        xname <- sapply(cl, function(x) as.character(x))
         colnames(x) <- xname
     } else {
         colnames(x) <- xname
@@ -577,6 +575,7 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE,
                  PACKAGE = "party")
             tree <- .Call("R_TreeGrow", object, weights, fitmem, tree_controls,
                           where, PACKAGE = "party")
+            .Call("R_remove_weights", tree, package = "party")
 
             predictfun <- function(newdata = NULL) {
                 if (is.null(newdata)) {

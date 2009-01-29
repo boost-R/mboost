@@ -69,6 +69,7 @@ blackboost_fit <- function(object,
               PACKAGE = "party")
         ens[[m]] <- .Call("R_TreeGrow", obj, weights, fitmem, tree_controls,
                           where, PACKAGE = "party")
+        .Call("R_remove_weights", ens[[m]], package = "party")
 
         ### check if first node is terminal, i.e., if at least
         ### one split was performed
