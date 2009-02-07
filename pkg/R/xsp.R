@@ -560,9 +560,11 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE,
 
         ### construct design matrix etc.
         y <- vector(length = nrow(x), mode = "numeric")
-        fm <- as.formula(paste("y ~ ", paste(xname, collapse = "+")))
+        ### name for working response (different from any x)
+        rname <- paste("R", paste(colnames(x), collapse = "_"), sep = "_")
+        fm <- as.formula(paste(rname, " ~ ", paste(xname, collapse = "+")))
         df <- x
-        df$y <- y
+        df[[rname]] <- y
         object <- party:::ctreedpp(fm, data = df)
         fitmem <- ctree_memory(object, TRUE)
         where <- rep.int(0, nrow(x))
