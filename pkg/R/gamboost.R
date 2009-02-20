@@ -301,7 +301,7 @@ coef.gamboost <- function(object, ...) {
     nu <- object$control$nu
 
     for (m in 1:mstop(object)) {
-        cf <- try(drop(coef(ensembless[[m]][[1]])))
+        cf <- try(drop(coef(ensembless[[m]]$model)))
         if (!inherits(cf, "try-error"))
             ret[[ens[m, "xselect"]]] <- ret[[ens[m, "xselect"]]] + nu * cf
     }

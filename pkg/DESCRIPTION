@@ -11,7 +11,7 @@ Description: Functional gradient descent algorithms
   smoothing splines, or regression trees as base learners for fitting
   generalized linear, additive and interaction models to potentially 
   high-dimensional data.
-Depends: R (>= 2.4.0), methods, modeltools (>= 0.2.10), party (>= 0.9-10),
+Depends: R (>= 2.4.0), methods, modeltools (>= 0.2.10), party (>= 0.9-993),
   splines
 Suggests: mlbench, ipred
 LazyLoad: yes

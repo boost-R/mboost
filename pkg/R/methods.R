@@ -92,7 +92,7 @@ hatvalues.gb <- function(model, ...) {
 }
 
 ### methods: AIC
-AIC.glmboost <- function(object, method = c("corrected", "classical"), 
+AIC.glmboost <- function(object, method = c("corrected", "classical", "gMDL"), 
                          df = c("trace", "actset"), ..., k = 2) {
 
     df <- match.arg(df)
@@ -118,13 +118,12 @@ AIC.glmboost <- function(object, method = c("corrected", "classical"),
     return(RET)
 }
 
-AIC.gamboost <- function(object, method = c("corrected", "classical"), ...,
+AIC.gamboost <- function(object, method = c("corrected", "classical", "gMDL"), ...,
                          k = 2)
     return(AICboost(object, method = method, 
                     df = attr(hatvalues(object), "trace"), k = k))
 
-
-AICboost <- function(object, method = c("corrected", "classical"), df, k = 2) {
+AICboost <- function(object, method = c("corrected", "classical", "gMDL"), df, k = 2) {
 
     if (object$control$risk != "inbag")
         return(NA)
@@ -143,12 +142,16 @@ AICboost <- function(object, method = c("corrected", "classical"), df, k = 2) {
     ### loss-function is to be MINIMIZED, take -2 * logLik == 2 * risk
     if (method == "classical")
         AIC <- 2 * object$risk + k * df
-
+    if (method == "gMDL"){
+        s <- object$risk/(sumw - df)
+        AIC <- log(s) + df/sumw * log((sum(object$data$y^2) - object$risk)
+                      /(df * s))
+        }
     mstop <- which.min(AIC)
     RET <- AIC[mstop]
 
     attr(RET, "mstop") <- which.min(AIC)
-    attr(RET, "df") <- df
+    attr(RET, "df") <- df  
     attr(RET, "AIC") <- AIC
     attr(RET, "corrected") <- method == "corrected"
 

@@ -23,8 +23,8 @@
 \method{print}{gamboost}(x, ...)
 \method{coef}{glmboost}(object, ...)
 \method{coef}{gamboost}(object, ...)
-\method{AIC}{gamboost}(object, method = c("corrected", "classical"), ..., k = 2)
-\method{AIC}{glmboost}(object, method = c("corrected", "classical"), 
+\method{AIC}{gamboost}(object, method = c("corrected", "classical", "gMDL"), ..., k = 2)
+\method{AIC}{glmboost}(object, method = c("corrected", "classical", "gMDL"), 
     df = c("trace", "actset"), ..., k = 2)
 \method{mstop}{gbAIC}(object, ...)
 \method{mstop}{gb}(object, ...)
@@ -81,6 +81,9 @@
   (faster but only meaningful for linear models fitted via \code{\link{gamboost}} 
   (see Hastie, 2007).
 
+  In addition, the general Minimum Description Length criterion (Buhlmann and Yu, 2006)
+  can be computed using function \code{AIC}.
+
   Note that \code{logLik} and \code{AIC} only make sense when the corresponding
   \code{\link{Family}} implements the appropriate loss function.  
 
@@ -99,6 +102,9 @@
 
   Travor Hastie (2007), Discussion of ``Boosting Algorithms: Regularization, Prediction and Model Fitting'' 
   by Peter Buhlmann and Torsten Hothorn. \emph{Statistical Science}, \bold{22}(4), 505.
+
+  Peter Buhlmann and Bin Yu (2006),
+  Sparse Boosting. \emph{Journal of Machine Learning Research}, \bold{7}, 1001--1024.
 
 }
 \examples{
