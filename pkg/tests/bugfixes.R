@@ -186,3 +186,14 @@ mean(predict(cspline, newdata = tmp[-learn,], type = "response") != tmp[-learn, 
 cspline <- gamboost(Class ~ ., data = tmp[learn,], 
     control = boost_control(mstop = 73, constraint = FALSE), family = GaussClass())
 mean(predict(cspline, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
+
+### make sure environment(formula) is used for evaluation
+data("cars")
+ctl  <- boost_control(mstop = 100, trace = TRUE)
+tctl <- ctree_control(teststat = "max", testtype = "Teststat", 
+                      mincrit = 0, maxdepth = 5, savesplitstat = FALSE)
+myfun <- function(cars, xx, zz){ 
+  gamboost(dist ~ btree(speed, tree_controls = zz),
+           data = cars, control = xx)
+}
+mod <- myfun(cars, xx = ctl, zz = tctl)

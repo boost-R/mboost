@@ -1,5 +1,5 @@
 
-R version 2.8.0 (2008-10-20)
+R version 2.8.1 (2008-12-22)
 Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -242,4 +242,19 @@ In gamboost_fit(object, ...) :
 +     control = boost_control(mstop = 73, constraint = FALSE), family = GaussClass())
 > mean(predict(cspline, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
 [1] 0.07843137
+> 
+> ### make sure environment(formula) is used for evaluation
+> data("cars")
+> ctl  <- boost_control(mstop = 100, trace = TRUE)
+> tctl <- ctree_control(teststat = "max", testtype = "Teststat", 
++                       mincrit = 0, maxdepth = 5, savesplitstat = FALSE)
+> myfun <- function(cars, xx, zz){ 
++   gamboost(dist ~ btree(speed, tree_controls = zz),
++            data = cars, control = xx)
++ }
+> mod <- myfun(cars, xx = ctl, zz = tctl)
+[   1] ...................................... -- risk: 12645.93 
+[  41] ...................................... -- risk: 12297.56 
+[  81] ..................
+Final risk: 12208.95 
 > 

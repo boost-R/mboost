@@ -200,7 +200,8 @@ gamboost.formula <- function(formula, data = list(), weights = NULL,
                              na.action = na.omit, ...) {
 
     ### construct design matrix etc.
-    object <- boost_dpp(formula, data, weights, na.action, designMatrix = FALSE)
+    object <- boost_dpp(formula, data, weights, na.action, designMatrix = FALSE,
+                        frame = environment(formula))
 
     ### fit the ensemble
     object$input <- object$menv@get("input")
@@ -301,7 +302,7 @@ coef.gamboost <- function(object, ...) {
     nu <- object$control$nu
 
     for (m in 1:mstop(object)) {
-        cf <- try(drop(coef(ensembless[[m]]$model)))
+        cf <- try(drop(coef(ensembless[[m]][[1]])))
         if (!inherits(cf, "try-error"))
             ret[[ens[m, "xselect"]]] <- ret[[ens[m, "xselect"]]] + nu * cf
     }

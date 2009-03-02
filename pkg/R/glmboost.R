@@ -172,7 +172,7 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
 
     ### construct design matrix etc.
     object <- boost_dpp(formula, data, weights, contrasts.arg = contrasts.arg, 
-                        na.action = na.action)
+                        na.action = na.action, frame = environment(formula))
 
     object$center <- function(xmat) {
         cm <- colMeans(object$x)
