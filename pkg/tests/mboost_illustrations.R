@@ -70,7 +70,7 @@ source("setup.R")
 ###################################################
 ### chunk number 10: bodyfat-gamboost-fit
 ###################################################
-bf_gam <- gamboost(DEXfat ~ ., data = bodyfat)
+bf_gam <- gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss")
 
 
 ###################################################
@@ -191,7 +191,7 @@ coef(wpbc_glm)[abs(coef(wpbc_glm)) > 0]
 ###################################################
 ### chunk number 23: wpbc-gamboost-fit
 ###################################################
-wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial())
+wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial(), baselearner = "bss")
 mopt <- mstop(aic <- AIC(wpbc_gam, "classical"))
 aic
 

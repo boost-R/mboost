@@ -65,32 +65,32 @@ stopin <- function(x, y) stopifnot(max(abs(x - y)) < 0.1)
 ### univariate linear model
 df <- data.frame(y = 3*x[,2], x = x)
 ga <- gamboost(y ~ x.2 - 1, data = df,
-               control = boost_control(mstop = 100, nu = 1))
+               control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ x.2 - 1, data = df)), fitted(ga))
 
 ### univariate model involving sin transformation
 df <- data.frame(y = sin(x[,1]), x = x)
 ga <- gamboost(y ~ x.1 - 1, data = df, 
-               control = boost_control(mstop = 100, nu = 1))
+               control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ sin(x.1) - 1, data = df)), fitted(ga))
 
 ### bivariate model: linear and sin
 df <- data.frame(y = sin(x[,1]) + 3*x[,2], x = x)
 ga <- gamboost(y ~ x.1 + x.2 - 1, data = df, 
-               control = boost_control(mstop = 100, nu = 1))
+               control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ sin(x.1) + x.2 - 1, data = df)), fitted(ga))
 ga <- gamboost(y ~ x.1 + x.2 - 1, data = df, dfbase = c(4, 1), 
-               control = boost_control(mstop = 100, nu = 1))
+               control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ sin(x.1) + x.2 - 1, data = df)), fitted(ga))
 
 ### ANCOVA model
 df <- data.frame(y = 3 * x[,2] + (1:4)[xf], x = x)
 ga <- gamboost(y ~ xf + x.2 - 1, data = df, 
-               control = boost_control(mstop = 100, nu = 1))
+               control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ xf + x.2 - 1, data = df)), fitted(ga))
 ga <- gamboost(y ~ xf + sin(x.1) + x.2, data = df, 
                dfbase = c(1, 1, 4, 1),
-               control = boost_control(mstop = 100, nu = 1))
+               control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ xf + sin(x.1) + x.2, data = df)), fitted(ga))
 
 
@@ -99,19 +99,15 @@ y <- rnorm(20)
 xn <- rnorm(20)
 xnm <- xn - mean(xn)
 xf <- gl(2, 10)
-gc <- gamboost(y ~ xn + xf, control = boost_control(center = TRUE))
+gc <- gamboost(y ~ xn + xf)
 g <- gamboost(y ~ xnm + xf)
-cgc <- coef(gc)
-cg <- coef(g)  
-names(cgc) <- NULL
-names(cg) <- NULL 
-stopifnot(all.equal(cgc, cg))
+stopifnot(max(abs(fitted(gc) - fitted(g))) < 1 / 10000)
 
 pc1 <- predict(gc)
 pc2 <- predict(gc, newdata = data.frame(xn = xn, xf = xf))
 pc3 <- predict(g)
 stopifnot(all.equal(pc1, pc2))
-stopifnot(all.equal(pc2, pc3))
+stopifnot(max(abs(pc2 - pc3)) < 1 / 10000)
 
 ### formula interfaces
 tmp <- data.frame(x1 = runif(100), x2 = runif(100), y = rnorm(100))
@@ -147,7 +143,7 @@ stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp))) 
 
 fit2 <- gamboost(Surv(futime, fustat) ~ bbs(age, knots = 40) +
     bols(resid.ds) + bols(rx) + bols(ecog.ps), data = ovarian, 
-    family = CoxPH(), control = boost_control(mstop = 1000, center = TRUE))
+    family = CoxPH(), control = boost_control(mstop = 1000))
 
 A2 <- survFit(fit2)
 A2

@@ -51,6 +51,10 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
     if (is.null(xname)) xname <- deparse(substitute(x))
     if (is.null(zname)) zname <- deparse(substitute(z))
 
+    if (all(x %in% c(0, 1)))
+        return(bols(x = x, z = z, xname = xname, zname = zname, 
+                    center = center || all(x == 1)))
+
     if (is.factor(x) || (df <= 2 && !center))
         return(bols(x = x, z = z, xname = xname, zname = zname))
 
@@ -59,7 +63,7 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
 
     if(is.factor(z) && length(unique(z)) == 2)
         ## FIXME is there a more elegant way to produce a binary with 0/1?
-        z <- as.numeric(z[, drop=T]) - 1
+        z <- as.numeric(z[, drop = TRUE]) - 1
 
     if (!differences %in% 1:3)
         stop(sQuote("differences"), " are not in 1:3")
@@ -70,47 +74,62 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
     if (length(unique(x)) < 6)
         stop(sQuote(xname), " has less than 6 unique values")
 
-    if (length(unique(diff(knots))) > 1)
+    if (length(unique(round(diff(knots), 10))) > 1)
             warning("non-equidistant ", sQuote("knots"),
                     " might be inappropriate")
 
-    if (length(knots) == 1) {
-        knots <- seq(from = min(x, na.rm = TRUE),
-                     to = max(x, na.rm = TRUE), length = knots+2)
-        knots <- knots[2:(length(knots) - 1)]
-    }
-    boundary.knots <- range(x, na.rm = TRUE)
-    newX <- function(x, z = NULL, na.rm = TRUE) {
-        if (na.rm) {
-            x <- x[cc]
-            if (!is.null(z))
-                z <- z[cc]
-        }
-        X <- bs(x, knots = knots, degree = degree, intercept = TRUE,
-                Boundary.knots = boundary.knots)
-        if (!is.null(z))
-            X <- X * z
-        if (center) {
-            K <- diff(diag(ncol(X)), differences = differences)
-            X <- tcrossprod(X, K) %*% solve(tcrossprod(K))
-        }
-        return(X)
-    }
-    X <- newX(x, z)
-    Xna <- X
-    if (any(!cc))
-        Xna <- newX(x, z, na.rm = FALSE)
+    X <- matrix(x, ncol = 1)
 
-    if (center) {
-        K <- diag(ncol(X))
-    } else {
-        K <- diff(diag(ncol(X)), differences = differences)
-        K <- crossprod(K, K)
-    }
 
     dpp <- function(weights) {
 
         if (any(!cc)) weights <- weights[cc]
+
+        ### knots may depend on weights
+        if (length(knots) == 1) {
+            knots <- seq(from = min(x[weights > 0], na.rm = TRUE),
+                         to = max(x[weights > 0], na.rm = TRUE), length = knots+2)
+            knots <- knots[2:(length(knots) - 1)]
+        }
+        boundary.knots <- range(x[weights > 0], na.rm = TRUE)
+
+        newX <- function(x, z = NULL, weights = NULL, na.rm = TRUE) {
+            if (na.rm) {
+                x <- x[cc]
+                if (!is.null(z))
+                    z <- z[cc]
+                if (!is.null(weights))
+                    weights <- weights[cc]
+            }
+            ### avoid bs warning on x outside boundary.knots
+            if (!is.null(weights)) {
+                xtmp <- x
+                xtmp[weights == 0] <- mean(boundary.knots)
+            } else {
+                xtmp <- x
+            }
+            X <- bs(xtmp, knots = knots, degree = degree, intercept = TRUE,
+                    Boundary.knots = boundary.knots)
+            if (!is.null(z))
+                X <- X * z
+            if (center) {
+                K <- diff(diag(ncol(X)), differences = differences)
+                X <- tcrossprod(X, K) %*% solve(tcrossprod(K))
+            }
+            return(X)
+        }
+        X <- newX(x, z, weights = weights)
+        Xna <- X
+        if (any(!cc))
+            Xna <- newX(x, z, weights = weights, na.rm = FALSE)
+
+        if (center) {
+            K <- diag(ncol(X))
+        } else {
+            K <- diff(diag(ncol(X)), differences = differences)
+            K <- crossprod(K, K)
+        }
+
         lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
 
         Xw <- X * weights
@@ -147,6 +166,9 @@ fitted.basefit <- function(object)
 
 coef.baselm <- function(object)
     object$model
+
+coef.bssfit <- function(object)
+    object$basemodel$coef
 
 df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
@@ -293,7 +315,7 @@ bss <- function(x, df = 4, xname = NULL) {
             }
 
             ret <- list(basemodel = object, predict = predictfun, fitted = predictfun)
-            class(ret) <- "basefit"
+            class(ret) <- c("basefit", "bssfit")
             ret
         }
 

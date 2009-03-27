@@ -223,7 +223,7 @@ using the \Rcmd{gamboost} function from \Rpackage{mboost} (first with
 pre-specified $m_\text{stop} = 100$ 
 boosting iterations, $\nu = 0.1$ and squared error loss):
 <<bodyfat-gamboost-fit, echo = TRUE>>=
-bf_gam <- gamboost(DEXfat ~ ., data = bodyfat)
+bf_gam <- gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss")
 @
 The degrees of freedom in the componentwise smoothing spline base procedure
 can be defined by the \Rcmd{dfbase} argument, defaulting to $4$.  
@@ -596,7 +596,7 @@ regression model).
 A generalized additive model adds more flexibility to the regression function but is still
 interpretable. We fit a logistic additive model to the \Robject{wpbc} data as follows:
 <<wpbc-gamboost-fit, echo = TRUE>>=
-wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial())
+wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial(), baselearner = "bss")
 mopt <- mstop(aic <- AIC(wpbc_gam, "classical"))
 aic
 @

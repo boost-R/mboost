@@ -13,7 +13,7 @@
 \method{gamboost}{formula}(formula, data = list(), weights = NULL, 
         na.action = na.omit, ...)
 \method{gamboost}{matrix}(x, y, weights = NULL, ...)
-gamboost_fit(object, baselearner = c("bss", "bbs", "bols", 
+gamboost_fit(object, baselearner = c("bbs", "bss", "bols", 
              "bns", "btree"), dfbase = 4, family = GaussReg(), 
              control = boost_control(), weights = NULL)
 \method{plot}{gamboost}(x, which = NULL, ask = TRUE && dev.interactive(), 
@@ -70,6 +70,9 @@ gamboost_fit(object, baselearner = c("bss", "bbs", "bols",
 
   The function \code{gamboost_fit} provides access to the fitting
   procedure without data pre-processing, e.g. for cross-validation.
+
+  Note that penalized B-splines instead of smoothing splines
+  are used as default baselearners as of version 1.1-0.
 
 }
 \value{

@@ -204,7 +204,7 @@ IPCweights <- function(x, maxweight = 5) {
 
     event <- x[,"status"]
     x[,"status"] <- 1 - event
-    km <- survfit(x)   
+    km <- survfit(x ~ 1)   
     Ghat <- getsurv(km, time = x[,"time"])
     Ghat[event == 0] <- 1
     w <- event / Ghat

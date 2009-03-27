@@ -1,6 +1,6 @@
 
-R version 2.8.1 (2008-12-22)
-Copyright (C) 2008 The R Foundation for Statistical Computing
+R version 2.9.0 alpha (2009-03-22 r48193)
+Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -106,7 +106,7 @@ Loading required package: colorspace
 > ga <- gamboost(DEXfat ~ ., data = bodyfat, dfbase = 1, control = ctrl)
 Warning message:
 In gamboost_fit(object, ...) :
-  ‘boost_control(center = TRUE)’ not implemented for ‘gamboost’; inputs are not centered
+  'boost_control(center = TRUE)' not implemented for 'gamboost'; inputs are not centered
 > gl <- glmboost(DEXfat ~ ., data = bodyfat, control = ctrl)
 > stopifnot(max(abs(predict(ga) - predict(gl))) < 1e-8)
 > AIC(gl)
@@ -141,7 +141,7 @@ Degrees of freedom (for mstop = 45): 1.917234
 +                family = Binomial())
 Warning message:
 In gamboost_fit(object, ...) :
-  ‘boost_control(center = TRUE)’ not implemented for ‘gamboost’; inputs are not centered
+  'boost_control(center = TRUE)' not implemented for 'gamboost'; inputs are not centered
 > g <- gamboost(y ~ xnm + xf, family = Binomial())
 > stopifnot(all.equal(mstop(AIC(gc, "classical")), mstop(AIC(g, "classical"))))
 > 
@@ -149,7 +149,7 @@ In gamboost_fit(object, ...) :
 > gc <- gamboost(y ~ xn + xf, control = boost_control(center = TRUE))
 Warning message:
 In gamboost_fit(object, ...) :
-  ‘boost_control(center = TRUE)’ not implemented for ‘gamboost’; inputs are not centered
+  'boost_control(center = TRUE)' not implemented for 'gamboost'; inputs are not centered
 > g <- gamboost(y ~ xnm + xf)
 > stopifnot(all.equal(mstop(AIC(gc, "corrected")), mstop(AIC(g, "corrected"))))
 > 
@@ -257,4 +257,16 @@ In gamboost_fit(object, ...) :
 [  41] ...................................... -- risk: 12297.56 
 [  81] ..................
 Final risk: 12208.95 
+> 
+> ### bbs with weights and expanded data
+> x <- runif(100)
+> y <- rnorm(length(x))
+> knots <- seq(from = 0.1, to = 0.9, by = 0.1)
+> w <- rmultinom(1, length(x), rep(1, length(x)) / length(x))[,1]
+> iw <- rep(1:length(x), w)
+> 
+> m1 <- attr(bbs(x, knots = knots), "dpp")(w)$fit(y)$model 
+> m2 <- attr(bbs(x[iw], knots = knots), "dpp")(rep(1, length(x)))$fit(y[iw])$model 
+> 
+> stopifnot(max(abs(m1 - m2)) < sqrt(.Machine$double.eps))
 > 

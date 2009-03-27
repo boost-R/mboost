@@ -9,8 +9,9 @@ basedef <- function(x, baselearner, dfbase) {
     for (xn in names(x)) {
         dpp <- attr(x[[xn]], "dpp")
         if (is.function(dpp)) next()
-        if (is.numeric(x[[xn]]) && dfbase > 2) {
-            args <- list(x = x[[xn]], df = dfbase, xname = xn)
+        xdf <- ifelse(length(dfbase) == 1, dfbase, dfbase[names(x) == xn])
+        if (is.numeric(x[[xn]]) && xdf > 2) {
+            args <- list(x = x[[xn]], df = xdf, xname = xn)
             if (baselearner %in% c("bols", "btree")) args$df <- NULL
             x[[xn]] <- do.call(baselearner, args)
         } else {
@@ -21,7 +22,7 @@ basedef <- function(x, baselearner, dfbase) {
 }
 
 ### Fitting function
-gamboost_fit <- function(object, baselearner = c("bss", "bbs", "bols", "bns", "btree"),
+gamboost_fit <- function(object, baselearner = c("bbs", "bss", "bols", "bns", "btree"),
                          dfbase = 4, family = GaussReg(),
                          control = boost_control(), weights = NULL) {
 
@@ -306,5 +307,6 @@ coef.gamboost <- function(object, ...) {
         if (!inherits(cf, "try-error"))
             ret[[ens[m, "xselect"]]] <- ret[[ens[m, "xselect"]]] + nu * cf
     }
+    attr(ret, "offset") <- object$offset
     ret
 }

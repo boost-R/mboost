@@ -1,6 +1,6 @@
 
-R version 2.8.0 (2008-10-20)
-Copyright (C) 2008 The R Foundation for Statistical Computing
+R version 2.9.0 alpha (2009-03-22 r48193)
+Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -44,7 +44,7 @@ Loading required package: strucchange
 Loading required package: vcd
 Loading required package: MASS
 Loading required package: colorspace
-plot.survFit: local variable ‘tmp’ assigned but may not be used
+plot.survFit: local variable 'tmp' assigned but may not be used
 NULL
 > 
 > 

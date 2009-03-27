@@ -1,6 +1,6 @@
 
-R version 2.8.0 (2008-10-20)
-Copyright (C) 2008 The R Foundation for Statistical Computing
+R version 2.9.0 alpha (2009-03-22 r48193)
+Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -115,7 +115,7 @@ Iter   TrainDeviance   ValidDeviance   StepSize   Improve
 +     center = TRUE))
 Warning message:
 In blackboost_fit(object, fitmem = fitmem, weights = weights, ...) :
-  ‘boost_control(center = TRUE)’ not implemented for ‘blackboost’; inputs are not centered
+  'boost_control(center = TRUE)' not implemented for 'blackboost'; inputs are not centered
 > 
 > A2 <- survFit(fit2)
 > A2

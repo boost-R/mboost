@@ -1,6 +1,6 @@
 
-R version 2.8.0 (2008-10-20)
-Copyright (C) 2008 The R Foundation for Statistical Computing
+R version 2.9.0 alpha (2009-03-22 r48193)
+Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -141,7 +141,7 @@ R>
 R> ###################################################
 R> ### chunk number 10: bodyfat-gamboost-fit
 R> ###################################################
-R> bf_gam <- gamboost(DEXfat ~ ., data = bodyfat)
+R> bf_gam <- gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss")
 R> 
 R> 
 R> ###################################################
@@ -294,7 +294,7 @@ R>
 R> ###################################################
 R> ### chunk number 23: wpbc-gamboost-fit
 R> ###################################################
-R> wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial())
+R> wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial(), baselearner = "bss")
 R> mopt <- mstop(aic <- AIC(wpbc_gam, "classical"))
 R> aic
 [1] 196.33
