@@ -8,6 +8,7 @@
 \alias{Laplace}
 \alias{Poisson}
 \alias{CoxPH}
+\alias{QuantReg}
 \title{ Gradient Boosting Families }
 \description{
     \code{boost_family} objects provide a convenient way to specify loss functions
@@ -28,6 +29,7 @@ Huber(d = NULL)
 Laplace()
 Poisson()
 CoxPH()
+QuantReg(tau = 0.5, qoffset = 0.5)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -45,6 +47,8 @@ CoxPH()
   \item{weights}{ a logical indicating if weights are allowed. }
   \item{name}{ a character giving the name of the loss function for pretty printing. }
   \item{d}{ delta parameter for Huber loss function. If omitted, it is chosen adaptively.}
+  \item{tau}{ the quantile to be estimated, a number strictly between 0 and 1.}
+  \item{qoffset}{ quantile of response distribution to be used as offset.}
 }
 \details{
 
@@ -65,9 +69,20 @@ CoxPH()
   \code{AdaExp()} and \eqn{(\sum w_i)^{-1} \sum w_i y_i} for \code{GaussReg} and the median
   for \code{Huber} and \code{Laplace}.
 
+  Boosting for quantile regression with the \code{QuantReg} family is
+  introduced in Fenske et al. (2009).
+
 }
 \value{
   An object of class \code{boost_family}.
+}
+\references{
+
+    Nora Fenke, Thomas Kneib, and Torsten Hothorn (2009).
+    Boosting additive quantile regression for identifying risk 
+    factors for severe childhood malnutrition. Technical Report Nr. 52,
+    Institut fuer Statistik, LMU Muenchen.
+    \url{http://epub.ub.uni-muenchen.de/}
 }
 \examples{
 

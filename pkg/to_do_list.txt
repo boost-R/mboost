@@ -1,4 +1,6 @@
 
+  o checks for QuantReg
+
 > Ein kleines Problem gibt es auch noch: Bei räumlichen Effekten müssen wir
 > die
 > plot-Funktion noch davon abhalten, eine Funktion zu zeichnen und
