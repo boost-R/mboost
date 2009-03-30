@@ -79,8 +79,8 @@ QuantReg(tau = 0.5, qoffset = 0.5)
 \references{
 
     Nora Fenke, Thomas Kneib, and Torsten Hothorn (2009).
-    Boosting additive quantile regression for identifying risk 
-    factors for severe childhood malnutrition. Technical Report Nr. 52,
+    Identifying risk factors for severe childhood malnutrition by                                        
+    boosting additive quantile regression. Technical Report Nr. 52,
     Institut fuer Statistik, LMU Muenchen.
     \url{http://epub.ub.uni-muenchen.de/}
 }
