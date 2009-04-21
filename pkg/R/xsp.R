@@ -86,12 +86,15 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
         if (any(!cc)) weights <- weights[cc]
 
         ### knots may depend on weights
+        boundary.knots <- range(x[cc], na.rm = TRUE)
+        bnw <- range(x[cc][weights > 0], na.rm = TRUE)
+        if (!isTRUE(all.equal(boundary.knots, bnw)))
+            warning("knots depend on weights")
+
         if (length(knots) == 1) {
-            knots <- seq(from = min(x[weights > 0], na.rm = TRUE),
-                         to = max(x[weights > 0], na.rm = TRUE), length = knots+2)
+            knots <- seq(from = bn[1], to = bn[2], length = knots+2)
             knots <- knots[2:(length(knots) - 1)]
         }
-        boundary.knots <- range(x[weights > 0], na.rm = TRUE)
 
         newX <- function(x, z = NULL, weights = NULL, na.rm = TRUE) {
             if (na.rm) {
@@ -101,14 +104,7 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
                 if (!is.null(weights))
                     weights <- weights[cc]
             }
-            ### avoid bs warning on x outside boundary.knots
-            if (!is.null(weights)) {
-                xtmp <- x
-                xtmp[weights == 0] <- mean(boundary.knots)
-            } else {
-                xtmp <- x
-            }
-            X <- bs(xtmp, knots = knots, degree = degree, intercept = TRUE,
+            X <- bs(x, knots = knots, degree = degree, intercept = TRUE,
                     Boundary.knots = boundary.knots)
             if (!is.null(z))
                 X <- X * z
