@@ -129,7 +129,7 @@ mod2 <- gamboost(DEXfat ~ ., data = bodyfat[rep(1:n, w),], con = ctrl)
 aic2 <- AIC(mod2, "corrected")
 attributes(aic2) <- NULL
 
-stopifnot(all.equal(round(aic1, 3), round(aic2, 3)))
+stopifnot(all.equal(round(aic1, 1), round(aic2, 1)))
 
 mod1 <- blackboost(DEXfat ~ ., data = bodyfat, weights = w)            
 mod2 <- blackboost(DEXfat ~ ., data = bodyfat[rep(1:n, w),])            
@@ -138,11 +138,17 @@ ratio <- mod1$risk / mod2$risk
 stopifnot(ratio[1] > 0.95 && ratio[2] < 1.05)
 
 ### df <= 2
-mod1 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, dfbase = 2)
+ctrl$risk <- "oobag"
+mod1 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bss", dfbase = 2)
 mod2 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bbs", dfbase = 2)
 mod3 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bols")
 stopifnot(max(abs(predict(mod1) - predict(mod2))) < .Machine$double.eps)
 stopifnot(max(abs(predict(mod1) - predict(mod3))) < .Machine$double.eps)
+
+### check predictions of zero-weight observations (via out-of-bag risk)
+mod1 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bss")
+mod2 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bbs")
+stopifnot(abs(coef(lm(mod1$risk ~ mod2$risk - 1)) - 1) < 0.01)
 
 ### not really a bug, a new feature; test fastp
 df <- data.frame(y = rnorm(100), x = runif(100), z = runif(100))
@@ -209,3 +215,4 @@ m1 <- attr(bbs(x, knots = knots), "dpp")(w)$fit(y)$model
 m2 <- attr(bbs(x[iw], knots = knots), "dpp")(rep(1, length(x)))$fit(y[iw])$model 
 
 stopifnot(max(abs(m1 - m2)) < sqrt(.Machine$double.eps))
+

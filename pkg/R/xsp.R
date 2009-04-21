@@ -89,10 +89,10 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
         boundary.knots <- range(x[cc], na.rm = TRUE)
         bnw <- range(x[cc][weights > 0], na.rm = TRUE)
         if (!isTRUE(all.equal(boundary.knots, bnw)))
-            warning("knots depend on weights")
+            warning("knots (and therefore model) depend on observations with zero weight")
 
         if (length(knots) == 1) {
-            knots <- seq(from = bn[1], to = bn[2], length = knots+2)
+            knots <- seq(from = boundary.knots[1], to = boundary.knots[2], length = knots+2)
             knots <- knots[2:(length(knots) - 1)]
         }
 
