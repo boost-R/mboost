@@ -1,5 +1,5 @@
 
-R version 2.9.0 alpha (2009-03-22 r48193)
+R version 2.9.0 (2009-04-17)
 Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -174,6 +174,25 @@ In gamboost_fit(object, ...) :
 > stopifnot(all.equal(round(aic1, 3), round(aic2, 3)))
 > 
 > mod1 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl)
+Warning messages:
+1: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+2: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+3: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+4: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+5: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+6: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+7: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+8: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+9: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
 > aic1 <- AIC(mod1, "corrected")
 > attributes(aic1) <- NULL
 > 
@@ -181,7 +200,7 @@ In gamboost_fit(object, ...) :
 > aic2 <- AIC(mod2, "corrected")
 > attributes(aic2) <- NULL
 > 
-> stopifnot(all.equal(round(aic1, 3), round(aic2, 3)))
+> stopifnot(all.equal(round(aic1, 1), round(aic2, 1)))
 > 
 > mod1 <- blackboost(DEXfat ~ ., data = bodyfat, weights = w)            
 > mod2 <- blackboost(DEXfat ~ ., data = bodyfat[rep(1:n, w),])            
@@ -190,11 +209,36 @@ In gamboost_fit(object, ...) :
 > stopifnot(ratio[1] > 0.95 && ratio[2] < 1.05)
 > 
 > ### df <= 2
-> mod1 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, dfbase = 2)
+> ctrl$risk <- "oobag"
+> mod1 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bss", dfbase = 2)
 > mod2 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bbs", dfbase = 2)
 > mod3 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bols")
 > stopifnot(max(abs(predict(mod1) - predict(mod2))) < .Machine$double.eps)
 > stopifnot(max(abs(predict(mod1) - predict(mod3))) < .Machine$double.eps)
+> 
+> ### check predictions of zero-weight observations (via out-of-bag risk)
+> mod1 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bss")
+> mod2 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bbs")
+Warning messages:
+1: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+2: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+3: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+4: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+5: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+6: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+7: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+8: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+9: In attr(x[[i]], "dpp")(weights) :
+  knots (and therefore model) depend on observations with zero weight
+> stopifnot(abs(coef(lm(mod1$risk ~ mod2$risk - 1)) - 1) < 0.01)
 > 
 > ### not really a bug, a new feature; test fastp
 > df <- data.frame(y = rnorm(100), x = runif(100), z = runif(100))
@@ -269,4 +313,5 @@ Final risk: 12208.95
 > m2 <- attr(bbs(x[iw], knots = knots), "dpp")(rep(1, length(x)))$fit(y[iw])$model 
 > 
 > stopifnot(max(abs(m1 - m2)) < sqrt(.Machine$double.eps))
+> 
 > 
