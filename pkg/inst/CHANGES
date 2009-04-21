@@ -1,7 +1,9 @@
 
-		CHANGES in `mboost' VERSION 1.1-0 (2009-xxxxx)
+		CHANGES in `mboost' VERSION 1.1-1 (2009-04-21)
 
   o  new quantile regression facilities.
+
+  o  fix problem with bbs baselearner and cvrisk
 
 
 		CHANGES in `mboost' VERSION 1.1-0 (2009-03-27)
