@@ -455,7 +455,7 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
             predictfun <- function(newdata = NULL) {
                 if (is.null(newdata)) return(Xna %*% coef)
                 nX <- newX(x = newdata[[xname]], y = newdata[[yname]],
-                           z = newdata[[zname]])
+                           z = newdata[[zname]], na.rm = FALSE)
                 if(center) {
                     nX <- nX%*%L
                 }
