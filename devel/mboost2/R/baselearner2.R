@@ -86,6 +86,17 @@ polyDes <- function(data, varid, degree = 1) {
     }
 }
 
+factorDes <- function(data, varid) {
+
+    x <- get_var(data, varid, class = "factor")
+    function(data) {
+        ret <- model.matrix(~ x - 1)
+        attr(ret, "index") <- attr(x, "index")
+        class(ret) <- "factorDes"
+        return(ret)
+    }
+}
+
 PSpline <- function(data, varid, differences = 2, ...) {
 
     stopifnot(length(varid) == 1)
@@ -101,6 +112,10 @@ PSpline <- function(data, varid, differences = 2, ...) {
     ret
 }
 class(PSpline) <- "design_generator"
+
+Factor <- function(data, varid)
+    return(function(data) factorDes(data, varid))
+class(Factor) <- "design_generator"
 
 ### koennen wir auch baselearner haben, die aus
 ### interactions und haupteffekten bestehen (so dass immer

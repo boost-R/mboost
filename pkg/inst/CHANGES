@@ -1,4 +1,9 @@
 
+		CHANGES in `mboost' VERSION 1.1-2 (2009-05-xx)
+
+  o  better weights and boundary knots handling in bspatial
+
+
 		CHANGES in `mboost' VERSION 1.1-1 (2009-04-21)
 
   o  new quantile regression facilities.
