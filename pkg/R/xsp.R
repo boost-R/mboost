@@ -420,7 +420,7 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
             return(X)
         }
         X <- newX(x, y, z)
-
+        Xna <- X
         if (any(!cc))
             Xna <- newX(x, y, z, weights = weights, na.rm = FALSE)
 
