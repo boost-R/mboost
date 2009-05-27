@@ -13,7 +13,7 @@ Description: Functional gradient descent algorithms
   high-dimensional data.
 Depends: R (>= 2.4.0), methods, modeltools (>= 0.2.10), party (>= 0.9-993),
   splines
-Suggests: mlbench, ipred
+Suggests: mlbench, ipred, multicore
 LazyLoad: yes
 LazyData: yes
 License: GPL-2

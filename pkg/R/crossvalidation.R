@@ -4,7 +4,7 @@
 ## for boosting algorithms
 ##
 
-cvrisk <- function(object, folds, grid = c(1:mstop(object))) {
+cvrisk <- function(object, folds, grid = c(1:mstop(object)), ...) {
 
     fitfct <- object$update
     oobrisk <- matrix(0, nrow = ncol(folds), ncol = length(grid))
@@ -14,7 +14,20 @@ cvrisk <- function(object, folds, grid = c(1:mstop(object))) {
     ctrl$saveensss <- FALSE
 
     if (is.null(object$data))
-        stop(sQuote("object"), " does not contain data. Estimate model with option ", sQuote("savedata = TRUE"))
+        stop(sQuote("object"), 
+             " does not contain data. Estimate model with option ", 
+             sQuote("savedata = TRUE"))
+
+    myapply <- lapply
+    if (require("multicore")) {
+        if (!multicore:::isChild()) {
+            myapply <- mclapply
+            if (ctrl$trace) {
+                ctrl$trace <- FALSE
+                cat("\n Running in parallel with `trace = FALSE'\n")
+            }
+        }
+    }
 
     fam_name <- object$family@name
     call <- deparse(object$call)
@@ -30,8 +43,10 @@ cvrisk <- function(object, folds, grid = c(1:mstop(object))) {
         ret
     }
 
-    oobrisk <- apply(folds, 2, dummyfct, control = ctrl, fct = fitfct, data = data, grid = grid)
-    oobrisk <- t(oobrisk)
+    oobrisk <- myapply(1:ncol(folds), function(i) 
+        dummyfct(folds[,i], control = ctrl, fct = fitfct, data = data, grid = grid),
+        ...)
+    oobrisk <- t(as.data.frame(oobrisk))
     oobrisk <- oobrisk/colSums(folds == 0)
     colnames(oobrisk) <- grid
     rownames(oobrisk) <- 1:nrow(oobrisk)

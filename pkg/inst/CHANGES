@@ -3,6 +3,8 @@
 
   o  better weights and boundary knots handling in bspatial
 
+  o  cvrisk runs in parallel if package `multicore' is available
+
 
 		CHANGES in `mboost' VERSION 1.1-1 (2009-04-21)
 

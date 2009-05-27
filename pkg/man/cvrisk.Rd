@@ -15,6 +15,8 @@ cvrisk(object, folds, grid = c(1:mstop(object)))
                 the number of cross-validation runs.}
   \item{grid}{ a vector of stopping parameters the empirical risk
                 is to be evaluated for. }
+  \item{...}{additional arguments passed to \code{\link[multicore]{mclapply}}
+             eventually.}
 }
 \details{
 
@@ -28,6 +30,12 @@ cvrisk(object, folds, grid = c(1:mstop(object)))
   Different forms of cross-validation can be applied, for example
   10-fold cross-validation or bootstrapping. The weights (zero weights
   correspond to test cases) are defined via the \code{folds} matrix.
+
+  If package \code{multicore} is available, \code{cvrisk}
+  runs in parallel on cores/processors available. The scheduling
+  can be changed by the corresponding arguments of 
+  \code{\link[multicore]{mclapply}} (via the dot arguments). 
+  No trace output is given when running in parallel.
 
 }
 \note{
