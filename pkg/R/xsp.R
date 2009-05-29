@@ -623,7 +623,7 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE,
         ### construct design matrix etc.
         y <- vector(length = nrow(x), mode = "numeric")
         ### name for working response (different from any x)
-        rname <- paste("R", paste(colnames(x), collapse = "_"), sep = "_")
+        rname <- paste(sample(LETTERS, 25, replace = TRUE), collapse = "")
         fm <- as.formula(paste(rname, " ~ ", paste(xname, collapse = "+")))
         df <- x
         df[[rname]] <- y
