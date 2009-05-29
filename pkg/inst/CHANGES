@@ -5,6 +5,8 @@
 
   o  cvrisk runs in parallel if package `multicore' is available
 
+  o  errors removed and minor improvements in the manuals
+
 
 		CHANGES in `mboost' VERSION 1.1-1 (2009-04-21)
 

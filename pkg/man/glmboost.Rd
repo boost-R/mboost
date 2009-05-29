@@ -10,10 +10,10 @@
   linear models are utilized as base learners.
 }
 \usage{
-\method{glmboost}{formula}(formula, data = list(), weights = NULL, 
+\method{glmboost}{formula}(formula, data = list(), weights = NULL,
              contrasts.arg = NULL, na.action = na.pass, ...)
 \method{glmboost}{matrix}(x, y, weights = NULL, ...)
-glmboost_fit(object, family = GaussReg(), 
+glmboost_fit(object, family = GaussReg(),
              control = boost_control(), weights = NULL)
 \method{plot}{glmboost}(x, main = deparse(x$call), col = NULL, ...)
 }
@@ -24,28 +24,28 @@ glmboost_fit(object, family = GaussReg(),
                   process. }
   \item{contrasts.arg}{a list, whose entries are contrasts suitable for input
           to the \code{contrasts} replacement function and whose names are
-          the names of columns of \code{data} containing factors. 
+          the names of columns of \code{data} containing factors.
           See \code{\link{model.matrix.default}}.}
   \item{na.action}{a function which indicates what should happen when the data
           contain \code{NA}s.}
   \item{x}{ design matrix or an object of class \code{glmboost} for plotting. }
   \item{y}{ vector of responses. }
-  \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}.} 
-  \item{family}{ an object of class \code{\link{boost_family-class}}, 
+  \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}.}
+  \item{family}{ an object of class \code{\link{boost_family-class}},
                 implementing the negative gradient corresponding
                 to the loss function to be minimized. By default, squared error loss
                 for continuous responses is used.}
   \item{control}{ an object of class \code{\link{boost_control}}.}
   \item{main}{ a title for the plot.}
-  \item{col}{ (a vector of) colors for plotting the lines representing 
+  \item{col}{ (a vector of) colors for plotting the lines representing
              the coefficient paths.}
   \item{\dots}{ additional arguments passed to callies. }
 }
 \details{
 
-  A (generalized) linear model is fitted using a boosting algorithm based on component-wise 
+  A (generalized) linear model is fitted using a boosting algorithm based on component-wise
   univariate linear models. The fit, i.e., the regression coefficients, can be
-  interpreted in the usual way. The methodology is described in 
+  interpreted in the usual way. The methodology is described in
   Buhlmann and Yu (2003), Buhlmann (2006), and Buhlmann and Hothorn (2007).
 
   The function \code{glmboost_fit} provides access to the fitting
@@ -61,23 +61,27 @@ glmboost_fit(object, family = GaussReg(),
 }
 \references{
 
-  Peter Buhlmann and Bin Yu (2003), 
-  Boosting with the L2 loss: regression and classification. 
+  Peter Buhlmann and Bin Yu (2003),
+  Boosting with the L2 loss: regression and classification.
   \emph{Journal of the American Statistical Association}, \bold{98},
   324--339.
 
-  Peter Buhlmann (2006), Boosting for high-dimensional linear models. 
+  Peter Buhlmann (2006), Boosting for high-dimensional linear models.
   \emph{The Annals of Statistics}, \bold{34}(2), 559--583.
-  
+
   Peter Buhlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 
 }
+\seealso{\code{\link{gamboost}} for boosted smooth models and
+  \code{\link{blackboost}} for boosted trees. See \code{\link{cvrisk}} for
+  cross-validated stoping iteration. Furthermore see
+  \code{\link{boost_control}}, \code{\link{Family}} and  \code{\link[mboost]{methods}}}
 \examples{
 
     ### a simple two-dimensional example: cars data
-    cars.gb <- glmboost(dist ~ speed, data = cars, 
+    cars.gb <- glmboost(dist ~ speed, data = cars,
                         control = boost_control(mstop = 5000))
     cars.gb
 
@@ -91,8 +95,8 @@ glmboost_fit(object, family = GaussReg(),
     lines(cars$speed, predict(cars.gb), col = "red")
 
     ### alternative loss function: absolute loss
-    cars.gbl <- glmboost(dist ~ speed, data = cars, 
-                         control = boost_control(mstop = 5000), 
+    cars.gbl <- glmboost(dist ~ speed, data = cars,
+                         control = boost_control(mstop = 5000),
                          family = Laplace())
     cars.gbl
 
@@ -100,8 +104,8 @@ glmboost_fit(object, family = GaussReg(),
     lines(cars$speed, predict(cars.gbl), col = "green")
 
     ### Huber loss with adaptive choice of delta
-    cars.gbh <- glmboost(dist ~ speed, data = cars, 
-                         control = boost_control(mstop = 5000), 
+    cars.gbh <- glmboost(dist ~ speed, data = cars,
+                         control = boost_control(mstop = 5000),
                          family = Huber())
 
     lines(cars$speed, predict(cars.gbh), col = "blue")

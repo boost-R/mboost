@@ -32,20 +32,22 @@
   function. If \code{newdata} is a data frame, the \code{\link{predict}} method
   of \code{object}, along with the Breslow estimator, is used for computing the
   predicted survivor function for each row in \code{newdata}.
-  
+
 }
 \value{
- An object of class \code{survFit} containing the following components: 
+ An object of class \code{survFit} containing the following components:
   \item{surv}{ the estimated survival probabilities at the time points
                given in \code{time}. }
   \item{time}{ the time points at which the survivor functions are
                evaluated. }
   \item{n.event}{ the number of events observed at each time point given
-                  in \code{time}.}              
+                  in \code{time}.}
 }
+\seealso{ \code{\link{gamboost}}, \code{\link{glmboost}} and
+  \code{\link{blackboost}} for model fitting.}
 \examples{
 fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps
-fit <- glmboost(fm, data = ovarian, family = CoxPH(), 
+fit <- glmboost(fm, data = ovarian, family = CoxPH(),
     control=boost_control(mstop = 500))
 
 S1 <- survFit(fit)

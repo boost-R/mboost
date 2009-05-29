@@ -10,13 +10,13 @@
   smoothing procedures are utilized as base learners.
 }
 \usage{
-\method{gamboost}{formula}(formula, data = list(), weights = NULL, 
+\method{gamboost}{formula}(formula, data = list(), weights = NULL,
         na.action = na.omit, ...)
 \method{gamboost}{matrix}(x, y, weights = NULL, ...)
-gamboost_fit(object, baselearner = c("bbs", "bss", "bols", 
-             "bns", "btree"), dfbase = 4, family = GaussReg(), 
+gamboost_fit(object, baselearner = c("bbs", "bss", "bols",
+             "bns", "btree"), dfbase = 4, family = GaussReg(),
              control = boost_control(), weights = NULL)
-\method{plot}{gamboost}(x, which = NULL, ask = TRUE && dev.interactive(), 
+\method{plot}{gamboost}(x, which = NULL, ask = TRUE && dev.interactive(),
     type = "b", ylab = expression(f[partial]), add_rug = TRUE, ...)
 }
 \arguments{
@@ -30,19 +30,19 @@ gamboost_fit(object, baselearner = c("bbs", "bss", "bols",
             by \code{gamboost} to be plotted via \code{plot}.}
   \item{y}{ vector of responses. }
   \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}. }
-  \item{baselearner}{ a character specifying the component-wise base learner to be used: 
+  \item{baselearner}{ a character specifying the component-wise base learner to be used:
       \code{\link{bss}} means smoothing splines (see Buhlmann and Yu 2003),
       \code{\link{bbs}} P-splines with a B-spline basis (see Schmid and Hothorn
-      2007), \code{\link{bns}} P-splines with a natural spline basis, 
+      2007), \code{\link{bns}} P-splines with a natural spline basis,
       \code{\link{bols}} linear models, \code{\link{bspatial}} bivariate tensor
-      product penalized splines, and \code{\link{brandom}} random effects. 
+      product penalized splines, and \code{\link{brandom}} random effects.
       In addition, \code{\link{btree}} boosts stumps.
       Component-wise smoothing splines
-      have been considered in Buhlmann and Yu (2003) and Schmid and Hothorn (2007) investigate P-splines with 
+      have been considered in Buhlmann and Yu (2003) and Schmid and Hothorn (2007) investigate P-splines with
       a B-spline basis. Kneib, Hothorn and Tutz (2007) also utilise P-splines with a B-spline basis,
       supplement them with their bivariate tensor product version to estimate interaction surfaces and spatial effects
       and also consider random effects base learners.}
-  \item{dfbase}{ an integer vector giving the degrees of freedom for the smoothing 
+  \item{dfbase}{ an integer vector giving the degrees of freedom for the smoothing
                  spline, either globally for all variables (when its length is one)
                  or separately for each single covariate. }
   \item{family}{ an object of class \code{\link{boost_family-class}},
@@ -89,9 +89,9 @@ gamboost_fit(object, baselearner = c("bbs", "bss", "bols",
   Peter Buhlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
-  
+
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable selection and
-  model choice in geoadditive regression models. 
+  model choice in geoadditive regression models.
   \emph{Biometrics}, accepted.
   \url{http://epub.ub.uni-muenchen.de/2063/}
 
@@ -101,18 +101,23 @@ gamboost_fit(object, baselearner = c("bbs", "bss", "bols",
   \url{http://epub.ub.uni-muenchen.de/2057/}
 
 }
+\seealso{\code{\link{glmboost}} for boosted linear models and
+  \code{\link{blackboost}} for boosted trees. See e.g. \code{\link{bbs}}
+  for possible base-learners. See \code{\link{cvrisk}} for
+  cross-validated stoping iteration. Furthermore see
+  \code{\link{boost_control}}, \code{\link{Family}} and  \code{\link[mboost]{methods}}}
 \examples{
 
     ### a simple two-dimensional example: cars data
-    cars.gb <- gamboost(dist ~ speed, data = cars, dfbase = 4, 
+    cars.gb <- gamboost(dist ~ speed, data = cars, dfbase = 4,
                         control = boost_control(mstop = 50))
     cars.gb
     AIC(cars.gb, method = "corrected")
 
     ### plot fit for mstop = 1, ..., 50
-    plot(dist ~ speed, data = cars)    
+    plot(dist ~ speed, data = cars)
     tmp <- sapply(1:mstop(AIC(cars.gb)), function(i)
-        lines(cars$speed, predict(cars.gb[i]), col = "red"))          
+        lines(cars$speed, predict(cars.gb[i]), col = "red"))
     lines(cars$speed, predict(smooth.spline(cars$speed, cars$dist),
                               cars$speed)$y, col = "green")
 
@@ -123,8 +128,8 @@ gamboost_fit(object, baselearner = c("bbs", "bss", "bols",
     ### linear model
     lines(x, fitted(lm(y ~ sin(x) - 1)), col = "red")
     ### GAM
-    lines(x, fitted(gamboost(y ~ x - 1, 
-                    control = boost_control(mstop = 500))), 
+    lines(x, fitted(gamboost(y ~ x - 1,
+                    control = boost_control(mstop = 500))),
           col = "green")
 
 }

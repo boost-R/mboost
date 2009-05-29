@@ -52,7 +52,7 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
     if (is.null(zname)) zname <- deparse(substitute(z))
 
     if (all(x %in% c(0, 1)))
-        return(bols(x = x, z = z, xname = xname, zname = zname, 
+        return(bols(x = x, z = z, xname = xname, zname = zname,
                     center = center || all(x == 1)))
 
     if (is.factor(x) || (df <= 2 && !center))
@@ -386,7 +386,7 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
 
         if (length(xknots) == 1) {
             xknots <- seq(from = xboundary.knots[1], to = xboundary.knots[2], length = xknots+2)
-            xknots <- xknots[2:(length(xknots) - 1)]  
+            xknots <- xknots[2:(length(xknots) - 1)]
         }
 
         yboundary.knots <- range(y[cc], na.rm = TRUE)
@@ -396,7 +396,7 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
 
         if (length(yknots) == 1) {
             yknots <- seq(from = yboundary.knots[1], to = yboundary.knots[2], length = yknots+2)
-            yknots <- yknots[2:(length(yknots) - 1)]  
+            yknots <- yknots[2:(length(yknots) - 1)]
         }
 
         newX <- function(x, y, z = NULL, weights = NULL, na.rm = TRUE) {
@@ -405,11 +405,11 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
                 x <- x[cc]
                 y <- y[cc]
                 if (!is.null(z))
-                    z <- z[cc]  
+                    z <- z[cc]
                 if (!is.null(weights))
                     weights <- weights[cc]
             }
- 
+
             Xx <- bs(x, knots = xknots, degree = degree, intercept = TRUE,
                      Boundary.knots = xboundary.knots)
             Xy <- bs(y, knots = yknots, degree = degree, intercept = TRUE,
@@ -488,7 +488,7 @@ bols <- function(x, z = NULL, xname = NULL, zname = NULL, center = FALSE,
              if (!is.null(z))
                  z <- z[cc]
          }
-         
+
          if (is.factor(x)) {
              X <- model.matrix(~ x, contrasts.arg = list(x = contrasts.arg))
          } else {
@@ -520,7 +520,7 @@ bols <- function(x, z = NULL, xname = NULL, zname = NULL, center = FALSE,
          XtX <- crossprod(Xw, X)
 
          if (is.null(df) || df >= ncol(K)) {
-             Xsolve <- tcrossprod(solve(crossprod(Xw, X)), Xw)
+             Xsolve <- tcrossprod(solve(XtX), Xw)
          } else {
              lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
              Xsolve <- tcrossprod(solve(XtX + lambda * K), Xw)

@@ -6,7 +6,7 @@
   for hyper-parameter selection.
 }
 \usage{
-cvrisk(object, folds, grid = c(1:mstop(object)))
+cvrisk(object, folds, grid = c(1:mstop(object)), ...)
 }
 \arguments{
   \item{object}{ an object of class \code{gb}.}
@@ -33,8 +33,8 @@ cvrisk(object, folds, grid = c(1:mstop(object)))
 
   If package \code{multicore} is available, \code{cvrisk}
   runs in parallel on cores/processors available. The scheduling
-  can be changed by the corresponding arguments of 
-  \code{\link[multicore]{mclapply}} (via the dot arguments). 
+  can be changed by the corresponding arguments of
+  \code{\link[multicore]{mclapply}} (via the dot arguments).
   No trace output is given when running in parallel.
 
 }
@@ -57,6 +57,10 @@ cvrisk(object, folds, grid = c(1:mstop(object)))
   \emph{Journal of Computational and Graphical Statistics}, \bold{14}(3),
   675--699.
 }
+\seealso{\code{\link{AIC.gamboost}} or \code{\link{AIC.glmboost}} for
+  \code{AIC} based selection of the stopping iteration. Use \code{mstop}
+  to extract the optimal stopping iteratation from \code{cvrisk}
+  object.}
 \examples{
 
   data("bodyfat", package = "mboost")
