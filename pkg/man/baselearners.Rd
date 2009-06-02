@@ -116,10 +116,10 @@ btree(..., tree_controls = ctree_control(stump = TRUE,
   If \code{z} is specified as an additional argument, a
   varying coefficients term is estimated, where \code{z} is the
   interaction variable and the effect modifier is given by either
-  \code{x} or \code{x} and \code{y}. If only \code{x} is specified and
-  one of the nonparametric base learners \code{bbs}, \code{bns} or \code{bss} is used, this
-  corresponds to the classical situation of varying coefficients, where the
-  effect of \code{z} varies over the domain of \code{x}. In case of \code{bspatial} as
+  \code{x} or \code{x} and \code{y}. If one of the nonparametric base
+  learners \code{bbs} or \code{bns} is used, this corresponds to the
+  classical situation of varying coefficients, where the effect of
+  \code{z} varies over the co-domain of \code{x}. In case of \code{bspatial} as
   base learner, the effect of \code{z} varies with respect to both
   \code{x} and \code{y}, i.e. an interaction surface between \code{x} and
   \code{y} is specified as effect modifier. For \code{brandom} specification of \code{z}

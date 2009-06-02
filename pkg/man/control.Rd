@@ -30,7 +30,7 @@ boost_control(mstop = 100, nu = 0.1, constraint = FALSE,
 		 centering is only needed if \code{\link{bols}}
 		 base-learners are specified without intercept. In this
 		 case centering of the covariates is esential and should be done
-		 manually (a.t.m.).}
+		 manually (at the moment).}
   \item{trace}{ a logical triggering printout of status information during
                 the fitting process.}
   \item{save_ensembless}{ a logical indicating if the list of
