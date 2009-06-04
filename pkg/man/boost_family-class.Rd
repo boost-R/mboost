@@ -22,7 +22,7 @@ Objects can be created by calls of the form \code{\link{Family}(...)}
     \item{\code{fW}:}{ transformation of the fit for the diagonal weights matrix for an
              approximation of the boosting hat matrix for loss functions other than
              squared error.}
-      \item{check\_y:}{ a function for checking the class / mode of a response variable.}
+    \item{check_y:}{ a function for checking the class / mode of a response variable.}
     \item{\code{name}:}{ a character giving the name of the loss function
                          for pretty printing. }
     \item{\code{charloss}:}{ a character, the deparsed loss function.}
