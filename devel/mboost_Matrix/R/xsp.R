@@ -43,7 +43,7 @@ fitted.baselist <- function(object) {
 
 ### what happens to weights
 ### when calculating knots etc?
-bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
+bbs1 <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
                 center = FALSE, xname = NULL, zname = NULL) {
 
     cc <- complete_cases(x = x, z = z)
@@ -325,7 +325,7 @@ bss <- function(x, df = 4, xname = NULL) {
     return(x)
 }
 
-bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
+bspatial1 <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
                      degree = 3, differences = 2, center = FALSE, xname = NULL,
                      yname = NULL, zname = NULL) {
 

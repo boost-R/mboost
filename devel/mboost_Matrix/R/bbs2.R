@@ -1,6 +1,6 @@
 ### what happens to weights
 ### when calculating knots etc?
-bbs2 <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
+bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
                 center = FALSE, xname = NULL, zname = NULL) {
 
     cc <- complete_cases(x = x, z = z)
@@ -35,8 +35,6 @@ bbs2 <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
             warning("non-equidistant ", sQuote("knots"),
                     " might be inappropriate")
 
-    ox <- order(x)
-    rx <- rank(x)
     X <- matrix(x, ncol = 1)
 
     dpp <- function(weights) {
@@ -74,10 +72,10 @@ bbs2 <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
             }
             return(X)
         }
-        X <- newX(x[ox], z[ox], weights = weights[ox])
+        X <- newX(x, z, weights = weights)
         Xna <- X
         if (any(!cc))
-            Xna <- newX(x[ox], z[ox], weights = weights[ox], na.rm = FALSE)
+            Xna <- newX(x, z, weights = weights, na.rm = FALSE)
 
         if (center) {
             K <- Diagonal(ncol(X))
@@ -87,26 +85,30 @@ bbs2 <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
         }
         K <- as(K, "CsparseMatrix")
 
-        lambda <- df2lambda(X, df = df, dmat = K, weights = weights[ox])
+        lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
 
-        Xw <- X * weights[ox]
+        Xw <- X * weights
         XtX <- crossprod(Xw, X) + lambda * K
+        if (isSymmetric(XtX)) XtX <- forceSymmetric(XtX)
+        #### if (any(!cc)) rm(X)
 	
         fitfun <- function(y) {
 
             if (any(!cc)) y <- y[cc]
-            coef <- solve(XtX, crossprod(Xw, y[ox]))
+            coef <- solve(XtX, crossprod(Xw, y))
 
             predictfun <- function(newdata = NULL) {
-                if (is.null(newdata)) return((Xna %*% coef)[rx])
+                if (is.null(newdata)) return(as.vector(Xna %*% coef))
                 nX <- newX(x = newdata[[xname]], z = newdata[[zname]], na.rm = FALSE)
-                nX %*% coef
+                as.vector(nX %*% coef)
             }
-            ret <- list(model = coef, predict = predictfun, fitted = function() (Xna %*% coef)[rx])
+            ret <- list(model = coef, predict = predictfun, 
+                        fitted = function() as.vector(Xna %*% coef))
             class(ret) <- c("basefit", "baselm")
             ret
         }
-        ret <- list(fit = fitfun, hatmatrix = function() tcrossprod(X %*% solve(XtX), X)[rx,])
+        ret <- list(fit = fitfun, hatmatrix = function() 
+                    as.matrix(tcrossprod(X %*% solve(XtX), Xw)))
         class(ret) <- "basisdpp"
         ret
     }
@@ -115,7 +117,7 @@ bbs2 <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
 }
 
 
-bspatial2 <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
+bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
                      degree = 3, differences = 2, center = FALSE, xname = NULL,
                      yname = NULL, zname = NULL) {
 
@@ -203,13 +205,13 @@ bspatial2 <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
             Xx <- bs(x, knots = xknots, degree = degree, intercept = TRUE,
                      Boundary.knots = xboundary.knots)
             class(Xx) <- "matrix"
-            Xx <- as(Xx, "CsparseMatrix")
+            Xx <- Matrix(Xx)
             Xy <- bs(y, knots = yknots, degree = degree, intercept = TRUE,
                      Boundary.knots = yboundary.knots)
             class(Xy) <- "matrix"
-            Xy <- as(Xy, "CsparseMatrix")
+            Xy <- Matrix(Xy)
 
-            X <- kronecker(Xx, matrix(1, nc = ncol(Xy))) * kronecker(matrix(1, nc = ncol(Xx)), Xy)
+            X <- kronecker(Xx, Matrix(1, nc = ncol(Xy))) * kronecker(Matrix(1, nc = ncol(Xx)), Xy)
             if (!is.null(z))
                 X <- X * z
             return(X)
@@ -226,42 +228,43 @@ bspatial2 <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
         Kx <- crossprod(Kx, Kx)
         Ky <- diff(Diagonal(yd), differences = differences)
         Ky <- crossprod(Ky, Ky)
-        K <- kronecker(Kx, Diagonal(yd)) + kronecker(diag(xd), Ky)
+        K <- kronecker(Kx, Diagonal(yd)) + kronecker(Diagonal(xd), Ky)
 
         L <- 0
         if(center) {
             L <- eigen(K, symmetric=TRUE, EISPACK=TRUE)
             L$vectors <- L$vectors[,1:(ncol(X)-differences^2)]
             L$values <- sqrt(L$values[1:(ncol(X)-differences^2)])
-            L <- L$vectors%*%diag(1/L$values)
+            L <- L$vectors%*%Diagonal(1/L$values)
             X <- X%*%L
-            K <- diag(ncol(X))
+            K <- Diagonal(ncol(X))
         }
-
 
         lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
         Xw <- X * weights
-        XtX <- crossprod(Xw, X)
-        Xsolve <- tcrossprod(solve(XtX + lambda * K), Xw)
+        XtX <- crossprod(Xw, X) + lambda * K
+        if (isSymmetric(XtX)) XtX <- forceSymmetric(XtX)
+        #### if (any(!cc)) rm(X)
 
         fitfun <- function(y) {
-            coef <- Xsolve %*% y
+            coef <- solve(XtX, crossprod(Xw, y))
 
             predictfun <- function(newdata = NULL) {
-                if (is.null(newdata)) return(Xna %*% coef)
+                if (is.null(newdata)) return(as.vector(Xna %*% coef))
                 nX <- newX(x = newdata[[xname]], y = newdata[[yname]],
                            z = newdata[[zname]], na.rm = FALSE)
                 if(center) {
                     nX <- nX%*%L
                 }
-                nX %*% coef
+                as.vector(nX %*% coef)
             }
             ret <- list(model = coef, predict = predictfun,
-                        fitted = function() Xna %*% coef)
+                        fitted = function() as.vector(Xna %*% coef))
             class(ret) <- c("basefit", "baselm")
             ret
         }
-        ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
+        ret <- list(fit = fitfun, hatmatrix = function() 
+                    as.matrix(tcrossprod(X %*% solve(XtX), Xw)))
         class(ret) <- "basisdpp"
         ret
     }
