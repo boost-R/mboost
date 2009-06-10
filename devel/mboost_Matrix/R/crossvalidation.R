@@ -19,7 +19,7 @@ cvrisk <- function(object, folds, grid = c(1:mstop(object)), ...) {
              sQuote("savedata = TRUE"))
 
     myapply <- lapply
-    if (require("multicore")) {
+    if (require("multicore") && object$control$parallel) {
         if (!multicore:::isChild()) {
             myapply <- mclapply
             if (ctrl$trace) {

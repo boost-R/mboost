@@ -9,5 +9,8 @@
     ### stats4 redefines AIC as S4 generic which causes dispatch problems
     if (length(grep("stats4", search())) > 0)
         detach(package:stats4)
+    if (require("multicore"))
+        packageStartupMessage("package ", sQuote("multicore"), " found; ",
+                              sQuote("mboost"), " parallelization enabled.")
     return(TRUE)
 }

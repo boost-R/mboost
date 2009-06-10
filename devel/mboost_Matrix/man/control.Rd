@@ -9,7 +9,7 @@
 boost_control(mstop = 100, nu = 0.1, constraint = FALSE,
               risk = c("inbag", "oobag", "none"),
               savedata = TRUE, center = FALSE, trace = FALSE,
-              save_ensembless=TRUE)
+              save_ensembless = TRUE, parallel = require("multicore"))
 }
 \arguments{
   \item{mstop}{ an integer giving the number of initial boosting iterations. }
@@ -36,6 +36,9 @@ boost_control(mstop = 100, nu = 0.1, constraint = FALSE,
   \item{save_ensembless}{ a logical indicating if the list of
     baselearners should be saved and returned. This list is generally
     needed but can be suppressed to reduce memory usage (not recommended). }
+  \item{parallel}{enable parallelization using \pkg{multicore} technology
+                  for crossvalidation (in function \code{\link{cvrisk}})
+                  and for computing predictions.}
 }
 \details{
 

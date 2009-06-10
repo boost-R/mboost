@@ -310,3 +310,53 @@ coef.gamboost <- function(object, ...) {
     attr(ret, "offset") <- object$offset
     ret
 }
+
+
+predict.gamboost <- function(object, newdata = NULL, type = c("lp", "response"), 
+    allIterations = FALSE, ...) {
+
+    cf <- coef(object)
+
+    if (allIterations) {
+        if (type != "lp")
+            stop(sQuote("allIterations"), " only available for ",
+                 sQuote("type = \"lp\""))
+        return(fastp(object, newdata))
+    }
+
+    ens <- object$ensembless
+    xselect <- object$ensemble[, "xselect"]
+
+    myapply <- lapply
+    if (require("multicore") && object$control$parallel) {
+        if (!multicore:::isChild()) {
+            myapply <- mclapply
+        }
+    }
+
+    if (is.matrix(newdata)) newdata <- as.data.frame(newdata)
+
+    lp <- object$offset
+    lp2 <- myapply(1:length(cf), function(i) {
+        indx <- which(xselect == i)[1]
+        mm <- "modelmatrix" %in% names(ens[[indx]][[1]])
+        if (length(cf[[i]]) > 0 && !any(is.na(cf[[i]])) && mm) {
+            return(as.vector(ens[[indx]][[1]]$modelmatrix(newdata = newdata) %*% cf[[i]]))
+        } else {
+            indx <- which(xselect == i)
+            if (length(indx) == 0) return(NULL)
+            return(object$control$nu * rowSums(sapply(indx, function(i) 
+                   predict(ens[[i]], newdata = newdata))))
+        }
+    })
+    nm <- names(cf)[!sapply(lp2, is.null)]
+    lp2 <- matrix(unlist(lp2), ncol = sum(!sapply(lp2, is.null)))
+    colnames(lp2) <- nm
+    lp <- lp + rowSums(lp2)
+    if (object$control$constraint) lp <- sign(lp) * pmin(abs(lp), 1)
+    y <- object$data$y
+    if (type == "response" && is.factor(y))
+       return(factor(levels(y)[(lp > 0) + 1], levels = levels(y)))
+    return(lp)
+}
+ 

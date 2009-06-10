@@ -9,7 +9,7 @@ export(glmboost, glmboost_fit,
        boost_control, mstop, Family,
        GaussReg, GaussClass, Laplace, Binomial, Poisson,
        Huber, AdaExp, CoxPH, boost_dpp, FP, IPCweights, cvrisk, bbs,
-       bss, bns, bols, bspatial, brandom, btree, survFit, bbs2, bspatial2)
+       bss, bns, bols, bspatial, brandom, btree, survFit, bbs1, bspatial1)
 exportClasses("boost_family")
 exportMethods("show")
 
@@ -30,6 +30,7 @@ S3method(hatvalues, glmboost)
 S3method(fitted, gb)
 S3method(fitted, blackboost)
 S3method(predict, gb)
+S3method(predict, gamboost)
 S3method(AIC, glmboost)
 S3method(AIC, gamboost)
 S3method(logLik, gb)

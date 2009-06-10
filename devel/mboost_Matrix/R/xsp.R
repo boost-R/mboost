@@ -137,12 +137,17 @@ bbs1 <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
             if (any(!cc)) y <- y[cc]
             coef <- Xsolve %*% y
 
-            predictfun <- function(newdata = NULL) {
-                if (is.null(newdata)) return(Xna %*% coef)
-                nX <- newX(x = newdata[[xname]], z = newdata[[zname]], na.rm = FALSE)
-                nX %*% coef
+            modelmatrix <- function(newdata = NULL) {
+                if (is.null(newdata)) return(Xna)
+                return(newX(x = newdata[[xname]], z = newdata[[zname]], na.rm = FALSE))
             }
-            ret <- list(model = coef, predict = predictfun, fitted = function() Xna %*% coef)
+            predictfun <- function(newdata = NULL) {
+                XX <- modelmatrix(newdata = newdata)
+                as.vector(XX %*% coef)
+            }
+            ret <- list(model = coef, predict = predictfun, 
+                        fitted = function() as.vector(Xna %*% coef),
+                        modelmatrix = modelmatrix)
             class(ret) <- c("basefit", "baselm")
             ret
         }
@@ -220,6 +225,7 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 bns <- function(x, z = NULL, df = 4, knots = 20, differences = 2,
                 xname = NULL, zname = NULL) {
 
+
     if (is.null(xname)) xname <- deparse(substitute(x))
     if (is.null(zname)) zname <- deparse(substitute(z))
 
@@ -264,7 +270,7 @@ bns <- function(x, z = NULL, df = 4, knots = 20, differences = 2,
     K <- crossprod(K, K)
 
     dpp <- function(weights) {
-
+	
         lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
 
         Xw <- X * weights
@@ -274,12 +280,16 @@ bns <- function(x, z = NULL, df = 4, knots = 20, differences = 2,
         fitfun <- function(y) {
             coef <- Xsolve %*% y
 
-            predictfun <- function(newdata = NULL) {
-                if (is.null(newdata)) return(X %*% coef)
-                nX <- newX(x = newdata[[xname]], z = newdata[[zname]])
-                nX %*% coef
+            modelmatrix <- function(newdata = NULL) {
+                return(newX(x = newdata[[xname]], z = newdata[[zname]]))
             }
-            ret <- list(model = coef, predict = predictfun, fitted = function() X %*% coef)
+            predictfun <- function(newdata = NULL) {
+                XX <- modelmatrix(newdata = newdata)
+                as.vector(XX %*% coef)
+            }
+            ret <- list(model = coef, predict = predictfun, 
+                        fitted = function() as.vector(X %*% coef),
+                        modelmatrix = modelmatrix)
             class(ret) <- c("basefit", "baselm")
             ret
         }
@@ -452,17 +462,22 @@ bspatial1 <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
         fitfun <- function(y) {
             coef <- Xsolve %*% y
 
-            predictfun <- function(newdata = NULL) {
-                if (is.null(newdata)) return(Xna %*% coef)
+            modelmatrix <- function(newdata = NULL) {
+                if (is.null(newdata)) return(Xna)
                 nX <- newX(x = newdata[[xname]], y = newdata[[yname]],
                            z = newdata[[zname]], na.rm = FALSE)
                 if(center) {
                     nX <- nX%*%L
                 }
-                nX %*% coef
             }
+            predictfun <- function(newdata = NULL) {
+                XX <- modelmatrix(newdata = newdata)
+                as.vector(XX %*% coef)
+            }
+
             ret <- list(model = coef, predict = predictfun,
-                        fitted = function() Xna %*% coef)
+                        fitted = function() as.vector(Xna %*% coef),
+                        modelmatrix = modelmatrix)
             class(ret) <- c("basefit", "baselm")
             ret
         }
@@ -531,14 +546,17 @@ bols <- function(x, z = NULL, xname = NULL, zname = NULL, center = FALSE,
              if (any(!cc)) y <- y[cc]
              coef <- Xsolve %*% y
 
+             modelmatrix <- function(newdata = NULL) {
+                 if (is.null(newdata)) return(Xna)
+                 return(newX(x = newdata[[xname]], z = newdata[[zname]], na.rm = FALSE))
+             }
              predictfun <- function(newdata = NULL) {
-                 if (is.null(newdata)) return(Xna %*% coef)
-                 nX <- newX(x = newdata[[xname]], z = newdata[[zname]],
-                            na.rm = FALSE)
-                 nX %*% coef
+                 XX <- modelmatrix(newdata = newdata)
+                 as.vector(XX %*% coef)
              }
              ret <- list(model = coef, predict = predictfun,
-                         fitted = function() Xna %*% coef)
+                        fitted = function() as.vector(Xna %*% coef),
+                        modelmatrix = modelmatrix)
              class(ret) <- c("basefit", "baselm")
              ret
          }
@@ -586,12 +604,17 @@ brandom <- function(x, z = NULL, df = 4, xname = NULL,
         fitfun <- function(y) {
             coef <- Xsolve %*% y
 
-            predictfun <- function(newdata = NULL) {
-                if (is.null(newdata)) return(X %*% coef)
-                nX <- newX(x = newdata[[xname]], z = newdata[[zname]])
-                nX %*% coef
+            modelmatrix <- function(newdata = NULL) {
+                return(newX(x = newdata[[xname]], z = newdata[[zname]]))
             }
-            ret <- list(model = coef, predict = predictfun, fitted = function() X %*% coef)
+            predictfun <- function(newdata = NULL) {
+                XX <- modelmatrix(newdata = newdata)
+                as.vector(XX %*% coef)
+            }
+            ret <- list(model = coef, predict = predictfun,
+                        fitted = function() as.vector(X %*% coef),
+                        modelmatrix = modelmatrix)
+
             class(ret) <- c("basefit", "baselm")
             ret
         }

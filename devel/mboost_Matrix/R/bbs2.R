@@ -97,13 +97,17 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
             if (any(!cc)) y <- y[cc]
             coef <- solve(XtX, crossprod(Xw, y))
 
+            modelmatrix <- function(newdata = NULL) {
+                if (is.null(newdata)) return(Xna)
+                return(newX(x = newdata[[xname]], z = newdata[[zname]], na.rm = FALSE))
+            }
             predictfun <- function(newdata = NULL) {
-                if (is.null(newdata)) return(as.vector(Xna %*% coef))
-                nX <- newX(x = newdata[[xname]], z = newdata[[zname]], na.rm = FALSE)
-                as.vector(nX %*% coef)
+                XX <- modelmatrix(newdata = newdata)
+                as.vector(XX %*% coef)
             }
             ret <- list(model = coef, predict = predictfun, 
-                        fitted = function() as.vector(Xna %*% coef))
+                        fitted = function() as.vector(Xna %*% coef),
+                        modelmatrix = modelmatrix)
             class(ret) <- c("basefit", "baselm")
             ret
         }
@@ -249,17 +253,22 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
         fitfun <- function(y) {
             coef <- solve(XtX, crossprod(Xw, y))
 
-            predictfun <- function(newdata = NULL) {
-                if (is.null(newdata)) return(as.vector(Xna %*% coef))
+            modelmatrix <- function(newdata = NULL) {
+                if (is.null(newdata)) return(Xna)
                 nX <- newX(x = newdata[[xname]], y = newdata[[yname]],
                            z = newdata[[zname]], na.rm = FALSE)
                 if(center) {
                     nX <- nX%*%L
                 }
-                as.vector(nX %*% coef)
             }
+            predictfun <- function(newdata = NULL) {
+                XX <- modelmatrix(newdata = newdata)
+                as.vector(XX %*% coef)
+            }
+
             ret <- list(model = coef, predict = predictfun,
-                        fitted = function() as.vector(Xna %*% coef))
+                        fitted = function() as.vector(Xna %*% coef),
+                        modelmatrix = modelmatrix)
             class(ret) <- c("basefit", "baselm")
             ret
         }

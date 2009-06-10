@@ -17,4 +17,4 @@ Suggests: mlbench, ipred, multicore
 LazyLoad: yes
 LazyData: yes
 License: GPL-2
-Packaged: 2009-06-07 09:56:35 UTC; hothorn
+Packaged: 2009-06-10 12:05:21 UTC; hothorn

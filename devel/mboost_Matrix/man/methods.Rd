@@ -7,6 +7,7 @@
 \alias{AIC.glmboost}
 \alias{predict.gb}
 \alias{predict.blackboost}
+\alias{predict.gamboost}
 \alias{mstop}
 \alias{mstop.gbAIC}
 \alias{mstop.gb}
@@ -33,6 +34,8 @@
 \method{predict}{gb}(object, newdata = NULL, type = c("lp", "response"),
        allIterations = FALSE, ...)
 \method{predict}{blackboost}(object, newdata = NULL, type = c("lp", "response"),
+       allIterations = FALSE, ...)
+\method{predict}{gamboost}(object, newdata = NULL, type = c("lp", "response"),
        allIterations = FALSE, ...)
 \method{fitted}{gb}(object, type = c("lp", "response"), ...)
 \method{logLik}{gb}(object, ...)

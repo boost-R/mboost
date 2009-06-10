@@ -1,9 +1,11 @@
 \name{baselearners}
 \alias{bols}
 \alias{bbs}
+\alias{bbs1}
 \alias{bns}
 \alias{bss}
 \alias{bspatial}
+\alias{bspatial1}
 \alias{brandom}
 \alias{btree}
 \title{ Base learners for Gradient Boosting with Smooth Components }
@@ -16,10 +18,15 @@ bols(x, z = NULL, xname = NULL, zname = NULL, center = FALSE,
      df = NULL, contrasts.arg = "contr.treatment")
 bbs(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
     center = FALSE, xname = NULL, zname = NULL)
+bbs1(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
+    center = FALSE, xname = NULL, zname = NULL)
 bns(x, z = NULL, df = 4, knots = 20, differences = 2,
     xname = NULL, zname = NULL)
 bss(x, df = 4, xname = NULL)
 bspatial(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
+         degree = 3, differences = 2, center = FALSE, xname = NULL,
+         yname = NULL, zname = NULL)
+bspatial1(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
          degree = 3, differences = 2, center = FALSE, xname = NULL,
          yname = NULL, zname = NULL)
 brandom(x, z = NULL, df = 4, xname = NULL, zname = NULL)
@@ -102,6 +109,12 @@ btree(..., tree_controls = ctree_control(stump = TRUE,
   and Tutz (2007) for details. Note that the dimensions of the penalty matrix
   increase (quickly) with the number of \code{xknots} and \code{yknots}
   with strong impact on computational time. Thus, both should not be choosen to large.
+
+  The two baselearners \code{bbs} and \code{bspatial} utilize sparse
+  matrix technology from package \pkg{Matrix} while the `older'
+  versions \code{bbs1} and \code{bspatial1} don't have these optimizations.
+  For small datasets, the latter two functions are faster but for
+  larger problems, \code{bbs} and \code{bspatial} should be preferred.
 
   \code{brandom} specifies a random effects base learner based on a factor variable
   \code{x} that defines the grouping structure of the data set. For each level of
