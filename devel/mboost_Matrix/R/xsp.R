@@ -627,9 +627,10 @@ brandom <- function(x, z = NULL, df = 4, xname = NULL,
 }
 
 btree <- function(..., tree_controls = ctree_control(stump = TRUE,
-    mincriterion = 0), xname = NULL) {
+    mincriterion = 0), xname = names(x), x = NULL) {
 
-    x <- as.data.frame(list(...))
+    if (is.null(x))
+        x <- as.data.frame(list(...))
 
     if (is.null(xname)) {
         cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
