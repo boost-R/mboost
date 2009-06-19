@@ -31,10 +31,11 @@ bspatial1(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
          yname = NULL, zname = NULL)
 brandom(x, z = NULL, df = 4, xname = NULL, zname = NULL)
 btree(..., tree_controls = ctree_control(stump = TRUE,
-      mincriterion = 0), xname = NULL)
+      mincriterion = 0), xname = names(xdf), xdf = NULL)
 }
 \arguments{
-  \item{x}{ a vector containing data, either numeric or a factor. }
+  \item{x}{ a vector containing data, either numeric or a factor.}
+  \item{xdf}{a data frame for \code{btree}. }
   \item{y}{ a vector containing numeric data. }
   \item{z}{ an optional vector containing data. \code{z} can be numeric
     in all cases. For \code{bols} it can also be a factor. For all other

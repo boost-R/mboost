@@ -102,6 +102,13 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
             return(newX(x = newdata[[xname]], z = newdata[[zname]]))
         }
 
+        modelframefun <- function() {
+            ret <- data.frame(x = x, z = z)
+            names(ret) <- c(xname, zname)
+            if (!is.null(index)) ret <- ret[index,]
+            ret
+        }
+
         fitfun <- function(y) {
 
             if (!is.null(index)) y <- as.vector(tapply(oweights * y, index, sum))
@@ -120,6 +127,7 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
             ret
         }
         ret <- list(fit = fitfun, modelmatrix = modelmatrixfun, 
+                    modelframe = modelframefun,
                     hatmatrix = function() {
             if (!is.null(index)) {
                 X <- as.matrix(X)
@@ -297,4 +305,116 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
 }
 
 model.matrix.basisdpp <- function(object, newdata = NULL)
-    object$modelmatrixfun(newdata)
+    object$modelmatrix(newdata)
+
+model.frame.basisdpp <- function(object)
+    object@modelframe()
+
+bols <- function(x, z = NULL, df = NULL, center = FALSE, 
+                 xname = NULL, zname = NULL, contrasts.arg = "contr.treatment") {
+
+    if (is.null(xname)) xname <- deparse(substitute(x))
+    if (is.null(zname)) zname <- deparse(substitute(z))
+
+    X <- matrix(x, ncol = 1)
+
+    if (is.null(z)) {
+        ux <- sort(unique(x), na.last = TRUE)
+        index <- match(x, ux)
+        x <- ux
+    }
+
+    cc <- complete_cases(x = x, z = z)
+    if (any(!cc)) {
+        if (is.null(index)) index <- 1:length(x)
+        x <- x[cc]
+        if (!is.null(z)) z <- z[cc]
+        index[index %in% which(!cc)] <- NA
+        
+    }
+
+    dpp <- function(weights) {
+
+        oweights <- weights
+        if (!is.null(index)) weights <- as.vector(tapply(weights, index, sum))
+
+        newX <- function(x, z = NULL) {
+
+            if (is.factor(x)) {
+                X <- model.matrix(~ x, contrasts.arg = list(x = contrasts.arg))
+            } else {
+                X <- model.matrix(~ x)
+            }
+   
+            if (center)
+               X <- X[, -1, drop = FALSE]
+
+            class(X) <- "matrix"
+            X <- as(X, "CsparseMatrix")
+            if (!is.null(z))
+                X <- X * z
+            return(X)
+        }
+        X <- newX(x, z)
+
+        if (center && !is.ordered(x)) {
+            K <- Diagonal(ncol(X))
+        } else {
+            K <- diff(Diagonal(ncol(X)), differences = 1)
+            K <- crossprod(K, K)
+        }
+
+        lambda <- 0
+        if (!(is.null(df) || df >= ncol(K)))
+            lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
+        
+        XtX <- crossprod(X * weights, X) + lambda * K
+        if (isSymmetric(XtX)) XtX <- forceSymmetric(XtX)
+	
+        modelmatrixfun <- function(newdata = NULL) {
+            if (is.null(newdata)) {
+                if (!is.null(index)) return(X[index,])
+                return(X)
+            }
+            return(newX(x = newdata[[xname]], z = newdata[[zname]]))
+        }
+
+        modelframefun <- function() {
+            ret <- data.frame(x = x, z = z)
+            names(ret) <- c(xname, zname)
+            if (!is.null(index)) ret <- ret[index,]
+            ret
+        }
+
+        fitfun <- function(y) {
+
+            if (!is.null(index)) y <- as.vector(tapply(oweights * y, index, sum))
+            coef <- solve(XtX, crossprod(X, y))
+
+            predictfun <- function(newdata = NULL) {
+                XX <- modelmatrixfun(newdata = newdata)
+                return(as.vector(XX %*% coef))
+            }
+            ret <- list(model = coef, predict = predictfun, 
+                        fitted = function() {
+                            if (!is.null(index)) return(as.vector(X %*% coef)[index])
+                            return(as.vector(X %*% coef))
+                        })
+            class(ret) <- c("basefit", "baselm")
+            ret
+        }
+        ret <- list(fit = fitfun, modelmatrix = modelmatrixfun, 
+                    modelframe = modelframefun,
+                    hatmatrix = function() {
+            if (!is.null(index)) {
+                X <- as.matrix(X)
+                return(as.matrix(tcrossprod(X[index,] %*% solve(XtX), X[index,] * oweights)))
+            }
+            return(as.matrix(tcrossprod(X %*% solve(XtX), X * oweights)))
+            })
+        class(ret) <- "basisdpp"
+        ret
+    }
+    attr(X, "dpp") <- dpp
+    return(X)
+}

@@ -12,7 +12,9 @@ complete_cases <- function(x, y = NULL, z = NULL) {
 
     tmp <- list(x = x, y = y, z = z)
     tmp <- tmp[!sapply(tmp, is.null)]
-    rowSums(sapply(tmp, is.na)) == 0
+    tmp <- sapply(tmp, is.na)
+    if (is.matrix(tmp)) return(rowSums(tmp) == 0)
+    as.integer(tmp) == 0
 }
 
 predict.baselist <- function(object, ...) {
@@ -489,7 +491,7 @@ bspatial1 <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
     return(X)
 }
 
-bols <- function(x, z = NULL, xname = NULL, zname = NULL, center = FALSE,
+bols1 <- function(x, z = NULL, xname = NULL, zname = NULL, center = FALSE,
                  df = NULL, contrasts.arg = "contr.treatment") {
 
      if (is.null(xname)) xname = deparse(substitute(x))
@@ -627,33 +629,33 @@ brandom <- function(x, z = NULL, df = 4, xname = NULL,
 }
 
 btree <- function(..., tree_controls = ctree_control(stump = TRUE,
-    mincriterion = 0), xname = names(x), x = NULL) {
+    mincriterion = 0), xname = names(xdf), xdf = NULL) {
 
-    if (is.null(x))
-        x <- as.data.frame(list(...))
+    if (is.null(xdf))
+        xdf <- as.data.frame(list(...))
 
     if (is.null(xname)) {
         cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
         xname <- sapply(cl, function(x) as.character(x))
-        colnames(x) <- xname
+        colnames(xdf) <- xname
     } else {
-        colnames(x) <- xname
+        colnames(xdf) <- xname
     }
 
-    X <- matrix(numeric(nrow(x)))
+    X <- matrix(numeric(nrow(xdf)))
 
     dpp <- function(weights) {
 
         ### construct design matrix etc.
-        y <- vector(length = nrow(x), mode = "numeric")
+        y <- vector(length = nrow(xdf), mode = "numeric")
         ### name for working response (different from any x)
         rname <- paste(sample(LETTERS, 25, replace = TRUE), collapse = "")
         fm <- as.formula(paste(rname, " ~ ", paste(xname, collapse = "+")))
-        df <- x
+        df <- xdf
         df[[rname]] <- y
         object <- party:::ctreedpp(fm, data = df)
         fitmem <- ctree_memory(object, TRUE)
-        where <- rep.int(0, nrow(x))
+        where <- rep.int(0, nrow(xdf))
         storage.mode(where) <- "integer"
         storage.mode(weights) <- "double"
 
