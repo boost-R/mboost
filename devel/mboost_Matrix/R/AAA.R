@@ -11,6 +11,6 @@
         detach(package:stats4)
     if (require("multicore"))
         packageStartupMessage("package ", sQuote("multicore"), " found; ",
-                              sQuote("mboost"), " parallelization enabled.")
+                              "parallelization enabled for package ", sQuote("mboost"))
     return(TRUE)
 }

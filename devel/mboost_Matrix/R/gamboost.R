@@ -317,6 +317,7 @@ predict.gamboost <- function(object, newdata = NULL, type = c("lp", "response"),
 
     cf <- coef(object)
 
+    type <- match.arg(type)
     if (allIterations) {
         if (type != "lp")
             stop(sQuote("allIterations"), " only available for ",

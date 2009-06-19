@@ -3,10 +3,15 @@
 bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
                 center = FALSE, xname = NULL, zname = NULL) {
 
-    cc <- complete_cases(x = x, z = z)
-
     if (is.null(xname)) xname <- deparse(substitute(x))
     if (is.null(zname)) zname <- deparse(substitute(z))
+
+    if (!is.numeric(z) && (is.factor(z) && length(unique(z)) != 2))
+        stop(sQuote("z"), " must be binary or numeric")
+
+    if(is.factor(z) && length(unique(z)) == 2)
+        ## FIXME is there a more elegant way to produce a binary with 0/1?
+        z <- as.numeric(z[, drop = TRUE]) - 1
 
     if (all(x %in% c(0, 1)))
         return(bols(x = x, z = z, xname = xname, zname = zname,
@@ -15,12 +20,6 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
     if (is.factor(x) || (df <= 2 && !center))
         return(bols(x = x, z = z, xname = xname, zname = zname))
 
-    if (!is.numeric(z) && (is.factor(z) && length(unique(z)) != 2))
-        stop(sQuote("z"), " must be binary or numeric")
-
-    if(is.factor(z) && length(unique(z)) == 2)
-        ## FIXME is there a more elegant way to produce a binary with 0/1?
-        z <- as.numeric(z[, drop = TRUE]) - 1
 
     if (!differences %in% 1:3)
         stop(sQuote("differences"), " are not in 1:3")
@@ -37,13 +36,29 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
 
     X <- matrix(x, ncol = 1)
 
+    if (is.null(z)) {
+        ux <- sort(unique(x), na.last = TRUE)
+        index <- match(x, ux)
+        x <- ux
+    }
+
+    cc <- complete_cases(x = x, z = z)
+    if (any(!cc)) {
+        if (is.null(index)) index <- 1:length(x)
+        x <- x[cc]
+        if (!is.null(z)) z <- z[cc]
+        index[index %in% which(!cc)] <- NA
+        
+    }
+
     dpp <- function(weights) {
 
-        if (any(!cc)) weights <- weights[cc]
+        oweights <- weights
+        if (!is.null(index)) weights <- as.vector(tapply(weights, index, sum))
 
         ### knots may depend on weights
-        boundary.knots <- range(x[cc], na.rm = TRUE)
-        bnw <- range(x[cc][weights > 0], na.rm = TRUE)
+        boundary.knots <- range(x, na.rm = TRUE)
+        bnw <- range(x[weights > 0], na.rm = TRUE)
         if (!isTRUE(all.equal(boundary.knots, bnw)))
             warning("knots (and therefore model) depend on observations with zero weight")
 
@@ -52,14 +67,7 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
             knots <- knots[2:(length(knots) - 1)]
         }
 
-        newX <- function(x, z = NULL, weights = NULL, na.rm = TRUE) {
-            if (na.rm) {
-                x <- x[cc]
-                if (!is.null(z))
-                    z <- z[cc]
-                if (!is.null(weights))
-                    weights <- weights[cc]
-            }
+        newX <- function(x, z = NULL) {
             X <- bs(x, knots = knots, degree = degree, intercept = TRUE,
                     Boundary.knots = boundary.knots)
             class(X) <- "matrix"
@@ -72,10 +80,7 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
             }
             return(X)
         }
-        X <- newX(x, z, weights = weights)
-        Xna <- X
-        if (any(!cc))
-            Xna <- newX(x, z, weights = weights, na.rm = FALSE)
+        X <- newX(x, z)
 
         if (center) {
             K <- Diagonal(ncol(X))
@@ -83,43 +88,50 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
             K <- diff(Diagonal(ncol(X)), differences = differences)
             K <- crossprod(K, K)
         }
-        K <- as(K, "CsparseMatrix")
 
         lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
 
-        Xw <- X * weights
-        XtX <- crossprod(Xw, X) + lambda * K
+        XtX <- crossprod(X * weights, X) + lambda * K
         if (isSymmetric(XtX)) XtX <- forceSymmetric(XtX)
-        #### if (any(!cc)) rm(X)
 	
         fitfun <- function(y) {
 
-            if (any(!cc)) y <- y[cc]
-            coef <- solve(XtX, crossprod(Xw, y))
+            if (!is.null(index)) y <- as.vector(tapply(oweights * y, index, sum))
+            coef <- solve(XtX, crossprod(X, y))
 
             modelmatrix <- function(newdata = NULL) {
-                if (is.null(newdata)) return(Xna)
-                return(newX(x = newdata[[xname]], z = newdata[[zname]], na.rm = FALSE))
+                if (is.null(newdata)) {
+                    if (!is.null(index)) return(X[index,])
+                    return(X)
+                }
+                return(newX(x = newdata[[xname]], z = newdata[[zname]]))
             }
             predictfun <- function(newdata = NULL) {
                 XX <- modelmatrix(newdata = newdata)
-                as.vector(XX %*% coef)
+                return(as.vector(XX %*% coef))
             }
             ret <- list(model = coef, predict = predictfun, 
-                        fitted = function() as.vector(Xna %*% coef),
+                        fitted = function() {
+                            if (!is.null(index)) return(as.vector(X %*% coef)[index])
+                            return(as.vector(X %*% coef))
+                        },
                         modelmatrix = modelmatrix)
             class(ret) <- c("basefit", "baselm")
             ret
         }
-        ret <- list(fit = fitfun, hatmatrix = function() 
-                    as.matrix(tcrossprod(X %*% solve(XtX), Xw)))
+        ret <- list(fit = fitfun, hatmatrix = function() {
+            if (!is.null(index)) {
+                X <- as.matrix(X)
+                return(as.matrix(tcrossprod(X[index,] %*% solve(XtX), X[index,] * oweights)))
+            }
+            return(as.matrix(tcrossprod(X %*% solve(XtX), X * oweights)))
+            })
         class(ret) <- "basisdpp"
         ret
     }
     attr(X, "dpp") <- dpp
     return(X)
 }
-
 
 bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
                      degree = 3, differences = 2, center = FALSE, xname = NULL,
