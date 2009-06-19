@@ -169,8 +169,38 @@ gamboost_fit <- function(object, baselearner = c("bbs", "bss", "bols", "bns", "b
     ### save learning sample
     if (control$savedata) RET$data <- object
 
+
+    ### function for computing hat matrices of individual predictors
+    RET$hat <- function(j) fitfct[[j]]$hatmatrix()
+
+    RET$f <- function(j, newdata = NULL, mstop = NULL, allIterations = FALSE) {
+
+        xselect <- ens[, "xselect"]
+        if (!is.null(mstop)) xselect <- xselect[1:mstop]
+        indx <- which(xselect == j)
+        if (length(indx) == 0) return(NULL)
+        cls <- sapply(ensss, class)[indx]
+        islm <- length(unique(cls)) == 1 && extends(unique(cls)[1], "baselm")
+        if (islm) {
+            mm <- model.matrix(fitfct[[j]], newdata = newdata)
+            if (allIterations) {
+                ret <- lapply(indx, function(i) mm %*% (nu * coef(ensss[[i]][[1]])))
+            } else {
+                cf <- 0
+                for (i in indx) cf <- cf + coef(ensss[[i]][[1]])
+                ret <- mm %*% (nu * cf)
+            }
+        } else {
+            ret <- lapply(indx, function(i) nu * predict(ensss[[i]], newdata = newdata))
+            if (!allIterations)
+                ret <- rowSums(do.call("cbind", ret))
+        }
+        return(ret)
+    }
+
     ### prediction function (linear predictor only)
-    RET$predict <- function(newdata = NULL, mstop = mstop, ...) {
+    RET$predict <- function(newdata = NULL, mstop = NULL, 
+                            allIterations = FALSE, allComponents = FALSE) {
 
         if (!is.null(newdata)) {
             if (is.null(colnames(newdata)))
@@ -178,15 +208,43 @@ gamboost_fit <- function(object, baselearner = c("bbs", "bss", "bols", "bns", "b
             if (is.matrix(newdata)) newdata <- as.data.frame(newdata)
         }
 
-        lp <- offset
-        for (m in 1:mstop)
-            lp <- lp + nu * predict(ensss[[m]], newdata = newdata)
-        if (constraint) lp <- sign(lp) * pmin(abs(lp), 1)
-        return(lp)
+        if (allIterations && allComponents) {
+            allIterations <- FALSE
+            warning("...")
+        }
+
+        xselect <- ens[, "xselect"]
+        if (!is.null(mstop)) xselect <- xselect[1:mstop]
+
+        ux <- sort(unique(xselect))
+
+        myapply <- lapply
+        if (require("multicore") && control$parallel) {
+            if (!multicore:::isChild()) {
+                myapply <- mclapply
+            }
+        }
+        ret <- myapply(ux, function(j) 
+            RET$f(j, newdata = newdata, mstop = mstop, 
+                  allIterations = allIterations))
+
+        names(ret) <- names(x)[ux]
+
+        if (!allComponents) {
+            if (allIterations) {
+                tmp <- matrix(0, nrow = length(ret[[1]][[1]]), ncol = length(xselect))
+                for (i in ux) {
+                   tmp[,xselect == i] <- matrix(unlist(ret[ux == i]), nrow = length(ret[[1]][[1]]))
+                }
+                ret <- offset + t(apply(tmp, 1, cumsum))
+            } else {
+                ret <- rowSums(do.call("cbind", ret)) + offset
+                if (constraint) ret <- sign(ret) * pmin(abs(ret), 1)
+            }
+        }
+        return(ret)
     }
 
-    ### function for computing hat matrices of individual predictors
-    RET$hat <- function(j) fitfct[[j]]$hatmatrix()
 
     class(RET) <- c("gamboost", "gb")
     return(RET)
@@ -257,7 +315,6 @@ print.gamboost <- function(x, ...) {
 plot.gamboost <- function(x, which = NULL, ask = TRUE && dev.interactive(),
     type = "b", ylab = expression(f[partial]), add_rug = TRUE, ...) {
 
-    lp <- mboost:::gamplot(x)
     input <- x$data$input
     ### <FIXME>: y ~ bbs(x) means that we only have access to x via
     ### the environment of its dpp function
@@ -277,10 +334,10 @@ plot.gamboost <- function(x, which = NULL, ask = TRUE && dev.interactive(),
 
     out <- sapply(which, function(w) {
         xp <- input[[w]]
-        yp <- lp[,w]
+        yp <- x$f(which(w == names(input)))
         ox <- order(xp)
         plot(xp[ox], yp[ox], xlab = w, type = type,
-             ylab = ylab, ylim = range(lp[,which]), ...)
+             ylab = ylab, ylim = range(yp), ...)
         abline(h = 0, lty = 3)
         if (add_rug) rug(input[[w]])
     })
@@ -310,54 +367,3 @@ coef.gamboost <- function(object, ...) {
     attr(ret, "offset") <- object$offset
     ret
 }
-
-
-predict.gamboost <- function(object, newdata = NULL, type = c("lp", "response"), 
-    allIterations = FALSE, ...) {
-
-    cf <- coef(object)
-
-    type <- match.arg(type)
-    if (allIterations) {
-        if (type != "lp")
-            stop(sQuote("allIterations"), " only available for ",
-                 sQuote("type = \"lp\""))
-        return(fastp(object, newdata))
-    }
-
-    ens <- object$ensembless
-    xselect <- object$ensemble[, "xselect"]
-
-    myapply <- lapply
-    if (require("multicore") && object$control$parallel) {
-        if (!multicore:::isChild()) {
-            myapply <- mclapply
-        }
-    }
-
-    if (is.matrix(newdata)) newdata <- as.data.frame(newdata)
-
-    lp <- object$offset
-    lp2 <- myapply(1:length(cf), function(i) {
-        indx <- which(xselect == i)[1]
-        mm <- "modelmatrix" %in% names(ens[[indx]][[1]])
-        if (length(cf[[i]]) > 0 && !any(is.na(cf[[i]])) && mm) {
-            return(as.vector(ens[[indx]][[1]]$modelmatrix(newdata = newdata) %*% cf[[i]]))
-        } else {
-            indx <- which(xselect == i)
-            if (length(indx) == 0) return(NULL)
-            return(object$control$nu * rowSums(sapply(indx, function(i) 
-                   predict(ens[[i]], newdata = newdata))))
-        }
-    })
-    nm <- names(cf)[!sapply(lp2, is.null)]
-    lp2 <- matrix(unlist(lp2), ncol = sum(!sapply(lp2, is.null)))
-    colnames(lp2) <- nm
-    lp <- lp + rowSums(lp2)
-    if (object$control$constraint) lp <- sign(lp) * pmin(abs(lp), 1)
-    y <- object$data$y
-    if (type == "response" && is.factor(y))
-       return(factor(levels(y)[(lp > 0) + 1], levels = levels(y)))
-    return(lp)
-}
- 

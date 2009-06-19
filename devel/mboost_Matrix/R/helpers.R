@@ -456,6 +456,8 @@ fastp.glmboost <- function(object, newdata = NULL) {
 
 fastp.gamboost <- function(object, newdata = NULL) {
 
+    return(predict(object, newdata = newdata, allIterations = TRUE))
+
     n <- length(predict(object$ensembless[[1]], newdata = newdata))
     lp <- matrix(0, nrow = n, ncol = mstop(object))
     nu <- object$control$nu

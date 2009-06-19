@@ -94,32 +94,33 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
         XtX <- crossprod(X * weights, X) + lambda * K
         if (isSymmetric(XtX)) XtX <- forceSymmetric(XtX)
 	
+        modelmatrixfun <- function(newdata = NULL) {
+            if (is.null(newdata)) {
+                if (!is.null(index)) return(X[index,])
+                return(X)
+            }
+            return(newX(x = newdata[[xname]], z = newdata[[zname]]))
+        }
+
         fitfun <- function(y) {
 
             if (!is.null(index)) y <- as.vector(tapply(oweights * y, index, sum))
             coef <- solve(XtX, crossprod(X, y))
 
-            modelmatrix <- function(newdata = NULL) {
-                if (is.null(newdata)) {
-                    if (!is.null(index)) return(X[index,])
-                    return(X)
-                }
-                return(newX(x = newdata[[xname]], z = newdata[[zname]]))
-            }
             predictfun <- function(newdata = NULL) {
-                XX <- modelmatrix(newdata = newdata)
+                XX <- modelmatrixfun(newdata = newdata)
                 return(as.vector(XX %*% coef))
             }
             ret <- list(model = coef, predict = predictfun, 
                         fitted = function() {
                             if (!is.null(index)) return(as.vector(X %*% coef)[index])
                             return(as.vector(X %*% coef))
-                        },
-                        modelmatrix = modelmatrix)
+                        })
             class(ret) <- c("basefit", "baselm")
             ret
         }
-        ret <- list(fit = fitfun, hatmatrix = function() {
+        ret <- list(fit = fitfun, modelmatrix = modelmatrixfun, 
+                    hatmatrix = function() {
             if (!is.null(index)) {
                 X <- as.matrix(X)
                 return(as.matrix(tcrossprod(X[index,] %*% solve(XtX), X[index,] * oweights)))
@@ -262,10 +263,7 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
         if (isSymmetric(XtX)) XtX <- forceSymmetric(XtX)
         #### if (any(!cc)) rm(X)
 
-        fitfun <- function(y) {
-            coef <- solve(XtX, crossprod(Xw, y))
-
-            modelmatrix <- function(newdata = NULL) {
+            modelmatrixfun <- function(newdata = NULL) {
                 if (is.null(newdata)) return(Xna)
                 nX <- newX(x = newdata[[xname]], y = newdata[[yname]],
                            z = newdata[[zname]], na.rm = FALSE)
@@ -273,18 +271,23 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
                     nX <- nX%*%L
                 }
             }
+
+
+        fitfun <- function(y) {
+            coef <- solve(XtX, crossprod(Xw, y))
+
             predictfun <- function(newdata = NULL) {
-                XX <- modelmatrix(newdata = newdata)
+                XX <- modelmatrixfun(newdata = newdata)
                 as.vector(XX %*% coef)
             }
 
             ret <- list(model = coef, predict = predictfun,
-                        fitted = function() as.vector(Xna %*% coef),
-                        modelmatrix = modelmatrix)
+                        fitted = function() as.vector(Xna %*% coef))
             class(ret) <- c("basefit", "baselm")
             ret
         }
-        ret <- list(fit = fitfun, hatmatrix = function() 
+        ret <- list(fit = fitfun, modelmatrix = modelmatrixfun, 
+                    hatmatrix = function() 
                     as.matrix(tcrossprod(X %*% solve(XtX), Xw)))
         class(ret) <- "basisdpp"
         ret
@@ -292,3 +295,6 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
     attr(X, "dpp") <- dpp
     return(X)
 }
+
+model.matrix.basisdpp <- function(object, newdata = NULL)
+    object$modelmatrixfun(newdata)
