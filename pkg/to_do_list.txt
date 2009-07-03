@@ -1,4 +1,6 @@
 
+  o  NA handling in bns and brandom!
+
   o make sure fitfct is saved -- with Matrix in place
     the memory demand is outweighted by speed (in cvrisk)
 
