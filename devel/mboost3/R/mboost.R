@@ -7,7 +7,7 @@ mboost <- function(blg, y, weights = NULL, offset = NULL,
     ### hyper parameters
     mstop <- 0
     risk <- control$risk
-    constraint <- control$constraint
+    stopifnot(!control$constraint)
     nu <- control$nu
     trace <- control$trace
     tracestep <- options("width")$width / 2
@@ -29,13 +29,12 @@ mboost <- function(blg, y, weights = NULL, offset = NULL,
 
     bl <- lapply(blg, dpp, weights = weights)
 
-    xselect <- integer(mstop)
-    ens <- vector(mode = "list", length = mstop)
+    xselect <- NA
+    ens <- vector(mode = "list", length = control$mstop)
 
     ### vector of empirical risks for all boosting iterations
     ### (either in-bag or out-of-bag)
-    mrisk <- numeric(mstop)
-    mrisk[1:mstop] <- NA
+    mrisk <- NA
     tsums <- numeric(length(bl))
     ss <- vector(mode = "list", length = length(bl))
 
@@ -49,18 +48,22 @@ mboost <- function(blg, y, weights = NULL, offset = NULL,
         for (m in (mstop + 1):(mstop + niter)) {
 
             ### fit least squares to residuals _componentwise_
-            for (i in 1:length(bl)) {
-                tsums[i] <- -1
-                ss[[i]] <- try(fit(bl[[i]], y = u))
-                if (inherits(ss[[i]], "try-error")) next
-                tsums[i] <- mean(weights * (fitted(ss[[i]]) - u)^2, na.rm = TRUE)
+            if (is.na(xselect[m])) {
+                for (i in 1:length(bl)) {
+                    tsums[i] <- -1
+                    ss[[i]] <- try(fit(bl[[i]], y = u))
+                    if (inherits(ss[[i]], "try-error")) next
+                    tsums[i] <- mean(weights * (fitted(ss[[i]]) - u)^2, na.rm = TRUE)
+                }
+
+                if (all(tsums < 0))
+                    stop("could not fit base learner in boosting iteration ", m)
+                xselect[m] <<- order(tsums)[1]
+                basess <- ss[[xselect[m]]]
+            } else {
+                basess <- try(fit(bl[[xselect[m]]], y = u))
+                stopifnot(!(inherits(ss[[i]], "try-error")))
             }
-
-            if (all(tsums < 0))
-                stop("could not fit base learner in boosting iteration ", m)
-            xselect[m] <<- order(tsums)[1]
-            basess <- ss[[xselect[m]]]
-
             ### update step
             fit <<- fit + nu * fitted(basess)
 
@@ -113,15 +116,17 @@ mboost <- function(blg, y, weights = NULL, offset = NULL,
     RET$risk <- function() risk[1:mstop]
 
     RET$predict <- function(newdata = NULL, which = NULL, 
-                            components = FALSE, Sum = TRUE) {
+                            components = FALSE, aggregate = TRUE) {
 
-        indx <- (1:length(xselect) <= mstop)
+        indx <- ((1:length(xselect)) <= mstop)
         if (is.null(which))
             which <- sort(unique(xselect[indx]))
+        which <- which[which %in% xselect[indx]]
+        if (length(which) == 0) return(NULL)
 
         if (length(which) == 1)
             return(bl[[which]]$predict(ens[xselect == which & indx], 
-                                       newdata = newdata, Sum = Sum))
+                                       newdata = newdata, Sum = aggregate))
 
         pr <- sapply(which, function(w) 
             bl[[w]]$predict(ens[xselect == w & indx], newdata = newdata))
@@ -141,20 +146,23 @@ mboost <- function(blg, y, weights = NULL, offset = NULL,
         if (i <= mstop || length(xselect) > i) {
             mstop <<- i
             fit <<- RET$predict()
+            u <<- ngradient(y, fit, weights)
         } else {
             tmp <- boost(i - mstop)
         }
     } 
 
-    RET$coef <- function(which = NULL, Sum = TRUE) {
+    RET$coef <- function(which = NULL, aggregate = TRUE) {
         
-        indx <- (1:length(xselect) <= mstop)
+        indx <- ((1:length(xselect)) <= mstop)
         if (is.null(which))
             which <- sort(unique(xselect[indx]))
+        which <- which[which %in% xselect[indx]]
+        if (length(which) == 0) return(NULL)
 
         if (length(which) == 1) {
             cf <- sapply(ens[xselect == which & indx], coef)
-            if (Sum) return(rowSums(cf) * nu)
+            if (aggregate) return(rowSums(cf) * nu)
             M <- triu(crossprod(Matrix(1, nc = ncol(cf))))
             return(nu * (cf %*% M))
         }

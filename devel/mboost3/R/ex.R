@@ -45,6 +45,6 @@ cc <- gamboost(DEXfat ~ age + hipcirc)
 
 max(abs(a$predict() - cc$fit))
 
-plot(model.frame(b[[1]])[,1], a$predict(which = 1))
+plot(model.frame(a, which = 1)[[1]], predict(a, which = 1))
 
 a$coef()
