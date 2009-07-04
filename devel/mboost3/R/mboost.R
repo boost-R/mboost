@@ -1,5 +1,6 @@
 
-mboost <- function(blg, y, weights = NULL, family = GaussReg(), control = boost_control()) {
+mboost <- function(blg, y, weights = NULL, offset = NULL, 
+                   family = GaussReg(), control = boost_control()) {
 
     check_y_family(y, family)
 
@@ -38,7 +39,9 @@ mboost <- function(blg, y, weights = NULL, family = GaussReg(), control = boost_
     tsums <- numeric(length(bl))
     ss <- vector(mode = "list", length = length(bl))
 
-    fit <- offset <- family@offset(y, weights)
+    fit <- offset
+    if (is.null(offset))
+        fit <- offset <- family@offset(y, weights)
     u <- ustart <- ngradient(y, fit, weights)
 
     ### start boosting iteration
@@ -85,7 +88,8 @@ mboost <- function(blg, y, weights = NULL, family = GaussReg(), control = boost_
     }
     tmp <- boost(control$mstop)
 
-    RET <- list(baselearner = bl,
+    RET <- list(baselearner = blg,
+                basemodel = bl,
                 offset = offset,        ### offset
                 ustart = ustart,        ### first negative gradients
                 control = control,      ### control parameters
@@ -93,6 +97,12 @@ mboost <- function(blg, y, weights = NULL, family = GaussReg(), control = boost_
                 response = y,           ### the response variable
                 weights = weights       ### weights used for fitting
     )
+
+    RET$update <- function(weights = NULL) {
+        control$mstop <- mstop
+        mboost(blg = blg, y = y, weights = weights, offset = offset,
+               family = family, control = control)
+    }
 
     RET$mstop <- function() mstop
 
@@ -120,8 +130,15 @@ mboost <- function(blg, y, weights = NULL, family = GaussReg(), control = boost_
         offset + nu * rowSums(pr)
     }
 
+    RET$model.frame <- function(which = NULL) {
+        if (is.null(which)) which <- sort(unique(RET$xselect()))
+        ret <- lapply(blg[which], model.frame)
+        names(ret) <- names(bl)[which]
+        ret
+    }
+
     RET$subset <- function(i) {
-        if (i <= mstop) {
+        if (i <= mstop || length(xselect) > i) {
             mstop <<- i
             fit <<- RET$predict()
         } else {
@@ -179,6 +196,14 @@ fitted.mboost <- function(object, ...)
 
 "[.mboost" <- function(x, i, ...) {
     x$subset(i)
-    return(x)
+    return(NULL)
 }
 
+update.mboost <- function(object, weights, ...)
+    object$update(weights)
+
+model.frame.mboost <- function(formula, ...)
+    formula$model.frame(...)
+
+response.mboost <- function(object, ...)
+    object$response
