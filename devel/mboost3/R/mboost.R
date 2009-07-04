@@ -1,8 +1,6 @@
 
-mboost <- function(blg, y, weights = NULL, offset = NULL, 
+mboost <- function(blg, response, weights = NULL, offset = NULL, 
                    family = GaussReg(), control = boost_control()) {
-
-    check_y_family(y, family)
 
     ### hyper parameters
     mstop <- 0
@@ -15,6 +13,15 @@ mboost <- function(blg, y, weights = NULL, offset = NULL,
     ### extract negative gradient and risk functions
     ngradient <- family@ngradient
     riskfct <- family@risk
+
+    ### handle missing responses (via zero weights)
+    yna <- is.na(response)
+    y <- response
+    if (any(yna)) {
+        weights[] <- 0
+        y[is.na(y)] <- y[1]
+    }
+    check_y_family(response, family)
 
     ### unweighted problem
     if (is.null(weights)) weights <- rep.int(1, length(y))
@@ -53,7 +60,8 @@ mboost <- function(blg, y, weights = NULL, offset = NULL,
                     tsums[i] <- -1
                     ss[[i]] <- try(fit(bl[[i]], y = u))
                     if (inherits(ss[[i]], "try-error")) next
-                    tsums[i] <- mean(weights * (fitted(ss[[i]]) - u)^2, na.rm = TRUE)
+                    tsums[i] <- mean(weights * (fitted(ss[[i]]) - u)^2, 
+                                     na.rm = TRUE)
                 }
 
                 if (all(tsums < 0))
@@ -75,7 +83,7 @@ mboost <- function(blg, y, weights = NULL, offset = NULL,
             if (risk == "inbag") mrisk[m] <<- riskfct(y, fit, weights)
             if (risk == "oobag") mrisk[m] <<- riskfct(y, fit, oobweights)
 
-            ### save the model, i.e., the selected coefficient and variance
+            ### save the model
             if (control$saveensss)
                 ens[[m]] <<- basess
 
@@ -97,14 +105,14 @@ mboost <- function(blg, y, weights = NULL, offset = NULL,
                 ustart = ustart,        ### first negative gradients
                 control = control,      ### control parameters
                 family = family,        ### family object
-                response = y,           ### the response variable
+                response = response,    ### the response variable
                 weights = weights       ### weights used for fitting
     )
 
     RET$update <- function(weights = NULL) {
         control$mstop <- mstop
-        mboost(blg = blg, y = y, weights = weights, offset = offset,
-               family = family, control = control)
+        mboost(blg = blg, response = response, weights = weights, 
+               offset = offset, family = family, control = control)
     }
 
     RET$mstop <- function() mstop

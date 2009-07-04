@@ -50,8 +50,7 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
     lambda
 }
 
-
-hyper_ols <- function(mf, vary) list(center = FALSE)
+hyper_ols <- function(...) list(...)
 
 mm_ols <- function(mf, vary, args) {
 
@@ -108,7 +107,8 @@ mm_bbs <- function(mf, vary, args) {
     return(list(mm = X, K = K))
 }
 
-bl <- function(..., z = NULL, index = NULL, hfun = hyper_ols, Xfun = mm_ols) {
+bols3 <- function(..., z = NULL, index = NULL, center = FALSE, df = NULL, 
+                  contrasts.arg = "contr.treatment") {
 
     mf <- list(...)
     if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
@@ -137,7 +137,48 @@ bl <- function(..., z = NULL, index = NULL, hfun = hyper_ols, Xfun = mm_ols) {
                 set_names = function(value) attr(mf, "names") <<- value)
     class(ret) <- "blg"
 
-    args <- hfun(mf, vary)
+    ret$dpp <- bl_lin(mf, vary, index = index, Xfun = mm_ols, args = hyper_ols(center = center, 
+                      df = df, contrasts.arg = contrasts.arg))
+    return(ret)
+}
+
+bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3, 
+                 differences = 2, df = 4) {
+
+    mf <- list(...)
+    if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
+        mf <- mf[[1]]
+    } else {
+        mf <- as.data.frame(mf)
+        cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
+        colnames(mf) <- sapply(cl, function(x) as.character(x))
+    }
+    vary <- ""
+    if (!is.null(z)) {
+        mf <- cbind(mf, z)
+        colnames(mf) <- c(colnames(mf), deparse(substitute(z)))
+        vary <- colnames(mf)[ncol(mf)]
+    }
+
+    if (is.null(index) & !is.matrix(mf)) {
+        index <- get_index(mf)
+        mf <- mf[index[[1]],,drop = FALSE]
+        index <- index[[2]]
+    }
+
+    ret <- list(model.frame = function() 
+                    if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
+                get_names = function() colnames(mf),
+                set_names = function(value) attr(mf, "names") <<- value)
+    class(ret) <- "blg"
+
+    ret$dpp <- bl_lin(mf, vary, index = index, Xfun = mm_bbs, 
+                      args = hyper_bbs(mf, vary, knots = knots,
+                      degree = degree, differences = differences, df = df))
+    return(ret)
+}
+
+bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
 
     newX <- function(newdata = NULL) {
         if (!is.null(newdata) && !all(names(newdata) == names(mf)))
@@ -212,8 +253,7 @@ bl <- function(..., z = NULL, index = NULL, hfun = hyper_ols, Xfun = mm_ols) {
         return(ret)
 
     }
-    ret$dpp <- dpp
-    return(ret)
+    return(dpp)
 }
 
 names.blg <- function(x)
