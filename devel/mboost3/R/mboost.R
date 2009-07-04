@@ -55,12 +55,12 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         for (m in (mstop + 1):(mstop + niter)) {
 
             ### fit least squares to residuals _componentwise_
-            if (is.na(xselect[m])) {
+#            if (is.na(xselect[m])) {
                 for (i in 1:length(bl)) {
                     tsums[i] <- -1
-                    ss[[i]] <- try(fit(bl[[i]], y = u))
-                    if (inherits(ss[[i]], "try-error")) next
-                    tsums[i] <- mean(weights * (fitted(ss[[i]]) - u)^2, 
+                    ss[[i]] <- bl[[i]]$fit(y = u) ### try(fit(bl[[i]], y = u))
+                    ### if (inherits(ss[[i]], "try-error")) next
+                    tsums[i] <- mean.default(weights * ((ss[[i]]$fitted()) - u)^2, 
                                      na.rm = TRUE)
                 }
 
@@ -68,12 +68,12 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                     stop("could not fit base learner in boosting iteration ", m)
                 xselect[m] <<- order(tsums)[1]
                 basess <- ss[[xselect[m]]]
-            } else {
-                basess <- try(fit(bl[[xselect[m]]], y = u))
-                stopifnot(!(inherits(ss[[i]], "try-error")))
-            }
+#            } else {
+#                basess <- try(fit(bl[[xselect[m]]], y = u))
+#                stopifnot(!(inherits(ss[[i]], "try-error")))
+#            }
             ### update step
-            fit <<- fit + nu * fitted(basess)
+            fit <<- fit + nu * basess$fitted()
 
             ### negative gradient vector, the new `residuals'
             u <<- ngradient(y, fit, weights)

@@ -85,22 +85,26 @@ mm_bbs <- function(mf, vary, args) {
         X <- bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,
            Boundary.knots = args$knots[[i]]$boundary.knots, intercept = TRUE)
         class(X) <- "matrix"
-        Matrix(X)
+        if (nrow(X) > 500 || ncol(X) > 50)
+            return(Matrix(X))
+        return(X)
     })
+    if (nrow(mm[[1]]) > 500 || ncol(mm[[1]]) > 50)
+        diag <- Diagonal
     if (length(mm) == 1) {
         X <- mm[[1]]
-        K <- diff(Diagonal(ncol(X)), differences = args$differences)
+        K <- diff(diag(ncol(X)), differences = args$differences)
         K <- crossprod(K, K)
     }
     if (length(mm) == 2) {
         X <- kronecker(mm[[1]], matrix(1, nc = ncol(mm[[2]]))) * 
              kronecker(matrix(1, nc = ncol(mm[[1]])), mm[[2]])
-        Kx <- diff(Diagonal(ncol(mm[[1]])), differences = args$differences)
+        Kx <- diff(diag(ncol(mm[[1]])), differences = args$differences)
         Kx <- crossprod(Kx, Kx)
-        Ky <- diff(Diagonal(ncol(mm[[2]])), differences = args$differences)
+        Ky <- diff(diag(ncol(mm[[2]])), differences = args$differences)
         Ky <- crossprod(Ky, Ky)
-        K <- kronecker(Kx, Diagonal(ncol(mm[[2]]))) + 
-             kronecker(Diagonal(ncol(mm[[1]])), Ky)
+        K <- kronecker(Kx, diag(ncol(mm[[2]]))) + 
+             kronecker(diag(ncol(mm[[1]])), Ky)
     }
     if (vary != "")
         X <- X * mf[, vary]
@@ -190,7 +194,7 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
             K <- X$K
             X <- X$mm
         }
-        return(list(X = Matrix(X), K = K))
+        return(list(X = X, K = K))
     }
     X <- newX()
     K <- X$K
