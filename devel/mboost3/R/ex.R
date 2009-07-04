@@ -4,7 +4,7 @@ library("Matrix")
 library("mboost")
 
 source("helpers.R")
-source("tmp.R")
+source("bl.R")
 source("mboost.R")
 
 
@@ -39,7 +39,7 @@ data("bodyfat", package = "mboost")
 attach(bodyfat)
 b <- list(blage = bbs3(age),
           blhih = bbs3(hipcirc))
-a <- mboost(b, DEXfat)
+a <- mboost_fit(b, DEXfat)
 
 cc <- gamboost(DEXfat ~ age + hipcirc)
 
@@ -49,3 +49,14 @@ plot(model.frame(a, which = 2)[[c(1,1)]], predict(a, which = 2))
 
 coef(a)
 
+x <- names(bodyfat)
+x <- x[x != "DEXfat"]
+fm1 <- paste("DEXfat ~ ", paste("bbs3(", x, ")", collapse = "+"), sep = "")
+fm1 <- as.formula(fm1)
+system.time(a1 <- mboost(fm, data = bodyfat))
+
+fm2 <- paste("DEXfat ~ ", paste("bbs(", x, ")", collapse = "+"), sep = "")
+fm2 <- as.formula(fm2)
+system.time(a2 <- gamboost(fm2, data = bodyfat))
+
+(max(abs(drop(predict(a2)) - predict(a1))))

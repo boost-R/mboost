@@ -1,6 +1,6 @@
 
-mboost <- function(blg, response, weights = NULL, offset = NULL, 
-                   family = GaussReg(), control = boost_control()) {
+mboost_fit <- function(blg, response, weights = NULL, offset = NULL, 
+                       family = GaussReg(), control = boost_control()) {
 
     ### hyper parameters
     mstop <- 0
@@ -223,3 +223,18 @@ model.frame.mboost <- function(formula, ...)
 
 response.mboost <- function(object, ...)
     object$response
+
+mboost <- function(formula, data = list(), ...) {
+
+    "+" <- function(a,b) {
+        if (inherits(a, "blg")) a <- list(a)
+        if (inherits(b, "blg")) b <- list(b)
+        c(a, b)
+    }
+    bl <- eval(as.expression(formula[[3]]), envir = data)
+    if (inherits(bl, "blg")) bl <- list(bl)
+    stopifnot(all(sapply(bl, inherits, what = "blg")))
+    response <- eval(as.expression(formula[[2]]), envir = data)
+    mboost_fit(bl, response = response, ...)
+}
+
