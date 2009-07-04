@@ -1,16 +1,55 @@
 
-library("splines")
-library("Matrix")
-library("mboost")
+df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
-get_index <- function(x) {
-    
-    tmp <- do.call("paste", x)           
-    nd <- which(!duplicated(tmp))
-    nd <- nd[complete.cases(x[nd,])]
-    index <- match(tmp, tmp[nd])
-    return(list(nd, index))
+#   if (df <= 2) stop(sQuote("df"), " must be greater than two")
+
+    if (is.null(dmat)) {
+        dmat <- diff(diag(ncol(X)), differences = 2)
+        dmat <- crossprod(dmat, dmat)
+    }
+
+    # Cholesky decomposition
+
+    A <- crossprod(X * weights, X) + dmat*10e-10
+    Rm <- solve(chol(A))
+
+    decomp <- svd(crossprod(Rm,dmat)%*%Rm)
+    d <- decomp$d
+
+    # df2lambda
+    df2l <- function(lambda)
+        (sum( 1/(1+lambda*d) ) - df)^2
+
+    lower.l <- 0
+    upper.l <- 5000
+    lambda <- upper.l
+
+    while (lambda >= upper.l - 200 ) {
+        upper.l <- upper.l * 1.5
+
+        tl <- try(lambda <- optimize(df2l, interval=c(lower.l,upper.l))$minimum,
+        silent=T)
+        if (class(tl)=="try-error") stop("problem of
+        converting df into lambda cannot be solved - please increase value of
+        df")
+        lower.l <- upper.l-200
+        if (lower.l > 1e+06){
+            lambda <- 1e+06
+            warning("lambda needs to be larger than 1e+06 for given value of df,
+            setting lambda = 1e+06 \n trace of hat matrix differs from df by ",
+            round(sum( 1/(1+lambda*d) )-df,6))
+            break
+            }
+    }
+
+    ### tmp <- sum(diag(X %*% solve(crossprod(X * weights, X) +
+    ###                   lambda*dmat) %*% t(X * weights))) - df
+    ### if (abs(tmp) > sqrt(.Machine$double.eps))
+    ###   warning("trace of hat matrix is not equal df with difference", tmp)
+
+    lambda
 }
+
 
 hyper_ols <- function(mf, vary) list(center = FALSE)
 
@@ -93,7 +132,7 @@ bl <- function(..., z = NULL, index = NULL, hfun = hyper_ols, Xfun = mm_ols) {
     }
 
     ret <- list(model.frame = function() 
-                    if (is.null(index)) return(mf) else return(mf[index,]),
+                    if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
                 get_names = function() colnames(mf),
                 set_names = function(value) attr(mf, "names") <<- value)
     class(ret) <- "blg"
@@ -123,7 +162,7 @@ bl <- function(..., z = NULL, index = NULL, hfun = hyper_ols, Xfun = mm_ols) {
         if (!is.null(index)) w <- as.vector(tapply(weights, index, sum))
         XtX <- crossprod(X * w, X)
         if (!is.null(args$df)) {
-            lambda <- mboost:::df2lambda(X, df = args$df, dmat = K, weights = w)
+            lambda <- df2lambda(X, df = args$df, dmat = K, weights = w)
             XtX <- XtX + lambda * K
         }
         
@@ -190,7 +229,7 @@ fitted.bm_lin <- function(object)
     object$fitted()
 
 hatvalues.bl_lin <- function(model)
-    object$hatvalues()
+    model$hatvalues()
 
 dpp <- function(object, weights)
     UseMethod("dpp", object)
@@ -204,160 +243,3 @@ dpp.blg <- function(object, weights)
 fit.bl <- function(object, y)
     object$fit(y)
 
-
-mboost <- function(blg, y, weights = NULL, family = GaussReg(), control = boost_control()) {
-
-    mboost:::check_y_family(y, family)
-
-    ### hyper parameters
-    mstop <- control$mstop
-    risk <- control$risk
-    constraint <- control$constraint
-    nu <- control$nu
-    trace <- control$trace
-    tracestep <- options("width")$width / 2
-
-    ### extract negative gradient and risk functions
-    ngradient <- family@ngradient
-    riskfct <- family@risk
-
-    ### unweighted problem
-    if (is.null(weights)) weights <- rep.int(1, length(y))
-    WONE <- (max(abs(weights - 1)) < .Machine$double.eps)
-    if (!family@weights && !WONE)
-        stop(sQuote("family"), " is not able to deal with weights")
-
-    ### rescale weights (because of the AIC criterion)
-    ### <FIXME> is this correct with zero weights??? </FIXME>
-    weights <- mboost:::rescale_weights(weights)
-    oobweights <- as.numeric(weights == 0)
-
-    bl <- lapply(blg, dpp, weights = weights)
-
-    xselect <- integer(mstop)
-    ens <- vector(mode = "list", length = mstop)
-
-    ### vector of empirical risks for all boosting iterations
-    ### (either in-bag or out-of-bag)
-    mrisk <- numeric(mstop)
-    mrisk[1:mstop] <- NA
-    tsums <- numeric(length(bl))
-    ss <- vector(mode = "list", length = length(bl))
-
-    fit <- offset <- family@offset(y, weights)
-    u <- ustart <- ngradient(y, fit, weights)
-
-    ### start boosting iteration
-    for (m in 1:mstop) {
-
-        ### fit least squares to residuals _componentwise_
-        for (i in 1:length(bl)) {
-            tsums[i] <- -1
-            ss[[i]] <- try(fit(bl[[i]], y = u))
-            if (inherits(ss[[i]], "try-error")) next
-            tsums[i] <- mean(weights * (fitted(ss[[i]]) - u)^2, na.rm = TRUE)
-        }
-
-        if (all(tsums < 0))
-            stop("could not fit base learner in boosting iteration ", m)
-        xselect[m] <- order(tsums)[1]
-        basess <- ss[[xselect[m]]]
-
-        ### update step
-        fit <- fit + nu * fitted(basess)
-
-        ### negative gradient vector, the new `residuals'
-        u <- ngradient(y, fit, weights)
-
-        ### evaluate risk, either for the learning sample (inbag)
-        ### or the test sample (oobag)
-        if (risk == "inbag") mrisk[m] <- riskfct(y, fit, weights)
-        if (risk == "oobag") mrisk[m] <- riskfct(y, fit, oobweights)
-
-        ### save the model, i.e., the selected coefficient and variance
-        if (control$saveensss)
-            ens[[m]] <- basess
-
-        ## free memory
-        rm("basess")
-
-        ### print status information
-        if (trace)
-            do_trace(m, risk = mrisk, step = tracestep, width = mstop)
-    }
-
-    RET <- list(xselect = xselect,
-                ensemble = ens,         ### list of baselearners
-                fit = fit,              ### vector of fitted values
-                offset = offset,        ### offset
-                ustart = ustart,        ### first negative gradients
-                risk = mrisk,           ### empirical risks for m = 1, ..., mstop
-                control = control,      ### control parameters
-                family = family,        ### family object
-                response = y,           ### the response variable
-                weights = weights       ### weights used for fitting
-    )
-
-    ### function for computing hat matrices of individual predictors
-    RET$hat <- function(j) hatvalues(bl[[j]])
-
-    RET$predict <- function(newdata = NULL, which = NULL, components = FALSE, Sum = TRUE) {
-
-        if (is.null(which))
-            which <- sort(unique(xselect))
-
-        if (length(which) == 1)
-            return(bl[[which]]$predict(ens[xselect == which], newdata = newdata, Sum = Sum))
-
-        pr <- sapply(which, function(w) 
-            bl[[w]]$predict(ens[xselect == w], newdata = newdata))
-        colnames(pr) <- names(bl)[which]
-        if (components) return(nu * pr)
-        offset + nu * rowSums(pr)
-    }
-
-    class(RET) <- "mboost"
-    return(RET)
-}
-
-
-x <- gl(50, 1009) ###rpois(10, lambda = 10)
-x[sample(1:length(x), 100)] <- NA
-y <- rnorm(length(x))
-x[sample(1:length(x), 100)] <- NA
-w <- rpois(length(x), lambda = 1)
-
-system.time(c1 <- bl(x)$dpp(w)$fit(y)$model)
-system.time(c2 <- coef(lm(y ~ x, weights = w)))
-max(abs(c1 - c2))
-
-set.seed(29)
-x <- rpois(100, lambda = 7)
-y <- rnorm(length(x))
-w <- rpois(length(x), lambda = 1)
-system.time(a1 <- bl(x, hfun = hyper_bbs, Xfun = mm_bbs)$dpp(w)$fit(y)$model)
-system.time(a2 <- as.vector(attr(mboost:::bbs(x), "dpp")(w)$fit(y)$model))
-max(abs(a1 - a2))
-
-b1 <- bl(x, hfun = hyper_bbs, Xfun = mm_bbs)$dpp(w)
-b1$predict(list(b1$fit(y), b1$fit(y + 2)), newdata = NULL, Sum = FALSE)
-fitted(b1$fit(y))
-
-a1 <- bl(x, y, hfun = hyper_bbs, Xfun = mm_bbs)$dpp(w)$fit(y)$model
-a2 <- as.vector(attr(mboost:::bspatial(x, y, df = 4), "dpp")(w)$fit(y)$model)
-max(abs(a1 - a2))
-
-data("bodyfat", package = "mboost")
-
-attach(bodyfat)
-b <- list(blage = bl(age, hfun = hyper_bbs, Xfun = mm_bbs), 
-          blhih = bl(hipcirc, hfun = hyper_bbs, Xfun = mm_bbs))
-a <- mboost(b, DEXfat)
-
-cc <- gamboost(DEXfat ~ age + hipcirc)
-
-max(abs(a$predict() - cc$fit))
-
-plot(model.frame(b[[1]]), a$predict(which = 1))
-
-matplot(a$predict(which = 1, Sum = FALSE))
