@@ -125,7 +125,7 @@ bols3 <- function(..., z = NULL, index = NULL, center = FALSE, df = NULL,
         vary <- colnames(mf)[ncol(mf)]
     }
 
-    if (is.null(index) & !is.matrix(mf)) {
+    if (is.null(index) & (!is.matrix(mf) & nrow(mf) > 10000)) {
         index <- get_index(mf)
         mf <- mf[index[[1]],,drop = FALSE]
         index <- index[[2]]
@@ -160,7 +160,7 @@ bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
         vary <- colnames(mf)[ncol(mf)]
     }
 
-    if (is.null(index) & !is.matrix(mf)) {
+    if (is.null(index) & (!is.matrix(mf) & nrow(mf) > 100)) {
         index <- get_index(mf)
         mf <- mf[index[[1]],,drop = FALSE]
         index <- index[[2]]
@@ -233,16 +233,20 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
         predict <- function(bm, newdata = NULL, Sum = TRUE) {
             cf <- sapply(bm, coef)
             if(!is.null(newdata)) {
-                index <- get_index(mf)
-                mf <- mf[index[[1]],,drop = FALSE]
-                index <- index[[2]]
+                index <- NULL
+                mf <- newdata
+                if (nrow(newdata) > 1000) {
+                    index <- get_index(mf)
+                    mf <- mf[index[[1]],,drop = FALSE]
+                    index <- index[[2]]
+                }
                 X <- newX(mf)$X
             }
             if (Sum) {
-                pr <- X %*% rowSums(cf)
+                pr <- as(X %*% rowSums(cf), "matrix")
             } else {
                 M <- triu(crossprod(Matrix(1, nc = ncol(cf))))
-                pr <- X %*% (cf %*% M)
+                pr <- as(X %*% (cf %*% M), "matrix")
             }
             if (is.null(index)) return(pr[,,drop = TRUE])
             return(pr[index,,drop = TRUE])
