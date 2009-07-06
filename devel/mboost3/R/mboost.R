@@ -311,3 +311,16 @@ Gamboost <- function(formula, data = list(), baselearner = bbs3, ...) {
     mboost_fit(bl, response = response, ...)
 }
 
+Blackboost <- function(formula, data = list(), ...) {
+
+    cl <- match.call()
+    mf <- match.call(expand.dots = FALSE)
+    m <- match(c("formula", "data"), names(mf), 0L)
+    mf <- mf[c(1L, m)]
+    mf[[1L]] <- as.name("model.frame")
+    mf <- eval(mf, parent.frame())
+    bl <- list(btree(mf[,-1, drop = FALSE]))
+    names(bl) <- "btree"
+    response <- eval(as.expression(formula[[2]]), envir = data)
+    mboost_fit(bl, response = response, ...)
+}

@@ -7,6 +7,7 @@ source("helpers.R")
 source("bl.R")
 source("mboost.R")
 source("bolscw.R")
+source("btree.R")
 
 
 x <- gl(50, 1009) ###rpois(10, lambda = 10)
@@ -123,3 +124,5 @@ b2 <- mboost(fm2, data = bodyfat, weights = w)
 sapply(1:length(coef(b1)), function(i) max(abs(coef(b1)[[i]] - coef(b2)[[i]])))
 max(abs(predict(b1) - predict(b2)))
 max(abs(b1$risk - b2$risk()))
+
+z <- mboost(DEXfat ~ btree(age) + btree(waistcirc), data = bodyfat)
