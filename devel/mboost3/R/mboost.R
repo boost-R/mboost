@@ -122,7 +122,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
     RET$fitted <- function() fit
 
-    RET$risk <- function() risk[1:mstop]
+    RET$risk <- function() mrisk[1:mstop]
 
     RET$predict <- function(newdata = NULL, which = NULL, 
                             components = FALSE, aggregate = TRUE) {
@@ -134,7 +134,8 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         if (length(which) == 0) return(NULL)
 
         pr <- sapply(which, function(w) 
-            nu * bl[[w]]$predict(ens[xselect == w & indx], newdata = newdata, Sum = aggregate))
+            nu * bl[[w]]$predict(ens[xselect == w & indx], 
+                                 newdata = newdata, Sum = aggregate))
         colnames(pr) <- names(bl)[which]
         if (!aggregate || components) return(pr)
         offset + rowSums(pr)
@@ -232,6 +233,9 @@ mboost <- function(formula, data = list(), ...) {
     bl <- eval(as.expression(formula[[3]]), envir = data)
     if (inherits(bl, "blg")) bl <- list(bl)
     stopifnot(all(sapply(bl, inherits, what = "blg")))
+    nm <- strsplit(as.character(as.expression(formula[[3]])), "\\+")[[1]]
+    nm <- gsub(" ", "", nm)
+    names(bl) <- nm
     response <- eval(as.expression(formula[[2]]), envir = data)
     mboost_fit(bl, response = response, ...)
 }

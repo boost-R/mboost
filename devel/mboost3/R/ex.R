@@ -56,6 +56,16 @@ fm1 <- paste("DEXfat ~ ", paste("bbs3(", x, ")", collapse = "+"), sep = "")
 fm1 <- as.formula(fm1)
 system.time(a1 <- mboost(fm1, data = bodyfat))
 
+fm2 <- paste("DEXfat ~ ", paste("bbs(", x, ")", collapse = "+"), sep = "")
+fm2 <- as.formula(fm2)
+system.time(a2 <- gamboost(fm2, data = bodyfat))
+
+p1 <- predict(a1, newdata = bodyfat)
+p2 <- predict(a2, newdata = bodyfat)
+
+(max(abs(drop(p2) - p1)))
+
+
 source("mboost.R")
 Rprof("a1")
 a1 <- mboost(fm1, data = bodyfat)
@@ -72,14 +82,6 @@ Rprof(NULL)
 
 
 
-fm2 <- paste("DEXfat ~ ", paste("bbs(", x, ")", collapse = "+"), sep = "")
-fm2 <- as.formula(fm2)
-system.time(a2 <- gamboost(fm2, data = bodyfat))
-
-p1 <- predict(a1, newdata = bodyfat)
-p2 <- predict(a2, newdata = bodyfat)
-
-(max(abs(drop(p2) - p1)))
 
 x <- rnorm(10)
 w <- rpois(length(x), lambda = 1)
