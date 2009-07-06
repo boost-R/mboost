@@ -104,12 +104,25 @@ data("bodyfat", package = "mboost")
 
 w <- rpois(nrow(bodyfat), lambda = 2)
 
-b1 <- glmboost(DEXfat ~ ., data = bodyfat, weights = w)
-b2 <- mboost(DEXfat ~ bolscw(bodyfat[, colnames(bodyfat) != "DEXfat"]), 
-             data = bodyfat, weights = w)
+system.time(b1 <- glmboost(DEXfat ~ ., data = bodyfat, weights = w))
+system.time(b2 <- mboost(DEXfat ~ bolscw(bodyfat[, colnames(bodyfat) != "DEXfat"]), 
+             data = bodyfat, weights = w))
+
+
 max(abs(coef(b1) - coef(b2)))
 max(abs(predict(b1) - predict(b2)))
 max(abs(b1$risk - b2$risk()))
+
+Rprof("a5")
+b1 <- glmboost(DEXfat ~ ., data = bodyfat, weights = w, control = boost_control(mstop = 1000))
+Rprof(NULL)
+
+
+Rprof("a4")
+b2 <- mboost(DEXfat ~ bolscw(bodyfat[, colnames(bodyfat) != "DEXfat"]),
+             data = bodyfat, weights = w, control = boost_control(mstop = 1000))
+Rprof(NULL)
+
 
 b1 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w)
 x <- names(bodyfat)

@@ -39,15 +39,15 @@ bolscw <- function(..., z = NULL) {
         xtx <- colSums(X^2 * weights)
         sxtx <- sqrt(xtx)
         MPinvS <- (1 / sxtx) * xw
+        p <- ncol(X)
 
         fit <- function(y) {
             xselect <- which.max(abs(mu <- MPinvS %*% y))  
             coef <- mu[xselect] / sxtx[xselect]
-            cfM[xselect,] <- coef
-            ret <- list(model = as.matrix(cfM),
+            ret <- list(model = c(coef, xselect, p),
                         fitted = function() 
                             coef * X[,xselect])
-            class(ret) <- c("bm_lin", "bm")
+            class(ret) <- c("bm_cwlin", "bm_lin", "bm")
             return(ret)
         }
 
@@ -55,9 +55,11 @@ bolscw <- function(..., z = NULL) {
 
             aggregate <- match.arg(aggregate)
             cf <- switch(aggregate, "sum" = {
-                cf <- 0
-                for (i in 1:length(bm))
-                    cf <- cf + coef(bm[[i]])
+                cf <- rep(0, bm[[1]]$model[3])
+                for (i in 1:length(bm)) {
+                    m <- bm[[i]]$model
+                    cf[m[2]] <- cf[m[2]] + m[1]
+                }
                 cf
             },
             "cumsum" = {
@@ -85,3 +87,8 @@ bolscw <- function(..., z = NULL) {
     return(ret)
 }
 
+coef.bm_cwlin <- function(object, ...) {
+    cf <- numeric(object$model[3])
+    cf[object$model[2]] <- object$model[1]
+    cf
+}

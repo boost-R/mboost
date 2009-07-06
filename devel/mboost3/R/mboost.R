@@ -36,6 +36,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
     bl <- lapply(blg, dpp, weights = weights)
     blfit <- lapply(bl, function(x) x$fit)
+    fit1 <- blfit[[1]]
 
     xselect <- NA
     ens <- vector(mode = "list", length = control$mstop)
@@ -55,24 +56,25 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     boost <- function(niter) {
         for (m in (mstop + 1):(mstop + niter)) {
 
-            ### fit least squares to residuals _componentwise_
-#            if (is.na(xselect[m])) {
+            if (length(bl) > 1) {
+                tsums <- rep(-1, length(bl))
+                ### fit least squares to residuals _componentwise_
                 for (i in 1:length(bl)) {
-                    tsums[i] <- -1
                     ss[[i]] <- sstmp <- blfit[[i]](y = u) ### try(fit(bl[[i]], y = u))
                     ### if (inherits(ss[[i]], "try-error")) next
                     tsums[i] <- mean.default(weights * ((sstmp$fitted()) - u)^2, 
-                                     na.rm = TRUE)
+                                             na.rm = TRUE)
                 }
-
+ 
                 if (all(tsums < 0))
                     stop("could not fit base learner in boosting iteration ", m)
-                xselect[m] <<- order(tsums)[1]
-                basess <- ss[[xselect[m]]]
-#            } else {
-#                basess <- try(fit(bl[[xselect[m]]], y = u))
-#                stopifnot(!(inherits(ss[[i]], "try-error")))
-#            }
+                xselect[m] <<- which.min(tsums)
+                basess <- ss[[xselect[m]]]	
+            } else {
+                basess <- fit1(y = u)
+                xselect[m] <<- 1
+            }
+
             ### update step
             fit <<- fit + nu * basess$fitted()
 
@@ -87,9 +89,6 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             ### save the model
             if (control$saveensss)
                 ens[[m]] <<- basess
-
-            ## free memory
-            rm("basess")
 
             ### print status information
             if (trace)

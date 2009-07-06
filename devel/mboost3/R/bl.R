@@ -279,7 +279,7 @@ model.frame.blg <- function(formula)
     formula$model.frame()
 
 coef.bm_lin <- function(object)
-    object$model
+    as.vector(object$model)
 
 fitted.bm_lin <- function(object)
     object$fitted()
