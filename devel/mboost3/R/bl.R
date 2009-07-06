@@ -210,6 +210,12 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
             lambda <- df2lambda(X, df = args$df, dmat = K, weights = w)
             XtX <- XtX + lambda * K
         }
+
+        if (inherits(X, "Matrix")) {
+            mysolve <- solve
+        } else {
+            mysolve <- solve.default
+        }
         
         fit <- function(y) {
             if (!is.null(index)) {
@@ -217,7 +223,7 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
             } else {
                 y <- y * weights
             }
-            coef <- solve(XtX, crossprod(X, y))
+            coef <- mysolve(XtX, crossprod(X, y))
             ret <- list(model = as.vector(coef), 
                         fitted = function() {
                             ret <- as.vector(X %*% coef)

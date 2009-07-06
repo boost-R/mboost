@@ -35,6 +35,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     oobweights <- as.numeric(weights == 0)
 
     bl <- lapply(blg, dpp, weights = weights)
+    blfit <- lapply(bl, function(x) x$fit)
 
     xselect <- NA
     ens <- vector(mode = "list", length = control$mstop)
@@ -58,9 +59,9 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 #            if (is.na(xselect[m])) {
                 for (i in 1:length(bl)) {
                     tsums[i] <- -1
-                    ss[[i]] <- bl[[i]]$fit(y = u) ### try(fit(bl[[i]], y = u))
+                    ss[[i]] <- sstmp <- blfit[[i]](y = u) ### try(fit(bl[[i]], y = u))
                     ### if (inherits(ss[[i]], "try-error")) next
-                    tsums[i] <- mean.default(weights * ((ss[[i]]$fitted()) - u)^2, 
+                    tsums[i] <- mean.default(weights * ((sstmp$fitted()) - u)^2, 
                                      na.rm = TRUE)
                 }
 
@@ -132,15 +133,11 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         which <- which[which %in% xselect[indx]]
         if (length(which) == 0) return(NULL)
 
-        if (length(which) == 1)
-            return(bl[[which]]$predict(ens[xselect == which & indx], 
-                                       newdata = newdata, Sum = aggregate))
-
         pr <- sapply(which, function(w) 
-            bl[[w]]$predict(ens[xselect == w & indx], newdata = newdata))
+            nu * bl[[w]]$predict(ens[xselect == w & indx], newdata = newdata, Sum = aggregate))
         colnames(pr) <- names(bl)[which]
-        if (components) return(nu * pr)
-        offset + nu * rowSums(pr)
+        if (!aggregate || components) return(pr)
+        offset + rowSums(pr)
     }
 
     RET$model.frame <- function(which = NULL) {
@@ -183,6 +180,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             return(cf * nu)
         })
         names(ret) <- names(bl)[which]
+        attr(ret, "offset") <- offset
         return(ret)
     }
 

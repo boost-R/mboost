@@ -6,6 +6,7 @@ library("mboost")
 source("helpers.R")
 source("bl.R")
 source("mboost.R")
+source("bolscw.R")
 
 
 x <- gl(50, 1009) ###rpois(10, lambda = 10)
@@ -79,3 +80,18 @@ p1 <- predict(a1, newdata = bodyfat)
 p2 <- predict(a2, newdata = bodyfat)
 
 (max(abs(drop(p2) - p1)))
+
+x <- rnorm(10)
+w <- rpois(length(x), lambda = 1)
+y <- rnorm(10)
+
+a <- fit(dpp(bolscw(x), w), y)
+
+b1 <- mboost(y ~ bolscw(x), weights = w)
+coef(b1)
+predict(b1)
+
+b2 <- glmboost(y ~ x, weights = w)
+coef(b2)
+predict(b2)
+
