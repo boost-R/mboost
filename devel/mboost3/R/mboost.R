@@ -276,3 +276,38 @@ mboost <- function(formula, data = list(), ...) {
     mboost_fit(bl, response = response, ...)
 }
 
+Glmboost <- function(formula, data = list(), ...) {
+
+    cl <- match.call()
+    mf <- match.call(expand.dots = FALSE)
+    m <- match(c("formula", "data"), names(mf), 0L)
+    mf <- mf[c(1L, m)]
+    mf[[1L]] <- as.name("model.frame")
+    mf <- eval(mf, parent.frame())
+    X <- model.matrix(attr(mf, "terms"), mf)
+    bl <- list(bolscw(X))
+    response <- eval(as.expression(formula[[2]]), envir = data)
+    mboost_fit(bl, response = response, ...)
+}
+
+Gamboost <- function(formula, data = list(), baselearner = bbs3, ...) {
+
+    cl <- match.call()
+    mf <- match.call(expand.dots = FALSE)
+    m <- match(c("formula", "data"), names(mf), 0L)
+    mf <- mf[c(1L, m)]
+    mf[[1L]] <- as.name("model.frame")
+    mf <- eval(mf, parent.frame())
+    bl <- vector(mode = "list", length = ncol(mf) - 1)
+    names(bl) <- names(mf)[-1]
+    for (i in 2:ncol(mf)) {
+        tmp <- mf[[i]]
+        bl[[i - 1]] <- baselearner(tmp)
+        bl[[i - 1]]$set_names(names(mf)[i])
+    }
+    if (!inherits(bl, "blg") && !is.list(bl)) bl <- list(bbs3(bl))
+    stopifnot(all(sapply(bl, inherits, what = "blg")))
+    response <- eval(as.expression(formula[[2]]), envir = data)
+    mboost_fit(bl, response = response, ...)
+}
+
