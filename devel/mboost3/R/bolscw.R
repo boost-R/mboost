@@ -51,17 +51,28 @@ bolscw <- function(..., z = NULL) {
             return(ret)
         }
 
-        predict <- function(bm, newdata = NULL, Sum = TRUE) {
+        predict <- function(bm, newdata = NULL, aggregate = c("sum", "cumsum", "none")) {
 
-            if (Sum) {
+            aggregate <- match.arg(aggregate)
+            cf <- switch(aggregate, "sum" = {
                 cf <- 0
                 for (i in 1:length(bm))
                     cf <- cf + coef(bm[[i]])
-            } else {
+                cf
+            },
+            "cumsum" = {
+                cf <- coef(bm[[1]])
+                for (i in 2:length(bm))
+                    cf <- cbind(cf, cf[[i-1]] + coef(bm[[i]]))
+                cf
+            },
+            "none" = {
                 cf <- coef(bm[[1]])
                 for (i in 2:length(bm))
                     cf <- cbind(cf, coef(bm[[i]]))
-            }
+                cf
+            })
+
             if (!is.null(newdata))
                 X <- newX(newdata)
             return(X %*% cf)

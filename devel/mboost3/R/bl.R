@@ -240,7 +240,7 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
             return(ret[index,index])
         }
 
-        predict <- function(bm, newdata = NULL, Sum = TRUE) {
+        predict <- function(bm, newdata = NULL, aggregate = c("sum", "cumsum", "none")) {
             cf <- sapply(bm, coef)
             if(!is.null(newdata)) {
                 index <- NULL
@@ -252,14 +252,16 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
                 }
                 X <- newX(mf)$X
             }
-            if (Sum) {
-                pr <- as(X %*% rowSums(cf), "matrix")
-            } else {
+            aggregate <- match.arg(aggregate)
+            pr <- switch(aggregate, "sum" = 
+                as(X %*% rowSums(cf), "matrix"),
+            "cumsum" = {
                 M <- triu(crossprod(Matrix(1, nc = ncol(cf))))
-                pr <- as(X %*% (cf %*% M), "matrix")
-            }
-            if (is.null(index)) return(pr[,,drop = TRUE])
-            return(pr[index,,drop = TRUE])
+                as(X %*% (cf %*% M), "matrix")
+            },
+            "none" = as(X %*% cf, "matrix"))
+            if (is.null(index)) return(pr[,,drop = FALSE])
+            return(pr[index,,drop = FALSE])
         }
 
         ret <- list(fit = fit, hatvalues = hatvalues, predict = predict)

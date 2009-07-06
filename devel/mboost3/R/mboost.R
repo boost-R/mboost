@@ -124,8 +124,8 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
     RET$risk <- function() mrisk[1:mstop]
 
-    RET$predict <- function(newdata = NULL, which = NULL, 
-                            components = FALSE, aggregate = TRUE) {
+    RET$predict <- function(newdata = NULL, which = NULL, components = FALSE,
+                            aggregate = c("sum", "cumsum", "none")) {
 
         indx <- ((1:length(xselect)) <= mstop)
         if (is.null(which))
@@ -133,12 +133,47 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         which <- which[which %in% xselect[indx]]
         if (length(which) == 0) return(NULL)
 
-        pr <- sapply(which, function(w) 
-            nu * bl[[w]]$predict(ens[xselect == w & indx], 
-                                 newdata = newdata, Sum = aggregate))
-        colnames(pr) <- names(bl)[which]
-        if (!aggregate || components) return(pr)
-        offset + rowSums(pr)
+        aggregate <- match.arg(aggregate)
+        pr <- switch(aggregate, "sum" = {
+            pr <- sapply(which, function(w) 
+                nu * bl[[w]]$predict(ens[xselect == w & indx], 
+                                     newdata = newdata, aggregate = "sum"))
+            colnames(pr) <- names(bl)[which]
+            if (components) return(pr)
+            offset + rowSums(pr)
+        }, "cumsum" = {
+            if (components) {
+                pr <- lapply(which, function(w)        
+                    nu * bl[[w]]$predict(ens[xselect == w & indx],         
+                                         newdata = newdata, aggregate = "cumsum"))
+                names(pr) <- names(bl)[which]
+                return(pr)
+            } else {
+                pr <- lapply(which, function(w)    
+                    nu * bl[[w]]$predict(ens[xselect == w & indx],     
+                                         newdata = newdata, aggregate = "none"))
+                ret <- matrix(0, nrow = nrow(pr[[1]]), ncol = sum(indx))
+                tmp <- integer(length(bl)) + 1
+                for (i in 1:sum(indx)) { 
+                    ret[,i] <- pr[[xselect[i]]][,tmp[xselect[i]]] 
+                    if (i > 1) ret[,i] <- ret[,i] + ret[,i-1]
+                    tmp[xselect[i]] <- tmp[xselect[i]] + 1
+                }
+                return(ret)
+            }
+         }, "none" = {
+                pr <- lapply(which, function(w)
+                    nu * bl[[w]]$predict(ens[xselect == w & indx],
+                                         newdata = newdata, aggregate = "none"))
+                ret <- matrix(0, nrow = nrow(pr[[1]]), ncol = sum(indx))
+                tmp <- integer(length(bl)) + 1
+                for (i in 1:sum(indx)) { 
+                    ret[,i] <- pr[[xselect[i]]][,tmp[xselect[i]]]
+                    tmp[xselect[i]] <- tmp[xselect[i]] + 1   
+                }
+                return(ret)
+         })
+        return(pr)
     }
 
     RET$model.frame <- function(which = NULL) {
@@ -173,14 +208,16 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             return(nu * (cf %*% M))
         }
 
-        ret <- lapply(which, function(w) {
+        tmp <- lapply(which, function(w) {
             tmp <- ens[xselect == w & indx]
             cf <- 0
             for (i in 1:length(tmp))
-                cf <- cf + coef(ens[[i]])
+                cf <- cf + coef(tmp[[i]])
             return(cf * nu)
         })
-        names(ret) <- names(bl)[which]
+        ret <- vector(mode = "list", length = length(bl))
+        names(ret) <- names(bl)
+        ret[which] <- tmp
         attr(ret, "offset") <- offset
         return(ret)
     }

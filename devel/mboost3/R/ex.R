@@ -28,7 +28,7 @@ system.time(a2 <- as.vector(attr(mboost:::bbs(x), "dpp")(w)$fit(y)$model))
 max(abs(a1 - a2))
 
 b1 <- bbs3(x)$dpp(w)
-b1$predict(list(b1$fit(y), b1$fit(y + 2)), newdata = NULL, Sum = FALSE)
+b1$predict(list(b1$fit(y), b1$fit(y + 2)), newdata = NULL, aggre = "none")
 fitted(b1$fit(y))
 
 a1 <- bbs3(x, y)$dpp(w)$fit(y)$model
@@ -97,3 +97,28 @@ b2 <- glmboost(y ~ x, weights = w)
 coef(b2)
 predict(b2)
 
+
+
+
+data("bodyfat", package = "mboost")
+
+w <- rpois(nrow(bodyfat), lambda = 2)
+
+b1 <- glmboost(DEXfat ~ ., data = bodyfat, weights = w)
+b2 <- mboost(DEXfat ~ bolscw(bodyfat[, colnames(bodyfat) != "DEXfat"]), 
+             data = bodyfat, weights = w)
+max(abs(coef(b1) - coef(b2)))
+max(abs(predict(b1) - predict(b2)))
+max(abs(b1$risk - b2$risk()))
+
+b1 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w)
+x <- names(bodyfat)
+x <- x[x != "DEXfat"]
+fm2 <- paste("DEXfat ~ ", paste("bbs3(", x, ")", collapse = "+"), sep = "")
+fm2 <- as.formula(fm2)
+b2 <- mboost(fm2, data = bodyfat, weights = w)
+
+
+sapply(1:length(coef(b1)), function(i) max(abs(coef(b1)[[i]] - coef(b2)[[i]])))
+max(abs(predict(b1) - predict(b2)))
+max(abs(b1$risk - b2$risk()))
