@@ -37,19 +37,7 @@ max(abs(a1 - a2))
 
 data("bodyfat", package = "mboost")
 
-attach(bodyfat)
-b <- list(blage = bbs3(age),
-          blhih = bbs3(hipcirc))
-a <- mboost_fit(b, DEXfat)
-
-cc <- gamboost(DEXfat ~ age + hipcirc)
-
-max(abs(a$predict() - cc$fit))
-
-plot(model.frame(a, which = 2)[[c(1,1)]], predict(a, which = 2))
-
-coef(a)
-
+ctrl <- boost_control(mstop = 500)
 x <- names(bodyfat)
 x <- x[x != "DEXfat"]
 fm1 <- paste("DEXfat ~ ", paste("bbs3(", x, ")", collapse = "+"), sep = "")
@@ -68,7 +56,7 @@ p2 <- predict(a2, newdata = bodyfat)
 
 source("mboost.R")
 Rprof("a1")
-a1 <- mboost(fm1, data = bodyfat)
+a1 <- mboost(fm1, data = bodyfat, control = ctrl)
 Rprof(NULL)
 Rprof("a2")
 a1[200]

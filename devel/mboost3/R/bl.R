@@ -214,7 +214,7 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
         if (inherits(X, "Matrix")) {
             mysolve <- solve
         } else {
-            mysolve <- solve.default
+            mysolve <- function(a, b) .Call("La_dgesv", a, b, .Machine$double.eps, PACKAGE = "base")
         }
         
         fit <- function(y) {
@@ -224,7 +224,7 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
                 y <- y * weights
             }
             coef <- mysolve(XtX, crossprod(X, y))
-            ret <- list(model = as.vector(coef), 
+            ret <- list(model = coef, 
                         fitted = function() {
                             ret <- as.vector(X %*% coef)
                             if (is.null(index)) return(ret)
