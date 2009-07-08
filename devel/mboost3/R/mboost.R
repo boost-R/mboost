@@ -135,7 +135,6 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         return(which)
     }
 
-
     RET$predict <- function(newdata = NULL, which = NULL, components = FALSE,
                             aggregate = c("sum", "cumsum", "none")) {
 
@@ -166,7 +165,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 return(pr)
             } else {
                 pr <- lapply(which, pfun, agg = "none")
-                ret <- matrix(0, nrow = nrow(pr[[1]]), ncol = length(pr))
+                ret <- matrix(0, nrow = n, ncol = sum(indx))
                 tmp <- integer(length(bl)) + 1
                 for (i in 1:sum(indx)) { 
                     ret[,i] <- pr[[xselect[i]]][,tmp[xselect[i]]] 
@@ -177,7 +176,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             }
          }, "none" = {
                 pr <- lapply(which, pfun, agg = "none")
-                ret <- matrix(0, nrow = nrow(pr[[1]]), ncol = length(pr))
+                ret <- matrix(0, nrow = n, ncol = sum(indx))
                 tmp <- integer(length(bl)) + 1
                 for (i in 1:sum(indx)) { 
                     ret[,i] <- pr[[xselect[i]]][,tmp[xselect[i]]]
@@ -207,38 +206,32 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         }
     } 
 
-    RET$coef <- function(which = NULL, aggregate = TRUE) {
+    RET$coef <- function(which = NULL, aggregate = c("sum", "cumsum", "none")) {
         
         indx <- ((1:length(xselect)) <= mstop)
         which <- thiswhich(which, usedonly = FALSE)
         if (length(which) == 0) return(NULL)
 
-        if (length(which) == 1) {
-            ix <- (xselect == which & indx)
+        aggregate <- match.arg(aggregate)
+        cfun <- function(w) {
+            ix <- (xselect == w & indx)
             if (!any(ix)) return(NULL)
             cf <- sapply(ens[ix], coef)
-            if (aggregate) {
-                ret <- (rowSums(cf) * nu)
-            } else {
-                M <- triu(crossprod(Matrix(1, nc = ncol(cf))))
-                ret <- nu * (cf %*% M)
-            }
+            ret <- switch(aggregate, 
+                "sum" = rowSums(cf) * nu,
+                "cumsum" = {
+                    M <- triu(crossprod(Matrix(1, nc = ncol(cf))))
+                    as.matrix(nu * (cf %*% M))
+                },
+                "none" = nu * cf
+            )
+        }
+        if (length(which) == 1) {
+            ret <- cfun(which)
             attr(ret, "offset") <- offset
             return(ret)
         }
-
-        if (!aggregate) 
-            stop("aggregate=FALSE only available for one single baselearner")
-
-        tmp <- lapply(which, function(w) {
-            ix <- (xselect == w & indx)
-            if (!any(ix)) return(NULL)
-            tmp <- ens[ix]
-            cf <- 0
-            for (i in 1:length(tmp))
-                cf <- cf + coef(tmp[[i]])
-            return(cf * nu)
-        })
+        tmp <- lapply(which, cfun)
         ret <- vector(mode = "list", length = length(bl))
         names(ret) <- names(bl)
         ret[which] <- tmp
@@ -269,8 +262,12 @@ coef.mboost <- function(object, ...)
 hatvalues.mboost <- function(model, ...)
     model$hatvalues(...)
 
-fitted.mboost <- function(object, ...)
-    object$fitted()
+fitted.mboost <- function(object, ...) {
+    args <- list(...)
+    if (length(args) == 0)
+        return(object$fitted())
+    object$predict(...)
+}
 
 "[.mboost" <- function(x, i, ...) {
     x$subset(i)
