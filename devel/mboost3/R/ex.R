@@ -96,6 +96,8 @@ w <- rpois(nrow(bodyfat), lambda = 2)
 system.time(b1 <- glmboost(DEXfat ~ ., data = bodyfat, weights = w))
 system.time(b2 <- mboost(DEXfat ~ bolscw(bodyfat[, colnames(bodyfat) != "DEXfat"]), 
              data = bodyfat, weights = w))
+b3 <- Glmboost(DEXfat ~ ., data = bodyfat, weights = w)
+
 
 
 max(abs(coef(b1) - coef(b2)))
@@ -125,4 +127,13 @@ sapply(1:length(coef(b1)), function(i) max(abs(coef(b1)[[i]] - coef(b2)[[i]])))
 max(abs(predict(b1) - predict(b2)))
 max(abs(b1$risk - b2$risk()))
 
+Rprof("a6")
 z <- mboost(DEXfat ~ btree(age) + btree(waistcirc), data = bodyfat)
+Rprof(NULL)
+
+library("gbm")
+
+Rprof("a7")
+z2 <- gbm(DEXfat ~ age + waistcirc, data = bodyfat, distr = "gaussian")
+Rprof(NULL)
+

@@ -123,35 +123,50 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
     RET$risk <- function() mrisk[1:mstop]
 
+    thiswhich <- function(which = NULL, usedonly = FALSE) {
+        if (is.null(which)) which <- 1:length(bl)
+        if (is.character(which)) {
+            i <- match(which, names(bl))
+            if (any(is.na(i)))
+                warning(paste(which[is.na(i)], collapse = ","), " not found")
+            which <- i
+        } 
+        if (usedonly) which <- which[which %in% RET$xselect()]
+        return(which)
+    }
+
+
     RET$predict <- function(newdata = NULL, which = NULL, components = FALSE,
                             aggregate = c("sum", "cumsum", "none")) {
 
         indx <- ((1:length(xselect)) <= mstop)
-        if (is.null(which))
-            which <- sort(unique(xselect[indx]))
-        which <- which[which %in% xselect[indx]]
+        which <- thiswhich(which, usedonly = FALSE)
         if (length(which) == 0) return(NULL)
 
         aggregate <- match.arg(aggregate)
+
+        n <- ifelse(!is.null(newdata), nrow(newdata), length(y))
+        pfun <- function(w, agg) {
+            ix <- xselect == w & indx
+            n <- 
+            if (!any(ix)) return(rep.int(0, n))
+            nu * bl[[w]]$predict(ens[ix],         
+                newdata = newdata, aggregate = agg)
+        }
+
         pr <- switch(aggregate, "sum" = {
-            pr <- sapply(which, function(w) 
-                nu * bl[[w]]$predict(ens[xselect == w & indx], 
-                                     newdata = newdata, aggregate = "sum"))
+            pr <- sapply(which, pfun, agg = "sum")
             colnames(pr) <- names(bl)[which]
             if (components) return(pr)
             offset + rowSums(pr)
         }, "cumsum" = {
             if (components) {
-                pr <- lapply(which, function(w)        
-                    nu * bl[[w]]$predict(ens[xselect == w & indx],         
-                                         newdata = newdata, aggregate = "cumsum"))
+                pr <- lapply(which, pfun, agg = "cumsum")
                 names(pr) <- names(bl)[which]
                 return(pr)
             } else {
-                pr <- lapply(which, function(w)    
-                    nu * bl[[w]]$predict(ens[xselect == w & indx],     
-                                         newdata = newdata, aggregate = "none"))
-                ret <- matrix(0, nrow = nrow(pr[[1]]), ncol = sum(indx))
+                pr <- lapply(which, pfun, agg = "none")
+                ret <- matrix(0, nrow = nrow(pr[[1]]), ncol = length(pr))
                 tmp <- integer(length(bl)) + 1
                 for (i in 1:sum(indx)) { 
                     ret[,i] <- pr[[xselect[i]]][,tmp[xselect[i]]] 
@@ -161,10 +176,8 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 return(ret)
             }
          }, "none" = {
-                pr <- lapply(which, function(w)
-                    nu * bl[[w]]$predict(ens[xselect == w & indx],
-                                         newdata = newdata, aggregate = "none"))
-                ret <- matrix(0, nrow = nrow(pr[[1]]), ncol = sum(indx))
+                pr <- lapply(which, pfun, agg = "none")
+                ret <- matrix(0, nrow = nrow(pr[[1]]), ncol = length(pr))
                 tmp <- integer(length(bl)) + 1
                 for (i in 1:sum(indx)) { 
                     ret[,i] <- pr[[xselect[i]]][,tmp[xselect[i]]]
@@ -176,9 +189,11 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     }
 
     RET$model.frame <- function(which = NULL) {
-        if (is.null(which)) which <- sort(unique(RET$xselect()))
-        ret <- lapply(blg[which], model.frame)
-        names(ret) <- names(bl)[which]
+        which <- thiswhich(which, usedonly = TRUE)
+        tmp <- lapply(blg[which], model.frame)
+        ret <- vector(mode = "list", length = length(bl))
+        names(ret) <- names(bl)
+        ret[which] <- tmp
         ret
     }
 
@@ -195,20 +210,30 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     RET$coef <- function(which = NULL, aggregate = TRUE) {
         
         indx <- ((1:length(xselect)) <= mstop)
-        if (is.null(which))
-            which <- sort(unique(xselect[indx]))
-        which <- which[which %in% xselect[indx]]
+        which <- thiswhich(which, usedonly = FALSE)
         if (length(which) == 0) return(NULL)
 
         if (length(which) == 1) {
-            cf <- sapply(ens[xselect == which & indx], coef)
-            if (aggregate) return(rowSums(cf) * nu)
-            M <- triu(crossprod(Matrix(1, nc = ncol(cf))))
-            return(nu * (cf %*% M))
+            ix <- (xselect == which & indx)
+            if (!any(ix)) return(NULL)
+            cf <- sapply(ens[ix], coef)
+            if (aggregate) {
+                ret <- (rowSums(cf) * nu)
+            } else {
+                M <- triu(crossprod(Matrix(1, nc = ncol(cf))))
+                ret <- nu * (cf %*% M)
+            }
+            attr(ret, "offset") <- offset
+            return(ret)
         }
 
+        if (!aggregate) 
+            stop("aggregate=FALSE only available for one single baselearner")
+
         tmp <- lapply(which, function(w) {
-            tmp <- ens[xselect == w & indx]
+            ix <- (xselect == w & indx)
+            if (!any(ix)) return(NULL)
+            tmp <- ens[ix]
             cf <- 0
             for (i in 1:length(tmp))
                 cf <- cf + coef(tmp[[i]])
@@ -223,9 +248,11 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
     ### function for computing hat matrices of individual predictors
     RET$hatvalues <- function(which = NULL) {
-        if (is.null(which)) which <- sort(unique(RET$xselect()))
-        ret <- lapply(bl[which], hatvalues)
-        names(ret) <- names(bl)[which]
+        which <- thiswhich(which, usedonly = TRUE)
+        tmp <- lapply(bl[which], hatvalues)
+        ret <- vector(mode = "list", length = length(bl))
+        names(ret) <- names(bl)
+        ret[which] <- tmp
         ret
     }
 
@@ -307,7 +334,7 @@ Gamboost <- function(formula, data = list(), baselearner = bbs3, ...) {
     }
     if (!inherits(bl, "blg") && !is.list(bl)) bl <- list(bbs3(bl))
     stopifnot(all(sapply(bl, inherits, what = "blg")))
-    response <- eval(as.expression(formula[[2]]), envir = data)
+    response <- mf[,1]
     mboost_fit(bl, response = response, ...)
 }
 
@@ -321,6 +348,6 @@ Blackboost <- function(formula, data = list(), ...) {
     mf <- eval(mf, parent.frame())
     bl <- list(btree(mf[,-1, drop = FALSE]))
     names(bl) <- "btree"
-    response <- eval(as.expression(formula[[2]]), envir = data)
+    response <- mf[,1]
     mboost_fit(bl, response = response, ...)
 }
