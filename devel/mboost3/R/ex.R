@@ -17,7 +17,7 @@ x[sample(1:length(x), 100)] <- NA
 w <- rpois(length(x), lambda = 1)
 
 system.time(c1 <- bols3(x)$dpp(w)$fit(y)$model)
-system.time(c2 <- coef(lm(y ~ x, weights = w)))
+system.time(c2 <- coef(lm(y ~ x - 1, weights = w)))
 max(abs(c1 - c2))
 
 set.seed(29)
@@ -100,6 +100,18 @@ b3 <- Glmboost(DEXfat ~ ., data = bodyfat, weights = w)
 
 
 
+b1 <- glmboost(DEXfat ~ ., data = bodyfat, 
+               control = boost_control(center = TRUE))
+
+
+b3 <- Glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)
+
+X <- bodyfat[,-2]
+
+a <- dpp(bolscw(X, center = TRUE), rep(1, nrow(X)))$fit
+a(bodyfat$DEXfat)
+
+
 max(abs(coef(b1) - coef(b2)))
 max(abs(predict(b1) - predict(b2)))
 max(abs(b1$risk - b2$risk()))
@@ -136,4 +148,18 @@ library("gbm")
 Rprof("a7")
 z2 <- gbm(DEXfat ~ age + waistcirc, data = bodyfat, distr = "gaussian")
 Rprof(NULL)
+
+
+n <- 50000
+df <- data.frame(y = rnorm(n), x1 = round(runif(n), 2), 
+                 x2 = round(runif(n), 2),
+                 z1 = round(runif(n), 2), 
+                 z2 = round(runif(n),2),
+                 id = gl(100, n / 100))
+
+system.time(a <- mboost(y ~ bbs3(x1) + bbs3(x2) + bspatial3(z1, z2, knots = 6) + 
+                        brandom3(id), data = df))
+
+system.time(b <- predict(a, components = TRUE))
+system.time(b1 <- predict(a, newdata = df, components = TRUE))
 

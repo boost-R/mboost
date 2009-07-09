@@ -23,6 +23,11 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     }
     check_y_family(response, family)
 
+    if (is.factor(response)) {
+        y <- as.numeric(y) - 1
+        y[y == 0] <- -1
+    }
+
     ### unweighted problem
     if (is.null(weights)) weights <- rep.int(1, length(y))
     WONE <- (max(abs(weights - 1)) < .Machine$double.eps)
@@ -92,7 +97,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
             ### print status information
             if (trace)
-                do_trace(m, risk = mrisk, step = tracestep, width = niter)
+                mboost:::do_trace(m, risk = mrisk, step = tracestep, width = niter)
         }
         mstop <<- mstop + niter 
         return(TRUE)
@@ -188,7 +193,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     }
 
     RET$model.frame <- function(which = NULL) {
-        which <- thiswhich(which, usedonly = TRUE)
+        which <- thiswhich(which, usedonly = FALSE)
         tmp <- lapply(blg[which], model.frame)
         ret <- vector(mode = "list", length = length(bl))
         names(ret) <- names(bl)
@@ -300,7 +305,7 @@ mboost <- function(formula, data = list(), ...) {
     mboost_fit(bl, response = response, ...)
 }
 
-Glmboost <- function(formula, data = list(), ...) {
+Glmboost <- function(formula, data = list(), center = FALSE, ...) {
 
     cl <- match.call()
     mf <- match.call(expand.dots = FALSE)
@@ -309,7 +314,7 @@ Glmboost <- function(formula, data = list(), ...) {
     mf[[1L]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
     X <- model.matrix(attr(mf, "terms"), mf)
-    bl <- list(bolscw(X))
+    bl <- list(bolscw(X, center = center))
     response <- eval(as.expression(formula[[2]]), envir = data)
     mboost_fit(bl, response = response, ...)
 }

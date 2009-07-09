@@ -1,5 +1,5 @@
 
-bolscw <- function(..., z = NULL) {
+bolscw <- function(..., z = NULL, center = FALSE) {
 
     mf <- list(...)
     if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
@@ -34,6 +34,14 @@ bolscw <- function(..., z = NULL) {
     cfM <- Matrix(0, nrow = ncol(X), ncol = 1)
 
     ret$dpp <- function(weights) {
+
+        if (center) {
+            cm <- colSums(X * w) / sum(w)
+            cls <- sapply(mf, class)[colnames(mf) != vary]
+            num <- which(cls == "numeric")
+            cm[!attr(X, "assign") %in% num] <- 0
+            X <- scale(X, center = cm, scale = FALSE)
+        }
 
         xw <- t(X * weights)
         xtx <- colSums(X^2 * weights)
@@ -75,8 +83,10 @@ bolscw <- function(..., z = NULL) {
                 cf
             })
 
-            if (!is.null(newdata))
+            if (!is.null(newdata)) {
                 X <- newX(newdata)
+                X <- scale(X, center = cm, scale = FALSE)
+            }
             return(X %*% cf)
         }
     
