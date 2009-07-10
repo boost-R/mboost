@@ -82,7 +82,8 @@ X_ols <- function(mf, vary, args) {
     list(X = X, K = K)
 }
 
-hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4) {
+hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4, 
+                      center = FALSE) {
 
     knotf <- function(x, knots) {	
         boundary.knots <- range(x, na.rm = TRUE)
@@ -99,7 +100,7 @@ hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4)
     names(ret) <- nm
     for (n in nm)
         ret[[n]] <- knotf(mf[[n]], if (is.list(knots)) knots[[n]] else knots)
-    list(knots = ret, degree = degree, differences = differences, df = df)
+    list(knots = ret, degree = degree, differences = differences, df = df, center = center)
 }
 
 X_bbs <- function(mf, vary, args) {
@@ -133,6 +134,14 @@ X_bbs <- function(mf, vary, args) {
     if (vary != "") {
         z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
         X <- X * z
+    }
+    if (args$center) {
+        L <- eigen(K, symmetric = TRUE, EISPACK = TRUE)
+        L$vectors <- L$vectors[,1:(ncol(X) - args$differences^2)]
+        L$values <- sqrt(L$values[1:(ncol(X) - args$differences^2)])
+        L <- L$vectors %*% diag(1/L$values)
+        X <- X %*% L
+        K <- diag(ncol(X))
     }
     return(list(X = X, K = K))
 }
@@ -243,9 +252,10 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
             mysolve <- function(y) solve(XtXC, crossprod(X, y))
         } else {
             mysolve <- function(y) 
-                .Call("La_dgesv", XtX, crossprod(X, y), .Machine$double.eps, PACKAGE = "base")
+                .Call("La_dgesv", XtX, crossprod(X, y), .Machine$double.eps, 
+                      PACKAGE = "base")
         }	
-        
+
         fit <- function(y) {
             if (!is.null(index)) {
                 y <- as.vector(tapply(weights * y, index, sum))
