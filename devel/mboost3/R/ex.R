@@ -150,7 +150,7 @@ z2 <- gbm(DEXfat ~ age + waistcirc, data = bodyfat, distr = "gaussian")
 Rprof(NULL)
 
 
-n <- 50000
+n <- 500
 df <- data.frame(y = rnorm(n), x1 = round(runif(n), 2), 
                  x2 = round(runif(n), 2),
                  z1 = round(runif(n), 2), 

@@ -27,6 +27,7 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
     while (lambda >= upper.l - 200 ) {
         upper.l <- upper.l * 1.5
 
+        ### uniroot?
         tl <- try(lambda <- optimize(df2l, interval=c(lower.l,upper.l))$minimum,
         silent=T)
         if (class(tl)=="try-error") stop("problem of
@@ -50,34 +51,35 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
     lambda
 }
 
-hyper_ols <- function(df = NULL, center = FALSE, contrasts.arg = "contr.treatment", ...) 
-    list(df = df, center = FALSE, contrasts.arg = contrasts.arg, ...)
+hyper_ols <- function(df = NULL, intercept = TRUE, contrasts.arg = "contr.treatment") 
+    list(df = df, 
+         intercept = intercept, 
+         contrasts.arg = contrasts.arg)
 
-mm_ols <- function(mf, vary, args) {
+X_ols <- function(mf, vary, args) {
 
-    ANOVA <- (length(mf) == 1 && is.factor(mf[[1]]))
     fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary], 
                 collapse = "+"), sep = "")
-    if (ANOVA || args$center)
+    if (!args$intercept)
         fm <- paste(fm, "-1", collapse = "")
     X <- model.matrix(as.formula(fm), data = mf, contrasts.arg = args$contrasts.arg)
     if (vary != "") {
-        z <- model.matrix(as.formula(paste("~", vary, "-1", collapse = "")), data = mf)
-        xtmp <- NULL
-        for (i in 1:ncol(z))
-            xtmp <- cbind(xtmp, X * z[,i])
-        X <- xtmp
+        z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
+        X <- X * z
     }
     K <- NULL
     if (!is.null(args$df)) {
-        if (ANOVA) { 
+        contr <- attr(X, "contrasts")
+        ANCOVA <- !is.null(contr)
+        if (ANCOVA) { 
             diag <- Diagonal
             X <- Matrix(X)
         }
-        if (ANOVA && is.ordered(mf[[1]])) K <- diff(diag(ncol(X)), differences = 2)
+        if (ANCOVA && any(sapply(mf[, names(contr), drop = FALSE], is.ordered)))
+            K <- diff(diag(ncol(X)), differences = 2)
         K <- diag(ncol(X))
     }
-    list(mm = X, K = K)
+    list(X = X, K = K)
 }
 
 hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4) {
@@ -91,24 +93,28 @@ hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4)
         }
         list(knots = knots, boundary.knots = boundary.knots)
     }
-    ret <- lapply(which(colnames(mf) != vary), function(i) {
-        knotf(mf[[i]], if (is.list(knots)) knots[[i]] else knots)
-    })
+    nm <- colnames(mf)[colnames(mf) != vary]
+    if (is.list(knots)) stopifnot(all(names(knots) %in% nm))
+    ret <- vector(mode = "list", length = length(nm))
+    names(ret) <- nm
+    for (n in nm)
+        ret[[n]] <- knotf(mf[[n]], if (is.list(knots)) knots[[n]] else knots)
     list(knots = ret, degree = degree, differences = differences, df = df)
 }
 
-mm_bbs <- function(mf, vary, args) {
+X_bbs <- function(mf, vary, args) {
 
     mm <- lapply(which(colnames(mf) != vary), function(i) {
         X <- bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,
            Boundary.knots = args$knots[[i]]$boundary.knots, intercept = TRUE)
         class(X) <- "matrix"
-        if (nrow(X) > 500 || (ncol(X) > 50 || sum(colnames(mf) != vary) > 1))
-            return(Matrix(X))
         return(X)
     })
-    if (nrow(mm[[1]]) > 500 || (ncol(mm[[1]]) > 50 || length(mm) > 1))
+    MATRIX <- any(sapply(mm, dim) > c(500, 50)) || (length(mm) > 1)
+    if (MATRIX) {
         diag <- Diagonal
+        for (i in 1:length(mm)) mm[[i]] <- Matrix(mm[[i]])
+    }
     if (length(mm) == 1) {
         X <- mm[[1]]
         K <- diff(diag(ncol(X)), differences = args$differences)
@@ -125,17 +131,13 @@ mm_bbs <- function(mf, vary, args) {
              kronecker(diag(ncol(mm[[1]])), Ky)
     }
     if (vary != "") {
-        z <- model.matrix(as.formula(paste("~", vary, "-1", collapse = "")), data = mf)[,-1]
+        z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
         X <- X * z
-#        xtmp <- NULL
-#        for (i in 1:ncol(z))
-#            xtmp <- cbind(xtmp, X * z[,i])
-#        X <- xtmp
     }
-    return(list(mm = X, K = K))
+    return(list(X = X, K = K))
 }
 
-bols3 <- function(..., z = NULL, index = NULL, center = FALSE, df = NULL, 
+bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, 
                   contrasts.arg = "contr.treatment") {
 
     mf <- list(...)
@@ -148,9 +150,9 @@ bols3 <- function(..., z = NULL, index = NULL, center = FALSE, df = NULL,
     }
     vary <- ""
     if (!is.null(z)) {
+        stopifnot(is.numeric(z) || (is.factor(z) && nlevels(z) == 2))
         mf <- cbind(mf, z)
-        colnames(mf) <- c(colnames(mf), deparse(substitute(z)))
-        vary <- colnames(mf)[ncol(mf)]
+        colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(z))
     }
 
     if (is.null(index) & (!is.matrix(mf) & nrow(mf) > 10000)) {
@@ -165,8 +167,8 @@ bols3 <- function(..., z = NULL, index = NULL, center = FALSE, df = NULL,
                 set_names = function(value) attr(mf, "names") <<- value)
     class(ret) <- "blg"
 
-    ret$dpp <- bl_lin(mf, vary, index = index, Xfun = mm_ols, args = hyper_ols(
-                      df = df, center = center, contrasts.arg = contrasts.arg))
+    ret$dpp <- bl_lin(mf, vary, index = index, Xfun = X_ols, args = hyper_ols(
+                      df = df, intercept = intercept, contrasts.arg = contrasts.arg))
     return(ret)
 }
 
@@ -183,6 +185,7 @@ bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
     }
     vary <- ""
     if (!is.null(z)) {
+        stopifnot(is.numeric(z) || (is.factor(z) && nlevels(z) == 2))
         mf <- cbind(mf, z)
         colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(z))
     }
@@ -199,7 +202,7 @@ bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
                 set_names = function(value) attr(mf, "names") <<- value)
     class(ret) <- "blg"
 
-    ret$dpp <- bl_lin(mf, vary, index = index, Xfun = mm_bbs, 
+    ret$dpp <- bl_lin(mf, vary, index = index, Xfun = X_bbs, 
                       args = hyper_bbs(mf, vary, knots = knots,
                       degree = degree, differences = differences, df = df))
     return(ret)
@@ -215,7 +218,7 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
         } else {
             X <- Xfun(mf, vary, args)
             K <- X$K
-            X <- X$mm
+            X <- X$X
         }
         return(list(X = X, K = K))
     }
@@ -234,12 +237,14 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
             XtX <- XtX + lambda * K
         }
 
-        if (inherits(X, "Matrix")) {
-            mysolve <- solve
+        if (is(X, "Matrix")) {
+            ### chol benutzen
+            XtXC <- Cholesky(forceSymmetric(XtX))
+            mysolve <- function(y) solve(XtXC, crossprod(X, y))
         } else {
-            mysolve <- function(a, b) 
-                .Call("La_dgesv", a, b, .Machine$double.eps, PACKAGE = "base")
-        }
+            mysolve <- function(y) 
+                .Call("La_dgesv", XtX, crossprod(X, y), .Machine$double.eps, PACKAGE = "base")
+        }	
         
         fit <- function(y) {
             if (!is.null(index)) {
@@ -247,7 +252,7 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
             } else {
                 y <- y * weights
             }
-            coef <- mysolve(XtX, crossprod(X, y))
+            coef <- mysolve(y)
             ret <- list(model = coef, 
                         fitted = function() {
                             ret <- as.vector(X %*% coef)
@@ -270,13 +275,13 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
                 index <- NULL
                 nm <- colnames(mf)
                 if (vary != "") nm <- c(nm, vary)
-                mf <- newdata[,nm, drop = FALSE]
+                newdata <- newdata[,nm, drop = FALSE]
                 if (nrow(newdata) > 1000) {
-                    index <- get_index(mf)
-                    mf <- mf[index[[1]],,drop = FALSE]
+                    index <- get_index(newdata)
+                    newdata <- newdata[index[[1]],,drop = FALSE]
                     index <- index[[2]]
                 }
-                X <- newX(mf)$X
+                X <- newX(newdata)$X
             }
             aggregate <- match.arg(aggregate)
             pr <- switch(aggregate, "sum" = 
@@ -307,7 +312,7 @@ bspatial3 <- function(...) {
 brandom3 <- function(..., df = 4) {
     cl <- match.call()
     if (is.null(cl$df)) cl$df <- df
-    cl$center <- FALSE
+    cl$intercept <- FALSE
     cl[[1L]] <- as.name("bols3")
     eval(cl, parent.frame())
 }
