@@ -6,12 +6,17 @@ get_index <- function(x) {
 #        nd <- nd[complete.cases(x[nd,])]
 #        ux <- sort(x[[1]][nd], na.last = TRUE)
 #        index <- match(x[[1]], ux)
-#    } else {
+    ### handle single factors separately
+    if (length(x) == 1 && is.factor(x[[1]])) {
+         nd <- which(!duplicated(x[[1]]))
+         nd <- nd[complete.cases(x[nd,])]
+         index <- as.integer(x[[1]])
+    } else {
         tmp <- do.call("paste", x)           
         nd <- which(!duplicated(tmp))
         nd <- nd[complete.cases(x[nd,])]
         index <- match(tmp, tmp[nd])
-#    }
+    }
     return(list(nd, index))
 }
 

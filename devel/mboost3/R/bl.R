@@ -1,80 +1,69 @@
 
 df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
-#   if (df <= 2) stop(sQuote("df"), " must be greater than two")
+    if (df > ncol(X)) return(0)
 
-    if (is.null(dmat)) {
-        dmat <- diff(diag(ncol(X)), differences = 2)
-        dmat <- crossprod(dmat, dmat)
-    }
+    if (is.null(dmat))
+        dmat <- diag(ncol(X))
 
     # Cholesky decomposition
 
-    A <- crossprod(X * weights, X) + dmat*10e-10
-    Rm <- solve(chol(A))
+    A <- crossprod(X * weights, X) 
+    Rm <- try(chol(A))
+    if (inherits(Rm, "try-error")) Rm <- chol(A + dmat * 10e-10)
+    Rm <- solve(Rm)
 
-    decomp <- svd(crossprod(Rm,dmat)%*%Rm)
-    d <- decomp$d
+    decomp <- svd(crossprod(Rm, dmat) %*% Rm)
+    d <- decomp$d[decomp$d > .Machine$double.eps]
+
+    if (df >= length(d)) return(0)
 
     # df2lambda
     df2l <- function(lambda)
-        (sum( 1/(1+lambda*d) ) - df)^2
+        sum( 1/(1+lambda*d) ) - df
 
-    lower.l <- 0
-    upper.l <- 5000
-    lambda <- upper.l
-
-    while (lambda >= upper.l - 200 ) {
-        upper.l <- upper.l * 1.5
-
-        ### uniroot?
-        tl <- try(lambda <- optimize(df2l, interval=c(lower.l,upper.l))$minimum,
-        silent=T)
-        if (class(tl)=="try-error") stop("problem of
-        converting df into lambda cannot be solved - please increase value of
-        df")
-        lower.l <- upper.l-200
-        if (lower.l > 1e+06){
-            lambda <- 1e+06
-            warning("lambda needs to be larger than 1e+06 for given value of df,
-            setting lambda = 1e+06 \n trace of hat matrix differs from df by ",
-            round(sum( 1/(1+lambda*d) )-df,6))
-            break
-            }
-    }
-
-    ### tmp <- sum(diag(X %*% solve(crossprod(X * weights, X) +
-    ###                   lambda*dmat) %*% t(X * weights))) - df
-    ### if (abs(tmp) > sqrt(.Machine$double.eps))
-    ###   warning("trace of hat matrix is not equal df with difference", tmp)
+    if (df2l(1e+10) > 0) return(1e+10)
+    lambda <- uniroot(df2l, c(0, 1e+10), tol = sqrt(.Machine$double.eps))$root
 
     lambda
 }
 
-hyper_ols <- function(df = NULL, intercept = TRUE, contrasts.arg = "contr.treatment") 
-    list(df = df, 
+hyper_ols <- function(df = NULL, lambda = NULL, intercept = TRUE, 
+                      contrasts.arg = "contr.treatment") 
+    list(pen = !is.null(df) || !is.null(lambda),
+         df = df, lambda = lambda,
          intercept = intercept, 
          contrasts.arg = contrasts.arg)
 
 X_ols <- function(mf, vary, args) {
 
-    fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary], 
-                collapse = "+"), sep = "")
-    if (!args$intercept)
-        fm <- paste(fm, "-1", collapse = "")
-    X <- model.matrix(as.formula(fm), data = mf, contrasts.arg = args$contrasts.arg)
-    if (vary != "") {
-        z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
-        X <- X * z
+    if (is.matrix(mf)) {
+        X <- mf
+        contr <- NULL
+    } else {
+        ### set up model matrix
+        fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary], 
+                    collapse = "+"), sep = "")
+        if (!args$intercept)
+            fm <- paste(fm, "-1", collapse = "")
+        X <- model.matrix(as.formula(fm), data = mf, contrasts.arg = args$contrasts.arg)
+        contr <- attr(X, "contrasts")
+        if (vary != "") {
+            ### <FIXME> is this really what we want?
+            z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
+            X <- X * z
+            ### </FIXME>
+        }
     }
     K <- NULL
-    if (!is.null(args$df)) {
-        contr <- attr(X, "contrasts")
+    if (args$pen) {
+        ### set up penalty matrix
         ANCOVA <- !is.null(contr)
         if (ANCOVA) { 
             diag <- Diagonal
             X <- Matrix(X)
         }
+        ### for ordered factors use difference penalty
         if (ANCOVA && any(sapply(mf[, names(contr), drop = FALSE], is.ordered)))
             K <- diff(diag(ncol(X)), differences = 2)
         K <- diag(ncol(X))
@@ -82,7 +71,7 @@ X_ols <- function(mf, vary, args) {
     list(X = X, K = K)
 }
 
-hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4, 
+hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4, lambda = NULL,
                       center = FALSE) {
 
     knotf <- function(x, knots) {	
@@ -100,7 +89,8 @@ hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4,
     names(ret) <- nm
     for (n in nm)
         ret[[n]] <- knotf(mf[[n]], if (is.list(knots)) knots[[n]] else knots)
-    list(knots = ret, degree = degree, differences = differences, df = df, center = center)
+    list(knots = ret, degree = degree, differences = differences, pen = TRUE,
+         df = df, lambda = lambda, center = center)
 }
 
 X_bbs <- function(mf, vary, args) {
@@ -146,7 +136,7 @@ X_bbs <- function(mf, vary, args) {
     return(list(X = X, K = K))
 }
 
-bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, 
+bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lambda = NULL,
                   contrasts.arg = "contr.treatment") {
 
     mf <- list(...)
@@ -159,15 +149,21 @@ bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL,
     }
     vary <- ""
     if (!is.null(z)) {
+        stopifnot(is.data.frame(mf))
         stopifnot(is.numeric(z) || (is.factor(z) && nlevels(z) == 2))
         mf <- cbind(mf, z)
         colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(z))
     }
 
-    if (is.null(index) & (!is.matrix(mf) & nrow(mf) > 10000)) {
-        index <- get_index(mf)
-        mf <- mf[index[[1]],,drop = FALSE]
-        index <- index[[2]]
+    if (is.null(index)) {
+        if (!is.matrix(mf)) {
+            if (nrow(mf) > 10000 || 
+                (is.factor(mf[[1]]) || !all(complete.cases(mf)))) {
+                index <- get_index(mf)
+                mf <- mf[index[[1]],,drop = FALSE]
+                index <- index[[2]]
+            }
+        }
     }
 
     ret <- list(model.frame = function() 
@@ -192,6 +188,7 @@ bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
         cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
         colnames(mf) <- sapply(cl, function(x) as.character(x))
     }
+    stopifnot(is.data.frame(mf))
     vary <- ""
     if (!is.null(z)) {
         stopifnot(is.numeric(z) || (is.factor(z) && nlevels(z) == 2))
@@ -199,10 +196,15 @@ bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
         colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(z))
     }
 
-    if (is.null(index) & (!is.matrix(mf) & nrow(mf) > 100)) {
-        index <- get_index(mf)
-        mf <- mf[index[[1]],,drop = FALSE]
-        index <- index[[2]]
+    if (is.null(index)) {
+        if (!is.matrix(mf)) {
+            if (nrow(mf) > 500 || 
+                !all(complete.cases(mf))) {
+                index <- get_index(mf)
+                mf <- mf[index[[1]],,drop = FALSE]
+                index <- index[[2]]
+            }
+        }
     }
 
     ret <- list(model.frame = function() 
@@ -222,13 +224,9 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
     newX <- function(newdata = NULL) {
         if (!is.null(newdata) && all(names(newdata) == names(mf)))
             mf <- newdata[,colnames(mf),drop = FALSE]        
-        if (is.matrix(mf)) {
-            X <- mf[,colnames(mf) != vary,drop = FALSE]
-        } else {
-            X <- Xfun(mf, vary, args)
-            K <- X$K
-            X <- X$X
-        }
+        X <- Xfun(mf, vary, args)
+        K <- X$K
+        X <- X$X
         return(list(X = X, K = K))
     }
     X <- newX()
@@ -241,8 +239,12 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
         w <- weights
         if (!is.null(index)) w <- as.vector(tapply(weights, index, sum))
         XtX <- crossprod(X * w, X)
-        if (!is.null(args$df)) {
-            lambda <- df2lambda(X, df = args$df, dmat = K, weights = w)
+        if (args$pen) {
+            if (is.null(args$lambda)) {
+                lambda <- df2lambda(X, df = args$df, dmat = K, weights = w)
+            } else {
+                lambda <- args$lambda
+            }
             XtX <- XtX + lambda * K
         }
 
@@ -337,7 +339,7 @@ model.frame.blg <- function(formula)
 coef.bm_lin <- function(object)
     as.vector(object$model)
 
-fitted.bm_lin <- function(object)
+fitted.bm <- function(object)
     object$fitted()
 
 hatvalues.bl_lin <- function(model)

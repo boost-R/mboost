@@ -1,5 +1,5 @@
 
-bolscw <- function(..., z = NULL, center = FALSE) {
+bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE, contrast.arg = NULL) {
 
     mf <- list(...)
     if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
@@ -11,38 +11,58 @@ bolscw <- function(..., z = NULL, center = FALSE) {
     }
     vary <- ""
     if (!is.null(z)) {
+        stopifnot(is.data.frame(mf))
         mf <- cbind(mf, z)
         colnames(mf) <- c(colnames(mf), deparse(substitute(z)))
         vary <- colnames(mf)[ncol(mf)]
     }
 
-    ret <- list(model.frame = function() return(mf),
+    index <- NULL
+    if (!all(cc <- complete.cases(mf))) {
+        nd <- which(cc)
+        index <- match(1:nrow(mf), nd)
+        mf <- mf[cc, , drop = FALSE]
+    }
+
+    ret <- list(model.frame = function() {
+                    if (is.null(index)) return(mf)
+                    return(mf[index, , drop = FALSE])
+                },
                 get_names = function() colnames(mf),
                 set_names = function(value) attr(mf, "names") <<- value)
     class(ret) <- "blg"
 
     newX <- function(newdata) {
-        if (is.matrix(newdata)) return(mf)
-        X <- model.matrix(~ ., data = newdata[, colnames(mf) != vary, drop = FALSE])
-        if (vary != "")
-            X <- X * newdata[[vary]]
+        if (is.matrix(newdata)) return(newdata)
+        fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary],
+                    collapse = "+"), sep = "")
+        if (!intercept)
+            fm <- paste(fm, "-1", collapse = "")
+        X <- model.matrix(as.formula(fm), data = newdata, contrasts.arg = contrast.arg)
+        if (vary != "") {
+            ### <FIXME> see X_ols
+            z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
+            X <- X * z
+            ### </FIXME>
+        }
         return(X)
     }
 
     X <- newX(mf)
 
-    cfM <- Matrix(0, nrow = ncol(X), ncol = 1)
+    ### <FIXME> centering with or without weights?
+    if (center) {
+        cm <- colSums(X) / nrow(X)
+        cls <- sapply(mf, class)[colnames(mf) != vary]
+        num <- which(cls == "numeric")
+        cm[!attr(X, "assign") %in% num] <- 0
+        X <- scale(X, center = cm, scale = FALSE)
+    }
+    ### </FIXME>
 
     ret$dpp <- function(weights) {
 
-        if (center) {
-            cm <- colSums(X * w) / sum(w)
-            cls <- sapply(mf, class)[colnames(mf) != vary]
-            num <- which(cls == "numeric")
-            cm[!attr(X, "assign") %in% num] <- 0
-            X <- scale(X, center = cm, scale = FALSE)
-        }
-
+        weights <- weights[cc]
         xw <- t(X * weights)
         xtx <- colSums(X^2 * weights)
         sxtx <- sqrt(xtx)
@@ -50,16 +70,22 @@ bolscw <- function(..., z = NULL, center = FALSE) {
         p <- ncol(X)
 
         fit <- function(y) {
+            if (!is.null(index))
+                y <- y[cc]
+
             xselect <- which.max(abs(mu <- MPinvS %*% y))  
             coef <- mu[xselect] / sxtx[xselect]
             ret <- list(model = c(coef, xselect, p),
-                        fitted = function() 
-                            coef * X[,xselect])
+                        fitted = function() {
+                            if (is.null(index)) return(coef * X[,xselect])
+                            return(coef * X[index, xselect])
+                        })
             class(ret) <- c("bm_cwlin", "bm_lin", "bm")
             return(ret)
         }
 
-        predict <- function(bm, newdata = NULL, aggregate = c("sum", "cumsum", "none")) {
+        predict <- function(bm, newdata = NULL, 
+                            aggregate = c("sum", "cumsum", "none")) {
 
             aggregate <- match.arg(aggregate)
             cf <- switch(aggregate, "sum" = {
