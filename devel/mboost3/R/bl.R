@@ -1,12 +1,10 @@
 
-df2lambda <- function(X, df = 4, dmat = NULL, weights) {
+df2lambda <- function(X, df = 4, dmat = diag(ncol(X)), weights) {
 
     if (df > ncol(X)) return(0)
 
-    if (is.null(dmat))
-        dmat <- diag(ncol(X))
-
-    # Cholesky decomposition
+    # Demmler-Reinsch Orthogonalization (cf. Ruppert et al., 2003, 
+    # Semiparametric Regression, Appendix B.1.1).
 
     A <- crossprod(X * weights, X) 
     Rm <- try(chol(A))
@@ -18,14 +16,12 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
     if (df >= length(d)) return(0)
 
-    # df2lambda
+    # search for appropriate lambda using uniroot
     df2l <- function(lambda)
-        sum( 1/(1+lambda*d) ) - df
+        sum(1/(1 + lambda * d)) - df
 
     if (df2l(1e+10) > 0) return(1e+10)
-    lambda <- uniroot(df2l, c(0, 1e+10), tol = sqrt(.Machine$double.eps))$root
-
-    lambda
+    uniroot(df2l, c(0, 1e+10), tol = sqrt(.Machine$double.eps))$root
 }
 
 hyper_ols <- function(df = NULL, lambda = NULL, intercept = TRUE, 
