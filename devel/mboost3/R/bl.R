@@ -1,12 +1,13 @@
 
-df2lambda <- function(X, df = 4, dmat = diag(ncol(X)), weights) {
+df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
 
-    if (df > ncol(X)) return(0)
+    if (!is.null(df))
+        if (df > ncol(X)) return(c(df = df, lambda = 0))
 
     # Demmler-Reinsch Orthogonalization (cf. Ruppert et al., 2003, 
     # Semiparametric Regression, Appendix B.1.1).
 
-    A <- crossprod(X * weights, X) 
+    A <- crossprod(X * weights, X)
     Rm <- try(chol(A))
     if (inherits(Rm, "try-error")) Rm <- chol(A + dmat * 10e-10)
     Rm <- solve(Rm)
@@ -14,14 +15,18 @@ df2lambda <- function(X, df = 4, dmat = diag(ncol(X)), weights) {
     decomp <- svd(crossprod(Rm, dmat) %*% Rm)
     d <- decomp$d[decomp$d > .Machine$double.eps]
 
-    if (df >= length(d)) return(0)
+    if (!is.null(lambda)) return(c(df = sum(1 / (1 + lambda * d)), lambda = lambda))
+
+    if (df >= length(d)) return(df = df, lambda = 0)
 
     # search for appropriate lambda using uniroot
     df2l <- function(lambda)
         sum(1/(1 + lambda * d)) - df
 
-    if (df2l(1e+10) > 0) return(1e+10)
-    uniroot(df2l, c(0, 1e+10), tol = sqrt(.Machine$double.eps))$root
+    if (df2l(1e+10) > 0) return(c(df = df, lambda = 1e+10))
+    return(c(df = df, 
+             lambda = uniroot(df2l, c(0, 1e+10), 
+                              tol = sqrt(.Machine$double.eps))$root))
 }
 
 hyper_ols <- function(df = NULL, lambda = NULL, intercept = TRUE, 
@@ -125,9 +130,9 @@ X_bbs <- function(mf, vary, args) {
         L <- eigen(K, symmetric = TRUE, EISPACK = TRUE)
         L$vectors <- L$vectors[,1:(ncol(X) - args$differences^2)]
         L$values <- sqrt(L$values[1:(ncol(X) - args$differences^2)])
-        L <- L$vectors %*% diag(1/L$values)
-        X <- X %*% L
-        K <- diag(ncol(X))
+        L <- L$vectors %*% (diag(length(L$values)) * (1/L$values))
+        X <- as(X %*% L, "matrix")
+        K <- as(diag(ncol(X)), "matrix")
     }
     return(list(X = X, K = K))
 }
@@ -169,12 +174,13 @@ bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lamb
     class(ret) <- "blg"
 
     ret$dpp <- bl_lin(mf, vary, index = index, Xfun = X_ols, args = hyper_ols(
-                      df = df, intercept = intercept, contrasts.arg = contrasts.arg))
+                      df = df, lambda = lambda, 
+                      intercept = intercept, contrasts.arg = contrasts.arg))
     return(ret)
 }
 
 bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3, 
-                 differences = 2, df = 4) {
+                 differences = 2, df = 4, lambda = NULL, center = FALSE) {
 
     mf <- list(...)
     if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
@@ -211,7 +217,8 @@ bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
 
     ret$dpp <- bl_lin(mf, vary, index = index, Xfun = X_bbs, 
                       args = hyper_bbs(mf, vary, knots = knots,
-                      degree = degree, differences = differences, df = df))
+                      degree = degree, differences = differences, 
+                      df = df, lambda = lambda, center = center))
     return(ret)
 }
 
@@ -219,7 +226,7 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
 
     newX <- function(newdata = NULL) {
         if (!is.null(newdata) && all(names(newdata) == names(mf)))
-            mf <- newdata[,colnames(mf),drop = FALSE]        
+            mf <- newdata[,colnames(mf),drop = FALSE]
         X <- Xfun(mf, vary, args)
         K <- X$K
         X <- X$X
@@ -237,7 +244,7 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
         XtX <- crossprod(X * w, X)
         if (args$pen) {
             if (is.null(args$lambda)) {
-                lambda <- df2lambda(X, df = args$df, dmat = K, weights = w)
+                lambda <- df2lambda(X, df = args$df, dmat = K, weights = w)["lambda"]
             } else {
                 lambda <- args$lambda
             }
@@ -277,12 +284,18 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
             return(ret[index,index])
         }
 
+        df <- function() {
+            if (args$pen) 
+                return(df2lambda(X, df = NULL, lambda = lambda, 
+                                 dmat = K, weights = w))
+            return(ncol(X))
+        }
+
         predict <- function(bm, newdata = NULL, aggregate = c("sum", "cumsum", "none")) {
             cf <- sapply(bm, coef)
             if(!is.null(newdata)) {
                 index <- NULL
                 nm <- colnames(mf)
-                if (vary != "") nm <- c(nm, vary)
                 newdata <- newdata[,nm, drop = FALSE]
                 if (nrow(newdata) > 1000) {
                     index <- get_index(newdata)
@@ -303,7 +316,8 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
             return(pr[index,,drop = FALSE])
         }
 
-        ret <- list(fit = fit, hatvalues = hatvalues, predict = predict)
+        ret <- list(fit = fit, hatvalues = hatvalues, 
+                    predict = predict, df = df)
         class(ret) <- c("bl_lin", "bl")
         return(ret)
 
