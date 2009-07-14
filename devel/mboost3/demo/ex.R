@@ -3,12 +3,10 @@ library("splines")
 library("Matrix")
 library("mboost")
 
-source("helpers.R")
-source("bl.R")
-source("mboost.R")
-source("bolscw.R")
-source("btree.R")
-
+f <- list.files(path = "../R", pattern = "R$", full = TRUE)
+sapply(f, source)
+library("MASS")
+library("Matrix")
 
 x <- gl(50, 1009) ###rpois(10, lambda = 10)
 x[sample(1:length(x), 100)] <- NA
@@ -55,7 +53,6 @@ p2 <- predict(a2, newdata = bodyfat)
 (max(abs(drop(p2) - p1)))
 
 
-source("mboost.R")
 Rprof("a1")
 a1 <- mboost(fm1, data = bodyfat, control = ctrl)
 Rprof(NULL)

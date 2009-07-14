@@ -7,10 +7,8 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
     # Demmler-Reinsch Orthogonalization (cf. Ruppert et al., 2003, 
     # Semiparametric Regression, Appendix B.1.1).
 
-    A <- crossprod(X * weights, X)
-    Rm <- try(chol(A))
-    if (inherits(Rm, "try-error")) Rm <- chol(A + dmat * 10e-10)
-    Rm <- solve(Rm)
+    A <- crossprod(X * weights, X) + dmat * 10e-10
+    Rm <- solve(chol(A))
 
     decomp <- svd(crossprod(Rm, dmat) %*% Rm)
     d <- decomp$d[decomp$d > .Machine$double.eps]

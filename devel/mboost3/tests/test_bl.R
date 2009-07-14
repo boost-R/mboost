@@ -1,9 +1,9 @@
 
-source("bl.R")
-source("helpers.R")
-source("bolscw.R")
+f <- list.files(path = "../R", pattern = "R$", full = TRUE)
+sapply(f, source)
 library("MASS")
 library("Matrix")
+library("splines")
 
 ### dgp
 n <- 20000
@@ -87,7 +87,7 @@ tX <- matrix(runif(1000), ncol = 10)
 ty <- rnorm(100)
 tw <- rep(1, 100)
 # compute & check df
-la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)
+la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
 truedf <- sum(diag(tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*% t(tX * tw)))
 truedf - 2
 one <- rep(1, ncol(tX))
@@ -100,7 +100,7 @@ sum((ty - tX %*% cf2)^2) + la * sum(cf2^2)
 
 # check df with weights
 tw <- rpois(100, 2)
-la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)
+la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
 truedf <- sum(diag(tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*% t(tX * tw)))
 truedf - 2
 
@@ -122,3 +122,67 @@ cf2 <- coef(fit(dpp(bolscw(xn, intercept = FALSE, center = TRUE), weights = w), 
 tx <- xn - mean(xn, na.rm = TRUE)
 cf1 <- coef(lm(y ~ tx - 1, weights = w))
 max(abs(cf1 - max(cf2)))
+
+### splines
+n <- 110
+x <- round(sort(runif(n, min = 0, max = 10)), 3)
+f <- function(x) 1 + 0.5 * x + sin(x)
+y <- f(x) + rnorm(n, sd = 0.05)
+w <- rpois(n, lambda = 2)
+x[sample(1:n)[1:10]] <- NA
+
+ps <- function(d) fitted(fit(dpp(bbs3(x, df = d), w), y))
+ss <- function(d) fitted(smooth.spline(x, y, w = w, df = d + 1))
+
+sapply(1:20, function(d) c(mean((ps(d) - f(x))^2, na.rm = TRUE), 
+  mean((ss(d) - f(x))^2, na.rm = TRUE),
+  mean((ss(d) - ps(d))^2, na.rm = TRUE)))
+
+max(abs(fitted(lm(y ~ x, weights = w)) - ps(0)[!is.na(x)]))
+
+### centering
+y <- y[!is.na(x)]
+w <- w[!is.na(x)]
+x <- x[!is.na(x)]
+max(abs(fitted(fit(dpp(bbs3(x, df = 4), w), y)) - 
+        fitted(lm(y ~ x)) + fitted(fit(dpp(bbs3(x, df = 1, center = TRUE), w), y))))
+
+### varying coefficients
+x1 <- runif(n, max = 2)
+x2 <- sort(runif(n, max = 2 * pi))
+y <- sin(x2) * x1 + rnorm(n)
+w <- rep(1, n)
+
+d <- dpp(bbs3(x2, z = x1, df = 4), w)
+f <- fit(d, y)
+f2 <- d$predict(list(f), newdata = data.frame(x1 = 1, x2 = x2))
+
+max(abs(sin(x2) - f2))
+
+set.seed(29)
+x1 <- runif(n, min = -3, max = 3)
+x2 <- runif(n, min = -3, max = 3)
+y <- dnorm(x1) * dnorm(x2)
+w <- rep(1, n)
+
+f1 <- fit(dpp(bspatial3(x1, x2, df = 10), w), y)$fitted
+f2 <- attr(mboost:::bspatial(x1, x2, df = 10), "dpp")(w)$fit(y)$fitted
+
+X1 <- get("X", env = environment(f1))
+X2 <- get("X", env = environment(f2))
+max(abs(X1 - X2))
+
+K1 <- get("K", env = environment(f1))
+K2 <- get("K", env = environment(f2))
+max(abs(K1 - K2))
+
+l1 <- get("lambda", env = environment(f1))
+l2 <- get("lambda", env = environment(f2))
+l1
+l2
+
+df2lambda(X1, dmat = K1, df = 10, weights = w)
+mboost:::df2lambda(X2, dmat = K2, df = 10, weights = w)
+
+
+
