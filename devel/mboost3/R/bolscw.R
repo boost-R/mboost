@@ -53,9 +53,11 @@ bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE, contrast.arg
     ### <FIXME> centering with or without weights?
     if (center) {
         cm <- colSums(X) / nrow(X)
-        cls <- sapply(mf, class)[colnames(mf) != vary]
-        num <- which(cls == "numeric")
-        cm[!attr(X, "assign") %in% num] <- 0
+        if (is.data.frame(mf)) {
+            cls <- sapply(mf, class)[colnames(mf) != vary]
+            num <- which(cls == "numeric")
+            cm[!attr(X, "assign") %in% num] <- 0
+        }
         X <- scale(X, center = cm, scale = FALSE)
     }
     ### </FIXME>
@@ -119,7 +121,7 @@ bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE, contrast.arg
             return(X %*% cf)
         }
     
-        ret <- list(fit = fit, predict = predict)
+        ret <- list(fit = fit, predict = predict, Xnames = colnames(X))
         class(ret) <- c("bl_lin", "bl")
         return(ret)
     }

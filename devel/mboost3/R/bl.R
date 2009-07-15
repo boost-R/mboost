@@ -315,7 +315,7 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
         }
 
         ret <- list(fit = fit, hatvalues = hatvalues, 
-                    predict = predict, df = df)
+                    predict = predict, df = df, Xnames = colnames(X))
         class(ret) <- c("bl_lin", "bl")
         return(ret)
 
@@ -344,8 +344,11 @@ names.blg <- function(x)
 model.frame.blg <- function(formula)
     formula$model.frame()
 
-coef.bm_lin <- function(object)
-    as.vector(object$model)
+coef.bm_lin <- function(object) {
+    ret <- as.vector(object$model)
+    names(ret) <- object$Xnames
+    ret
+}
 
 fitted.bm <- function(object)
     object$fitted()

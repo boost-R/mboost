@@ -234,6 +234,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         if (length(which) == 1) {
             ret <- cfun(which)
             attr(ret, "offset") <- offset
+            names(ret) <- bl[[which]]$Xnames
             return(ret)
         }
         tmp <- lapply(which, cfun)
@@ -305,18 +306,22 @@ mboost <- function(formula, data = list(), ...) {
     mboost_fit(bl, response = response, ...)
 }
 
-Glmboost <- function(formula, data = list(), center = FALSE, ...) {
+Glmboost <- function(formula, data = list(), weights = NULL, na.action = na.pass, 
+                     center = FALSE, ...) {
 
     cl <- match.call()
     mf <- match.call(expand.dots = FALSE)
-    m <- match(c("formula", "data"), names(mf), 0L)
+    m <- match(c("formula", "data", "weights"), names(mf), 0L)
     mf <- mf[c(1L, m)]
+    mf$na.action <- na.action
+    mf$drop.unused.levels <- TRUE
     mf[[1L]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
-    X <- model.matrix(attr(mf, "terms"), mf)
+    X <- model.matrix(attr(mf, "terms"), mf)	
     bl <- list(bolscw(X, center = center))
-    response <- eval(as.expression(formula[[2]]), envir = data)
-    mboost_fit(bl, response = response, ...)
+    response <- model.response(mf)
+    weights <- model.weights(mf)
+    mboost_fit(bl, response = response, weights = weights, ...)
 }
 
 Gamboost <- function(formula, data = list(), baselearner = bbs3, ...) {

@@ -132,8 +132,8 @@ X <- Matrix(data = x, ncol = m, nrow = n)
 beta <- rpois(ncol(X), lambda = 1)
 y <- X %*% beta + rnorm(nrow(X))
 w <- rep(1, nrow(X)) ###rpois(nrow(X), lambda = 1)
-fit <- dpp(bolscw(X), weights = w)$fit
-system.time(for (i in 1:100) f <- fit(y))
+f1 <- dpp(bolscw(X), weights = w)$fit
+system.time(for (i in 1:100) f <- f1(y))
 
 ### splines
 n <- 110
@@ -190,11 +190,6 @@ max(abs(K1 - K2))
 
 l1 <- get("lambda", env = environment(f1))
 l2 <- get("lambda", env = environment(f2))
-l1
-l2
-
-df2lambda(X1, dmat = K1, df = 10, weights = w)
-mboost:::df2lambda(X2, dmat = K2, df = 10, weights = w)
-
+l1 - l2
 
 
