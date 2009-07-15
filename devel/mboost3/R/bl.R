@@ -36,7 +36,7 @@ hyper_ols <- function(df = NULL, lambda = NULL, intercept = TRUE,
 
 X_ols <- function(mf, vary, args) {
 
-    if (is.matrix(mf)) {
+    if (isMATRIX(mf)) {
         X <- mf
         contr <- NULL
     } else {
@@ -139,7 +139,7 @@ bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lamb
                   contrasts.arg = "contr.treatment") {
 
     mf <- list(...)
-    if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
+    if (length(mf) == 1 && (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]))) {
         mf <- mf[[1]]
     } else {
         mf <- as.data.frame(mf)
@@ -155,9 +155,9 @@ bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lamb
     }
 
     if (is.null(index)) {
-        if (!is.matrix(mf)) {
+        if (!isMATRIX(mf)) {
             if (nrow(mf) > 10000 || 
-                (is.factor(mf[[1]]) || !all(complete.cases(mf)))) {
+                (is.factor(mf[[1]]) || !all(Complete.cases(mf)))) {
                 index <- get_index(mf)
                 mf <- mf[index[[1]],,drop = FALSE]
                 index <- index[[2]]
@@ -182,7 +182,7 @@ bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
 
     mf <- list(...)
     if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
-        mf <- mf[[1]]
+        mf <- as.data.frame(mf[[1]])
     } else {
         mf <- as.data.frame(mf)
         cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
@@ -199,7 +199,7 @@ bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
     if (is.null(index)) {
         if (!is.matrix(mf)) {
             if (nrow(mf) > 500 || 
-                !all(complete.cases(mf))) {
+                !all(Complete.cases(mf))) {
                 index <- get_index(mf)
                 mf <- mf[index[[1]],,drop = FALSE]
                 index <- index[[2]]
@@ -236,7 +236,7 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
 
     dpp <- function(weights) {
 
-        weights[!complete.cases(mf)] <- 0
+        weights[!Complete.cases(mf)] <- 0
         w <- weights
         if (!is.null(index)) w <- as.vector(tapply(weights, index, sum))
         XtX <- crossprod(X * w, X)

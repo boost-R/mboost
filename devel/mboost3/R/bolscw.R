@@ -2,7 +2,7 @@
 bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE, contrast.arg = NULL) {
 
     mf <- list(...)
-    if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
+    if (length(mf) == 1 && (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]))) {
         mf <- mf[[1]]
     } else {
         mf <- as.data.frame(mf)
@@ -18,7 +18,7 @@ bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE, contrast.arg
     }
 
     index <- NULL
-    if (!all(cc <- complete.cases(mf))) {
+    if (!all(cc <- Complete.cases(mf))) {
         nd <- which(cc)
         index <- match(1:nrow(mf), nd)
         mf <- mf[cc, , drop = FALSE]
@@ -33,7 +33,7 @@ bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE, contrast.arg
     class(ret) <- "blg"
 
     newX <- function(newdata) {
-        if (is.matrix(newdata)) return(newdata)
+        if (isMATRIX(newdata)) return(newdata)
         fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary],
                     collapse = "+"), sep = "")
         if (!intercept)
@@ -65,6 +65,8 @@ bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE, contrast.arg
         weights <- weights[cc]
         xw <- t(X * weights)
         xtx <- colSums(X^2 * weights)
+        ### some columns may be zero
+        xtx[xtx < .Machine$double.eps] <- 1
         sxtx <- sqrt(xtx)
         MPinvS <- (1 / sxtx) * xw
         p <- ncol(X)
@@ -73,7 +75,8 @@ bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE, contrast.arg
             if (!is.null(index))
                 y <- y[cc]
 
-            xselect <- which.max(abs(mu <- MPinvS %*% y))  
+            mmu <- max(amu <- abs(mu <- MPinvS %*% y))
+            xselect <- which(as.logical(mmu == amu))[1]
             coef <- mu[xselect] / sxtx[xselect]
             ret <- list(model = c(coef, xselect, p),
                         fitted = function() {

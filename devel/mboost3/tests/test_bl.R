@@ -82,7 +82,7 @@ ty <- mod$y
 cf2 <- coef(fit(dpp(bols3(tX), weights = tw), ty))
 max(abs(cf1 - cf2))
 
-### ridge again
+### ridge again with matrix interface
 tX <- matrix(runif(1000), ncol = 10)
 ty <- rnorm(100)
 tw <- rep(1, 100)
@@ -122,6 +122,18 @@ cf2 <- coef(fit(dpp(bolscw(xn, intercept = FALSE, center = TRUE), weights = w), 
 tx <- xn - mean(xn, na.rm = TRUE)
 cf1 <- coef(lm(y ~ tx - 1, weights = w))
 max(abs(cf1 - max(cf2)))
+
+### componentwise with matrix
+n <- 200
+m <- 10000
+x <- rnorm(n * m)
+x[abs(x) < 2] <- 0
+X <- Matrix(data = x, ncol = m, nrow = n)
+beta <- rpois(ncol(X), lambda = 1)
+y <- X %*% beta + rnorm(nrow(X))
+w <- rep(1, nrow(X)) ###rpois(nrow(X), lambda = 1)
+fit <- dpp(bolscw(X), weights = w)$fit
+system.time(for (i in 1:100) f <- fit(y))
 
 ### splines
 n <- 110

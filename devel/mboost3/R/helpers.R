@@ -29,3 +29,11 @@ rescale_weights <- function(w) {
 ### check measurement scale of response for some losses
 check_y_family <- function(y, family)
     family@check_y(y)
+
+isMATRIX <- function(x)
+    is.matrix(x) || is(x, "Matrix")
+
+Complete.cases <- function(x) {
+    if (isMATRIX(x)) return(rowSums(is.na(x)) == 0)
+    complete.cases(x)
+}
