@@ -7,6 +7,11 @@
 
   o  errors removed and minor improvements in the manuals
 
+  o  center = TRUE in glmboost did only apply to numeric (not integer)
+     predictors
+
+  o  for safety reasons: na.action = na.omit again
+
 
 		CHANGES in `mboost' VERSION 1.1-1 (2009-04-21)
 

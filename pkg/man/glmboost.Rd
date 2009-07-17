@@ -11,7 +11,7 @@
 }
 \usage{
 \method{glmboost}{formula}(formula, data = list(), weights = NULL,
-             contrasts.arg = NULL, na.action = na.pass, ...)
+             contrasts.arg = NULL, na.action = na.omit, ...)
 \method{glmboost}{matrix}(x, y, weights = NULL, ...)
 glmboost_fit(object, family = GaussReg(),
              control = boost_control(), weights = NULL)

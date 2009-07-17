@@ -244,7 +244,7 @@ names(coef(wpbc_surv)[abs(coef(wpbc_surv)) > 0])
 ###################################################
 ### chunk number 29: wpbc-glmboost-censored-fit
 ###################################################
-plot(log(wpbc3$time), predict(wpbc_surv),
+plot(log(wpbc3$time), predict(wpbc_surv, newdata = wpbc3),
      cex = iw, ylim = c(0, 5), xlim = c(0, 5), 
      xlab = "Time to recurrence (log-scale)", 
      ylab = "Predicted time to recurrence")

@@ -62,7 +62,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
     ### Moore-Penrose inverse (which is a scalar in this case) for the raw
     ### and standardized input variables
     xw <- t(x * weights)
-    xtx <- colSums(x^2 * weights)
+    xtx <- colSums(x^2 * weights, na.rm = TRUE)
     sxtx <- sqrt(xtx)
     ### MPinv <- (1 / xtx) * xw
     MPinvS <- (1 / sxtx) * xw
@@ -162,7 +162,7 @@ glmboost <- function(x, ...) UseMethod("glmboost")
 ### formula interface
 ### FIXME: is na.pass correct here? fails with centering
 glmboost.formula <- function(formula, data = list(), weights = NULL, 
-                             contrasts.arg = NULL, na.action = na.pass, ...) {
+                             contrasts.arg = NULL, na.action = na.omit, ...) {
 
     ### control and contrasts.arg might be confused here
     if (!is.null(contrasts.arg)) {
@@ -175,8 +175,8 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
                         na.action = na.action, frame = environment(formula))
 
     object$center <- function(xmat) {
-        cm <- colMeans(object$x)
-        num <- which(sapply(object$menv@get("input"), class) == "numeric")
+        cm <- colMeans(object$x, na.rm = TRUE)
+        num <- which(sapply(object$menv@get("input"), is.numeric))
         cm[!attr(object$x, "assign") %in% num] <- 0       
         scale(xmat, center = cm, scale = FALSE)
     }
@@ -202,7 +202,7 @@ glmboost.matrix <- function(x, y, weights = NULL, ...) {
 
     object <- gb_xyw(x, y, weights)
     object$center <- function(xmat) 
-        scale(xmat, center = colMeans(x), scale = FALSE)
+        scale(xmat, center = colMeans(x, na.rm = TRUE), scale = FALSE)
     RET <- glmboost_fit(object, ...)
     RET$call <- match.call()
     return(RET)
