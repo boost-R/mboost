@@ -513,6 +513,7 @@ Blackboost <- function(formula, data = list(), ...) {
     mf <- match.call(expand.dots = FALSE)
     m <- match(c("formula", "data"), names(mf), 0L)
     mf <- mf[c(1L, m)]
+    mf$na.action <- na.pass
     mf[[1L]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
     ### btree can deal with data.frames
