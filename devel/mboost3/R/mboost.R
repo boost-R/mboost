@@ -321,10 +321,11 @@ Glmboost <- function(formula, data = list(), weights = NULL, na.action = na.pass
         center <- TRUE
         warning("boost_control center deprecated")
     }
-    X <- model.matrix(attr(mf, "terms"), data = mf, contrasts.args = contrasts.args)
+    X <- model.matrix(attr(mf, "terms"), data = mf, 
+                      contrasts.args = contrasts.args)
     cm <- rep(0, ncol(X))
     if (center) {
-        cm <- colMeans(X)
+        cm <- colMeans(X, na.rm = TRUE)
         center <- attr(X, "assign") %in% which(sapply(mf, is.numeric)[-1])
         cm[!center] <- 0
         X <- scale(X, center = cm, scale = FALSE)
@@ -334,7 +335,7 @@ Glmboost <- function(formula, data = list(), weights = NULL, na.action = na.pass
                           contrasts.args = contrasts.args)
         scale(X, center = cm, scale = FALSE)
     }
- 
+
     bl <- list(bolscw(X))
     response <- model.response(mf)
     weights <- model.weights(mf)
@@ -344,7 +345,6 @@ Glmboost <- function(formula, data = list(), weights = NULL, na.action = na.pass
     class(ret) <- c("Glmboost", "mboost")
     return(ret)
 }
-
 
 predict.Glmboost <- function(object, newdata = NULL, ...) {
 

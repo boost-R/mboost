@@ -105,22 +105,12 @@ truedf <- sum(diag(tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*
 truedf - 2
 
 ### componentwise
-cf2 <- coef(fit(dpp(bolscw(xn), weights = w), y))
+cf2 <- coef(fit(dpp(bolscw(cbind(1, xn)), weights = w), y))
 cf1 <- coef(lm(y ~ xn - 1, weights = w))
 max(abs(cf1 - max(cf2)))
 
-cf2 <- coef(fit(dpp(bolscw(xn, intercept = FALSE), weights = w), y))
+cf2 <- coef(fit(dpp(bolscw(matrix(xn, nc = 1)), weights = w), y))
 cf1 <- coef(lm(y ~ xn - 1, weights = w))
-max(abs(cf1 - max(cf2)))
-
-### with center
-cf2 <- coef(fit(dpp(bolscw(xn, center = TRUE), weights = w), y))
-cf1 <- coef(lm(y ~ 1, weights = w, subset = complete.cases(xn)))
-max(abs(cf1 - max(cf2)))
-
-cf2 <- coef(fit(dpp(bolscw(xn, intercept = FALSE, center = TRUE), weights = w), y))
-tx <- xn - mean(xn, na.rm = TRUE)
-cf1 <- coef(lm(y ~ tx - 1, weights = w))
 max(abs(cf1 - max(cf2)))
 
 ### componentwise with matrix
@@ -192,4 +182,17 @@ l1 <- get("lambda", env = environment(f1))
 l2 <- get("lambda", env = environment(f2))
 l1 - l2
 
+### bols and bbs; matrix interfaces
+n <- 10000
+x <- runif(n, min = 0, max = 2*pi)
+y <- sin(x) + rnorm(n, sd = 0.1)
+w <- rpois(n, lambda = 1)
+x[sample(1:n)[1:(n / 100)]] <- NA
+h <- hyper_bbs(data.frame(x = x), vary = "")
+X <- X_bbs(data.frame(x = x), vary = "", h)$X
+f1 <- fit(dpp(bbs3(x, df = ncol(X)), w), y)
+f2 <- fit(dpp(bols3(X, df = ncol(X)), w), y)
+max(abs(coef(f1) - coef(f2)))
 
+all.equal(get_index(data.frame(x, x)), get_index(X))
+all.equal(get_index(data.frame(x)), get_index(X))

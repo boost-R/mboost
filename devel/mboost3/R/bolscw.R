@@ -19,7 +19,7 @@ bolscw <- function(X) {
 
         weights <- weights[cc]
         xw <- t(X * weights)
-        xtx <- colSums(X^2 * weights)
+        xtx <- colSums(X^2 * weights, na.rm = TRUE)
         ### some columns may be zero
         xtx[xtx < .Machine$double.eps] <- 1
         sxtx <- sqrt(xtx)

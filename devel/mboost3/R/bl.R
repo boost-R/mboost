@@ -178,12 +178,14 @@ bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lamb
 
     ret <- list(model.frame = function() 
                     if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
+                get_data = function() mf,
+                get_index = function() index,
                 get_names = function() colnames(mf),
                 get_vary = function() vary,
                 set_names = function(value) attr(mf, "names") <<- value)
     class(ret) <- "blg"
 
-    ret$dpp <- bl_lin(mf, vary, index = index, Xfun = X_ols, args = hyper_ols(
+    ret$dpp <- bl_lin(ret, Xfun = X_ols, args = hyper_ols(
                       df = df, lambda = lambda, 
                       intercept = intercept, contrasts.arg = contrasts.arg))
     return(ret)
@@ -222,25 +224,31 @@ bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
 
     ret <- list(model.frame = function() 
                     if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
+                get_data = function() mf,
+                get_index = function() index,
                 get_vary = function() vary,
                 get_names = function() colnames(mf),
                 set_names = function(value) attr(mf, "names") <<- value)
     class(ret) <- "blg"
 
-    ret$dpp <- bl_lin(mf, vary, index = index, Xfun = X_bbs, 
+    ret$dpp <- bl_lin(ret, Xfun = X_bbs, 
                       args = hyper_bbs(mf, vary, knots = knots,
                       degree = degree, differences = differences, 
                       df = df, lambda = lambda, center = center))
     return(ret)
 }
 
-bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
+bl_lin <- function(blg, Xfun, args) {
+
+    mf <- blg$get_data()
+    index <- blg$get_index()
+    vary <- blg$get_vary()
 
     newX <- function(newdata = NULL) {
         if (!is.null(newdata)) {
-            stopifnot(all(names(newdata) == names(mf)))
+            stopifnot(all(names(newdata) == names(blg)))
             stopifnot(all(class(newdata) == class(mf)))
-            mf <- newdata[,colnames(mf),drop = FALSE]
+            mf <- newdata[,names(blg),drop = FALSE]
         }
         return(Xfun(mf, vary, args))
     }
@@ -308,7 +316,7 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
             cf <- sapply(bm, coef)
             if(!is.null(newdata)) {
                 index <- NULL
-                nm <- colnames(mf)
+                nm <- names(blg)
                 newdata <- newdata[,nm, drop = FALSE]
                 ### option
                 if (nrow(newdata) > 10000) {
