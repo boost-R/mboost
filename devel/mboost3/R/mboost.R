@@ -307,7 +307,7 @@ mboost <- function(formula, data = list(), ...) {
 }
 
 Glmboost <- function(formula, data = list(), weights = NULL, na.action = na.pass, 
-                     center = FALSE, control = boost_control(), ...) {
+                     contrasts.arg = NULL, center = FALSE, control = boost_control(), ...) {
 
     cl <- match.call()
     mf <- match.call(expand.dots = FALSE)
@@ -321,13 +321,39 @@ Glmboost <- function(formula, data = list(), weights = NULL, na.action = na.pass
         center <- TRUE
         warning("boost_control center deprecated")
     }
-    X <- model.matrix(attr(mf, "terms"), data = mf)
-    ### determine which columns are subject to centering
-    if (center) center <- attr(X, "assign") %in% which(sapply(mf, is.numeric)[-1])
-    bl <- list(bolscw(X, center = center))
+    X <- model.matrix(attr(mf, "terms"), data = mf, contrasts.args = contrasts.args)
+    cm <- rep(0, ncol(X))
+    if (center) {
+        cm <- colMeans(X)
+        center <- attr(X, "assign") %in% which(sapply(mf, is.numeric)[-1])
+        cm[!center] <- 0
+        X <- scale(X, center = cm, scale = FALSE)
+    }
+    newX <- function(newdata) {
+        X <- model.matrix(delete.response(attr(mf, "terms")), data = newdata,
+                          contrasts.args = contrasts.args)
+        scale(X, center = cm, scale = FALSE)
+    }
+ 
+    bl <- list(bolscw(X))
     response <- model.response(mf)
     weights <- model.weights(mf)
-    mboost_fit(bl, response = response, weights = weights, control = control, ...)
+    ret <- mboost_fit(bl, response = response, weights = weights, 
+                      control = control, ...)
+    ret$newX <- newX
+    class(ret) <- c("Glmboost", "mboost")
+    return(ret)
+}
+
+
+predict.Glmboost <- function(object, newdata = NULL, ...) {
+
+    if (!is.null(newdata)) {
+        if (!isMATRIX(newdata)) {
+            newdata <- object$newX(newdata)
+        }
+    }
+    object$predict(newdata = newdata, ...)
 }
 
 Gamboost <- function(formula, data = list(), baselearner = bbs3, ...) {

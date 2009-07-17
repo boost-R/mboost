@@ -98,6 +98,7 @@ hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4,
 
 X_bbs <- function(mf, vary, args) {
 
+    stopifnot(is.data.frame(mf))
     mm <- lapply(which(colnames(mf) != vary), function(i) {
         X <- bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,
            Boundary.knots = args$knots[[i]]$boundary.knots, intercept = TRUE)
@@ -238,6 +239,7 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
     newX <- function(newdata = NULL) {
         if (!is.null(newdata)) {
             stopifnot(all(names(newdata) == names(mf)))
+            stopifnot(all(class(newdata) == class(mf)))
             mf <- newdata[,colnames(mf),drop = FALSE]
         }
         return(Xfun(mf, vary, args))

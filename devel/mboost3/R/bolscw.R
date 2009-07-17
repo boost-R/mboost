@@ -1,65 +1,19 @@
 
-bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE, 
-                   contrast.arg = NULL) {
+bolscw <- function(X) {
 
-    mf <- list(...)
-    if (length(mf) == 1 && (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]))) {
-        mf <- mf[[1]]
-        ### spline bases should be matrices
-        if (isMATRIX(mf) && !is(mf, "Matrix"))
-            class(mf) <- "matrix"
-    } else {
-        mf <- as.data.frame(mf)
-        cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
-        colnames(mf) <- sapply(cl, function(x) as.character(x))
-    }
-    vary <- ""
-    if (!is.null(z)) {
-        stopifnot(is.data.frame(mf))
-        mf <- cbind(mf, z)
-        colnames(mf) <- c(colnames(mf), deparse(substitute(z)))
-        vary <- colnames(mf)[ncol(mf)]
-    }
+    stopifnot(isMATRIX(X))
 
     index <- NULL
-    if (!all(cc <- Complete.cases(mf))) {
+    if (!all(cc <- Complete.cases(X))) {
         nd <- which(cc)
-        index <- match(1:nrow(mf), nd)
-        mf <- mf[cc, , drop = FALSE]
+        index <- match(1:nrow(X), nd)
+        X <- X[cc, , drop = FALSE]
     }
 
-    ret <- list(model.frame = function() return(mf),
-                get_names = function() colnames(mf),
-                get_vary = function() vary,
-                set_names = function(value) attr(mf, "names") <<- value)
+    ret <- list(model.frame = function() return(X),
+                get_names = function() colnames(X),
+                set_names = function(value) attr(mf, "colnames") <<- value)
     class(ret) <- "blg"
-
-    newX <- function(newdata) {
-        if (isMATRIX(newdata)) return(newdata)
-        fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary],
-                    collapse = "+"), sep = "")
-        if (!intercept)
-            fm <- paste(fm, "-1", collapse = "")
-        X <- model.matrix(as.formula(fm), data = newdata, contrasts.arg = contrast.arg)
-        if (vary != "") {
-            ### <FIXME> see X_ols
-            z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
-            X <- X * z
-            ### </FIXME>
-        }
-        return(X)
-    }
-
-    X <- newX(mf)
-
-    ### <FIXME> centering with or without weights?
-    if (any(center)) {
-        cm <- colMeans(X)
-        ### center only columns i with center[i] == TRUE
-        if (length(center) == length(cm)) cm[!center] <- 0
-        X <- scale(X, center = cm, scale = FALSE)
-    }
-    ### </FIXME>
 
     ret$dpp <- function(weights) {
 
@@ -114,8 +68,9 @@ bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE,
             })
 
             if (!is.null(newdata)) {
-                X <- newX(newdata)
-                X <- scale(X, center = cm, scale = FALSE)
+                stopifnot(all(class(newdata) == class(X)))
+                stopifnot(all(colnames(newdata) == colnames(X)))
+                X <- newdata
             }
             return(X %*% cf)
         }
