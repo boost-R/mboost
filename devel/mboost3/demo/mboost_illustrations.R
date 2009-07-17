@@ -4,6 +4,7 @@
 source("setup.R")
 library("Matrix")
 library("mboost")
+attach(asNamespace("mboost"))
 
 f <- list.files(path = "../R", pattern = "R$", full = TRUE)
 sapply(f, source)
@@ -22,6 +23,9 @@ coef(bf_lm)
 bf_glm <- glmboost(DEXfat ~ ., data = bodyfat, control = boost_control(center = TRUE))
 bf_glm3 <- Glmboost(DEXfat ~ ., data = bodyfat, control = boost_control(center = TRUE))
 
+max(abs(attr(hatvalues(bf_glm), "trace") - attr(hatvalues(bf_glm3), "trace")))
+AIC(bf_glm)
+AIC(bf_glm3)
 
 ###################################################
 ### chunk number 4: bodyfat-glmboost-coef
@@ -43,6 +47,11 @@ source("setup.R")
 bf_gam <- gamboost(DEXfat ~ ., data = bodyfat)
 bf_gam3 <- Gamboost(DEXfat ~ ., data = bodyfat)
 sapply(1:length(coef(bf_gam)), function(i) max(abs(coef(bf_gam)[[i]] - coef(bf_gam3)[[i]])))
+
+max(abs(attr(hatvalues(bf_gam), "trace") - attr(hatvalues(bf_gam3), "trace")))
+AIC(bf_gam)
+AIC(bf_gam3)
+
 
 max(abs(predict(bf_gam, newdata = bodyfat[1:10]) -
         predict(bf_gam3, newdata = bodyfat[1:10])))
@@ -73,6 +82,10 @@ max(abs(coef(bf_bs) - coef(bf_bs3)))
 
 max(abs(predict(bf_bs, newdata = bodyfat[1:10]) -
         predict(bf_bs3, newdata = bodyfat[1:10])))
+
+max(abs(attr(hatvalues(bf_bs), "trace") - attr(hatvalues(bf_bs3), "trace")))
+AIC(bf_bs)
+AIC(bf_bs3)
 
 
 ###################################################
@@ -159,6 +172,4 @@ max(abs(predict(wpbc_surv, newdata = wpbc3[1:10,]) -
 ### chunk number 28: wpbc-glmboost-coef
 ###################################################
 names(coef(wpbc_surv)[abs(coef(wpbc_surv)) > 0])
-
-
 

@@ -75,8 +75,9 @@ bolscw <- function(X) {
             return(X %*% cf)
         }
     
-        ret <- list(fit = fit, predict = predict, Xnames = colnames(X))
-        class(ret) <- c("bl_lin", "bl")
+        ret <- list(fit = fit, predict = predict, Xnames = colnames(X), 
+                    MPinv = function() MPinvS / sxtx)
+        class(ret) <- c("bl_cwlin", "bl")
         return(ret)
     }
     return(ret)
