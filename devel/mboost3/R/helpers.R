@@ -1,4 +1,6 @@
 
+### try to find duplicated entries / observations with missing values
+### for more efficient memory handling
 get_index <- function(x) {
 
     if (isMATRIX(x)) {
@@ -38,9 +40,11 @@ rescale_weights <- function(w) {
 check_y_family <- function(y, family)
     family@check_y(y)
 
+### check for classical or Matrix matrices
 isMATRIX <- function(x)
     is.matrix(x) || is(x, "Matrix")
 
+### rows without missings in Matrices, matrices and data.frames
 Complete.cases <- function(x) {
     if (isMATRIX(x)) return(rowSums(is.na(x)) == 0)
     complete.cases(x)

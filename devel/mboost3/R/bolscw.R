@@ -1,8 +1,11 @@
 
+### component-wise linear models baselearner
 bolscw <- function(X) {
 
+    ### formula parsing, data handling is done elsewhere
     stopifnot(isMATRIX(X))
 
+    ### deal with missing values
     index <- NULL
     if (!all(cc <- Complete.cases(X))) {
         nd <- which(cc)
@@ -10,9 +13,13 @@ bolscw <- function(X) {
         X <- X[cc, , drop = FALSE]
     }
 
-    ret <- list(model.frame = function() return(X),
+    ### we actually don't have raw data available
+    ret <- list(model.frame = function() return(NULL),
+                get_data = function() X,
+                get_index = function() index,
+                get_vary = function() NULL,
                 get_names = function() colnames(X),
-                set_names = function(value) attr(mf, "colnames") <<- value)
+                set_names = function(value) attr(X, "colnames") <<- value)
     class(ret) <- "blg"
 
     ret$dpp <- function(weights) {

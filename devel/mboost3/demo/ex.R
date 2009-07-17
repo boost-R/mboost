@@ -73,9 +73,9 @@ x <- rnorm(10)
 w <- rpois(length(x), lambda = 1)
 y <- rnorm(10)
 
-a <- fit(dpp(bolscw(x), w), y)
+a <- fit(dpp(bolscw(matrix(x, nc = 1)), w), y)
 
-b1 <- mboost(y ~ bolscw(x), weights = w)
+b1 <- mboost(y ~ bolscw(matrix(x, nc = 1)), weights = w)
 coef(b1)
 predict(b1)
 

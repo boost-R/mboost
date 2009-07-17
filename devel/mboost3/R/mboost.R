@@ -23,6 +23,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     }
     check_y_family(response, family)
 
+    ### recode to -1, +1
     if (is.factor(response)) {
         y <- as.numeric(y) - 1
         y[y == 0] <- -1
@@ -39,6 +40,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     weights <- rescale_weights(weights)
     oobweights <- as.numeric(weights == 0)
 
+    ### set up the fitting functions
     bl <- lapply(blg, dpp, weights = weights)
     blfit <- lapply(bl, function(x) x$fit)
     fit1 <- blfit[[1]]
@@ -52,15 +54,17 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     tsums <- numeric(length(bl))
     ss <- vector(mode = "list", length = length(bl))
 
+    ### initialized the boosting algorithm
     fit <- offset
     if (is.null(offset))
         fit <- offset <- family@offset(y, weights)
     u <- ustart <- ngradient(y, fit, weights)
 
-    ### start boosting iteration
+    ### set up a function for boosting
     boost <- function(niter) {
         for (m in (mstop + 1):(mstop + niter)) {
 
+            ### is there is more than one baselearner
             if (length(bl) > 1) {
                 tsums <- rep(-1, length(bl))
                 ### fit least squares to residuals _componentwise_
@@ -70,12 +74,12 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                     tsums[i] <- mean.default(weights * ((sstmp$fitted()) - u)^2, 
                                              na.rm = TRUE)
                 }
- 
                 if (all(tsums < 0))
                     stop("could not fit base learner in boosting iteration ", m)
                 xselect[m] <<- which.min(tsums)
                 basess <- ss[[xselect[m]]]	
             } else {
+                ### a little faster for one baselearner only
                 basess <- fit1(y = u)
                 xselect[m] <<- 1
             }
@@ -92,8 +96,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             if (risk == "oobag") mrisk[m] <<- riskfct(y, fit, oobweights)
 
             ### save the model
-            if (control$saveensss)
-                ens[[m]] <<- basess
+            ens[[m]] <<- basess
 
             ### print status information
             if (trace)
@@ -102,10 +105,12 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         mstop <<- mstop + niter 
         return(TRUE)
     }
+    ### actually go for initial mstop iterations!
     tmp <- boost(control$mstop)
 
-    RET <- list(baselearner = blg,
-                basemodel = bl,
+    ### prepare a (very) rich objects
+    RET <- list(baselearner = blg,      ### the baselearners (without weights)
+                basemodel = bl,         ### the basemodels (with weights)
                 offset = offset,        ### offset
                 ustart = ustart,        ### first negative gradients
                 control = control,      ### control parameters
@@ -114,40 +119,60 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 weights = weights       ### weights used for fitting
     )
 
+    ### update to new weights; just a fresh start
     RET$update <- function(weights = NULL) {
         control$mstop <- mstop
         mboost(blg = blg, response = response, weights = weights, 
                offset = offset, family = family, control = control)
     }
 
+    ### number of iterations performed so far
     RET$mstop <- function() mstop
 
+    ### which basemodels have been selected so far?
     RET$xselect <- function(cw = FALSE) {
+        ### <FIXME> is this the right place?
         if (inherits(bl[[1]], "bl_cwlin") && (length(bl) == 1 && cw))
             return(as.integer(sapply(ens[1:mstop], function(m) m$model[2])))
+        ### </FIXME>
         return(xselect[1:mstop])
     }
 
+    ### current fitted values
     RET$fitted <- function() fit
 
+    ### current negative gradient
     RET$resid <- function() u
 
+    ### current risk fct.
     RET$risk <- function() mrisk[1:mstop]
 
+    ### negative risk (at current iteration)
     RET$logLik <- function() -mrisk[mstop]
 
+    ### figure out which baselearners are requested
     thiswhich <- function(which = NULL, usedonly = FALSE) {
         if (is.null(which)) which <- 1:length(bl)
         if (is.character(which)) {
-            i <- match(which, names(bl))
+            i <- sapply(which, function(w) {
+                wi <- grep(w, names(bl))
+                ifelse(length(wi) > 0, wi, NA)
+            })
             if (any(is.na(i)))
                 warning(paste(which[is.na(i)], collapse = ","), " not found")
             which <- i
         } 
+        ### return only those selected so far
         if (usedonly) which <- which[which %in% RET$xselect()]
         return(which)
     }
 
+    ### prepare for computing predictions in the following ways
+    ### - for all baselearners (which = NULL) or selected onces
+    ### - for each baselearners separately (components = TRUE)
+    ### - aggregated ("sum"), the complete path over all
+    ###   boosting iterations done so far ("cumsum") or
+    ###   not aggregated at all ("none")
     RET$predict <- function(newdata = NULL, which = NULL, components = FALSE,
                             aggregate = c("sum", "cumsum", "none")) {
 
@@ -200,9 +225,10 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         return(pr)
     }
 
+    ### extract a list of the model frames of the single baselearners
     RET$model.frame <- function(which = NULL) {
         which <- thiswhich(which, usedonly = FALSE)
-        if (length(which) == 1) return(model.frame(blg[[which]]))
+        # if (length(which) == 1) return(model.frame(blg[[which]]))
         tmp <- lapply(blg[which], model.frame)
         ret <- vector(mode = "list", length = length(bl))
         names(ret) <- names(bl)
@@ -210,6 +236,11 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         ret
     }
 
+    ### update to a new number of boosting iterations mstop
+    ### i <= mstop means less iterations than current
+    ### i >  mstop needs additional computations
+    ### updates take place in THIS ENVIRONMENT,
+    ### some models are CHANGED!
     RET$subset <- function(i) {
         if (i <= mstop || length(xselect) > i) {
             mstop <<- i
@@ -220,6 +251,10 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         }
     } 
 
+    ### if baselearners have a notion of coefficients,
+    ### extract these either aggregated ("sum"),
+    ### their coefficient path ("cumsum") or not
+    ### aggregated at all ("none")
     RET$coef <- function(which = NULL, aggregate = c("sum", "cumsum", "none")) {
         
         indx <- ((1:length(xselect)) <= mstop)
@@ -268,6 +303,10 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     return(RET)
 }
 
+### compute predictions
+### <FIXME>: add arguments (for documentation)
+###          add link argument (family needs to be touched)
+### </FIXME>
 predict.mboost <- function(object, type = c("lp", "response"), ...) {
     pr <- object$predict(...)
     type <- match.arg(type)
@@ -276,9 +315,11 @@ predict.mboost <- function(object, type = c("lp", "response"), ...) {
     return(pr)
 }
 
+### extract coefficients
 coef.mboost <- function(object, ...)
     object$coef(...)
 
+### compute boosting hat matrix and its trace
 hatvalues.mboost <- function(model, ...) {
     H <- model$hatvalues(...)
     n <- length(model$response)
@@ -358,6 +399,7 @@ AICboost3 <- function(object, method = c("corrected", "classical", "gMDL"), df, 
 }
 
 
+### compute fitted values
 fitted.mboost <- function(object, ...) {
     args <- list(...)
     if (length(args) == 0)
@@ -365,12 +407,16 @@ fitted.mboost <- function(object, ...) {
     object$predict(...)
 }
 
+### residuals (the current negative gradient)
 resid.mboost <- function(object, ...) 
     object$resid()
 
 logLik.mboost <- function(object, ...)
     object$logLik()
 
+### restrict or enhance models to less/more
+### boosting iterations.
+### ATTENTION: x gets CHANGED!
 "[.mboost" <- function(x, i, ...) {
     stopifnot(length(i) == 1 && i > 0)
     x$subset(i)
@@ -388,50 +434,98 @@ model.frame.mboost <- function(formula, ...)
 response.mboost <- function(object, ...)
     object$response
 
+### main user interface function
+### formula may contain unevaluated baselearners as well
+### as additional variables
+###     y ~ bols3(x1) + x2 + btree(x3)
+### is evaluated as
+###     y ~ bols3(x1) + baselearner(x2) + btree(x3)
+### see mboost_fit for the dots
 mboost <- function(formula, data = list(), baselearner = bbs3, ...) {
 
+    ### OK, we need at least variable names to go ahead
+    if (as.name(formula[[3]]) == ".") {
+        cl <- match.call()
+        mf <- match.call(expand.dots = FALSE)
+        m <- match(c("formula", "data"), names(mf), 0L)
+        mf <- mf[c(1L, m)]
+        mf[[1L]] <- as.name("model.frame")
+        mf <- eval(mf, parent.frame())
+        nm <- names(mf)
+        formula <- as.formula(paste(nm[1], " ~ ", paste(nm[-1], collapse = "+")))
+        data <- mf
+    }
+    ### instead of evaluating a model.frame, we evaluate
+    ### the expressions on the lhs of formula directly
     "+" <- function(a,b) {
+        ### got baselearner, fine!
         if (inherits(a, "blg")) a <- list(a)
+        ### a single variable; compute baselearner
         if (!is.list(a)) a <- list(baselearner(a))
+        ### got baselearner, fine!
         if (inherits(b, "blg")) b <- list(b)
+        ### a single variable, compute baselearner
         if (!is.list(b)) b <- list(baselearner(b))
+        ### join both baselearners in a list
         c(a, b)
     }
+    ### set up all baselearners
     bl <- eval(as.expression(formula[[3]]), envir = data)
+    ### if there is just one, assign it to a list anyway
     if (inherits(bl, "blg")) bl <- list(bl)
+    ### just a check
     stopifnot(all(sapply(bl, inherits, what = "blg")))
+    ### we need identifiers for the baselearners, 
+    ### split the formula at `+'
     nm <- strsplit(as.character(as.expression(formula[[3]])), "\\+")[[1]]
     nm <- gsub(" ", "", nm)
     names(bl) <- nm
-    missing <- (1:length(nm))[-grep("\\(", nm)]
+    ### baselearners constructed indirectly via `baselearner'
+    ### don't know the variable names yet
+    ### check for parts of the lhs of formula
+    ### that didn't specify a baselearner
+    funs <- grep("\\(", nm)
+    missing <- 1:length(nm)
+    if (length(funs) > 0)
+        missing <- missing[-funs]
     if (length(missing) > 0) {
+        ### assign variable names
         for (m in missing) bl[[m]]$set_names(nm[m])
+        ### assign names containing `baselearner'
         names(bl)[missing] <- paste(deparse(substitute(baselearner)), 
                                     "(", nm[missing], ")", sep = "")
     }
+    ### get the response
     response <- eval(as.expression(formula[[2]]), envir = data)
     mboost_fit(bl, response = response, ...)
 }
 
+### nothing to do there
 Gamboost <- mboost
 
+### just one single tree-based baselearner
 Blackboost <- function(formula, data = list(), ...) {
 
+    ### get the model frame first
     cl <- match.call()
     mf <- match.call(expand.dots = FALSE)
     m <- match(c("formula", "data"), names(mf), 0L)
     mf <- mf[c(1L, m)]
     mf[[1L]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
+    ### btree can deal with data.frames
     bl <- list(btree(mf[,-1, drop = FALSE]))
     names(bl) <- "btree"
     response <- mf[,1]
     mboost_fit(bl, response = response, ...)
 }
 
-Glmboost <- function(formula, data = list(), weights = NULL, na.action = na.pass, 
-                     contrasts.arg = NULL, center = FALSE, control = boost_control(), ...) {
+### fit a linear model componentwise
+Glmboost <- function(formula, data = list(), weights = NULL, 
+                     na.action = na.pass, contrasts.arg = NULL, 
+                     center = FALSE, control = boost_control(), ...) {
 
+    ### get the model frame first
     cl <- match.call()
     mf <- match.call(expand.dots = FALSE)
     m <- match(c("formula", "data", "weights"), names(mf), 0L)
@@ -440,31 +534,37 @@ Glmboost <- function(formula, data = list(), weights = NULL, na.action = na.pass
     mf$drop.unused.levels <- TRUE
     mf[[1L]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
+    ### center argument moved to this function
     if (control$center) {
         center <- TRUE
         warning("boost_control center deprecated")
     }
+    ### set up the model.matrix and center (if requested)
     X <- model.matrix(attr(mf, "terms"), data = mf, 
                       contrasts.args = contrasts.args)
     cm <- rep(0, ncol(X))
     if (center) {
         cm <- colMeans(X, na.rm = TRUE)
+        ### center numeric variables only
         center <- attr(X, "assign") %in% which(sapply(mf, is.numeric)[-1])
         cm[!center] <- 0
         X <- scale(X, center = cm, scale = FALSE)
     }
+    ### this function will be used for predictions later
     newX <- function(newdata) {
         X <- model.matrix(delete.response(attr(mf, "terms")), data = newdata,
                           contrasts.args = contrasts.args)
         scale(X, center = cm, scale = FALSE)
     }
 
+    ### component-wise linear models baselearner
     bl <- list(bolscw(X))
     response <- model.response(mf)
     weights <- model.weights(mf)
     ret <- mboost_fit(bl, response = response, weights = weights, 
                       control = control, ...)
     ret$newX <- newX
+    ### need specialized method (hatvalues etc. anyway)
     class(ret) <- c("Glmboost", "mboost")
     return(ret)
 }
@@ -483,7 +583,7 @@ hatvalues.Glmboost <- function(model, ...) {
 
     if (!checkL2(model)) return(hatvalues.mboost(model))
     Xf <- t(model$basemodel[[1]]$MPinv()) * model$control$nu
-    X <- model.frame(model$baselearner[[1]])
+    X <- model$baselearner[[1]]$get_data()
     op <- .Call("R_trace_glmboost", X, Xf,
                 as.integer(model$xselect(cw = TRUE)),
                 PACKAGE = "mboost")
@@ -492,4 +592,3 @@ hatvalues.Glmboost <- function(model, ...) {
     attr(RET, "trace") <- op[[2]] 
     RET
 }
-

@@ -1,4 +1,6 @@
 
+### compute Ridge shrinkage parameter lambda from df
+### or the other way round
 df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
 
     if (!is.null(df))
@@ -29,6 +31,7 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
                               tol = sqrt(.Machine$double.eps))$root))
 }
 
+### hyper parameters for ols baselearner
 hyper_ols <- function(df = NULL, lambda = NULL, intercept = TRUE, 
                       contrasts.arg = "contr.treatment") 
     list(pen = !is.null(df) || !is.null(lambda),
@@ -36,6 +39,7 @@ hyper_ols <- function(df = NULL, lambda = NULL, intercept = TRUE,
          intercept = intercept, 
          contrasts.arg = contrasts.arg)
 
+### model.matrix for ols baselearner
 X_ols <- function(mf, vary, args) {
 
     if (isMATRIX(mf)) {
@@ -74,8 +78,9 @@ X_ols <- function(mf, vary, args) {
     list(X = X, K = K)
 }
 
-hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4, lambda = NULL,
-                      center = FALSE) {
+### hyper parameters for P-splines baselearner (including tensor product P-splines)
+hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4, 
+                      lambda = NULL, center = FALSE) {
 
     knotf <- function(x, knots) {	
         boundary.knots <- range(x, na.rm = TRUE)
@@ -96,6 +101,7 @@ hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4,
          df = df, lambda = lambda, center = center)
 }
 
+### model.matrix for P-splines baselearner (including tensor product P-splines)
 X_bbs <- function(mf, vary, args) {
 
     stopifnot(is.data.frame(mf))
@@ -143,6 +149,7 @@ X_bbs <- function(mf, vary, args) {
     return(list(X = X, K = K))
 }
 
+### Linear baselearner, potentially Ridge-penalized
 bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lambda = NULL,
                   contrasts.arg = "contr.treatment") {
 
@@ -169,6 +176,8 @@ bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lamb
     ### option
     DOINDEX <- is.data.frame(mf) && (nrow(mf) > 10000 || is.factor(mf[[1]]))
     if (is.null(index)) {
+        ### try to remove duplicated observations or 
+        ### observations with missings
         if (!CC || DOINDEX) {
             index <- get_index(mf)
             mf <- mf[index[[1]],,drop = FALSE]
@@ -191,6 +200,7 @@ bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lamb
     return(ret)
 }
 
+### P-spline (and tensor-product spline) baselearner
 bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3, 
                  differences = 2, df = 4, lambda = NULL, center = FALSE) {
 
@@ -238,6 +248,7 @@ bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
     return(ret)
 }
 
+### workhorse for fitting (Ridge-penalized) baselearners 
 bl_lin <- function(blg, Xfun, args) {
 
     mf <- blg$get_data()
@@ -298,13 +309,15 @@ bl_lin <- function(blg, Xfun, args) {
             ret
         }
 
-        ### check for n
+        ### <FIXME> check for large n, option?
         hatvalues <- function() {
             ret <- as.matrix(tcrossprod(X %*% solve(XtX), X * w))
             if (is.null(index)) return(ret)
             return(ret[index,index])
         }
+        ### </FIXME>
 
+        ### actually used degrees of freedom (trace of hat matrix)
         df <- function() {
             if (args$pen) 
                 return(df2lambda(X, df = NULL, lambda = lambda, 
@@ -312,6 +325,7 @@ bl_lin <- function(blg, Xfun, args) {
             return(ncol(X))
         }
 
+        ### prepare for computing predictions
         predict <- function(bm, newdata = NULL, aggregate = c("sum", "cumsum", "none")) {
             cf <- sapply(bm, coef)
             if(!is.null(newdata)) {
@@ -348,12 +362,14 @@ bl_lin <- function(blg, Xfun, args) {
     return(dpp)
 }
 
+### tensor-product spline baselearner
 bspatial3 <- function(...) {
     cl <- match.call()
     cl[[1L]] <- as.name("bbs3")
     eval(cl, parent.frame())
 }
 
+### random-effects (Ridge-penalized ANOVA) baselearner
 brandom3 <- function(..., df = 4) {
     cl <- match.call()
     if (is.null(cl$df)) cl$df <- df
@@ -362,34 +378,39 @@ brandom3 <- function(..., df = 4) {
     eval(cl, parent.frame())
 }
 
-
+### extract variables names from baselearner
 names.blg <- function(x)
     x$get_names()
 
+### extract data from baselearner
 model.frame.blg <- function(formula)
     formula$model.frame()
 
+### extract coefficients
 coef.bm_lin <- function(object) {
     ret <- as.vector(object$model)
     names(ret) <- object$Xnames
     ret
 }
 
+### extract fitted values
 fitted.bm <- function(object)
     object$fitted()
 
+### extract hatmatrix
 hatvalues.bl_lin <- function(model)
     model$hatvalues()
 
+### data preprocessing (plug in weights)
 dpp <- function(object, weights)
     UseMethod("dpp", object)
-
-fit <- function(object, y)
-    UseMethod("fit", object)
 
 dpp.blg <- function(object, weights)
     object$dpp(weights)
 
+### actually fit a baselearner to response y
+fit <- function(object, y)
+    UseMethod("fit", object)
+
 fit.bl <- function(object, y)
     object$fit(y)
-
