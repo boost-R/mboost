@@ -4,6 +4,9 @@ bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE, contrast.arg
     mf <- list(...)
     if (length(mf) == 1 && (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]))) {
         mf <- mf[[1]]
+        ### spline bases should be matrices
+        if (isMATRIX(mf) && !is(mf, "Matrix"))
+            class(mf) <- "matrix"
     } else {
         mf <- as.data.frame(mf)
         cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
@@ -24,11 +27,9 @@ bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE, contrast.arg
         mf <- mf[cc, , drop = FALSE]
     }
 
-    ret <- list(model.frame = function() {
-                    if (is.null(index)) return(mf)
-                    return(mf[index, , drop = FALSE])
-                },
+    ret <- list(model.frame = function() return(mf),
                 get_names = function() colnames(mf),
+                get_vary = function() vary,
                 set_names = function(value) attr(mf, "names") <<- value)
     class(ret) <- "blg"
 
@@ -52,7 +53,8 @@ bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE, contrast.arg
 
     ### <FIXME> centering with or without weights?
     if (center) {
-        cm <- colSums(X) / nrow(X)
+        cm <- colMeans(X)
+        ### when `assign' is available...
         if (is.data.frame(mf)) {
             cls <- sapply(mf, class)[colnames(mf) != vary]
             num <- which(cls == "numeric")

@@ -1,21 +1,29 @@
 
 get_index <- function(x) {
 
-#    if (length(x) == 1 && is.data.frame(x)) {
-#        nd <- which(!duplicated(x[[1]]))
-#        nd <- nd[complete.cases(x[nd,])]
-#        ux <- sort(x[[1]][nd], na.last = TRUE)
-#        index <- match(x[[1]], ux)
-    ### handle single factors separately
-    if (length(x) == 1 && is.factor(x[[1]])) {
-         nd <- which(!duplicated(x[[1]]))
-         nd <- nd[complete.cases(x[nd,])]
-         index <- as.integer(x[[1]])
+    if (isMATRIX(x)) {
+        ### handle missing values only
+        cc <- Complete.cases(x)
+        nd <- which(cc)
+        index <- match(1:nrow(x), nd)
     } else {
-        tmp <- do.call("paste", x)           
-        nd <- which(!duplicated(tmp))
-        nd <- nd[complete.cases(x[nd,])]
-        index <- match(tmp, tmp[nd])
+        ### handle single variables (factors / numerics) factors
+        if (length(x) == 1) {
+            x <- x[[1]]
+            nd <- which(!duplicated(x))
+            nd <- nd[complete.cases(x[nd])]
+            if (is.factor(x)) {
+                index <- as.integer(x)
+            } else {
+                index <- match(x, x[nd])
+            }
+        ### go for data.frames with >= 2 variables
+        } else {
+            tmp <- do.call("paste", x)           
+            nd <- which(!duplicated(tmp))
+            nd <- nd[complete.cases(x[nd,])]
+            index <- match(tmp, tmp[nd])
+        }
     }
     return(list(nd, index))
 }

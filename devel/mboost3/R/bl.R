@@ -7,20 +7,22 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
     # Demmler-Reinsch Orthogonalization (cf. Ruppert et al., 2003, 
     # Semiparametric Regression, Appendix B.1.1).
 
+    ### option
     A <- crossprod(X * weights, X) + dmat * 10e-10
     Rm <- solve(chol(A))
 
     decomp <- svd(crossprod(Rm, dmat) %*% Rm)
     d <- decomp$d[decomp$d > .Machine$double.eps]
 
-    if (!is.null(lambda)) return(c(df = sum(1 / (1 + lambda * d)), lambda = lambda))
-
-    if (df >= length(d)) return(df = df, lambda = 0)
+    if (!is.null(lambda)) 
+        return(c(df = sum(1 / (1 + lambda * d)), lambda = lambda))
+    if (df >= length(d)) return(c(df = df, lambda = 0))
 
     # search for appropriate lambda using uniroot
     df2l <- function(lambda)
         sum(1/(1 + lambda * d)) - df
 
+    ### option
     if (df2l(1e+10) > 0) return(c(df = df, lambda = 1e+10))
     return(c(df = df, 
              lambda = uniroot(df2l, c(0, 1e+10), 
@@ -62,10 +64,12 @@ X_ols <- function(mf, vary, args) {
             diag <- Diagonal
             X <- Matrix(X)
         }
-        ### for ordered factors use difference penalty
-        if (ANCOVA && any(sapply(mf[, names(contr), drop = FALSE], is.ordered)))
-            K <- diff(diag(ncol(X)), differences = 2)
         K <- diag(ncol(X))
+        ### for ordered factors use difference penalty
+        if (ANCOVA && any(sapply(mf[, names(contr), drop = FALSE], is.ordered))) {
+            K <- diff(diag(ncol(X)), differences = 2)
+            K <- crossprod(K)
+        }
     }
     list(X = X, K = K)
 }
@@ -100,6 +104,7 @@ X_bbs <- function(mf, vary, args) {
         class(X) <- "matrix"
         return(X)
     })
+    ### options
     MATRIX <- any(sapply(mm, dim) > c(500, 50)) || (length(mm) > 1)
     if (MATRIX) {
         diag <- Diagonal
@@ -108,22 +113,24 @@ X_bbs <- function(mf, vary, args) {
     if (length(mm) == 1) {
         X <- mm[[1]]
         K <- diff(diag(ncol(X)), differences = args$differences)
-        K <- crossprod(K, K)
+        K <- crossprod(K)
     }
     if (length(mm) == 2) {
         X <- kronecker(mm[[1]], matrix(1, nc = ncol(mm[[2]]))) * 
              kronecker(matrix(1, nc = ncol(mm[[1]])), mm[[2]])
         Kx <- diff(diag(ncol(mm[[1]])), differences = args$differences)
-        Kx <- crossprod(Kx, Kx)
+        Kx <- crossprod(Kx)
         Ky <- diff(diag(ncol(mm[[2]])), differences = args$differences)
-        Ky <- crossprod(Ky, Ky)
+        Ky <- crossprod(Ky)
         K <- kronecker(Kx, diag(ncol(mm[[2]]))) + 
              kronecker(diag(ncol(mm[[1]])), Ky)
     }
+    ### <FIXME>
     if (vary != "") {
         z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
         X <- X * z
     }
+    ### </FIXME>
     if (args$center) {
         L <- eigen(K, symmetric = TRUE, EISPACK = TRUE)
         L$vectors <- L$vectors[,1:(ncol(X) - args$differences^2)]
@@ -141,6 +148,9 @@ bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lamb
     mf <- list(...)
     if (length(mf) == 1 && (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]))) {
         mf <- mf[[1]]
+        ### spline bases should be matrices
+        if (isMATRIX(mf) && !is(mf, "Matrix"))
+            class(mf) <- "matrix"
     } else {
         mf <- as.data.frame(mf)
         cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
@@ -154,20 +164,21 @@ bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lamb
         colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(z))
     }
 
+    CC <- all(Complete.cases(mf))
+    ### option
+    DOINDEX <- is.data.frame(mf) && (nrow(mf) > 10000 || is.factor(mf[[1]]))
     if (is.null(index)) {
-        if (!isMATRIX(mf)) {
-            if (nrow(mf) > 10000 || 
-                (is.factor(mf[[1]]) || !all(Complete.cases(mf)))) {
-                index <- get_index(mf)
-                mf <- mf[index[[1]],,drop = FALSE]
-                index <- index[[2]]
-            }
+        if (!CC || DOINDEX) {
+            index <- get_index(mf)
+            mf <- mf[index[[1]],,drop = FALSE]
+            index <- index[[2]]
         }
     }
 
     ret <- list(model.frame = function() 
                     if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
                 get_names = function() colnames(mf),
+                get_vary = function() vary,
                 set_names = function(value) attr(mf, "names") <<- value)
     class(ret) <- "blg"
 
@@ -189,6 +200,7 @@ bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
         colnames(mf) <- sapply(cl, function(x) as.character(x))
     }
     stopifnot(is.data.frame(mf))
+    stopifnot(all(sapply(mf, is.numeric)))
     vary <- ""
     if (!is.null(z)) {
         stopifnot(is.numeric(z) || (is.factor(z) && nlevels(z) == 2))
@@ -196,19 +208,20 @@ bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
         colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(z))
     }
 
+    CC <- all(Complete.cases(mf))
+    ### option
+    DOINDEX <- (nrow(mf) > 10000)
     if (is.null(index)) {
-        if (!is.matrix(mf)) {
-            if (nrow(mf) > 500 || 
-                !all(Complete.cases(mf))) {
-                index <- get_index(mf)
-                mf <- mf[index[[1]],,drop = FALSE]
-                index <- index[[2]]
-            }
+        if (!CC || DOINDEX) {
+            index <- get_index(mf)
+            mf <- mf[index[[1]],,drop = FALSE]
+            index <- index[[2]]
         }
     }
 
     ret <- list(model.frame = function() 
                     if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
+                get_vary = function() vary,
                 get_names = function() colnames(mf),
                 set_names = function(value) attr(mf, "names") <<- value)
     class(ret) <- "blg"
@@ -223,12 +236,11 @@ bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
 bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
 
     newX <- function(newdata = NULL) {
-        if (!is.null(newdata) && all(names(newdata) == names(mf)))
+        if (!is.null(newdata)) {
+            stopifnot(all(names(newdata) == names(mf)))
             mf <- newdata[,colnames(mf),drop = FALSE]
-        X <- Xfun(mf, vary, args)
-        K <- X$K
-        X <- X$X
-        return(list(X = X, K = K))
+        }
+        return(Xfun(mf, vary, args))
     }
     X <- newX()
     K <- X$K
@@ -276,6 +288,7 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
             ret
         }
 
+        ### check for n
         hatvalues <- function() {
             ret <- as.matrix(tcrossprod(X %*% solve(XtX), X * w))
             if (is.null(index)) return(ret)
@@ -295,7 +308,8 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
                 index <- NULL
                 nm <- colnames(mf)
                 newdata <- newdata[,nm, drop = FALSE]
-                if (nrow(newdata) > 1000) {
+                ### option
+                if (nrow(newdata) > 10000) {
                     index <- get_index(newdata)
                     newdata <- newdata[index[[1]],,drop = FALSE]
                     index <- index[[2]]
@@ -315,7 +329,8 @@ bl_lin <- function(mf, vary, index = NULL, Xfun, args) {
         }
 
         ret <- list(fit = fit, hatvalues = hatvalues, 
-                    predict = predict, df = df, Xnames = colnames(X))
+                    predict = predict, df = df, 
+                    Xnames = colnames(X))
         class(ret) <- c("bl_lin", "bl")
         return(ret)
 
