@@ -662,7 +662,7 @@ depicted in Figure~\ref{wpbc-glmboost-censored-fit}, showing a reasonable model 
 \begin{figure}[t]
 \begin{center}
 <<wpbc-glmboost-censored-fit, echo = FALSE, fig = TRUE, width = 5, height = 5>>=
-plot(log(wpbc3$time), predict(wpbc_surv),
+plot(log(wpbc3$time), predict(wpbc_surv, newdata = wpbc3),
      cex = iw, ylim = c(0, 5), xlim = c(0, 5), 
      xlab = "Time to recurrence (log-scale)", 
      ylab = "Predicted time to recurrence")
