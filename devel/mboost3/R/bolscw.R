@@ -1,5 +1,6 @@
 
-bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE, contrast.arg = NULL) {
+bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE, 
+                   contrast.arg = NULL) {
 
     mf <- list(...)
     if (length(mf) == 1 && (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]))) {
@@ -52,14 +53,10 @@ bolscw <- function(..., z = NULL, center = FALSE, intercept = TRUE, contrast.arg
     X <- newX(mf)
 
     ### <FIXME> centering with or without weights?
-    if (center) {
+    if (any(center)) {
         cm <- colMeans(X)
-        ### when `assign' is available...
-        if (is.data.frame(mf)) {
-            cls <- sapply(mf, class)[colnames(mf) != vary]
-            num <- which(cls == "numeric")
-            cm[!attr(X, "assign") %in% num] <- 0
-        }
+        ### center only columns i with center[i] == TRUE
+        if (length(center) == length(cm)) cm[!center] <- 0
         X <- scale(X, center = cm, scale = FALSE)
     }
     ### </FIXME>

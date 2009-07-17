@@ -317,11 +317,13 @@ Glmboost <- function(formula, data = list(), weights = NULL, na.action = na.pass
     mf$drop.unused.levels <- TRUE
     mf[[1L]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
-    X <- model.matrix(attr(mf, "terms"), mf)	
     if (control$center) {
         center <- TRUE
         warning("boost_control center deprecated")
     }
+    X <- model.matrix(attr(mf, "terms"), data = mf)
+    ### determine which columns are subject to centering
+    if (center) center <- attr(X, "assign") %in% which(sapply(mf, is.numeric)[-1])
     bl <- list(bolscw(X, center = center))
     response <- model.response(mf)
     weights <- model.weights(mf)
@@ -336,6 +338,10 @@ Gamboost <- function(formula, data = list(), baselearner = bbs3, ...) {
     mf <- mf[c(1L, m)]
     mf[[1L]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
+
+    if (is.character(baselearner)) 
+        baselearner <- get(baselearner, mode = "function", 
+                           envir = parent.frame())
     bl <- vector(mode = "list", length = ncol(mf) - 1)
     names(bl) <- names(mf)[-1]
     for (i in 2:ncol(mf)) {
