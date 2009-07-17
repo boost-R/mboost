@@ -202,6 +202,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
     RET$model.frame <- function(which = NULL) {
         which <- thiswhich(which, usedonly = FALSE)
+        if (length(which) == 1) return(model.frame(blg[[which]]))
         tmp <- lapply(blg[which], model.frame)
         ret <- vector(mode = "list", length = length(bl))
         names(ret) <- names(bl)
@@ -387,11 +388,13 @@ model.frame.mboost <- function(formula, ...)
 response.mboost <- function(object, ...)
     object$response
 
-mboost <- function(formula, data = list(), ...) {
+mboost <- function(formula, data = list(), baselearner = bbs3, ...) {
 
     "+" <- function(a,b) {
         if (inherits(a, "blg")) a <- list(a)
+        if (!is.list(a)) a <- list(baselearner(a))
         if (inherits(b, "blg")) b <- list(b)
+        if (!is.list(b)) b <- list(baselearner(b))
         c(a, b)
     }
     bl <- eval(as.expression(formula[[3]]), envir = data)
@@ -400,7 +403,29 @@ mboost <- function(formula, data = list(), ...) {
     nm <- strsplit(as.character(as.expression(formula[[3]])), "\\+")[[1]]
     nm <- gsub(" ", "", nm)
     names(bl) <- nm
+    missing <- (1:length(nm))[-grep("\\(", nm)]
+    if (length(missing) > 0) {
+        for (m in missing) bl[[m]]$set_names(nm[m])
+        names(bl)[missing] <- paste(deparse(substitute(baselearner)), 
+                                    "(", nm[missing], ")", sep = "")
+    }
     response <- eval(as.expression(formula[[2]]), envir = data)
+    mboost_fit(bl, response = response, ...)
+}
+
+Gamboost <- mboost
+
+Blackboost <- function(formula, data = list(), ...) {
+
+    cl <- match.call()
+    mf <- match.call(expand.dots = FALSE)
+    m <- match(c("formula", "data"), names(mf), 0L)
+    mf <- mf[c(1L, m)]
+    mf[[1L]] <- as.name("model.frame")
+    mf <- eval(mf, parent.frame())
+    bl <- list(btree(mf[,-1, drop = FALSE]))
+    names(bl) <- "btree"
+    response <- mf[,1]
     mboost_fit(bl, response = response, ...)
 }
 
@@ -468,41 +493,3 @@ hatvalues.Glmboost <- function(model, ...) {
     RET
 }
 
-Gamboost <- function(formula, data = list(), baselearner = bbs3, ...) {
-
-    cl <- match.call()
-    mf <- match.call(expand.dots = FALSE)
-    m <- match(c("formula", "data"), names(mf), 0L)
-    mf <- mf[c(1L, m)]
-    mf[[1L]] <- as.name("model.frame")
-    mf <- eval(mf, parent.frame())
-
-    if (is.character(baselearner)) 
-        baselearner <- get(baselearner, mode = "function", 
-                           envir = parent.frame())
-    bl <- vector(mode = "list", length = ncol(mf) - 1)
-    names(bl) <- names(mf)[-1]
-    for (i in 2:ncol(mf)) {
-        tmp <- mf[[i]]
-        bl[[i - 1]] <- baselearner(tmp)
-        bl[[i - 1]]$set_names(names(mf)[i])
-    }
-    if (!inherits(bl, "blg") && !is.list(bl)) bl <- list(bbs3(bl))
-    stopifnot(all(sapply(bl, inherits, what = "blg")))
-    response <- mf[,1]
-    mboost_fit(bl, response = response, ...)
-}
-
-Blackboost <- function(formula, data = list(), ...) {
-
-    cl <- match.call()
-    mf <- match.call(expand.dots = FALSE)
-    m <- match(c("formula", "data"), names(mf), 0L)
-    mf <- mf[c(1L, m)]
-    mf[[1L]] <- as.name("model.frame")
-    mf <- eval(mf, parent.frame())
-    bl <- list(btree(mf[,-1, drop = FALSE]))
-    names(bl) <- "btree"
-    response <- mf[,1]
-    mboost_fit(bl, response = response, ...)
-}
