@@ -444,16 +444,18 @@ response.mboost <- function(object, ...)
 mboost <- function(formula, data = list(), baselearner = bbs3, ...) {
 
     ### OK, we need at least variable names to go ahead
-    if (as.name(formula[[3]]) == ".") {
-        cl <- match.call()
-        mf <- match.call(expand.dots = FALSE)
-        m <- match(c("formula", "data"), names(mf), 0L)
-        mf <- mf[c(1L, m)]
-        mf[[1L]] <- as.name("model.frame")
-        mf <- eval(mf, parent.frame())
-        nm <- names(mf)
-        formula <- as.formula(paste(nm[1], " ~ ", paste(nm[-1], collapse = "+")))
-        data <- mf
+    if (length(formula[[3]]) == 1) {
+        if (as.name(formula[[3]]) == ".") {
+            cl <- match.call()
+            mf <- match.call(expand.dots = FALSE)
+            m <- match(c("formula", "data"), names(mf), 0L)
+            mf <- mf[c(1L, m)]
+            mf[[1L]] <- as.name("model.frame")
+            mf <- eval(mf, parent.frame())
+            nm <- names(mf)
+            formula <- as.formula(paste(nm[1], " ~ ", paste(nm[-1], collapse = "+")))
+            data <- mf
+        }
     }
     ### instead of evaluating a model.frame, we evaluate
     ### the expressions on the lhs of formula directly
