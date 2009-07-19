@@ -1,7 +1,7 @@
 
 ### the classical tree-based baselearner; stumps by default
 ### (also fits an additive model)
-btree <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0)) {
+btree3 <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0)) {
 
     mf <- list(...)
     if (length(mf) == 1 && is.data.frame(mf[[1]])) {

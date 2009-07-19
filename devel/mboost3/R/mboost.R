@@ -116,14 +116,15 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 control = control,      ### control parameters
                 family = family,        ### family object
                 response = response,    ### the response variable
-                weights = weights       ### weights used for fitting
+                "(weights)" = weights       ### weights used for fitting
     )
 
     ### update to new weights; just a fresh start
-    RET$update <- function(weights = NULL) {
+    RET$update <- function(weights = NULL, risk = "oobag") {
         control$mstop <- mstop
-        mboost(blg = blg, response = response, weights = weights, 
-               offset = offset, family = family, control = control)
+        control$risk <- risk
+        mboost_fit(blg = blg, response = response, weights = weights, 
+                   offset = offset, family = family, control = control)
     }
 
     ### number of iterations performed so far
@@ -517,8 +518,8 @@ Blackboost <- function(formula, data = list(), ...) {
     mf[[1L]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
     ### btree can deal with data.frames
-    bl <- list(btree(mf[,-1, drop = FALSE]))
-    names(bl) <- "btree"
+    bl <- list(btree3(mf[,-1, drop = FALSE]))
+    names(bl) <- "btree3"
     response <- mf[,1]
     mboost_fit(bl, response = response, ...)
 }
