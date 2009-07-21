@@ -1,5 +1,5 @@
 
-		CHANGES in `mboost' VERSION 1.1-2 (2009-05-xx)
+		CHANGES in `mboost' VERSION 1.1-2 (2009-06-21)
 
   o  better weights and boundary knots handling in bspatial
 
@@ -11,6 +11,7 @@
      predictors
 
   o  for safety reasons: na.action = na.omit again
+     (causes slight changes in wpbc3 example)
 
 
 		CHANGES in `mboost' VERSION 1.1-1 (2009-04-21)
