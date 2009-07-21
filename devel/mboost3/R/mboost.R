@@ -445,18 +445,10 @@ response.mboost <- function(object, ...)
 mboost <- function(formula, data = list(), baselearner = bbs3, ...) {
 
     ### OK, we need at least variable names to go ahead
-    if (length(formula[[3]]) == 1) {
-        if (as.name(formula[[3]]) == ".") {
-            cl <- match.call()
-            mf <- match.call(expand.dots = FALSE)
-            m <- match(c("formula", "data"), names(mf), 0L)
-            mf <- mf[c(1L, m)]
-            mf[[1L]] <- as.name("model.frame")
-            mf <- eval(mf, parent.frame())
-            nm <- names(mf)
-            formula <- as.formula(paste(nm[1], " ~ ", paste(nm[-1], collapse = "+")))
-            data <- mf
-        }
+    if (as.name(formula[[3]]) == ".") {
+        formula <- as.formula(paste(as.character(formula[[2]]),
+            "~", paste(names(data)[names(data) != all.vars(formula[[2]])], 
+                       collapse = "+"), collapse = ""))
     }
     ### instead of evaluating a model.frame, we evaluate
     ### the expressions on the lhs of formula directly
@@ -509,19 +501,14 @@ Gamboost <- mboost
 ### just one single tree-based baselearner
 Blackboost <- function(formula, data = list(), ...) {
 
-    ### get the model frame first
-    cl <- match.call()
-    mf <- match.call(expand.dots = FALSE)
-    m <- match(c("formula", "data"), names(mf), 0L)
-    mf <- mf[c(1L, m)]
-    mf$na.action <- na.pass
-    mf[[1L]] <- as.name("model.frame")
-    mf <- eval(mf, parent.frame())
-    ### btree can deal with data.frames
-    bl <- list(btree3(mf[,-1, drop = FALSE]))
-    names(bl) <- "btree3"
-    response <- mf[,1]
-    mboost_fit(bl, response = response, ...)
+    if (formula[[3]] == as.name(".")) {
+        xvars <- names(data)[names(data) != all.vars(formula)]
+    } else {
+        xvars <- all.vars(formula[[3]])
+    }
+    formula <- as.formula(paste(formula[[2]], "~ btree3(", 
+        paste(xvars, collapse = ","), ")", collapse = ""))
+    mboost(formula = formula, data = data, ...)
 }
 
 ### fit a linear model componentwise
@@ -573,12 +560,43 @@ Glmboost <- function(formula, data = list(), weights = NULL,
     return(ret)
 }
 
+Glmboost.matrix <- function(x, y, center = FALSE, 
+                            control = boost_control(), ...) {
+
+    X <- x
+    if (control$center) {
+        center <- TRUE
+        warning("boost_control center deprecated")
+    }
+    if (center) {
+        cm <- colMeans(X, na.rm = TRUE)
+        ### center numeric variables only
+        center <- attr(X, "assign") %in% which(sapply(mf, is.numeric)[-1])
+        cm[!center] <- 0
+        X <- scale(X, center = cm, scale = FALSE)
+    }
+    newX <- function(newdata) {
+        if (isMATRIX(newdata)) {
+            if (all(colnames(X) == colnames(newdata)))
+                return(newdata)
+        }
+        return(NULL)
+    }
+    bl <- list(bolscw(X))
+    ret <- mboost_fit(bl, response = y, control = control, ...)
+    ret$newX <- newX
+    ### need specialized method (hatvalues etc. anyway)
+    class(ret) <- c("Glmboost", "mboost")
+    return(ret)
+}
+
+
+    
+
 predict.Glmboost <- function(object, newdata = NULL, ...) {
 
     if (!is.null(newdata)) {
-        if (!isMATRIX(newdata)) {
-            newdata <- object$newX(newdata)
-        }
+        newdata <- object$newX(newdata)
     }
     object$predict(newdata = newdata, ...)
 }

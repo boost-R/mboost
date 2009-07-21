@@ -49,28 +49,24 @@ X_ols <- function(mf, vary, args) {
         ### set up model matrix
         fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary], 
                     collapse = "+"), sep = "")
+        if (vary != "") 
+            fm <- paste(fm, vary, sep = ":")
         if (!args$intercept)
-            fm <- paste(fm, "-1", collapse = "")
+            fm <- paste(fm, "-1", sep = "")
         X <- model.matrix(as.formula(fm), data = mf, contrasts.arg = args$contrasts.arg)
         contr <- attr(X, "contrasts")
-        if (vary != "") {
-            ### <FIXME> is this really what we want?
-            z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
-            X <- X * z
-            ### </FIXME>
-        }
     }
     K <- NULL
     if (args$pen) {
         ### set up penalty matrix
-        ANCOVA <- !is.null(contr)
-        if (ANCOVA) { 
+        ANOVA <- (!is.null(contr) && (length(contr) == 1)) && (ncol(mf) == 1)
+        if (ANOVA) { 
             diag <- Diagonal
             X <- Matrix(X)
         }
         K <- diag(ncol(X))
         ### for ordered factors use difference penalty
-        if (ANCOVA && any(sapply(mf[, names(contr), drop = FALSE], is.ordered))) {
+        if (ANOVA && any(sapply(mf[, names(contr), drop = FALSE], is.ordered))) {
             K <- diff(diag(ncol(X)), differences = 2)
             K <- crossprod(K)
         }
@@ -153,6 +149,7 @@ X_bbs <- function(mf, vary, args) {
 bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lambda = NULL,
                   contrasts.arg = "contr.treatment") {
 
+    cll <- match.call()
     mf <- list(...)
     if (length(mf) == 1 && (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]))) {
         mf <- mf[[1]]
@@ -187,6 +184,7 @@ bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lamb
 
     ret <- list(model.frame = function() 
                     if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
+                get_call = function() cll,
                 get_data = function() mf,
                 get_index = function() index,
                 get_names = function() colnames(mf),
@@ -204,6 +202,7 @@ bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lamb
 bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3, 
                  differences = 2, df = 4, lambda = NULL, center = FALSE) {
 
+    cll <- match.call()
     mf <- list(...)
     if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
         mf <- as.data.frame(mf[[1]])
@@ -234,6 +233,7 @@ bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
 
     ret <- list(model.frame = function() 
                     if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
+                get_call = function() cll,
                 get_data = function() mf,
                 get_index = function() index,
                 get_vary = function() vary,

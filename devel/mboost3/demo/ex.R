@@ -147,15 +147,20 @@ z2 <- gbm(DEXfat ~ age + waistcirc, data = bodyfat, distr = "gaussian")
 Rprof(NULL)
 
 
-n <- 500
+n <- 500000
 df <- data.frame(y = rnorm(n), x1 = round(runif(n), 2), 
                  x2 = round(runif(n), 2),
                  z1 = round(runif(n), 2), 
                  z2 = round(runif(n),2),
                  id = gl(100, n / 100))
 
-system.time(a <- mboost(y ~ bbs3(x1) + bbs3(x2) + bspatial3(z1, z2, knots = 6) + 
-                        brandom3(id), data = df))
+Rprof("mem")
+a <- mboost(y ~  # bbs3(x1)
+                 # bbs3(x2) + 
+                 bspatial3(z1, z2, knots = 6)
+                 # brandom3(id)
+                 , data = df)
+Rprof(NULL)
 
 system.time(b <- predict(a, components = TRUE))
 system.time(b1 <- predict(a, newdata = df, components = TRUE))

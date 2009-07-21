@@ -27,6 +27,8 @@ max(abs(attr(hatvalues(bf_glm), "trace") - attr(hatvalues(bf_glm3), "trace")))
 AIC(bf_glm)
 AIC(bf_glm3)
 
+cv <- Cvrisk(bf_glm3)
+
 ###################################################
 ### chunk number 4: bodyfat-glmboost-coef
 ###################################################

@@ -3,6 +3,7 @@
 ### (also fits an additive model)
 btree3 <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0)) {
 
+    cll <- match.call()
     mf <- list(...)
     if (length(mf) == 1 && is.data.frame(mf[[1]])) {
         mf <- mf[[1]]
@@ -13,6 +14,7 @@ btree3 <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion
     }
 
     ret <- list(model.frame = function() return(mf),
+                get_call = function() cll,
                 get_names = function() colnames(mf),
                 set_names = function(value) attr(mf, "names") <<- value)
     class(ret) <- "blg"
