@@ -85,7 +85,9 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             }
 
             ### update step
+            ### <FIXME> handle missing values!
             fit <<- fit + nu * basess$fitted()
+            ### <FIXME>
 
             ### negative gradient vector, the new `residuals'
             u <<- ngradient(y, fit, weights)
@@ -99,6 +101,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             ens[[m]] <<- basess
 
             ### print status information
+            ### print xselect???
             if (trace)
                 mboost:::do_trace(m, risk = mrisk, step = tracestep, width = niter)
         }
