@@ -195,7 +195,9 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         pr <- switch(aggregate, "sum" = {
             pr <- sapply(which, pfun, agg = "sum")
             colnames(pr) <- names(bl)[which]
-            if (components) return(pr)
+            if (components || !all(which %in% unique(xselect))) return(pr)
+            ### only if no selection of baselearners
+            ### was made via the `which' argument
             offset + rowSums(pr)
         }, "cumsum" = {
             if (components) {
@@ -445,10 +447,12 @@ response.mboost <- function(object, ...)
 mboost <- function(formula, data = list(), baselearner = bbs3, ...) {
 
     ### OK, we need at least variable names to go ahead
-    if (as.name(formula[[3]]) == ".") {
-        formula <- as.formula(paste(as.character(formula[[2]]),
-            "~", paste(names(data)[names(data) != all.vars(formula[[2]])], 
-                       collapse = "+"), collapse = ""))
+    if (length(formula[[3]]) == 1) {
+        if (as.name(formula[[3]]) == ".") {
+            formula <- as.formula(paste(as.character(formula[[2]]),
+                "~", paste(names(data)[names(data) != all.vars(formula[[2]])], 
+                           collapse = "+"), collapse = ""))
+        }
     }
     ### instead of evaluating a model.frame, we evaluate
     ### the expressions on the lhs of formula directly
