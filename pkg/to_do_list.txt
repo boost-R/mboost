@@ -1,4 +1,6 @@
 
+  o  make sure Binomial()@loss works with large f
+
   o  NA handling in bns and brandom!
 
   o make sure fitfct is saved -- with Matrix in place
