@@ -81,6 +81,7 @@ Binomial <- function()
                -(-2 * y * exp2yf) / (log(2) * (1 + exp2yf))
            },
            loss = function(y, f) {
+               ### FIXME: this is unstable
                p <- exp(f) / (exp(f) + exp(-f))
                y <- (y + 1) / 2
                -y * log(p) - (1 - y) * log(1 - p)
