@@ -1,5 +1,12 @@
 
-		CHANGES in `mboost' VERSION 1.1-2 (2009-06-21)
+                CHANGES in `mboost' VERSION 1.1-3 (2009-07-xx)
+
+  o  better x-axes in plot.cvrisk
+
+  o  parallel cvrisk on unix systems only (`multicore' isn't safe on windows)
+
+
+		CHANGES in `mboost' VERSION 1.1-2 (2009-07-21)
 
   o  better weights and boundary knots handling in bspatial
 

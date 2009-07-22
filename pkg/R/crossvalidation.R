@@ -19,7 +19,7 @@ cvrisk <- function(object, folds, grid = c(1:mstop(object)), ...) {
              sQuote("savedata = TRUE"))
 
     myapply <- lapply
-    if (require("multicore")) {
+    if (require("multicore") && .Platform$OS.type == "unix") {
         if (!multicore:::isChild()) {
             myapply <- mclapply
             if (ctrl$trace) {
@@ -72,9 +72,12 @@ plot.cvrisk <- function(x, ylab = attr(x, "risk"), ylim = range(x),
     plot(1:ncol(x), cm, ylab = ylab, ylim = ylim,
          type = "n", lwd = 2,
          xlab = "Number of boosting iterations",
-         main = main, ...)
+         main = main, axes = FALSE, ...)
     out <- apply(x, 1, function(y) lines(1:ncol(x),y, col = "lightgrey"))
     rm(out)
+    axis(2)
+    axis(1, at = 1:ncol(x), labels = attr(x, "mstop"))
+    box()
     ms <- which.min(cm)
     lines(c(ms, ms), c(min(c(0, ylim[1] * ifelse(ylim[1] < 0, 2, 0.5))), cm[ms]), lty = 2)
     lines(1:ncol(x), cm, type = "l")
