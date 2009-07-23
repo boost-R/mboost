@@ -39,6 +39,11 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     ### <FIXME> is this correct with zero weights??? </FIXME>
     weights <- rescale_weights(weights)
     oobweights <- as.numeric(weights == 0)
+    if (control$risk == "oobag") {
+        triskfct <- function(y, f) riskfct(y, f, oobweights)
+    } else {
+        triskfct <- function(y, f) riskfct(y, f, weights)
+    }
 
     ### set up the fitting functions
     bl <- lapply(blg, dpp, weights = weights)
@@ -60,29 +65,36 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         fit <- offset <- family@offset(y, weights)
     u <- ustart <- ngradient(y, fit, weights)
 
+    ### set up function for fitting baselearner(s)
+    if (length(bl) > 1) {
+        basefit <- function(u, m) {
+           tsums <- rep(-1, length(bl))
+           ### fit least squares to residuals _componentwise_
+           for (i in 1:length(bl)) {
+               ss[[i]] <<- sstmp <- blfit[[i]](y = u) ### try(fit(bl[[i]], y = u))
+               ### if (inherits(ss[[i]], "try-error")) next
+               tsums[i] <- mean.default(weights * ((sstmp$fitted()) - u)^2,
+                                        na.rm = TRUE)
+           }
+           if (all(tsums < 0))
+               stop("could not fit base learner in boosting iteration ", m)
+           xselect[m] <<- which.min(tsums)
+           return(ss[[xselect[m]]])
+        }
+    } else {
+        basefit <- function(u, m) {
+            xselect[m] <<- 1
+            return(fit1(y = u))
+        }
+    }
+
+
     ### set up a function for boosting
     boost <- function(niter) {
         for (m in (mstop + 1):(mstop + niter)) {
 
-            ### is there is more than one baselearner
-            if (length(bl) > 1) {
-                tsums <- rep(-1, length(bl))
-                ### fit least squares to residuals _componentwise_
-                for (i in 1:length(bl)) {
-                    ss[[i]] <- sstmp <- blfit[[i]](y = u) ### try(fit(bl[[i]], y = u))
-                    ### if (inherits(ss[[i]], "try-error")) next
-                    tsums[i] <- mean.default(weights * ((sstmp$fitted()) - u)^2, 
-                                             na.rm = TRUE)
-                }
-                if (all(tsums < 0))
-                    stop("could not fit base learner in boosting iteration ", m)
-                xselect[m] <<- which.min(tsums)
-                basess <- ss[[xselect[m]]]	
-            } else {
-                ### a little faster for one baselearner only
-                basess <- fit1(y = u)
-                xselect[m] <<- 1
-            }
+            ### fit baselearner(s)
+            basess <- basefit(u, m)
 
             ### update step
             ### <FIXME> handle missing values!
@@ -94,8 +106,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
             ### evaluate risk, either for the learning sample (inbag)
             ### or the test sample (oobag)
-            if (risk == "inbag") mrisk[m] <<- riskfct(y, fit, weights)
-            if (risk == "oobag") mrisk[m] <<- riskfct(y, fit, oobweights)
+            mrisk[m] <<- triskfct(y, fit)
 
             ### save the model
             ens[[m]] <<- basess
@@ -181,7 +192,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                             aggregate = c("sum", "cumsum", "none")) {
 
         indx <- ((1:length(xselect)) <= mstop)
-        which <- thiswhich(which, usedonly = FALSE)
+        which <- thiswhich(which, usedonly = is.null(which))
         if (length(which) == 0) return(NULL)
 
         aggregate <- match.arg(aggregate)
