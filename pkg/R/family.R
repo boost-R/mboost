@@ -213,7 +213,7 @@ QuantReg <- function(tau = 0.5, qoffset = 0.5) {
     stopifnot(qoffset > 0 && qoffset < 1)
     Family(
         ngradient = function(y, f, w = 1) 
-            tau*((y - f) > 0) - (1 - tau)*((y - f)<0) + 0*((y - f)==0) ,
+            tau*((y - f) >= 0) - (1 - tau)*((y - f)<0) ,
         loss = function(y, f) tau*(y-f)*((y-f)>=0) - (1-tau)*(y-f)*((y-f)<0) ,
         offset = function(y, w = rep(1, length(y))) 
             quantile(y[rep(1:length(y), w)], qoffset),
