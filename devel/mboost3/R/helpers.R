@@ -49,3 +49,13 @@ Complete.cases <- function(x) {
     if (isMATRIX(x)) return(rowSums(is.na(x)) == 0)
     complete.cases(x)
 }
+
+MYapply <- function(X, FUN, parallel = FALSE, ...) {
+
+    myapply <- lapply
+    if (parallel && .Platform$OS.type == "unix") {
+        if (!multicore:::isChild()) 
+            myapply <- mclapply
+    }
+    myapply(X, FUN, ...)
+}

@@ -4,7 +4,7 @@
 ## for boosting algorithms
 ##
 
-Cvrisk <- function(object, folds = NULL, grid = c(1:mstop(object)), 
+Cvrisk <- function(object, folds = cv(model.weights(object)), grid = 1:mstop(object), 
                    parallel = require("multicore"), fun = NULL, ...) {
 
     weights <- model.weights(object)
@@ -21,24 +21,19 @@ Cvrisk <- function(object, folds = NULL, grid = c(1:mstop(object)),
     oobrisk <- matrix(0, nrow = ncol(folds), ncol = length(grid))
     if (!is.null(fun)) stopifnot(is.function(fun))
 
-    myapply <- lapply
-    if (parallel) {
-        if (!multicore:::isChild())
-            myapply <- mclapply
-    }
-
     fam_name <- object$family@name
     call <- deparse(object$call)
 
-    dummyfct <- function(weights){
-        model <- fitfct(weights = weights)
-        if (!is.null(fun)) return(fun(model))
-        ret <- model$risk()[grid]
-        ret
+    if (is.null(fun)) {
+        dummyfct <- function(weights)
+            fitfct(weights = weights)$risk()[grid]
+    } else {
+        dummyfct <- function(weights)
+            fun(fitfct(weights = weights))
     }
 
-    oobrisk <- myapply(1:ncol(folds), function(i) dummyfct(folds[,i]),
-                       ...)
+    oobrisk <- MYapply(1:ncol(folds), function(i) dummyfct(folds[,i]), 
+                       parallel = parallel, ...)
     if (!is.null(fun)) return(oobrisk)
     oobrisk <- t(as.data.frame(oobrisk))
     oobrisk <- oobrisk/colSums(folds == 0)
@@ -76,3 +71,41 @@ plot.cvrisk <- function(x, ylab = attr(x, "risk"), ylim = range(x),
 
 mstop.cvrisk <- function(object, ...)
     attr(object, "mstop")[which.min(colSums(object))]
+
+cv <- function(weights, type = c("bootstrap", "kfold", "subsampling"),
+               B = 25, prob = 0.5, strata = NULL) {
+
+    type <- match.arg(type)
+    n <- length(weights)
+
+    if (is.null(strata)) strata <- gl(1, n)
+    folds <- matrix(0, nrow = n, ncol = k)
+
+    ### <FIXME> handling of weights needs careful documentation </FIXME>
+    for (s in levels(strata)) {
+        indx <- which(strata == s)
+        folds[indx,] <- switch(type, 
+            "bootstrap" = cvboot(length(indx), B = k, weights),
+            "kfold" = cvkfold(length(indx), k = k) * weights[indx],
+            "subsampling" = cvsub(length(indx), prob = prob, B = k) * weights[indx])
+    }
+    return(folds)
+}
+
+
+cvboot <- function(n, B, weights) 
+    rmultinom(B, n, weights / sum(weights))
+
+cvkfold <- function(n, k) {
+    if (k > n / 2) stop("k > n/2")
+    fl <- floor(n/k)
+    folds <- c(rep(c(rep(0, fl), rep(1, n)), k - 1), 
+               rep(0, n * k - (k - 1) * (fl + n)))
+    matrix(folds, nrow = n)
+}
+
+cvsub <- function(n, prob, B) {
+    k <- floor(n * prob)
+    indx <- rep(c(0, 1), c(n - k, k))
+    replicate(B, sample(indx))
+}
