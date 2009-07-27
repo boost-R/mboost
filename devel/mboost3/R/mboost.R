@@ -188,11 +188,13 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     ### - aggregated ("sum"), the complete path over all
     ###   boosting iterations done so far ("cumsum") or
     ###   not aggregated at all ("none")
+    ###   always returns a matrix
     RET$predict <- function(newdata = NULL, which = NULL, components = FALSE,
                             aggregate = c("sum", "cumsum", "none")) {
 
         indx <- ((1:length(xselect)) <= mstop)
-        which <- thiswhich(which, usedonly = is.null(which))
+        nullwhich <- is.null(which)
+        which <- thiswhich(which, usedonly = nullwhich)
         if (length(which) == 0) return(NULL)
 
         aggregate <- match.arg(aggregate)
@@ -209,7 +211,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         pr <- switch(aggregate, "sum" = {
             pr <- sapply(which, pfun, agg = "sum")
             colnames(pr) <- names(bl)[which]
-            if (components || !all(which %in% unique(xselect))) return(pr)
+            if (components || !nullwhich) return(pr)
             ### only if no selection of baselearners
             ### was made via the `which' argument
             offset + rowSums(pr)
@@ -244,12 +246,9 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
     ### extract a list of the model frames of the single baselearners
     RET$model.frame <- function(which = NULL) {
-        which <- thiswhich(which, usedonly = FALSE)
-        # if (length(which) == 1) return(model.frame(blg[[which]]))
-        tmp <- lapply(blg[which], model.frame)
-        ret <- vector(mode = "list", length = length(bl))
-        names(ret) <- names(bl)
-        ret[which] <- tmp
+        which <- thiswhich(which, usedonly = is.null(which))
+        ret <- lapply(blg[which], model.frame)
+        names(ret) <- names(bl)[which]
         ret
     }
 
@@ -275,7 +274,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     RET$coef <- function(which = NULL, aggregate = c("sum", "cumsum", "none")) {
         
         indx <- ((1:length(xselect)) <= mstop)
-        which <- thiswhich(which, usedonly = FALSE)
+        which <- thiswhich(which, usedonly = is.null(which))
         if (length(which) == 0) return(NULL)
 
         aggregate <- match.arg(aggregate)
@@ -292,27 +291,17 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 "none" = nu * cf
             )
         }
-        if (length(which) == 1) {
-            ret <- cfun(which)
-            attr(ret, "offset") <- offset
-            names(ret) <- bl[[which]]$Xnames
-            return(ret)
-        }
-        tmp <- lapply(which, cfun)
-        ret <- vector(mode = "list", length = length(bl))
-        names(ret) <- names(bl)
-        ret[which] <- tmp
+        ret <- lapply(which, cfun)
+        names(ret) <- names(bl)[which]
         attr(ret, "offset") <- offset
         return(ret)
     }
 
     ### function for computing hat matrices of individual predictors
     RET$hatvalues <- function(which = NULL) {
-        which <- thiswhich(which, usedonly = TRUE)
-        tmp <- lapply(bl[which], function(b) hatvalues(b) * nu)
-        ret <- vector(mode = "list", length = length(bl))
-        names(ret) <- names(bl)
-        ret[which] <- tmp
+        which <- thiswhich(which, usedonly = is.null(which))
+        ret <- lapply(bl[which], function(b) hatvalues(b) * nu)
+        names(ret) <- names(bl)[which]
         ret
     }
 
