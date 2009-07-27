@@ -463,7 +463,7 @@ mboost <- function(formula, data = list(), baselearner = bbs3, ...) {
     ### OK, we need at least variable names to go ahead
     if (length(formula[[3]]) == 1) {
         if (as.name(formula[[3]]) == ".") {
-            formula <- as.formula(paste(as.character(formula[[2]]),
+            formula <- as.formula(paste(deparse(formula[[2]]),
                 "~", paste(names(data)[names(data) != all.vars(formula[[2]])], 
                            collapse = "+"), collapse = ""))
         }
@@ -490,7 +490,7 @@ mboost <- function(formula, data = list(), baselearner = bbs3, ...) {
     stopifnot(all(sapply(bl, inherits, what = "blg")))
     ### we need identifiers for the baselearners, 
     ### split the formula at `+'
-    nm <- strsplit(as.character(as.expression(formula[[3]])), "\\+")[[1]]
+    nm <- strsplit(paste(deparse(formula[[3]]), collapse = ""), "\\+")[[1]]
     nm <- gsub(" ", "", nm)
     names(bl) <- nm
     ### baselearners constructed indirectly via `baselearner'

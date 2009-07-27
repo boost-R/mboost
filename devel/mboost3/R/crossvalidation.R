@@ -25,11 +25,17 @@ Cvrisk <- function(object, folds = cv(model.weights(object)), grid = 1:mstop(obj
     call <- deparse(object$call)
 
     if (is.null(fun)) {
-        dummyfct <- function(weights)
-            fitfct(weights = weights)$risk()[grid]
+        dummyfct <- function(weights) {
+            mod <- fitfct(weights = weights)
+            mod[max(grid)]
+            mod$risk()[grid]
+        }
     } else {
-        dummyfct <- function(weights)
-            fun(fitfct(weights = weights))
+        dummyfct <- function(weights) {
+            mod <- fitfct(weights = weights)
+            mod[max(grid)]
+            fun(mod)
+        }
     }
 
     oobrisk <- MYapply(1:ncol(folds), function(i) dummyfct(folds[,i]), 
