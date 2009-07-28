@@ -48,7 +48,7 @@ source("setup.R")
 ###################################################
 bf_gam <- gamboost(DEXfat ~ ., data = bodyfat)
 bf_gam3 <- Gamboost(DEXfat ~ ., data = bodyfat)
-sapply(1:length(coef(bf_gam)), function(i) max(abs(coef(bf_gam)[[i]] - coef(bf_gam3)[[i]])))
+sapply(1:length(coef(bf_gam)), function(i) max(abs(coef(bf_gam)[[i]] - coef(bf_gam3, which = i)[[1]])))
 
 max(abs(attr(hatvalues(bf_gam), "trace") - attr(hatvalues(bf_gam3), "trace")))
 AIC(bf_gam)
@@ -135,7 +135,7 @@ max(abs(predict(wpbc_glm, newdata = wpbc2[1:10,]) -
 ###################################################
 wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial())
 wpbc_gam3 <- Gamboost(status ~ ., data = wpbc2, family = Binomial())
-sapply(1:length(coef(wpbc_gam)), function(i) max(abs(coef(wpbc_gam)[[i]] - coef(wpbc_gam3)[[i]])))
+sapply(1:length(coef(wpbc_gam)), function(i) max(abs(coef(wpbc_gam)[[i]] - coef(wpbc_gam3, which = i)[[1]])))
 
 max(abs(predict(wpbc_gam, newdata = wpbc2[1:10,]) -
         predict(wpbc_gam3, newdata = wpbc2[1:10,])))
@@ -167,7 +167,7 @@ wpbc_surv3 <- Glmboost(log(time) ~ ., data = wpbc3,
 max(abs(coef(wpbc_surv) - coef(wpbc_surv3)))
 
 max(abs(predict(wpbc_surv, newdata = wpbc3[1:10,]) -
-        predict(wpbc_surv3, newdata = wpbc3[1:10,])))
+        predict(wpbc_surv3, newdata = wpbc3[1:10,])), na.rm = TRUE)
 
 
 ###################################################

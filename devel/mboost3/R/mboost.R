@@ -193,8 +193,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                             aggregate = c("sum", "cumsum", "none")) {
 
         indx <- ((1:length(xselect)) <= mstop)
-        nullwhich <- is.null(which)
-        which <- thiswhich(which, usedonly = nullwhich)
+        which <- thiswhich(which, usedonly = nw <- is.null(which))
         if (length(which) == 0) return(NULL)
 
         aggregate <- match.arg(aggregate)
@@ -202,7 +201,6 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         n <- ifelse(!is.null(newdata), nrow(newdata), length(y))
         pfun <- function(w, agg) {
             ix <- xselect == w & indx
-            n <- 
             if (!any(ix)) return(rep.int(0, n))
             nu * bl[[w]]$predict(ens[ix],         
                 newdata = newdata, aggregate = agg)
@@ -210,18 +208,17 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
         pr <- switch(aggregate, "sum" = {
             pr <- sapply(which, pfun, agg = "sum")
-            colnames(pr) <- names(bl)[which]
-            if (components || !nullwhich) return(pr)
+            if (!nw) return(pr)
             ### only if no selection of baselearners
             ### was made via the `which' argument
-            offset + rowSums(pr)
+            offset + matrix(rowSums(pr), ncol = 1)
         }, "cumsum" = {
-            if (components) {
+            if (!nw) {
                 pr <- lapply(which, pfun, agg = "cumsum")
                 names(pr) <- names(bl)[which]
                 return(pr)
             } else {
-                pr <- lapply(which, pfun, agg = "none")
+                pr <- lapply(1:length(bl), pfun, agg = "none")
                 ret <- matrix(0, nrow = n, ncol = sum(indx))
                 tmp <- integer(length(bl)) + 1
                 for (i in 1:sum(indx)) { 
@@ -232,7 +229,12 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 return(ret)
             }
          }, "none" = {
+            if (!nw) {
                 pr <- lapply(which, pfun, agg = "none")
+                names(pr) <- names(bl)[which]
+                return(pr)
+            } else {
+                pr <- lapply(1:length(bl), pfun, agg = "none")
                 ret <- matrix(0, nrow = n, ncol = sum(indx))
                 tmp <- integer(length(bl)) + 1
                 for (i in 1:sum(indx)) { 
@@ -240,6 +242,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                     tmp[xselect[i]] <- tmp[xselect[i]] + 1   
                 }
                 return(ret)
+            }
          })
         return(pr)
     }
@@ -550,7 +553,8 @@ Glmboost <- function(formula, data = list(), weights = NULL,
     }
     ### this function will be used for predictions later
     newX <- function(newdata) {
-        X <- model.matrix(delete.response(attr(mf, "terms")), data = newdata,
+        mf <- model.frame(attr(mf, "terms"), data = newdata, na.action = na.pass)
+        X <- model.matrix(attr(mf, "terms"), data = mf,
                           contrasts.args = contrasts.args)
         scale(X, center = cm, scale = FALSE)
     }
@@ -597,9 +601,6 @@ Glmboost.matrix <- function(x, y, center = FALSE,
     return(ret)
 }
 
-
-    
-
 predict.Glmboost <- function(object, newdata = NULL, ...) {
 
     if (!is.null(newdata)) {
@@ -607,6 +608,15 @@ predict.Glmboost <- function(object, newdata = NULL, ...) {
     }
     object$predict(newdata = newdata, ...)
 }
+
+coef.Glmboost <- function(object, ...) {
+    cf <- object$coef(...)
+    off <- attr(cf, "offset")
+    cf <- cf[[1]]
+    attr(cf, "offset") <- off
+    cf
+}
+
 
 hatvalues.Glmboost <- function(model, ...) {
 

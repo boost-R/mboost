@@ -48,6 +48,8 @@ Cvrisk <- function(object, folds = cv(model.weights(object)), grid = 1:mstop(obj
     attr(oobrisk, "risk") <- fam_name
     attr(oobrisk, "call") <- call
     attr(oobrisk, "mstop") <- grid
+    attr(oobrisk, "type") <- ifelse(!is.null(attr(folds, "type")), 
+        attr(folds, "type"), "user-defined")
     class(oobrisk) <- "cvrisk"
     oobrisk
 }
@@ -61,7 +63,7 @@ print.cvrisk <- function(x, ...) {
 }
 
 plot.cvrisk <- function(x, ylab = attr(x, "risk"), ylim = range(x),
-                        main = attr(x, "call"), ...) {
+                        main = attr(x, "type"), ...) {
 
     cm <- colMeans(x)
     plot(1:ncol(x), cm, ylab = ylab, ylim = ylim,
@@ -79,25 +81,27 @@ mstop.cvrisk <- function(object, ...)
     attr(object, "mstop")[which.min(colSums(object))]
 
 cv <- function(weights, type = c("bootstrap", "kfold", "subsampling"),
-               B = 25, prob = 0.5, strata = NULL) {
+               B = ifelse(type == "kfold", 10, 25), 
+               prob = 0.5, strata = NULL) {
 
     type <- match.arg(type)
     n <- length(weights)
 
     if (is.null(strata)) strata <- gl(1, n)
-    folds <- matrix(0, nrow = n, ncol = k)
+    folds <- matrix(0, nrow = n, ncol = B)
 
     ### <FIXME> handling of weights needs careful documentation </FIXME>
     for (s in levels(strata)) {
         indx <- which(strata == s)
         folds[indx,] <- switch(type, 
-            "bootstrap" = cvboot(length(indx), B = k, weights),
-            "kfold" = cvkfold(length(indx), k = k) * weights[indx],
-            "subsampling" = cvsub(length(indx), prob = prob, B = k) * weights[indx])
+            "bootstrap" = cvboot(length(indx), B = B, weights),
+            "kfold" = cvkfold(length(indx), k = B) * weights[indx],
+            "subsampling" = cvsub(length(indx), prob = prob, B = B) * weights[indx])
     }
+    attr(folds, "type") <- paste(B, "-fold ", type, sep = "")
     return(folds)
 }
-
+	
 
 cvboot <- function(n, B, weights) 
     rmultinom(B, n, weights / sum(weights))
