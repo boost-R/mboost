@@ -183,12 +183,11 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     }
 
     ### prepare for computing predictions in the following ways
-    ### - for all baselearners (which = NULL) or selected onces
-    ### - for each baselearners separately (components = TRUE)
+    ### - for all selected baselearners (which = NULL) or chosen ones (selected or not)
     ### - aggregated ("sum"), the complete path over all
     ###   boosting iterations done so far ("cumsum") or
     ###   not aggregated at all ("none")
-    ###   always returns a matrix
+    ### - always returns a matrix
     RET$predict <- function(newdata = NULL, which = NULL, components = FALSE,
                             aggregate = c("sum", "cumsum", "none")) {
 
@@ -616,7 +615,6 @@ coef.Glmboost <- function(object, ...) {
     attr(cf, "offset") <- off
     cf
 }
-
 
 hatvalues.Glmboost <- function(model, ...) {
 
