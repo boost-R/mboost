@@ -56,14 +56,14 @@ btree3 <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion
             aggregate <- match.arg(aggregate)
             
             if (is.null(newdata)) {
-                newinp <- object
+                newinp <- object@inputs
             } else {
                 newinp <- party:::newinputs(object, newdata)
             }
 
             pr <- 0
             for (i in 1:length(bm)) {
-                wh <- .Call("R_get_nodeID", bm[[i]]$model, newinp@inputs, 0.0,
+                wh <- .Call("R_get_nodeID", bm[[i]]$model, newinp, 0.0,
                          PACKAGE = "party")
                 pri <- unlist(.Call("R_getpredictions", bm[[i]]$model, wh, PACKAGE = "party"))
                 if (aggregate == "sum") {
