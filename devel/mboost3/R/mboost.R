@@ -188,7 +188,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     ###   boosting iterations done so far ("cumsum") or
     ###   not aggregated at all ("none")
     ### - always returns a matrix
-    RET$predict <- function(newdata = NULL, which = NULL, components = FALSE,
+    RET$predict <- function(newdata = NULL, which = NULL, 
                             aggregate = c("sum", "cumsum", "none")) {
 
         indx <- ((1:length(xselect)) <= mstop)
@@ -201,8 +201,12 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         pfun <- function(w, agg) {
             ix <- xselect == w & indx
             if (!any(ix)) return(rep.int(0, n))
-            nu * bl[[w]]$predict(ens[ix],         
-                newdata = newdata, aggregate = agg)
+            ret <- nu * bl[[w]]$predict(ens[ix],         
+                   newdata = newdata, aggregate = agg)
+            if (agg == "sum") return(ret)
+            m <- Matrix(0, nrow = n, ncol = sum(indx))
+            m[, which(ix)] <- ret
+            m
         }
 
         pr <- switch(aggregate, "sum" = {
@@ -213,19 +217,16 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             offset + matrix(rowSums(pr), ncol = 1)
         }, "cumsum" = {
             if (!nw) {
-                pr <- lapply(which, pfun, agg = "cumsum")
+                pr <- lapply(which, pfun, agg = "none")
+                M <- triu(crossprod(Matrix(1, nc = sum(indx))))
+                pr <- lapply(pr, function(x) as(x %*% M, "matrix"))
                 names(pr) <- names(bl)[which]
                 return(pr)
             } else {
-                pr <- lapply(1:length(bl), pfun, agg = "none")
-                ret <- matrix(0, nrow = n, ncol = sum(indx))
-                tmp <- integer(length(bl)) + 1
-                for (i in 1:sum(indx)) { 
-                    ret[,i] <- pr[[xselect[i]]][,tmp[xselect[i]]] 
-                    if (i > 1) ret[,i] <- ret[,i] + ret[,i-1]
-                    tmp[xselect[i]] <- tmp[xselect[i]] + 1
-                }
-                return(ret)
+                ret <- Matrix(0, nrow = n, ncol = sum(indx))
+                for (i in 1:length(bl)) ret <- ret + pfun(i, agg = "none")
+                M <- triu(crossprod(Matrix(1, nc = sum(indx))))
+                as(ret %*% M, "matrix")
             }
          }, "none" = {
             if (!nw) {
@@ -233,14 +234,9 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 names(pr) <- names(bl)[which]
                 return(pr)
             } else {
-                pr <- lapply(1:length(bl), pfun, agg = "none")
-                ret <- matrix(0, nrow = n, ncol = sum(indx))
-                tmp <- integer(length(bl)) + 1
-                for (i in 1:sum(indx)) { 
-                    ret[,i] <- pr[[xselect[i]]][,tmp[xselect[i]]]
-                    tmp[xselect[i]] <- tmp[xselect[i]] + 1   
-                }
-                return(ret)
+                ret <- Matrix(0, nrow = n, ncol = sum(indx))
+                for (i in 1:length(bl)) ret <- ret + pfun(i, agg = "none")
+                as(ret, "matrix")
             }
          })
         return(pr)
