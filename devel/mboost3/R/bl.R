@@ -58,6 +58,7 @@ X_ols <- function(mf, vary, args) {
     }
     K <- NULL
     if (args$pen) {
+        ### <FIXME> penalize intercepts???
         ### set up penalty matrix
         ANOVA <- (!is.null(contr) && (length(contr) == 1)) && (ncol(mf) == 1)
         if (ANOVA) { 
@@ -67,9 +68,9 @@ X_ols <- function(mf, vary, args) {
         K <- diag(ncol(X))
         ### for ordered factors use difference penalty
         if (ANOVA && any(sapply(mf[, names(contr), drop = FALSE], is.ordered))) {
-            K <- diff(diag(ncol(X)), differences = 2)
-            K <- crossprod(K)
+            K <- diff(diag(ncol(X)), differences = 1)
         }
+        ### </FIXME>
     }
     list(X = X, K = K)
 }
