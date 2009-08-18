@@ -315,7 +315,7 @@ predict.mboost <- function(object, type = c("lp", "response"), ...) {
     pr <- object$predict(...)
     type <- match.arg(type)
     if (is.factor(y <- object$response) && type == "response")
-        return(factor(levels(y)[(lp > 0) + 1], levels = levels(y)))
+        return(factor(levels(y)[(pr > 0) + 1], levels = levels(y)))
     return(pr)
 }
 
@@ -421,9 +421,10 @@ logLik.mboost <- function(object, ...)
 ### restrict or enhance models to less/more
 ### boosting iterations.
 ### ATTENTION: x gets CHANGED!
-"[.mboost" <- function(x, i, ...) {
+"[.mboost" <- function(x, i, return = TRUE, ...) {
     stopifnot(length(i) == 1 && i > 0)
     x$subset(i)
+    if (return) return(x)
     return(NULL)
 }
 
@@ -517,9 +518,11 @@ Blackboost <- function(formula, data = list(), ...) {
 }
 
 ### fit a linear model componentwise
-Glmboost <- function(formula, data = list(), weights = NULL, 
-                     na.action = na.pass, contrasts.arg = NULL, 
-                     center = FALSE, control = boost_control(), ...) {
+Glmboost <- function(x, ...) UseMethod("Glmboost", x)
+
+Glmboost.formula <- function(formula, data = list(), weights = NULL, 
+                             na.action = na.pass, contrasts.arg = NULL, 
+                             center = FALSE, control = boost_control(), ...) {
 
     ### get the model frame first
     cl <- match.call()
@@ -595,6 +598,8 @@ Glmboost.matrix <- function(x, y, center = FALSE,
     class(ret) <- c("Glmboost", "mboost")
     return(ret)
 }
+
+Glmboost.Matrix <- Glmboost.matrix
 
 predict.Glmboost <- function(object, newdata = NULL, ...) {
 
