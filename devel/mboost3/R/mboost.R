@@ -377,7 +377,7 @@ AICboost3 <- function(object, method = c("corrected", "classical", "gMDL"), df, 
     if (!checkL2(object) && method == "corrected")
         stop("corrected AIC method not implemented for non-Gaussian family")
 
-    sumw <- sum(object$weights)
+    sumw <- sum(model.weights(object))
     if (method == "corrected") 
         AIC <- log(object$risk() / sumw) +
                (1 + df/sumw) / (1 - (df + 2)/sumw)
