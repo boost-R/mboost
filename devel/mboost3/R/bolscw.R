@@ -81,9 +81,10 @@ bolscw <- function(X) {
             }
             return(X %*% cf)
         }
-    
+
         ret <- list(fit = fit, predict = predict, Xnames = colnames(X), 
-                    MPinv = function() MPinvS / sxtx)
+                    MPinv = function() MPinvS / sxtx,
+                    hatvalues = function() X %*% (MPinvS / sxtx))
         class(ret) <- c("bl_cwlin", "bl")
         return(ret)
     }
@@ -95,3 +96,7 @@ coef.bm_cwlin <- function(object, ...) {
     cf[object$model[2]] <- object$model[1]
     cf
 }
+
+### extract hatmatrix
+hatvalues.bl_cwlin <- function(model)
+    model$hatvalues()
