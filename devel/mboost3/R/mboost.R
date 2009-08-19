@@ -498,7 +498,9 @@ mboost <- function(formula, data = list(), baselearner = bbs3, ...) {
     }
     ### get the response
     response <- eval(as.expression(formula[[2]]), envir = data)
-    mboost_fit(bl, response = response, ...)
+    ret <- mboost_fit(bl, response = response, ...)
+    ret$call <- match.call()
+    ret
 }
 
 ### nothing to do there
@@ -514,7 +516,9 @@ Blackboost <- function(formula, data = list(), ...) {
     }
     formula <- as.formula(paste(formula[[2]], "~ btree3(", 
         paste(xvars, collapse = ","), ")", collapse = ""))
-    mboost(formula = formula, data = data, ...)
+    ret <- mboost(formula = formula, data = data, ...)
+    ret$call <- match.call()
+    ret
 }
 
 ### fit a linear model componentwise
@@ -564,6 +568,7 @@ Glmboost.formula <- function(formula, data = list(), weights = NULL,
     ret <- mboost_fit(bl, response = response, weights = weights, 
                       control = control, ...)
     ret$newX <- newX
+    ret$call <- cl
     ### need specialized method (hatvalues etc. anyway)
     class(ret) <- c("Glmboost", "mboost")
     return(ret)
@@ -594,6 +599,7 @@ Glmboost.matrix <- function(x, y, center = FALSE,
     bl <- list(bolscw(X))
     ret <- mboost_fit(bl, response = y, control = control, ...)
     ret$newX <- newX
+    ret$call <- match.call()
     ### need specialized method (hatvalues etc. anyway)
     class(ret) <- c("Glmboost", "mboost")
     return(ret)
@@ -613,6 +619,7 @@ coef.Glmboost <- function(object, ...) {
     cf <- object$coef(...)
     off <- attr(cf, "offset")
     cf <- cf[[1]]
+    names(cf) <- variable.names(object)
     attr(cf, "offset") <- off
     cf
 }
@@ -629,4 +636,51 @@ hatvalues.Glmboost <- function(model, ...) {
     attr(RET, "hatmatrix") <- op[[1]]  
     attr(RET, "trace") <- op[[2]] 
     RET
+}
+
+### methods: print
+print.mboost <- function(x, ...) {
+
+    cat("\n")
+    cat("\t Model-based Boosting\n")
+    cat("\n")
+    if (!is.null(x$call))
+    cat("Call:\n", deparse(x$call), "\n\n", sep = "")
+    show(x$family)
+    cat("\n")
+    cat("Number of boosting iterations: mstop =", mstop(x), "\n")
+    cat("Step size: ", x$control$nu, "\n")
+    cat("Offset: ", x$offset, "\n")
+    cat("Baselearner(s): \n")
+    print(names(variable.names(x)))
+    cat("\n")
+    invisible(x)
+}
+
+### methods: print
+print.Glmboost <- function(x, ...) {
+
+    cat("\n")
+    cat("\t Generalized Linear Models Fitted via Gradient Boosting\n")
+    cat("\n")
+    if (!is.null(x$call))
+    cat("Call:\n", deparse(x$call), "\n\n", sep = "")
+    show(x$family)
+    cat("\n")
+    cat("Number of boosting iterations: mstop =", mstop(x), "\n")
+    cat("Step size: ", x$control$nu, "\n")
+    cat("Offset: ", x$offset, "\n")
+    cat("\n")
+    cat("Coefficients: \n")
+    cf <- coef(x)
+    attr(x, "offset") <- NULL
+    print(cf)
+    cat("\n")
+    invisible(x)
+}
+
+variable.names.mboost <- function(object, ...) {
+    ret <- sapply(object$baselearner, function(x) x$get_names())
+    if (is.matrix(ret)) ret <- ret[, , drop = TRUE]
+    ret
 }

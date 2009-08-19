@@ -32,3 +32,16 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
             stop("not yet implemented")
     }
 }
+
+plot.Glmboost <- function(x, main = deparse(x$call), col = NULL, ...) {
+
+    cp <- coef(x, aggregate = "cumsum")
+    cf <- cp[, ncol(cp)]
+    if (is.null(col))  
+        col <- hcl(h = 40, l = 50, c= abs(cf) / max(abs(cf)) * 490)
+    matplot(t(cp), type = "l", lty = 1, xlab = "Number of boosting iterations",
+            ylab = "Coefficients", main = main, col = col, ...)
+    abline(h = 0, lty = 1, col = "lightgray")
+    axis(4, at = cf, labels = variable.names(x), las = 1)
+
+}
