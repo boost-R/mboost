@@ -94,6 +94,38 @@ AICboost3 <- function(object, method = c("corrected", "classical", "gMDL"), df, 
     return(RET)
 }
 
+print.gbAIC <- function(x, ...) {
+    mstop <- mstop(x)
+    df <- attr(x, "df")[mstop]
+    attributes(x) <- NULL
+    print(x)
+    cat("Optimal number of boosting iterations:", mstop, "\n")
+    cat("Degrees of freedom", paste("(for mstop = ", mstop, "):", sep = "",
+                                    collapse = ""), df, "\n")
+    invisible(x)
+}
+
+plot.gbAIC <- function(x, y = NULL, ...) {
+    mstop <- mstop(x)
+    class(x) <- NULL
+    plot(attr(x, "AIC"), xlab = "Number of boosting iterations",
+         ylab = ifelse(attr(x, "corrected"), "Corrected AIC", "AIC"),
+         type = "l", ...)
+    points(mstop, x)
+    ylim <- list(...)$ylim
+    if (!is.null(ylim)) {
+        ymin <- ylim[1] * ifelse(ylim[1] < 0, 2, 0.5)
+    } else {
+        ymin <- x - x/2
+    }
+    lines(c(mstop, mstop), 
+          c(ymin, x), lty = 2)
+}
+
+mstop <- function(object, ...) UseMethod("mstop")
+
+mstop.gbAIC <- function(object, ...) attr(object, "mstop")
+
 
 ### compute fitted values
 fitted.mboost <- function(object, ...) {
