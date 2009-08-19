@@ -129,6 +129,9 @@ max(abs(coef(wpbc_glm) - coef(wpbc_glm3)))
 max(abs(predict(wpbc_glm, newdata = wpbc2[1:10,]) -
         predict(wpbc_glm3, newdata = wpbc2[1:10,])))
 
+AIC(wpbc_glm, "classical")
+AIC(wpbc_glm3, "classical")
+
 
 ###################################################
 ### chunk number 23: wpbc-gamboost-fit
@@ -140,6 +143,8 @@ sapply(1:length(coef(wpbc_gam)), function(i) max(abs(coef(wpbc_gam)[[i]] - coef(
 max(abs(predict(wpbc_gam, newdata = wpbc2[1:10,]) -
         predict(wpbc_gam3, newdata = wpbc2[1:10,])))
 
+AIC(wpbc_gam)
+AIC(wpbc_gam3)
 
 ###################################################
 ### chunk number 25: pkg-attach

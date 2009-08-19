@@ -1,0 +1,47 @@
+
+import(Matrix)
+
+export(glmboost, 
+       gamboost, 
+       blackboost, 
+       mboost,
+       boost_control, mstop, Family,
+       GaussReg, GaussClass, Laplace, Binomial, Poisson, QuantReg,
+       Huber, AdaExp, CoxPH, FP, IPCweights, cvrisk, bbs,
+       bols, bspatial, brandom, btree, survFit, dpp)
+exportClasses("boost_family")
+exportMethods("show")
+
+S3method(print, glmboost)
+S3method(plot, glmboost)
+S3method(glmboost, formula)
+S3method(glmboost, matrix)
+S3method(glmboost, Matrix)
+S3method(print, mboost)
+S3method(plot, mboost)
+S3method(plot, survFit)
+S3method(coef, mboost)
+S3method(coef, glmboost)
+S3method(hatvalues, mboost)
+S3method(hatvalues, glmboost)
+S3method(fitted, mboost)
+S3method(predict, mboost)
+S3method(AIC, mboost)
+S3method(logLik, mboost)
+S3method(resid, mboost)
+S3method(print, mboost)
+S3method(print, cvrisk)
+S3method(print, gbAIC)
+S3method(plot, gbAIC)
+S3method(plot, cvrisk)
+S3method(mstop, gbAIC)
+S3method(mstop, cvrisk)
+S3method(mstop, mboost)
+S3method(survFit, mboost)
+S3method("[", mboost)
+S3method("dpp", blg)
+S3method("coef", "bm_lin")
+S3method("coef", "bm_cwlin")
+
+
+useDynLib(mboost3)
