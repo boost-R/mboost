@@ -5,7 +5,6 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     ### hyper parameters
     mstop <- 0
     risk <- control$risk
-    stopifnot(!control$constraint)
     nu <- control$nu
     trace <- control$trace
     tracestep <- options("width")$width / 2
@@ -372,10 +371,10 @@ mboost <- function(formula, data = list(), baselearner = bbs3, ...) {
 }
 
 ### nothing to do there
-Gamboost <- mboost
+gamboost <- mboost
 
 ### just one single tree-based baselearner
-Blackboost <- function(formula, data = list(), ...) {
+blackboost <- function(formula, data = list(), ...) {
 
     if (formula[[3]] == as.name(".")) {
         xvars <- names(data)[names(data) != all.vars(formula)]
@@ -390,9 +389,9 @@ Blackboost <- function(formula, data = list(), ...) {
 }
 
 ### fit a linear model componentwise
-Glmboost <- function(x, ...) UseMethod("Glmboost", x)
+glmboost <- function(x, ...) UseMethod("glmboost", x)
 
-Glmboost.formula <- function(formula, data = list(), weights = NULL, 
+glmboost.formula <- function(formula, data = list(), weights = NULL, 
                              na.action = na.pass, contrasts.arg = NULL, 
                              center = FALSE, control = boost_control(), ...) {
 
@@ -438,11 +437,11 @@ Glmboost.formula <- function(formula, data = list(), weights = NULL,
     ret$newX <- newX
     ret$call <- cl
     ### need specialized method (hatvalues etc. anyway)
-    class(ret) <- c("Glmboost", "mboost")
+    class(ret) <- c("glmboost", "mboost")
     return(ret)
 }
 
-Glmboost.matrix <- function(x, y, center = FALSE, 
+glmboost.matrix <- function(x, y, center = FALSE, 
                             control = boost_control(), ...) {
 
     X <- x
@@ -469,8 +468,8 @@ Glmboost.matrix <- function(x, y, center = FALSE,
     ret$newX <- newX
     ret$call <- match.call()
     ### need specialized method (hatvalues etc. anyway)
-    class(ret) <- c("Glmboost", "mboost")
+    class(ret) <- c("glmboost", "mboost")
     return(ret)
 }
 
-Glmboost.Matrix <- Glmboost.matrix
+glmboost.Matrix <- glmboost.matrix

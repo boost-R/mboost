@@ -2,7 +2,7 @@
 survFit <- function(object, ...)
     UseMethod("survFit")
 
-survFit.gb <- function(object, newdata = NULL, ...)
+survFit.mboost <- function(object, newdata = NULL, ...)
 {
 
     n <- length(w <- model.weights(object))

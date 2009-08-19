@@ -21,7 +21,7 @@ hatvalues.mboost <- function(model, ...) {
     n <- length(model$response)
     if (checkL2(model)) {
         op <- .Call("R_trace_gamboost", as.integer(n), H,
-                    as.integer(model$xselect()), PACKAGE = "mboost")
+                    as.integer(model$xselect()), PACKAGE = "mboost3")
     } else {
         fitm <- predict(model, aggregate = "cumsum")
         op <- bhatmat(n, H, model$xselect(), fitm, model$family@fW)
@@ -38,7 +38,7 @@ AIC.mboost <- function(object, method = c("corrected", "classical", "gMDL"),
     df <- match.arg(df)
     if (df == "trace") {
         hatval <- hatvalues(object)
-        RET <- AICboost3(object, method = method,
+        RET <- AICboost(object, method = method,
                          df = attr(hatval, "trace"), k = k)
     } 
     if (df == "actset") {
@@ -52,13 +52,13 @@ AIC.mboost <- function(object, method = c("corrected", "classical", "gMDL"),
         ### no offset computed at all!
         if (object$offset != 0) df <- df + 1
         ### </FIXME>
-        RET <- AICboost3(object, method = method, 
+        RET <- AICboost(object, method = method, 
                          df = df, k = k)
     }
     return(RET)
 }
 
-AICboost3 <- function(object, method = c("corrected", "classical", "gMDL"), df, k = 2) {
+AICboost <- function(object, method = c("corrected", "classical", "gMDL"), df, k = 2) {
 
     if (object$control$risk != "inbag")
         return(NA)
@@ -163,7 +163,7 @@ model.frame.mboost <- function(formula, ...)
 response.mboost <- function(object, ...)
     object$response
 
-predict.Glmboost <- function(object, newdata = NULL, ...) {
+predict.glmboost <- function(object, newdata = NULL, ...) {
 
     if (!is.null(newdata)) {
         newdata <- object$newX(newdata)
@@ -171,7 +171,7 @@ predict.Glmboost <- function(object, newdata = NULL, ...) {
     object$predict(newdata = newdata, ...)
 }
 
-coef.Glmboost <- function(object, ...) {
+coef.glmboost <- function(object, ...) {
     cf <- object$coef(...)
     off <- attr(cf, "offset")
     cf <- cf[[1]]
@@ -180,14 +180,14 @@ coef.Glmboost <- function(object, ...) {
     cf
 }
 
-hatvalues.Glmboost <- function(model, ...) {
+hatvalues.glmboost <- function(model, ...) {
 
     if (!checkL2(model)) return(hatvalues.mboost(model))
     Xf <- t(model$basemodel[[1]]$MPinv()) * model$control$nu
     X <- model$baselearner[[1]]$get_data()
     op <- .Call("R_trace_glmboost", X, Xf,
                 as.integer(model$xselect(cw = TRUE)),
-                PACKAGE = "mboost")
+                PACKAGE = "mboost3")
     RET <- diag(op[[1]])
     attr(RET, "hatmatrix") <- op[[1]]  
     attr(RET, "trace") <- op[[2]] 
@@ -214,7 +214,7 @@ print.mboost <- function(x, ...) {
 }
 
 ### methods: print
-print.Glmboost <- function(x, ...) {
+print.glmboost <- function(x, ...) {
 
     cat("\n")
     cat("\t Generalized Linear Models Fitted via Gradient Boosting\n")

@@ -33,7 +33,7 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
     }
 }
 
-plot.Glmboost <- function(x, main = deparse(x$call), col = NULL, ...) {
+plot.glmboost <- function(x, main = deparse(x$call), col = NULL, ...) {
 
     cp <- coef(x, aggregate = "cumsum")
     cf <- cp[, ncol(cp)]

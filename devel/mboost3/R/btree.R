@@ -1,7 +1,10 @@
 
 ### the classical tree-based baselearner; stumps by default
 ### (also fits an additive model)
-btree3 <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0)) {
+btree <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0)) {
+
+    if (!require("party"))
+        stop("cannot load ", sQuote("party"))
 
     cll <- match.call()
     mf <- list(...)

@@ -147,7 +147,7 @@ X_bbs <- function(mf, vary, args) {
 }
 
 ### Linear baselearner, potentially Ridge-penalized
-bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lambda = NULL,
+bols <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lambda = NULL,
                   contrasts.arg = "contr.treatment") {
 
     cll <- match.call()
@@ -200,7 +200,7 @@ bols3 <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lamb
 }
 
 ### P-spline (and tensor-product spline) baselearner
-bbs3 <- function(..., z = NULL, index = NULL, knots = 20, degree = 3, 
+bbs <- function(..., z = NULL, index = NULL, knots = 20, degree = 3, 
                  differences = 2, df = 4, lambda = NULL, center = FALSE) {
 
     cll <- match.call()
@@ -364,18 +364,18 @@ bl_lin <- function(blg, Xfun, args) {
 }
 
 ### tensor-product spline baselearner
-bspatial3 <- function(...) {
+bspatial <- function(...) {
     cl <- match.call()
-    cl[[1L]] <- as.name("bbs3")
+    cl[[1L]] <- as.name("bbs")
     eval(cl, parent.frame())
 }
 
 ### random-effects (Ridge-penalized ANOVA) baselearner
-brandom3 <- function(..., df = 4) {
+brandom <- function(..., df = 4) {
     cl <- match.call()
     if (is.null(cl$df)) cl$df <- df
     cl$intercept <- FALSE
-    cl[[1L]] <- as.name("bols3")
+    cl[[1L]] <- as.name("bols")
     eval(cl, parent.frame())
 }
 

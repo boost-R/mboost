@@ -4,7 +4,7 @@
 ## for boosting algorithms
 ##
 
-Cvrisk <- function(object, folds = cv(model.weights(object)), grid = 1:mstop(object),
+cvrisk <- function(object, folds = cv(model.weights(object)), grid = 1:mstop(object),
                    parallel = require("multicore"), fun = NULL, ...) {
 
     weights <- model.weights(object)
