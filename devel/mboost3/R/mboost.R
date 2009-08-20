@@ -313,7 +313,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 ### is evaluated as
 ###     y ~ bols3(x1) + baselearner(x2) + btree(x3)
 ### see mboost_fit for the dots
-mboost <- function(formula, data = list(), baselearner = bbs3, ...) {
+mboost <- function(formula, data = list(), baselearner = bbs, ...) {
 
     ### OK, we need at least variable names to go ahead
     if (length(formula[[3]]) == 1) {
@@ -381,7 +381,7 @@ blackboost <- function(formula, data = list(), ...) {
     } else {
         xvars <- all.vars(formula[[3]])
     }
-    formula <- as.formula(paste(formula[[2]], "~ btree3(", 
+    formula <- as.formula(paste(formula[[2]], "~ btree(", 
         paste(xvars, collapse = ","), ")", collapse = ""))
     ret <- mboost(formula = formula, data = data, ...)
     ret$call <- match.call()

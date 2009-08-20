@@ -121,3 +121,16 @@ do_trace <- function(m, risk, step = options("width")$width / 2,
         cat("\nFinal risk:", risk[m], "\n")
     }
 }
+
+bhatmat <- function(n, H, xselect, fitm, fW) {
+     
+    B <- matrix(0, nrow = n, ncol = n)
+    I <- diag(n)
+    tr <- numeric(length(xselect))
+
+    for (m in 1:length(xselect)) {
+        B <- B + (H[[xselect[m]]] * fW(fitm[,m])) %*% (I - B)
+        tr[m] <- sum(diag(B))
+    }
+    list(hatmatrix = B, trace = tr)
+}
