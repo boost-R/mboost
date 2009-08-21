@@ -29,7 +29,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     }
 
     ### unweighted problem
-    if (is.null(weights)) weights <- rep.int(1, length(y))
+    if (is.null(weights)) weights <- rep.int(1, NROW(y))
     WONE <- (max(abs(weights - 1)) < .Machine$double.eps)
     if (!family@weights && !WONE)
         stop(sQuote("family"), " is not able to deal with weights")
@@ -60,6 +60,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
     ### initialized the boosting algorithm
     fit <- offset
+    offsetarg <- offset
     if (is.null(offset))
         fit <- offset <- family@offset(y, weights)
     u <- ustart <- ngradient(y, fit, weights)
@@ -136,8 +137,10 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     RET$update <- function(weights = NULL, risk = "oobag") {
         control$mstop <- mstop
         control$risk <- risk
+        ### use user specified offset only (since it depends on weights otherwise)
+        if (!is.null(offsetarg)) offsetarg <- offset
         mboost_fit(blg = blg, response = response, weights = weights, 
-                   offset = offset, family = family, control = control)
+                   offset = offsetarg, family = family, control = control)
     }
 
     ### number of iterations performed so far
@@ -225,7 +228,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 ret <- Matrix(0, nrow = n, ncol = sum(indx))
                 for (i in 1:length(bl)) ret <- ret + pfun(i, agg = "none")
                 M <- triu(crossprod(Matrix(1, nc = sum(indx))))
-                as(ret %*% M, "matrix")
+                as(ret %*% M, "matrix") + offset
             }
          }, "none" = {
             if (!nw) {
@@ -279,6 +282,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             ix <- (xselect == w & indx)
             if (!any(ix)) return(NULL)
             cf <- sapply(ens[ix], coef)
+            if (!is.matrix(cf)) cf <- matrix(cf, nrow = 1)
             ret <- switch(aggregate, 
                 "sum" = rowSums(cf) * nu,
                 "cumsum" = {
@@ -297,8 +301,11 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     ### function for computing hat matrices of individual predictors
     RET$hatvalues <- function(which = NULL) {
         which <- thiswhich(which, usedonly = is.null(which))
-        ret <- lapply(bl[which], function(b) hatvalues(b) * nu)
-        names(ret) <- names(bl)[which]
+        ### make sure each list element corresponds to one baselearner
+        ### non-selected baselearners receive NULL
+        ret <- vector(mode = "list", length = length(bl))
+        ret[which] <- lapply(bl[which], function(b) hatvalues(b) * nu)
+        names(ret) <- names(bl)
         ret
     }
 
@@ -313,7 +320,18 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 ### is evaluated as
 ###     y ~ bols3(x1) + baselearner(x2) + btree(x3)
 ### see mboost_fit for the dots
-mboost <- function(formula, data = list(), baselearner = bbs, ...) {
+mboost <- function(formula, data = list(), baselearner = c("bbs", "bols", "btree", "bss", "bns"), ...) {
+
+    if (is.character(baselearner)) {
+        baselearner <- match.arg(baselearner)
+        if (baselearner %in% c("bss", "bns")) {
+            warning("bss and bns are deprecated, bbs is used instead")
+            baselearner <- "bbs"
+        }
+        baselearner <- get(baselearner, mode = "function", 
+                           envir = parent.frame())
+    }
+    stopifnot(is.function(baselearner))
 
     ### OK, we need at least variable names to go ahead
     if (length(formula[[3]]) == 1) {
@@ -324,7 +342,7 @@ mboost <- function(formula, data = list(), baselearner = bbs, ...) {
         }
     }
     ### instead of evaluating a model.frame, we evaluate
-    ### the expressions on the lhs of formula directly
+    ### the expressions on the rhs of formula directly
     "+" <- function(a,b) {
         ### got baselearner, fine!
         if (inherits(a, "blg")) a <- list(a)
@@ -339,8 +357,7 @@ mboost <- function(formula, data = list(), baselearner = bbs, ...) {
     }
     ### set up all baselearners
     bl <- eval(as.expression(formula[[3]]), envir = data)
-    ### if there is just one, assign it to a list anyway
-    if (inherits(bl, "blg")) bl <- list(bl)
+    if (!is.list(bl)) bl <- list(baselearner(bl))
     ### just a check
     stopifnot(all(sapply(bl, inherits, what = "blg")))
     ### we need identifiers for the baselearners, 
@@ -371,20 +388,49 @@ mboost <- function(formula, data = list(), baselearner = bbs, ...) {
 }
 
 ### nothing to do there
-gamboost <- mboost
+gamboost <- function(formula, data = list(), baselearner = c("bbs", "bols", "btree", "bss", "bns"), 
+                     dfbase = 4, ...) {
+
+    if (is.character(baselearner)) {
+        baselearner <- match.arg(baselearner)
+        if (baselearner %in% c("bss", "bns")) {
+            warning("bss and bns are deprecated, bbs is used instead")
+            baselearner <- "bbs"
+        }
+        baselearner <- get(baselearner, mode = "function",
+                           envir = parent.frame())
+    }
+    stopifnot(is.function(baselearner))
+    if (isTRUE(all.equal(baselearner, bbs)))
+        baselearner <- function(...) bbs(..., df = dfbase)
+    ret <- mboost(formula = formula, data = data, baselearner = baselearner, ...)
+    ret$call <- match.call()
+    ret
+}
+
 
 ### just one single tree-based baselearner
-blackboost <- function(formula, data = list(), ...) {
+blackboost <- function(formula, data = list(), 
+    tree_controls = ctree_control(teststat = "max",
+                               testtype = "Teststatistic",
+                               mincriterion = 0,
+                               maxdepth = 2),
+    ...) {
 
-    if (formula[[3]] == as.name(".")) {
-        xvars <- names(data)[names(data) != all.vars(formula)]
-    } else {
-        xvars <- all.vars(formula[[3]])
-    }
-    formula <- as.formula(paste(formula[[2]], "~ btree(", 
-        paste(xvars, collapse = ","), ")", collapse = ""))
-    ret <- mboost(formula = formula, data = data, ...)
-    ret$call <- match.call()
+    ### get the model frame first
+    cl <- match.call()
+    mf <- match.call(expand.dots = FALSE)
+    m <- match(c("formula", "data", "weights"), names(mf), 0L)
+    mf <- mf[c(1L, m)]
+    mf$na.action <- na.pass
+    mf$drop.unused.levels <- TRUE
+    mf[[1L]] <- as.name("model.frame")
+    mf <- eval(mf, parent.frame())
+    response <- model.response(mf)
+    mf <- mf[,-1, drop = FALSE]
+    bl <- list(btree(mf, tree_controls = tree_controls))
+    ret <- mboost_fit(bl, response = response, ...)
+    ret$call <- cl
     ret
 }
 
@@ -407,11 +453,11 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     ### center argument moved to this function
     if (control$center) {
         center <- TRUE
-        warning("boost_control center deprecated")
+        warning("boost_control(center = TRUE) is deprecated, use glmboost(..., center = TRUE)")
     }
     ### set up the model.matrix and center (if requested)
     X <- model.matrix(attr(mf, "terms"), data = mf, 
-                      contrasts.args = contrasts.args)
+                      contrasts.arg = contrasts.arg)
     cm <- rep(0, ncol(X))
     if (center) {
         cm <- colMeans(X, na.rm = TRUE)
@@ -424,7 +470,7 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     newX <- function(newdata) {
         mf <- model.frame(attr(mf, "terms"), data = newdata, na.action = na.pass)
         X <- model.matrix(attr(mf, "terms"), data = mf,
-                          contrasts.args = contrasts.args)
+                          contrasts.arg = contrasts.arg)
         scale(X, center = cm, scale = FALSE)
     }
 
@@ -451,8 +497,6 @@ glmboost.matrix <- function(x, y, center = FALSE,
     }
     if (center) {
         cm <- colMeans(X, na.rm = TRUE)
-        ### center numeric variables only
-        center <- attr(X, "assign") %in% which(sapply(mf, is.numeric)[-1])
         cm[!center] <- 0
         X <- scale(X, center = cm, scale = FALSE)
     }

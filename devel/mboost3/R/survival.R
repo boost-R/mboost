@@ -9,7 +9,7 @@ survFit.mboost <- function(object, newdata = NULL, ...)
     if (!all.equal(w,rep(1,n)))
         stop("survFit cannot (yet) deal with weights")
     y <- object$response
-    stopifnot(!inherits(y, "Surv"))
+    stopifnot(inherits(y, "Surv"))
 
     ord <- order(y[,1])
     time <- y[ord,1]

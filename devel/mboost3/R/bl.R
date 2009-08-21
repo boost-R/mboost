@@ -210,10 +210,18 @@ bbs <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
     } else {
         mf <- as.data.frame(mf)
         cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
-        colnames(mf) <- sapply(cl, function(x) as.character(x))
+        colnames(mf) <- sapply(cl, function(x) deparse(x))
     }
     stopifnot(is.data.frame(mf))
-    stopifnot(all(sapply(mf, is.numeric)))
+    if(!(all(sapply(mf, is.numeric)))) {
+        if (ncol(mf) == 1) return(bols(..., z = z, index = index))
+        stop("cannot compute bbs for non-numeric variables")
+    }
+    ### use bols when appropriate
+    if (!is.null(df) & !center) {
+        if (df <= ncol(mf))
+            return(bols(..., z = z, index = index))
+    }
     vary <- ""
     if (!is.null(z)) {
         stopifnot(is.numeric(z) || (is.factor(z) && nlevels(z) == 2))

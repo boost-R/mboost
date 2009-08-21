@@ -7,6 +7,7 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion 
         stop("cannot load ", sQuote("party"))
 
     cll <- match.call()
+    ctrl <- tree_controls
     mf <- list(...)
     if (length(mf) == 1 && is.data.frame(mf[[1]])) {
         mf <- mf[[1]]
@@ -22,6 +23,7 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion 
                 set_names = function(value) attr(mf, "names") <<- value)
     class(ret) <- "blg"
 
+    
     ret$dpp <- function(weights) {
 
         ### construct design matrix etc.
@@ -41,7 +43,7 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion 
 
             .Call("R_modify_response", as.double(y), object@responses,
                  PACKAGE = "party")
-            tree <- .Call("R_TreeGrow", object, weights, fitmem, tree_controls,
+            tree <- .Call("R_TreeGrow", object, weights, fitmem, ctrl,
                           where, PACKAGE = "party")
             .Call("R_remove_weights", tree, package = "party")
 
