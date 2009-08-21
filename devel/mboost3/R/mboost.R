@@ -114,7 +114,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             ### print status information
             ### print xselect???
             if (trace)
-                mboost:::do_trace(m, risk = mrisk, step = tracestep, width = niter)
+                do_trace(m, risk = mrisk, step = tracestep, width = niter)
         }
         mstop <<- mstop + niter 
         return(TRUE)

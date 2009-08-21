@@ -396,7 +396,7 @@ model.frame.blg <- function(formula)
     formula$model.frame()
 
 ### extract coefficients
-coef.bm_lin <- function(object) {
+coef.bm_lin <- function(object, ...) {
     ret <- as.vector(object$model)
     names(ret) <- object$Xnames
     ret
