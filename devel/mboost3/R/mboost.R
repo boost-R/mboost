@@ -516,4 +516,9 @@ glmboost.matrix <- function(x, y, center = FALSE,
     return(ret)
 }
 
-glmboost.Matrix <- glmboost.matrix
+glmboost.default <- function(x, ...) {
+    if (extends(class(x), "Matrix"))
+        return(glmboost.matrix(x = x, ...))
+    stop("no method for objects of class ", sQuote(class(x)), 
+         " implemented")
+}
