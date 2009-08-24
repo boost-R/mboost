@@ -202,11 +202,14 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         n <- ifelse(!is.null(newdata), nrow(newdata), length(y))
         pfun <- function(w, agg) {
             ix <- xselect == w & indx
-            if (!any(ix)) return(rep.int(0, n))
+            m <- Matrix(0, nrow = n, ncol = sum(indx))
+            if (!any(ix)) {
+                if (agg == "sum") return(rep.int(0, n))
+                return(m)
+            }
             ret <- nu * bl[[w]]$predict(ens[ix],         
                    newdata = newdata, aggregate = agg)
             if (agg == "sum") return(ret)
-            m <- Matrix(0, nrow = n, ncol = sum(indx))
             m[, which(ix)] <- ret
             m
         }

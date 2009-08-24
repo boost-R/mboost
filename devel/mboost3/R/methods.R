@@ -240,3 +240,11 @@ variable.names.mboost <- function(object, ...) {
     if (is.matrix(ret)) ret <- ret[, , drop = TRUE]
     ret
 }
+
+selected <- function(object) UseMethod("selected", object)
+
+selected.mboost <- function(object)
+    object$xselect()
+
+selected.glmboost <- function(object)
+   object$xselect(cw = TRUE)
