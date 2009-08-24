@@ -212,11 +212,11 @@ try(mod <- myfun(cars, xx = ctl, zz = tctl))
 x <- runif(100)
 y <- rnorm(length(x))
 knots <- seq(from = 0.1, to = 0.9, by = 0.1)
-w <- rmultinom(1, length(x), rep(1, length(x)) / length(x))[,1]
+w <- rmultinom(1, length(x), rep(1, length(x)) / length(x))[,1] 
 iw <- rep(1:length(x), w)
 
 m1 <- bbs(x, knots = knots)$dpp(w)$fit(y)$model 
-m2 <- bbs(x[iw], knots = knots)$dpp(rep(1, length(x)))$fit(y[iw])$model 
+m2 <- bbs(x[iw], knots = knots)$dpp(rep(1, length(iw)))$fit(y[iw])$model 
 
 stopifnot(max(abs(m1 - m2)) < sqrt(.Machine$double.eps))
 

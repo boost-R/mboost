@@ -14,7 +14,7 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
     Rm <- solve(chol(A))
 
     decomp <- svd(crossprod(Rm, dmat) %*% Rm)
-    d <- decomp$d[decomp$d > .Machine$double.eps]
+    d <- decomp$d[decomp$d > sqrt(.Machine$double.eps)]
 
     if (!is.null(lambda)) 
         return(c(df = sum(1 / (1 + lambda * d)), lambda = lambda))
