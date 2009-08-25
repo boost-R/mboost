@@ -183,6 +183,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         if (usedonly) which <- which[which %in% RET$xselect()]
         return(which)
     }
+    RET$which <- thiswhich
 
     ### prepare for computing predictions in the following ways
     ### - for all selected baselearners (which = NULL) or chosen ones (selected or not)
@@ -360,6 +361,9 @@ mboost <- function(formula, data = list(), baselearner = c("bbs", "bols", "btree
     }
     ### set up all baselearners
     bl <- eval(as.expression(formula[[3]]), envir = data)
+    ### rhs was one single baselearner
+    if (inherits(bl, "blg")) bl <- list(bl)
+    ### rhs was one single variable
     if (!is.list(bl)) bl <- list(baselearner(bl))
     ### just a check
     stopifnot(all(sapply(bl, inherits, what = "blg")))

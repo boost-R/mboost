@@ -236,7 +236,10 @@ print.glmboost <- function(x, ...) {
 }
 
 variable.names.mboost <- function(object, ...) {
-    ret <- sapply(object$baselearner, function(x) x$get_names())
+    ### <FIXME> is pasting what we want?
+    ret <- sapply(object$baselearner, function(x) 
+                  paste(x$get_names(), collapse = ", "))
+    ### </FIXME>
     if (is.matrix(ret)) ret <- ret[, , drop = TRUE]
     ret
 }

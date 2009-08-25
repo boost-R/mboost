@@ -1,9 +1,10 @@
 
 ### just a try
 plot.mboost <- function(x, which = NULL, newdata = NULL, 
-                        type = "b", rug = TRUE, eylim = TRUE, ...) {
+                        type = "b", rug = TRUE, 
+                        xlab = NULL, ylab = expression(f[partial]), ...) {
 
-    if (is.null(which)) which <- sort(unique(x$xselect()))
+    if (is.null(which)) which <- x$which(which, usedonly = TRUE)
     pr <- predict(x, newdata = newdata, which = which)
     mf <- model.frame(x, which = which)
     if (!is.null(newdata)) {
@@ -11,22 +12,29 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
             mf[[i]] <- newdata[, colnames(mf[[i]]), drop = FALSE]
     }
 
-    if (eylim) ylim <- range(pr)
+    ylim <- list(...)$ylim
+    if (is.null(ylim)) ylim <- range(pr)
+    if (is.null(xlab)) xlab <- variable.names(x)[which]
+    if (is.null(ylab)) ylab <- names(variable.names(x))[which]
+    if (length(xlab) != length(which)) xlab <- rep(xlab[1], length(which))
+    if (length(ylab) != length(which)) ylab <- rep(ylab[1], length(which))
 
     for (i in 1:ncol(pr)) {
         dat <- mf[[i]]
         p <- pr[,i]
-        if (!eylim) ylim <- range(p)
 
         if (ncol(dat) == 1) {
-            plot(sort(dat[[1]]), p[order(dat[[1]])], type = type, xlab = names(mf[[i]]),
-                 ylab = names(mf)[i], ylim = ylim, ...)
+            plot(sort(dat[[1]]), p[order(dat[[1]])], type = type, 
+                 xlab = xlab[i], ylab = ylab[i], ylim = ylim, ...)
             if (rug) rug(dat[[1]])
         }
         if (ncol(dat) == 2) {
+            stopifnot(require("sp"))
             dat$pr <- p
+            ### <FIXME> names
             coordinates(dat) <- as.formula(paste("~", paste(names(mf[[i]]), collapse = "+"), sep = ""))
             print(spplot(dat, "pr", xlab = names(mf[[i]])[1], ylab = names(mf[[i]])[2], ...))
+            ### </FIXME>
         }
         if (ncol(dat) > 2)
             stop("not yet implemented")
