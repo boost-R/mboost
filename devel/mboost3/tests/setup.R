@@ -31,3 +31,4 @@ perfplot <- function(x, grid, alpha = NULL, border = 1,
 
 data("bodyfat", package = "mboost")
 data("wpbc", package = "mboost")
+library("survival")

@@ -1,5 +1,6 @@
 
 require("mboost3")
+library("party")
 
 set.seed(290875)
 
@@ -42,16 +43,14 @@ if (!inherits(tst, "try-error")) {
 ### check different interfaces
 x <- as.matrix(BostonHousing[,colnames(BostonHousing) != "medv"])
 y <- BostonHousing$medv
-p1 <- predict(blackboost(x = x, y = y, family = Laplace()), newdata = x)
 p2 <- predict(blackboost(medv ~ ., data = BostonHousing, family = Laplace()),
               newdata = BostonHousing)
-stopifnot(identical(abs(max(p1 - p2)), 0))
 
 ## Cox model
+library("survival")
 
 fit2 <- blackboost(Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps, 
-    data = ovarian, family = CoxPH(), control = boost_control(mstop = 1000, 
-    center = TRUE))
+    data = ovarian, family = CoxPH(), control = boost_control(mstop = 1000))
 
 A2 <- survFit(fit2)
 A2

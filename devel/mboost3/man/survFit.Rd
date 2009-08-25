@@ -43,6 +43,10 @@
 \seealso{ \code{\link{gamboost}}, \code{\link{glmboost}} and
   \code{\link{blackboost}} for model fitting.}
 \examples{
+
+library("survival")
+data("ovarian", package = "survival")
+
 fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps
 fit <- glmboost(fm, data = ovarian, family = CoxPH(),
     control=boost_control(mstop = 500))

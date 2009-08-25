@@ -34,7 +34,7 @@ mboost_fit(blg, response, weights = NULL, offset = NULL,
   \item{\dots}{ additional arguments passed to \code{mboost}.}
 }
 \details{
-
+to be done
 }
 \value{
   An object of class \code{mboost} with \code{\link{print}},
@@ -61,7 +61,7 @@ mboost_fit(blg, response, weights = NULL, offset = NULL,
 
   data("bodyfat", package = "mboost3")
 
-  mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bss(hipcirc), data = bodyfat)
+  mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc), data = bodyfat)
 
   layout(matrix(1:3, nc = 3))
   plot(mod, ask = FALSE)

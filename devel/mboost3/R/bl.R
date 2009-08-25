@@ -392,8 +392,8 @@ names.blg <- function(x)
     x$get_names()
 
 ### extract data from baselearner
-model.frame.blg <- function(formula)
-    formula$model.frame()
+model.frame.blg <- function(formula, ...)
+    formula$model.frame(...)
 
 ### extract coefficients
 coef.bm_lin <- function(object, ...) {

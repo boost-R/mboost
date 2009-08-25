@@ -244,6 +244,13 @@ variable.names.mboost <- function(object, ...) {
     ret
 }
 
+variable.names.glmboost <- function(object, ...) {
+    ret <- object$baselearner[[1]]$get_names()
+    names(ret) <- ret
+    ret
+}
+
+
 selected <- function(object) UseMethod("selected", object)
 
 selected.mboost <- function(object)

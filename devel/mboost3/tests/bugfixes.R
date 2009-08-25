@@ -220,3 +220,7 @@ m2 <- bbs(x[iw], knots = knots)$dpp(rep(1, length(iw)))$fit(y[iw])$model
 
 stopifnot(max(abs(m1 - m2)) < sqrt(.Machine$double.eps))
 
+### base learner handling
+stopifnot(max(abs(fitted(gamboost(DEXfat ~ age, data = bodyfat)) - 
+                  fitted(gamboost(DEXfat ~ bbs(age), data = bodyfat)))) < 
+          sqrt(.Machine$double.eps))

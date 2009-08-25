@@ -161,12 +161,12 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
 
   spline1 <- bbs(x1, knots = 20, df = 4)
 attributes(spline1)
-spline2 <- bns(x2,knots=knots.x2,df=5)
+spline2 <- bbs(x2,knots=knots.x2,df=5)
 attributes(spline2)
 olsfit <- bols(x3)
 attributes(olsfit)
 
-form1 <- y ~ bbs(x1,knots=20,df=4) + bns(x2,knots=knots.x2,df=5)
+form1 <- y ~ bbs(x1,knots=20,df=4) + bbs(x2,knots=knots.x2,df=5)
 
 # example for factors
 attributes(bols(x4))
@@ -178,15 +178,15 @@ x2 <- runif(250,-pi,pi)
 
 y <- sin(x1)*sin(x2) + rnorm(250, sd = 0.4)
 
-spline3 <- bspatial(x1, x2, xknots=12, yknots=12)
+spline3 <- bspatial(x1, x2, knots=12)
 attributes(spline3)
 
-form2 <- y ~ bspatial(x1, x2, xknots=12, yknots=12)
+form2 <- y ~ bspatial(x1, x2, knots=12)
 
 # decompose spatial effect into parametric part and deviation with 1 df
 
 form2 <- y ~ bols(x1) + bols(x2) + bols(x1*x2) +
-             bspatial(x1, x2, xknots=12, yknots=12, center = TRUE, df=1)
+             bspatial(x1, x2, knots=12, center = TRUE, df=1)
 
 # random intercept
 
@@ -204,7 +204,7 @@ attributes(raneff)
 # and add explicit intercept to the model
 
 tmpdata <- data.frame(x = 1:100, y = rnorm(1:100), int = rep(1, 100))
-mod <- gamboost(y ~ bols(int, center = TRUE) + bols(x, center = TRUE),
+mod <- gamboost(y ~ bols(int, intercept = FALSE) + bols(x, intercept = FALSE),
                 data = tmpdata, control = boost_control(mstop = 2500))
 cf <- unlist(coef(mod))
 cf[1] <- cf[1] + mod$offset
