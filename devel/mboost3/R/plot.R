@@ -1,46 +1,56 @@
 
 ### just a try
-plot.mboost <- function(x, which = NULL, newdata = NULL, 
-                        type = "b", rug = TRUE, 
+plot.mboost <- function(x, which = NULL, newdata = NULL,
+                        type = "b", rug = TRUE, ylim = NULL, 
                         xlab = NULL, ylab = expression(f[partial]), ...) {
 
     if (is.null(which)) which <- x$which(which, usedonly = TRUE)
-    pr <- predict(x, newdata = newdata, which = which)
-    mf <- model.frame(x, which = which)
-    if (!is.null(newdata)) {
-        for (i in 1:ncol(pr))
-            mf[[i]] <- newdata[, colnames(mf[[i]]), drop = FALSE]
-    }
-
-    ylim <- list(...)$ylim
+    pr <- predict(x, which = which)
     if (is.null(ylim)) ylim <- range(pr)
-    if (is.null(xlab)) xlab <- variable.names(x)[which]
-    if (is.null(ylab)) ylab <- names(variable.names(x))[which]
-    if (length(xlab) != length(which)) xlab <- rep(xlab[1], length(which))
-    if (length(ylab) != length(which)) ylab <- rep(ylab[1], length(which))
 
-    ### <FIXME> handle ... 
+    for (w in which) {
 
-    for (i in 1:ncol(pr)) {
-        dat <- mf[[i]]
-        p <- pr[,i]
-
-        if (ncol(dat) == 1) {
-            plot(sort(dat[[1]]), p[order(dat[[1]])], type = type, 
-                 xlab = xlab[i], ylab = ylab[i], ylim = ylim)
-            if (rug) rug(dat[[1]])
+        data <- model.frame(x, which = w)[[1]]
+        get_vary <- x$baselearner[[w]]$get_vary
+        vary <- ""
+        if (!is.null(get_vary)) vary <- get_vary()
+        if (!is.null(newdata)) data <- newdata[, colnames(data), drop = FALSE]
+        if (vary != "") {
+            v <- data[[vary]]
+            if (is.factor(v)) v <- factor(rep(levels(v)[2], 1), levels = levels(v))
+            if (is.numeric(v)) v <- 1
+            data[[vary]] <- v[rep(1, nrow(data))]
         }
-        if (ncol(dat) == 2) {
-            stopifnot(require("sp"))
-            dat$pr <- p
-            ### <FIXME> names
-            coordinates(dat) <- as.formula(paste("~", paste(names(mf[[i]]), collapse = "+"), sep = ""))
-            print(spplot(dat, "pr", xlab = names(mf[[i]])[1], ylab = names(mf[[i]])[2]))
-            ### </FIXME>
+        pr <- predict(x, newdata = data, which = w)
+        if (!is.null(vary)) data <- data[, colnames(data) != vary, drop = FALSE]
+
+        if (is.null(xlab)) xlab <- variable.names(x)
+        xl <- ifelse(is.na(xlab[w]), xlab[1], xlab[w])
+        if (is.null(ylab)) ylab <- variable.names(x)[w]
+        yl <- ylab
+        ### yl <- ifelse(is.na(ylab[w]), ylab[1], ylab[w])
+
+        if (ncol(data) == 1) {
+            plot(sort(data[[1]]), pr[order(data[[1]])], type = type, 
+                 xlab = xl, ylab = yl, ylim = ylim, ...)
+            if (rug) rug(data[[1]])
         }
-        if (ncol(dat) > 2)
-            stop("not yet implemented")
-    }
+        if (ncol(data) == 2) {
+            fm <- as.formula(paste("pr ~ ", paste(colnames(data), collapse = "*"), sep = ""))
+            print(levelplot(fm, data = data, ...))
+        }
+        if (ncol(data) > 2) {
+            for (v in colnames(data)) {
+                tmp <- data
+                pardep <- sapply(data[[v]], function(vv) {
+                    tmp[[v]] <- vv
+                    mean(predict(x, newdata = tmp, which = w))
+                })
+                plot(sort(data[[v]]), pardep[order(data[[v]])], type = type,
+                     xlab = v, ylab = "Partial Dependency", ylim = ylim, ...)
+            }
+        }
+   }
 }
 
 plot.glmboost <- function(x, main = deparse(x$call), col = NULL, ...) {
