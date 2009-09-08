@@ -75,13 +75,15 @@ Laplace <- function()
            name = "Absolute Error")
 
 ### Binomial
+lfinv <- binomial()$linkinv
 Binomial <- function()
     Family(ngradient = function(y, f, w = 1) {
                exp2yf <- exp(-2 * y * f)
                -(-2 * y * exp2yf) / (log(2) * (1 + exp2yf))
            },
            loss = function(y, f) {
-               ### FIXME: this is unstable
+               large <- (abs(f) > 36) & !is.na(f)
+               f[large] <- sign(f[large]) * 36
                p <- exp(f) / (exp(f) + exp(-f))
                y <- (y + 1) / 2
                -y * log(p) - (1 - y) * log(1 - p)
@@ -91,6 +93,8 @@ Binomial <- function()
                1/2 * log(p / (1 - p))
            },
            fW = function(f) {
+               large <- (abs(f) > 36)
+               f[large] <- sign(f[large]) * 36
                p <- exp(f) / (exp(f) + exp(-f))
                4 * p * (1 - p)
            },

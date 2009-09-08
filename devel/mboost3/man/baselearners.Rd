@@ -91,7 +91,8 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
   For all base learners the amount of smoothing is determined by the
   trace of the hat matrix, as indicated by \code{df}. If \code{df} is
   specified in \code{bols} a ridge penalty with the according degrees of
-  freedom is used.
+  freedom is used. For ordinal variables, the penalty as described
+  by Gertheiss and Tutz (2009) is applied.
 
   If \code{z} is specified as an additional argument, a
   varying coefficients term is estimated, where \code{z} is the
@@ -146,6 +147,9 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable selection and
   model choice in geoadditive regression models, \emph{Biometrics}, \bold{65}(2),
   626--634.
+
+  Jan Gertheiss and Gerhard Tutz (2009), Penalized Regression with Ordinal
+  Predictors, \emph{International Statistical Review}, forthcoming.
 
 }
 \seealso{\code{\link{gamboost}}}
