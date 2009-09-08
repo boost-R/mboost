@@ -25,8 +25,8 @@ dim(InternetAd$x)
 system.time(a <- glmboost(x = InternetAd$x, y = as.factor(InternetAd$y), family = Binomial()))
 system.time(b <- glmnet(x = InternetAd$x, y = InternetAd$y, family = "binomial"))
 
-dim(NewsGroup$x)
-system.time(a <- glmboost(x = NewsGroup$x, y = as.factor(NewsGroup$y), family = Binomial()))
-system.time(b <- glmnet(x = NewsGroup$x, y = NewsGroup$y, family = "binomial"))
-
+#dim(NewsGroup$x)
+#system.time(a <- glmboost(x = NewsGroup$x, y = as.factor(NewsGroup$y), family = Binomial()))
+#system.time(b <- glmnet(x = NewsGroup$x, y = NewsGroup$y, family = "binomial"))
+#
 setwd(wd)

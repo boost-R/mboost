@@ -49,12 +49,16 @@ X_ols <- function(mf, vary, args) {
         ### set up model matrix
         fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary], 
                     collapse = "+"), sep = "")
-        if (vary != "") 
-            fm <- paste(fm, vary, sep = ":")
         if (!args$intercept)
             fm <- paste(fm, "-1", sep = "")
         X <- model.matrix(as.formula(fm), data = mf, contrasts.arg = args$contrasts.arg)
         contr <- attr(X, "contrasts")
+        ### <FIXME>
+        if (vary != "") {
+            z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
+            X <- X * z
+        }
+        ### </FIXME>
     }
     K <- NULL
     if (args$pen) {
@@ -116,8 +120,19 @@ X_bbs <- function(mf, vary, args) {
     }
     if (length(mm) == 1) {
         X <- mm[[1]]
+        ### <FIXME>
+        if (vary != "") {
+            z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
+            X <- X * z
+        }
+        ### </FIXME>
         K <- diff(diag(ncol(X)), differences = args$differences)
-        K <- crossprod(K)
+        if (args$center) {
+            X <- tcrossprod(X, K) %*% solve(tcrossprod(K))
+            K <- diag(ncol(X))
+        } else {
+            K <- crossprod(K)
+        }
     }
     if (length(mm) == 2) {
         X <- kronecker(mm[[1]], matrix(1, nc = ncol(mm[[2]]))) * 
@@ -128,20 +143,20 @@ X_bbs <- function(mf, vary, args) {
         Ky <- crossprod(Ky)
         K <- kronecker(Kx, diag(ncol(mm[[2]]))) + 
              kronecker(diag(ncol(mm[[1]])), Ky)
-    }
-    ### <FIXME>
-    if (vary != "") {
-        z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
-        X <- X * z
-    }
-    ### </FIXME>
-    if (args$center) {
-        L <- eigen(K, symmetric = TRUE, EISPACK = TRUE)
-        L$vectors <- L$vectors[,1:(ncol(X) - args$differences^2)]
-        L$values <- sqrt(L$values[1:(ncol(X) - args$differences^2)])
-        L <- L$vectors %*% (diag(length(L$values)) * (1/L$values))
-        X <- as(X %*% L, "matrix")
-        K <- as(diag(ncol(X)), "matrix")
+        ### <FIXME>
+        if (vary != "") {
+            z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
+            X <- X * z
+        }
+        ### </FIXME>
+        if (args$center) {
+            L <- eigen(K, symmetric = TRUE, EISPACK = TRUE)
+            L$vectors <- L$vectors[,1:(ncol(X) - args$differences^2)]
+            L$values <- sqrt(L$values[1:(ncol(X) - args$differences^2)])
+            L <- L$vectors %*% (diag(length(L$values)) * (1/L$values))
+            X <- as(X %*% L, "matrix")
+            K <- as(diag(ncol(X)), "matrix")
+        }
     }
     return(list(X = X, K = K))
 }

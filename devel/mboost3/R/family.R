@@ -24,7 +24,7 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
     if (is.null(loss))
         loss <- function(y, f) NA
     if (is.null(risk))
-        risk <- function(y, f, w = 1) sum(w * loss(y, f))
+        risk <- function(y, f, w = 1) sum(w * loss(y, f), na.rm = TRUE)
     RET <- new("boost_family", ngradient = ngradient, loss = loss, 
                risk = risk, offset = offset, fW = fW, check_y = check_y, 
                weights = weights, 
@@ -198,7 +198,7 @@ CoxPH <- function()
                    risk[i] <- sum((time >= time[i])*ef)
                event * (f - log(risk))
            },
-           risk = function(y, f, w = 1) -sum(plloss(y, f, w)),
+           risk = function(y, f, w = 1) -sum(plloss(y, f, w), na.rm = TRUE),
            check_y = function(y) {
                if (!inherits(y, "Surv"))
                    stop("response is not an object of class ", sQuote("Surv"),

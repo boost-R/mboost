@@ -83,20 +83,12 @@ mstop(aic <- AIC(bf_gam))
 ### chunk number 12: bodyfat-gamboost-plot
 ###################################################
 bf_gam <- bf_gam[mstop(aic)]
-if (FALSE) {
-fpartial <- mboost:::gamplot(bf_gam)
+fpartial <- predict(bf_gam, which = 1:length(variable.names(bf_gam)))
 layout(matrix(1:4, ncol = 2, byrow = TRUE))
 par(mai = par("mai") * c(1, 1, 0.5, 1))
-x <- bf_gam$data$input
-varorder <- rev(order(colMeans(abs(fpartial))))[1:4]
+varorder <- rev(order(colMeans(abs(fpartial))))
+plot(bf_gam, which = varorder[1:4])
 
-out <- sapply(varorder, function(i) {
-    plot(x[,i], fpartial[,i],  main = "",
-         xlab = colnames(x)[i], ylab = expression(f[partial]),
-         ylim = max(abs(fpartial))*c(-1, 1))
-    abline(h = 0, lty = 2, lwd = 0.5)
-    })
-}
 
 ###################################################
 ### chunk number 13: bodyfat-pkg-attach
@@ -124,22 +116,20 @@ mstop(aic <- AIC(bf_bs))
 ###################################################
 ### chunk number 16: bodyfat-fpboost-plot
 ###################################################
-if (FALSE) {
 layout(matrix(1:4, ncol = 2, byrow = TRUE))
 par(mai = par("mai") * c(1, 1, 0.5, 1))
 cf <- coef(bf_bs[mstop(aic)])
-x <- bf_bs$data$x
 varorder <- c("hipcirc", "waistcirc", "kneebreadth", "anthro3b")
 fpartial <- sapply(varorder, function(v) {
     indx <- grep(v, names(cf))
-    x[,indx] %*% cf[indx]
+    as.matrix(bf_bs$newX(bodyfat)[,indx]) %*% cf[indx]
 })
 out <- sapply(varorder, function(i) {
     plot(bodyfat[,i], fpartial[,i],  main = "",
          xlab = i, ylab = expression(f[partial]), ylim = max(abs(fpartial)) * c(-1, 1))
     abline(h = 0, lty = 2, lwd = 0.5)
     })
-}
+
 
 ###################################################
 ### chunk number 17: pkg-attach
@@ -201,17 +191,12 @@ aic
 ###################################################
 ### chunk number 24: wpbc-gamboost-plot
 ###################################################
-if (FALSE) {
-fpartial <- mboost:::gamplot(wpbc_gam[mopt])
-x <- wpbc_gam$data$input
+mod <- wpbc_gam[mopt]
+fpartial <- predict(wpbc_gam, which = 1:length(variable.names(wpbc_gam)))
 layout(matrix(1:4, nrow = 2, byrow = TRUE))
 par(mai = par("mai") * c(1, 1, 0.5, 1))
-out <- sapply(rev(order(colMeans(abs(fpartial))))[1:4], function(i) {
-    plot(x[,i], fpartial[,i], xlab = colnames(x)[i], main = "",
-         ylab = expression(f[partial]), ylim = c(-0.5, 0.5), type = "p")
-    abline(h = 0, lty = 2, lwd = 0.5)
-        })
-}
+plot(wpbc_gam, which = rev(order(colMeans(abs(fpartial))))[1:4])
+
 
 ###################################################
 ### chunk number 25: pkg-attach

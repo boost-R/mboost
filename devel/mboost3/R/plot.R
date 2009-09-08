@@ -19,13 +19,15 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
     if (length(xlab) != length(which)) xlab <- rep(xlab[1], length(which))
     if (length(ylab) != length(which)) ylab <- rep(ylab[1], length(which))
 
+    ### <FIXME> handle ... 
+
     for (i in 1:ncol(pr)) {
         dat <- mf[[i]]
         p <- pr[,i]
 
         if (ncol(dat) == 1) {
             plot(sort(dat[[1]]), p[order(dat[[1]])], type = type, 
-                 xlab = xlab[i], ylab = ylab[i], ylim = ylim, ...)
+                 xlab = xlab[i], ylab = ylab[i], ylim = ylim)
             if (rug) rug(dat[[1]])
         }
         if (ncol(dat) == 2) {
@@ -33,7 +35,7 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
             dat$pr <- p
             ### <FIXME> names
             coordinates(dat) <- as.formula(paste("~", paste(names(mf[[i]]), collapse = "+"), sep = ""))
-            print(spplot(dat, "pr", xlab = names(mf[[i]])[1], ylab = names(mf[[i]])[2], ...))
+            print(spplot(dat, "pr", xlab = names(mf[[i]])[1], ylab = names(mf[[i]])[2]))
             ### </FIXME>
         }
         if (ncol(dat) > 2)

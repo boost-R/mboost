@@ -42,8 +42,8 @@ bolscw <- function(X) {
             coef <- mu[xselect] / sxtx[xselect]
             ret <- list(model = c(coef, xselect, p),
                         fitted = function() {
-                            if (is.null(index)) return(coef * X[,xselect])
-                            return(coef * X[index, xselect])
+                            if (is.null(index)) return(coef * X[,xselect, drop = FALSE])
+                            return(coef * X[index, xselect,drop = FALSE])
                         })
             class(ret) <- c("bm_cwlin", "bm_lin", "bm")
             return(ret)
@@ -78,7 +78,10 @@ bolscw <- function(X) {
                 stopifnot(all(class(newdata) == class(X)))
                 stopifnot(all(colnames(newdata) == colnames(X)))
                 X <- newdata
+                return(X %*% cf)
             }
+            if (!is.null(index))
+                return(X[index,,drop = FALSE] %*% cf)
             return(X %*% cf)
         }
 

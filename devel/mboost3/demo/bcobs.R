@@ -103,10 +103,14 @@ data("bodyfat", package = "mboost3")
 bb <- function(...) bcobs(..., constraint = "increase")
 bmod <- mboost(DEXfat ~ . , data = bodyfat, baselearner = bb,
             control = boost_control(mstop = 50))
+pdf("bodyfat_constr.pdf")
 layout(matrix(1:9, nc = 3))
 plot(bmod)
+dev.off()
 
+pdf("bodyfat_unconstr.pdf")
 mod <- gamboost(DEXfat ~ ., data = bodyfat, control = boost_control(mstop = 50))
 layout(matrix(1:9, nc = 3))
 plot(mod)
+dev.off()
 

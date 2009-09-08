@@ -89,16 +89,15 @@ ga <- gamboost(y ~ xf + x.2, data = df,
                control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ xf + x.2 - 1, data = df)), fitted(ga))
 ga <- gamboost(y ~ xf + sin(x.1) + x.2, data = df, 
-               dfbase = c(1, 1, 4, 1),
+               dfbase = 1,
                control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ xf + sin(x.1) + x.2, data = df)), fitted(ga))
 
-
 ### check centering
-y <- rnorm(20)
-xn <- rnorm(20)
+y <- rnorm(200)
+xn <- rnorm(200)
 xnm <- xn - mean(xn)
-xf <- gl(2, 10)
+xf <- gl(2, 100)
 gc <- gamboost(y ~ xn + xf)
 g <- gamboost(y ~ xnm + xf)
 stopifnot(max(abs(fitted(gc) - fitted(g))) < 1 / 10000)

@@ -360,7 +360,8 @@ mboost <- function(formula, data = list(), baselearner = c("bbs", "bols", "btree
         c(a, b)
     }
     ### set up all baselearners
-    bl <- eval(as.expression(formula[[3]]), envir = data)
+    bl <- eval(as.expression(formula[[3]]), envir = c(as.list(data), list("+" = get("+"))), 
+               enclos = environment(formula))
     ### rhs was one single baselearner
     if (inherits(bl, "blg")) bl <- list(bl)
     ### rhs was one single variable

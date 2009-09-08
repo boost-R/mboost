@@ -140,13 +140,6 @@ sapply(1:20, function(d) c(mean((ps(d) - f(x))^2, na.rm = TRUE),
 
 max(abs(fitted(lm(y ~ x, weights = w)) - ps(0)[!is.na(x)]))
 
-### centering
-y <- y[!is.na(x)]
-w <- w[!is.na(x)]
-x <- x[!is.na(x)]
-max(abs(fitted(fit(dpp(bbs(x, df = 4), w), y)) - 
-        fitted(lm(y ~ x)) + fitted(fit(dpp(bbs(x, df = 1, center = TRUE), w), y))))
-
 ### varying coefficients
 x1 <- runif(n, max = 2)
 x2 <- sort(runif(n, max = 2 * pi))
@@ -181,8 +174,8 @@ x2 <- runif(n, min = -3, max = 3)
 y <- dnorm(x1) * dnorm(x2)
 w <- rep(1, n)
 
-f1 <- fit(dpp(bspatial(x1, x2, df = 10), w), y)$fitted
-f2 <- attr(mboost:::bspatial(x1, x2, df = 10), "dpp")(w)$fit(y)$fitted
+f1 <- fit(dpp(bspatial(x1, x2, df = 12), w), y)$fitted
+f2 <- attr(mboost:::bspatial(x1, x2, df = 12), "dpp")(w)$fit(y)$fitted
 
 X1 <- get("X", env = environment(f1))
 X2 <- get("X", env = environment(f2))
@@ -195,4 +188,10 @@ max(abs(K1 - K2))
 l1 <- get("lambda", env = environment(f1))
 l2 <- get("lambda", env = environment(f2))
 l1 - l2
+### because of near-zero eigenvalues.
 
+x <- seq(from = 0, to = 2 * pi, length = 100)
+y <- sin(x) + rnorm(length(x), sd = 0.1)
+m1 <- mboost(y ~ mboost3:::bbs(x, df = 1, center = TRUE) + mboost3:::bols(x))
+m2 <- mboost:::gamboost(y ~ mboost:::bbs(x, df = 1, center = TRUE) + mboost:::bols(x))
+stopifnot(max(abs(fitted(m1) - fitted(m2))) < sqrt(.Machine$double.eps))
