@@ -21,10 +21,10 @@ hatvalues.mboost <- function(model, ...) {
     n <- length(model$response)
     if (checkL2(model)) {
         op <- .Call("R_trace_gamboost", as.integer(n), H,
-                    as.integer(model$xselect()), PACKAGE = "mboost3")
+                    as.integer(model$xselect(cw = TRUE)), PACKAGE = "mboost3")
     } else {
         fitm <- predict(model, aggregate = "cumsum")
-        op <- bhatmat(n, H, model$xselect(), fitm, model$family@fW)
+        op <- bhatmat(n, H, model$xselect(cw = TRUE), fitm, model$family@fW)
     }
     RET <- diag(op[[1]])  
     attr(RET, "hatmatrix") <- op[[1]]
@@ -69,7 +69,7 @@ AICboost <- function(object, method = c("corrected", "classical", "gMDL"), df, k
     if (!checkL2(object) && method == "corrected")
         stop("corrected AIC method not implemented for non-Gaussian family")
 
-    sumw <- sum(model.weights(object))
+    sumw <- sum(model.weights(object)[!is.na(fitted(object))])
     if (method == "corrected") 
         AIC <- log(object$risk() / sumw) +
                (1 + df/sumw) / (1 - (df + 2)/sumw)
@@ -163,12 +163,16 @@ model.frame.mboost <- function(formula, ...)
 response.mboost <- function(object, ...)
     object$response
 
-predict.glmboost <- function(object, newdata = NULL, ...) {
+predict.glmboost <- function(object, newdata = NULL, type = c("lp", "response"), ...) {
 
     if (!is.null(newdata)) {
         newdata <- object$newX(newdata)
     }
-    object$predict(newdata = newdata, ...)
+    pr <- object$predict(newdata = newdata, ...)
+    type <- match.arg(type)
+    if (is.factor(y <- object$response) && type == "response")
+        return(factor(levels(y)[(pr > 0) + 1], levels = levels(y)))
+    return(pr)
 }
 
 coef.glmboost <- function(object, ...) {

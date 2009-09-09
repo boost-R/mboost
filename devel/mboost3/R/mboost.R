@@ -121,13 +121,13 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     tmp <- boost(control$mstop)
 
     ### prepare a (very) rich objects
-    RET <- list(baselearner = blg,      ### the baselearners (without weights)
-                basemodel = bl,         ### the basemodels (with weights)
-                offset = offset,        ### offset
-                ustart = ustart,        ### first negative gradients
-                control = control,      ### control parameters
-                family = family,        ### family object
-                response = response,    ### the response variable
+    RET <- list(baselearner = blg,          ### the baselearners (without weights)
+                basemodel = bl,             ### the basemodels (with weights)
+                offset = offset,            ### offset
+                ustart = ustart,            ### first negative gradients
+                control = control,          ### control parameters
+                family = family,            ### family object
+                response = response,        ### the response variable
                 "(weights)" = weights       ### weights used for fitting
     )
 
@@ -489,6 +489,13 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     ret$newX <- newX
     ret$call <- cl
     ### need specialized method (hatvalues etc. anyway)
+    ret$hatvalues <- function() {
+        H <- vector(mode = "list", length = ncol(X))
+        MPinv <- ret$basemodel[[1]]$MPinv()
+        for (j in unique(ret$xselect(cw = TRUE)))
+            H[[j]] <- (X[,j] %*% MPinv[j, ,drop = FALSE]) * control$nu
+        H
+    }
     class(ret) <- c("glmboost", "mboost")
     return(ret)
 }
@@ -518,6 +525,13 @@ glmboost.matrix <- function(x, y, center = FALSE,
     ret$newX <- newX
     ret$call <- match.call()
     ### need specialized method (hatvalues etc. anyway)
+    ret$hatvalues <- function() {
+        H <- vector(mode = "list", length = ncol(X))
+        MPinv <- ret$basemodel[[1]]$MPinv()
+        for (j in unique(ret$xselect(cw = TRUE)))
+            H[[j]] <- (X[,j] %*% MPinv[j, ,drop = FALSE]) * control$nu
+        H
+    }
     class(ret) <- c("glmboost", "mboost")
     return(ret)
 }
