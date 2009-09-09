@@ -29,7 +29,7 @@
 \method{mstop}{mboost}(object, ...)
 \method{mstop}{cvrisk}(object, ...)
 \method{predict}{mboost}(object, type = c("lp", "response"), ...)
-\method{predict}{glmboost}(object, newdata = NULL, ...)
+\method{predict}{glmboost}(object, newdata = NULL, type = c("lp", "response"), ...)
 \method{fitted}{mboost}(object, ...)
 \method{logLik}{mboost}(object, ...)
 \method{hatvalues}{mboost}(model, ...)
