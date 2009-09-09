@@ -45,4 +45,6 @@ done
 
 find . -name "DEADJOE" -exec rm -f {} \;
 
+rm -rf inst/doc/figures
+
 exit 0
