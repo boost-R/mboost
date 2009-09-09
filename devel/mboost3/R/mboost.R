@@ -23,10 +23,8 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     check_y_family(response, family)
 
     ### recode to -1, +1
-    if (is.factor(response)) {
-        y <- as.numeric(y) - 1
-        y[y == 0] <- -1
-    }
+    if (is.factor(response))
+        y <- c(-1, 1)[as.integer(y)]
 
     ### unweighted problem
     if (is.null(weights)) weights <- rep.int(1, NROW(y))

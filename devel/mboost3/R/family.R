@@ -82,8 +82,7 @@ Binomial <- function()
                -(-2 * y * exp2yf) / (log(2) * (1 + exp2yf))
            },
            loss = function(y, f) {
-               large <- (abs(f) > 36) & !is.na(f)
-               f[large] <- sign(f[large]) * 36
+               f <- pmin(abs(f), 36) * sign(f)
                p <- exp(f) / (exp(f) + exp(-f))
                y <- (y + 1) / 2
                -y * log(p) - (1 - y) * log(1 - p)
@@ -93,8 +92,7 @@ Binomial <- function()
                1/2 * log(p / (1 - p))
            },
            fW = function(f) {
-               large <- (abs(f) > 36)
-               f[large] <- sign(f[large]) * 36
+               f <- pmin(abs(f), 36) * sign(f)
                p <- exp(f) / (exp(f) + exp(-f))
                4 * p * (1 - p)
            },
