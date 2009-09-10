@@ -83,7 +83,10 @@ This document reproduces the data analyses presented in
 \cite{BuhlmannHothorn06}. For a description of the theory behind
 applications shown here we refer to the original manuscript. The results
 differ slightly due to technical changes or bugfixes in \textbf{mboost} 
-that have been implemented after the paper was printed.
+that have been implemented after the paper was printed. Most important,
+\texttt{gamboost} uses penalized $B$-splines instead of smoothing
+splines as baselearners. The computations are much faster
+and the results differ only slightly \citep{Schmid+Hothorn:2008b}.
 
 
 \SweaveOpts{prefix.string=figures/BH} 
@@ -260,7 +263,7 @@ slight non-linearity, mainly for \Robject{kneebreadth}.
 \begin{center}
 <<bodyfat-gamboost-plot, echo = FALSE, fig = TRUE>>=
 bf_gam <- bf_gam[mstop(aic)]
-layout(matrix(1:4, ncol = 2, byrow = TRUE))
+layout(matrix(1:4, ncol = 2))
 plot(bf_gam, which = c("hipcirc", "kneebreadth", "waistcirc", "anthro3b"))
 @
 \caption{\Robject{bodyfat} data: Partial contributions of four covariates

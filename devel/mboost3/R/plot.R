@@ -2,11 +2,13 @@
 ### just a try
 plot.mboost <- function(x, which = NULL, newdata = NULL,
                         type = "b", rug = TRUE, ylim = NULL, 
-                        xlab = NULL, ylab = expression(f[partial]), ...) {
+                        xlab = variable.names(x), ylab = expression(f[partial]), ...) {
 
-    if (is.null(which)) which <- x$which(which, usedonly = TRUE)
+    which <- x$which(which, usedonly = TRUE)
     pr <- predict(x, which = which)
     if (is.null(ylim)) ylim <- range(pr)
+    stopifnot(length(xlab) %in% c(1, length(variable.names(x))))
+    stopifnot(length(ylab) %in% c(1, length(variable.names(x))))
 
     for (w in which) {
 
@@ -24,11 +26,8 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
         pr <- predict(x, newdata = data, which = w)
         if (!is.null(vary)) data <- data[, colnames(data) != vary, drop = FALSE]
 
-        if (is.null(xlab)) xlab <- variable.names(x)
-        xl <- ifelse(is.na(xlab[w]), xlab[1], xlab[w])
-        if (is.null(ylab)) ylab <- variable.names(x)[w]
-        yl <- ylab
-        ### yl <- ifelse(is.na(ylab[w]), ylab[1], ylab[w])
+        xl <- ifelse(length(xlab) > max(which), xlab[w], xlab[1])
+        yl <- ifelse(length(ylab) > max(which), ylab[w], ylab[1])
 
         if (ncol(data) == 1) {
             plot(sort(data[[1]]), pr[order(data[[1]])], type = type, 
