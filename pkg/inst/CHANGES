@@ -1,9 +1,20 @@
 
-                CHANGES in `mboost' VERSION 1.1-3 (2009-07-xx)
+                CHANGES in `mboost' VERSION 1.1-3 (2009-09-xx)
 
-  o  better x-axes in plot.cvrisk
+  o  better x-axes in plot.cvrisk and possibility to change xlab
 
   o  parallel cvrisk on unix systems only (`multicore' isn't safe on windows)
+
+  o  included new penalty for ordinal predictors (in bols())
+
+  o  corrected bug in bspatial (centering was not used for Xna)
+
+  o  added summary methods for glmboost and gamboost objects
+     that prints the selection frequencies of base-learners
+
+  o  removed output of dfbase (which is seldom used) in gamboost
+
+  o  changed manual for coef.gamboost
 
 
 		CHANGES in `mboost' VERSION 1.1-2 (2009-07-21)
@@ -67,13 +78,13 @@
 
   o  improved memory footprint in gamboost() and cvrisk()
 
-  o  option to suppress saving of ensembless added to 
+  o  option to suppress saving of ensembless added to
      boost_control()
 
-  o  bbs(), bns(), bspatial(): default number of knots changed to 
+  o  bbs(), bns(), bspatial(): default number of knots changed to
      a fixed value (= 20)
 
-  o  changed default for grid (now uses all iterations) in 
+  o  changed default for grid (now uses all iterations) in
      cvrisk() and changed plot.cvrisk()
 
   o  bols: works now for factors and can be set-up
@@ -133,7 +144,7 @@
   o  gamboost() now allows for user-specified base learners
      via the formula interface
 
-  o  gamboost.matrix(x = x, ...) requires colnames being set 
+  o  gamboost.matrix(x = x, ...) requires colnames being set
      for `x'
 
   o  na.action = na.omit fix for g{al}mboost()
@@ -148,7 +159,7 @@
 
   o  extract response correctly in fitted.blackboost
 
-  o  hatvalues (and thus AICs) for GLMs with centering of 
+  o  hatvalues (and thus AICs) for GLMs with centering of
      covariates may have been wrong since version 0.5-0
 
   o  add paper examples to tests
@@ -171,7 +182,7 @@
   o  plot() method for `glmboost' objects visualizing the
      coefficient path (feature request by Axel Benner <benner@dkfz.de>).
 
-  o  predict(newdata = <matrix>) was broken for gamboost(), 
+  o  predict(newdata = <matrix>) was broken for gamboost(),
      thanks to Max Kuhn <Max.Kuhn@pfizer.com> for spotting this.
 
 
@@ -205,7 +216,7 @@
      (default), "bsp" for B-splines and "ols" for linear models.
      The latter two haven't been tested yet.
 
-  o  The `dfbase' arguments now applies to each covariate and 
+  o  The `dfbase' arguments now applies to each covariate and
      no longer to each column of the design matrix.
 
   o  cvrisk() for blackboost() was broken, totally :-(
@@ -225,7 +236,7 @@
 
 		CHANGES in `mboost' VERSION 0.4-17 (2007-01-15)
 
-  o  fix problem with `dfbase' in `gamboost', spotted by 
+  o  fix problem with `dfbase' in `gamboost', spotted by
      Karin Eckel <Karin.Eckel@imbe.imed.uni-erlangen.de>
 
 
@@ -321,7 +332,7 @@
 
   o  risk was always 0 in Huber()@risk when d was choosen adaptively
 
-  o  pData(westbc)$nodal.y has levels `negative' and `positive' 
+  o  pData(westbc)$nodal.y has levels `negative' and `positive'
      (lymph node status)
 
 
@@ -335,12 +346,12 @@
 
 		CHANGES in `mboost' VERSION 0.4-6 (2006-06-14)
 
-  o  some minor `codetools' fixes: removed unused variables 
+  o  some minor `codetools' fixes: removed unused variables
      and an out-dated function
 
   o  add `codetools' checks to regression tests
 
-  o  fix xlab in plot.gbAIC 
+  o  fix xlab in plot.gbAIC
 
 ______________________________________________________________________________
 

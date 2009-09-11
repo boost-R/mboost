@@ -246,12 +246,39 @@ print.gamboost <- function(x, ...) {
     cat("Number of boosting iterations: mstop =", mstop(x), "\n")
     cat("Step size: ", x$control$nu, "\n")
     cat("Offset: ", x$offset, "\n")
-    dfbase <- ifelse(length(unique(x$dfbase)) == 1, unique(x$dfbase),
-                     x$dfbase)
-    cat("Degree of freedom: ", dfbase, "\n")
+    #dfbase <- ifelse(length(unique(x$dfbase)) == 1, unique(x$dfbase),
+    #                 x$dfbase)
+    #cat("Degree of freedom: ", dfbase, "\n")
     cat("\n")
     invisible(x)
 
+}
+
+### methods: summary
+summary.gamboost <- function(x, ...) {
+
+    print(x)
+
+    cat("Number of selections in",  mstop(x), "iterations:\n")
+    fs <- freq.sel.gamboost(x)
+    for (i in 1:length(fs))
+        cat("\t", names(fs[i]), ":\t", fs[i], "\n", sep="")
+
+    invisible(x)
+
+}
+
+## function to extract selection frequencies of base-learners
+freq.sel.gamboost <- function(object){
+    x <- object$data$input
+    ret <- rep(0, length(x))
+    names(ret) <- colnames(x)
+
+    for (i in 1:length(x)){
+        ret[i] <- sum(object$ensemble == i)
+    }
+    ret <- sort(ret, decreasing=TRUE)
+    return(ret)
 }
 
 plot.gamboost <- function(x, which = NULL, ask = TRUE && dev.interactive(),

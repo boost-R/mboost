@@ -21,6 +21,8 @@
 \usage{
 \method{print}{glmboost}(x, ...)
 \method{print}{gamboost}(x, ...)
+\method{summary}{glmboost}(x, ...)
+\method{summary}{gamboost}(x, ...)
 \method{coef}{glmboost}(object, ...)
 \method{coef}{gamboost}(object, ...)
 \method{AIC}{gamboost}(object, method = c("corrected", "classical", "gMDL"), ..., k = 2)
@@ -63,8 +65,12 @@
   These functions can be used to extract details from fitted models. \code{print}
   shows a dense representation of the model fit and \code{coef} extracts the
   regression coefficients of a linear model fitted using the \code{\link{glmboost}}
-  function (for \code{\link{gamboost}} objects, \code{coef} only works
-  when \code{\link{bols}} is used as baselearner).
+  function or the \code{\link{gamboost}} function.
+
+  The \code{summary} functions for \code{\link{glmboost}} and
+  \code{\link{gamboost}} objects show the information given by the
+  \code{print} function and additionally return the number of selections
+  for the base-learners.
 
   The \code{predict} function can be used to predict the status of the response variable
   for new observations whereas \code{fitted} extracts the regression fit for the observations

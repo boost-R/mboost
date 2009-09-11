@@ -167,8 +167,8 @@ coef.bssfit <- function(object)
     object$basemodel$coef
 
 df2lambda <- function(X, df = 4, dmat = NULL, weights) {
-
-#   if (df <= 2) stop(sQuote("df"), " must be greater than two")
+    ## For comutational details see Ruppert, Wand, Carroll (2003),
+    ## Semiparametric Regression, Appendix B.1.1
 
     if (is.null(dmat)) {
         dmat <- diff(diag(ncol(X)), differences = 2)
@@ -183,7 +183,7 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
     decomp <- svd(crossprod(Rm,dmat)%*%Rm)
     d <- decomp$d
 
-    # df2lambda
+    ## df2lambda (for df = trace(S))
     df2l <- function(lambda)
         (sum( 1/(1+lambda*d) ) - df)^2
 
@@ -208,7 +208,6 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
             break
             }
     }
-
     ### tmp <- sum(diag(X %*% solve(crossprod(X * weights, X) +
     ###                   lambda*dmat) %*% t(X * weights))) - df
     ### if (abs(tmp) > sqrt(.Machine$double.eps))
@@ -216,6 +215,8 @@ df2lambda <- function(X, df = 4, dmat = NULL, weights) {
 
     lambda
 }
+
+
 
 bns <- function(x, z = NULL, df = 4, knots = 20, differences = 2,
                 xname = NULL, zname = NULL) {
@@ -417,13 +418,11 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
             X <- kronecker(Xx, matrix(1, nc = ncol(Xy))) * kronecker(matrix(1, nc = ncol(Xx)), Xy)
             if (!is.null(z))
                 X <- X * z
+            if(center){
+                X <- X%*%L
+            }
             return(X)
         }
-        X <- newX(x, y, z)
-        Xna <- X
-        if (any(!cc))
-            Xna <- newX(x, y, z, weights = weights, na.rm = FALSE)
-
         xd <- length(xknots) + degree + 1
         yd <- length(yknots) + degree + 1
 
@@ -433,18 +432,22 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
         Ky <- crossprod(Ky, Ky)
         K <- kronecker(Kx, diag(yd)) + kronecker(diag(xd), Ky)
 
-        L <- 0
-        if(center) {
+        if (center){
+            L <- 0
             L <- eigen(K, symmetric=TRUE, EISPACK=TRUE)
-            L$vectors <- L$vectors[,1:(ncol(X)-differences^2)]
-            L$values <- sqrt(L$values[1:(ncol(X)-differences^2)])
+            L$vectors <- L$vectors[,1:(xd*yd - differences^2)]
+            L$values <- sqrt(L$values[1:(xd*yd - differences^2)])
             L <- L$vectors%*%diag(1/L$values)
-            X <- X%*%L
-            K <- diag(ncol(X))
+            K <- diag(ncol(L))
         }
 
+        X <- newX(x, y, z)
+        Xna <- X
+        if (any(!cc))
+            Xna <- newX(x, y, z, weights = weights, na.rm = FALSE)
 
         lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
+
         Xw <- X * weights
         XtX <- crossprod(Xw, X)
         Xsolve <- tcrossprod(solve(XtX + lambda * K), Xw)
@@ -456,9 +459,6 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
                 if (is.null(newdata)) return(Xna %*% coef)
                 nX <- newX(x = newdata[[xname]], y = newdata[[yname]],
                            z = newdata[[zname]], na.rm = FALSE)
-                if(center) {
-                    nX <- nX%*%L
-                }
                 nX %*% coef
             }
             ret <- list(model = coef, predict = predictfun,
@@ -511,7 +511,13 @@ bols <- function(x, z = NULL, xname = NULL, zname = NULL, center = FALSE,
      if (any(!cc))
          Xna <- newX(x, z, na.rm = FALSE)
 
-     K <- diag(ncol(X))
+     if (center && !is.ordered(x)) {
+         K <- diag(ncol(X))
+     } else {
+         K <- diff(diag(ncol(X)+1), differences = 1)
+         K <- K[,-1]
+         K <- crossprod(K, K)
+     }
 
      dpp <- function(weights) {
 
@@ -577,7 +583,6 @@ brandom <- function(x, z = NULL, df = 4, xname = NULL,
     dpp <- function(weights) {
 
         lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
-
         Xw <- X * weights
         XtX <- crossprod(Xw, X)
         ### XtX and K are diagonal matrices

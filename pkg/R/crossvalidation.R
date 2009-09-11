@@ -65,13 +65,13 @@ print.cvrisk <- function(x, ...) {
     return(invisible(x))
 }
 
-plot.cvrisk <- function(x, ylab = attr(x, "risk"), ylim = range(x),
+plot.cvrisk <- function(x, xlab= "Number of boosting iterations",
+                        ylab = attr(x, "risk"), ylim = range(x),
                         main = attr(x, "call"), ...) {
 
     cm <- colMeans(x)
-    plot(1:ncol(x), cm, ylab = ylab, ylim = ylim,
-         type = "n", lwd = 2,
-         xlab = "Number of boosting iterations",
+    plot(1:ncol(x), cm, xlab = xlab, ylab = ylab,
+         ylim = ylim, type = "n", lwd = 2,
          main = main, axes = FALSE, ...)
     out <- apply(x, 1, function(y) lines(1:ncol(x),y, col = "lightgrey"))
     rm(out)

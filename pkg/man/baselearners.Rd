@@ -27,7 +27,8 @@ btree(..., tree_controls = ctree_control(stump = TRUE,
       mincriterion = 0), xname = NULL)
 }
 \arguments{
-  \item{x}{ a vector containing data, either numeric or a factor. }
+  \item{x}{ a vector containing data, either numeric, a factor or an
+     ordered factor. }
   \item{y}{ a vector containing numeric data. }
   \item{z}{ an optional vector containing data. \code{z} can be numeric
     in all cases. For \code{bols} it can also be a factor. For all other
@@ -82,8 +83,10 @@ btree(..., tree_controls = ctree_control(stump = TRUE,
   can deal with both numeric and factor variables \code{x}.
   By default, an intercept term is added to the corresponding design matrix
   (which can be omitted using \code{center = TRUE}). When \code{df} is
-  given, a ridge estimator with \code{df} degrees of freedom (trace of hat matrix)
-  is used as base learner.
+  given, and \code{x} is a factor a ridge estimator with \code{df}
+  degrees of freedom is used as base learner. When \code{x} is an
+  ordered factor (\code{ordered()}) and  \code{df} is given the
+  differences of adjacent parameters are ridge penalized.
 
   With \code{bbs}, the P-spline approach of Eilers and Marx (1996) is used.
   \code{bns} uses the same penalty and interior knots as \code{bbs},
@@ -110,8 +113,8 @@ btree(..., tree_controls = ctree_control(stump = TRUE,
 
   For all base learners the amount of smoothing is determined by the
   trace of the hat matrix, as indicated by \code{df}. If \code{df} is
-  specified in \code{bols} a ridge penalty with the according degrees of
-  freedom is used.
+  specified in \code{bols} a ridge penalty or a ridge penalty of the differences of
+  adjacent parameters with the according degrees of freedom is used.
 
   If \code{z} is specified as an additional argument, a
   varying coefficients term is estimated, where \code{z} is the

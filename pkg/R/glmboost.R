@@ -1,8 +1,8 @@
 
-### 
+###
 ### Experimental version of gradient boosting with componentwise least
 ### squares as base learner, i.e., fitting of generalized linear models
-### 
+###
 
 
 ### Fitting function
@@ -20,9 +20,9 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
     if (is.null(weights)) {
         weights <- object$w
     } else {
-        if (NROW(x) == length(weights)) 
+        if (NROW(x) == length(weights))
             object$w <- weights
-        else 
+        else
             stop(sQuote("weights"), " is not of length ", NROW(x))
     }
 
@@ -41,7 +41,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
     ### unweighted problem
     WONE <- (max(abs(weights - 1)) < .Machine$double.eps)
     if (!family@weights && !WONE)
-        stop(sQuote("family"), " is not able to deal with weights") 
+        stop(sQuote("family"), " is not able to deal with weights")
 
     ### rescale weights (because of the AIC criterion)
     ### <FIXME> is this correct with zero weights??? </FIXME>
@@ -52,7 +52,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
     ens <- matrix(NA, nrow = mstop, ncol = 2)
     colnames(ens) <- c("xselect", "coef")
 
-    ### vector of empirical risks for all boosting iterations 
+    ### vector of empirical risks for all boosting iterations
     ### (either in-bag or out-of-bag)
     mrisk <- numeric(mstop)
     mrisk[1:mstop] <- NA
@@ -74,7 +74,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
 
     ### start boosting iteration
     for (m in 1:mstop) {
-  
+
         ### fit least squares to residuals _componentwise_, i.e.,
         ### compute regression coefficients for each _standardized_
         ### input variable and select the best variable
@@ -102,7 +102,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
         ens[m,] <- c(xselect, coef)
 
         ### print status information
-        if (trace) 
+        if (trace)
             do_trace(m, risk = mrisk, step = tracestep, width = mstop)
     }
 
@@ -146,7 +146,7 @@ glmboost_fit <- function(object, family = GaussReg(), control = boost_control(),
         tmp <- RET
         tmp$ensemble <- tmp$ensemble[1:mstop,,drop = FALSE]
         lp <- offset + x %*% coef(tmp)
-        if (constraint) lp <- sign(lp) * pmin(abs(lp), 1)    
+        if (constraint) lp <- sign(lp) * pmin(abs(lp), 1)
         return(drop(lp))
     }
     ### function for computing hat matrices of individual predictors
@@ -161,7 +161,7 @@ glmboost <- function(x, ...) UseMethod("glmboost")
 
 ### formula interface
 ### FIXME: is na.pass correct here? fails with centering
-glmboost.formula <- function(formula, data = list(), weights = NULL, 
+glmboost.formula <- function(formula, data = list(), weights = NULL,
                              contrasts.arg = NULL, na.action = na.omit, ...) {
 
     ### control and contrasts.arg might be confused here
@@ -171,13 +171,13 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     }
 
     ### construct design matrix etc.
-    object <- boost_dpp(formula, data, weights, contrasts.arg = contrasts.arg, 
+    object <- boost_dpp(formula, data, weights, contrasts.arg = contrasts.arg,
                         na.action = na.action, frame = environment(formula))
 
     object$center <- function(xmat) {
         cm <- colMeans(object$x, na.rm = TRUE)
         num <- which(sapply(object$menv@get("input"), is.numeric))
-        cm[!attr(object$x, "assign") %in% num] <- 0       
+        cm[!attr(object$x, "assign") %in% num] <- 0
         scale(xmat, center = cm, scale = FALSE)
     }
 
@@ -193,15 +193,15 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
 glmboost.matrix <- function(x, y, weights = NULL, ...) {
 
     if (NROW(x) != NROW(y))
-        stop("number of observations in", sQuote("x"), "and", 
+        stop("number of observations in", sQuote("x"), "and",
              sQuote("y"), "differ")
     if (is.null(weights)) weights <- rep(1, NROW(x))
     if (length(weights) != NROW(x))
-        stop("number of observations in", sQuote("x"), "and", 
+        stop("number of observations in", sQuote("x"), "and",
              sQuote("weights"), "differ")
 
     object <- gb_xyw(x, y, weights)
-    object$center <- function(xmat) 
+    object$center <- function(xmat)
         scale(xmat, center = colMeans(x, na.rm = TRUE), scale = FALSE)
     RET <- glmboost_fit(object, ...)
     RET$call <- match.call()
@@ -232,14 +232,14 @@ coefpath.glmboost <- function(object, ...) {
     colnames(ret) <- svars
     for (j in unique(xselect)) {
         indx <- which(xselect == j)
-        ret[indx, svars[svars == vars[j]]] <- 
+        ret[indx, svars[svars == vars[j]]] <-
             object$ensemble[indx, "coef"]
     }
     RET <- ret * object$control$nu
     apply(RET, 2, cumsum)
 }
 
-### methods: hatvalues. 
+### methods: hatvalues.
 hatvalues.glmboost <- function(model, ...) {
 
     if (!checkL2(model)) return(hatglm(model))
@@ -250,8 +250,8 @@ hatvalues.glmboost <- function(model, ...) {
                 as.integer(model$ensemble[, "xselect"]),
                 PACKAGE = "mboost")
     RET <- diag(op[[1]])
-    attr(RET, "hatmatrix") <- op[[1]]  
-    attr(RET, "trace") <- op[[2]] 
+    attr(RET, "hatmatrix") <- op[[1]]
+    attr(RET, "trace") <- op[[2]]
     RET
 }
 
@@ -277,7 +277,34 @@ print.glmboost <- function(x, ...) {
     invisible(x)
 }
 
-plot.glmboost <- function(x, main = deparse(x$call), 
+### methods: summary
+summary.glmboost <- function(x, ...) {
+
+    print(x)
+
+    cat("Number of selections in",  mstop(x), "iterations:\n")
+    fs <- freq.sel.glmboost(x)
+    for (i in 1:length(fs))
+        cat("\t", names(fs[i]), ":\t", fs[i], "\n", sep="")
+
+    invisible(x)
+
+}
+
+## function to extract selection frequencies of base-learners
+freq.sel.glmboost <- function(object){
+    x <- object$data$x
+    ret <- rep(0, ncol(x))
+    names(ret) <- colnames(x)
+
+    for (i in 1:ncol(x)){
+        ret[i] <- sum(object$ensemble[,1] == i)
+    }
+    ret <- sort(ret, decreasing=TRUE)
+    return(ret)
+}
+
+plot.glmboost <- function(x, main = deparse(x$call),
                           col = NULL, ...) {
 
     cp <- coefpath(x)
@@ -285,10 +312,10 @@ plot.glmboost <- function(x, main = deparse(x$call),
     cf <- cp[nrow(cp),]
     if (is.null(col))
         col <- hcl(h = 40, l = 50, c= abs(cf) / max(abs(cf)) * 490)
-    matplot(cp, type = "l", lty = 1, xlab = "Number of boosting iterations", 
+    matplot(cp, type = "l", lty = 1, xlab = "Number of boosting iterations",
             ylab = "Coefficients", main = main, col = col, ...)
     abline(h = 0, lty = 1, col = "lightgray")
-    axis(4, at = cp[nrow(cp),], labels = colnames(cp), 
+    axis(4, at = cp[nrow(cp),], labels = colnames(cp),
          las = 1)
-    
+
 }
