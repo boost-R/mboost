@@ -1,0 +1,368 @@
+
+R version 2.9.0 (2009-04-17)
+Copyright (C) 2009 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ###################################################
+> ### chunk number 1: pkg-attach
+> ###################################################
+> source("setup.R")
+Loading required package: modeltools
+Loading required package: stats4
+Loading required package: party
+Loading required package: survival
+Loading required package: splines
+Loading required package: grid
+Loading required package: coin
+Loading required package: mvtnorm
+Loading required package: zoo
+
+Attaching package: 'zoo'
+
+
+	The following object(s) are masked from package:base :
+
+	 as.Date.numeric 
+
+Loading required package: sandwich
+Loading required package: strucchange
+Loading required package: vcd
+Loading required package: MASS
+Loading required package: colorspace
+
+
+	%%%% DON'T EDIT THIS FILE
+
+\setkeys{Gin}{width = 0.95\textwidth}R> 
+R> 
+R> ###################################################
+R> ### chunk number 2: bodyfat-lm-fit
+R> ###################################################
+R> bf_lm <- lm(DEXfat ~ hipcirc + kneebreadth + anthro3a, data = bodyfat)
+R> coef(bf_lm)  
+(Intercept)     hipcirc kneebreadth    anthro3a 
+  -75.23478     0.51153     1.90199     8.90964 
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 3: bodyfat-glmboost-fit
+R> ###################################################
+R> bf_glm <- glmboost(DEXfat ~ ., data = bodyfat, control = boost_control(center = TRUE))
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 4: bodyfat-glmboost-coef
+R> ###################################################
+R> coef(bf_glm)
+ (Intercept)          age    waistcirc      hipcirc 
+    0.000000     0.013602     0.189716     0.351626 
+elbowbreadth  kneebreadth     anthro3a     anthro3b 
+   -0.384140     1.736589     3.326860     3.656524 
+    anthro3c      anthro4 
+    0.595363     0.000000 
+attr(,"offset")
+[1] 30.783
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 5: bodyfat-oob-plot
+R> ###################################################
+R> load(system.file("cache/bodyfat_benchmarks.rda", package = "mboost"))
+R> aic <- AIC(bf_glm)
+R> pdf("figures/bodyfat_glmboost-bodyfat-oob-plot.pdf", version = "1.4", width = 6, height = 10)
+R> par(mai = par("mai") * c(1, 1, 0.5, 1))
+R> mopt <- grid[which.min(colMeans(boob))]
+R> layout(matrix(1:2, nrow = 2))
+R> perfplot(boob, grid, ylab = "Out-of-bootstrap squared error", 
+         xlab = "Number of boosting iterations", alpha = 0.05)
+Warning message:
+In matplot(x = x, y = y, type = type, lty = lty, lwd = lwd, pch = pch,  :
+  default 'pch' is smaller than number of columns and hence recycled
+R> abline(h = mean(boobrest), lty = 2)
+R> lines(c(which.min(colMeans(boob)), which.min(colMeans(boob))), 
+           c(0, min(colMeans(boob))), lty = 2)
+R> points(which.min(colMeans(boob)), min(colMeans(boob)))
+R> plot(aic, ylim = c(3, 5.5))
+R> dev.off()
+null device 
+          1 
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 6: bodyfat-glmboost-AIC
+R> ###################################################
+R> mstop(aic <- AIC(bf_glm))
+[1] 45
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 7: bodyfat-glmboost-coef
+R> ###################################################
+R> coef(bf_glm[mstop(aic)])
+ (Intercept)          age    waistcirc      hipcirc 
+   0.0000000    0.0023271    0.1893046    0.3488781 
+elbowbreadth  kneebreadth     anthro3a     anthro3b 
+   0.0000000    1.5217686    3.3268603    3.6051548 
+    anthro3c      anthro4 
+   0.5043133    0.0000000 
+attr(,"offset")
+[1] 30.783
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 8: bodyfat-glmboost-coef-count
+R> ###################################################
+R> cf <- coef(bf_glm[mopt])
+R> nsel <- sum(abs(cf) > 0)
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 9: bodyfat-pkg-attach
+R> ###################################################
+R> source("setup.R")
+
+
+	%%%% DON'T EDIT THIS FILE
+
+\setkeys{Gin}{width = 0.95\textwidth}R> 
+R> 
+R> ###################################################
+R> ### chunk number 10: bodyfat-gamboost-fit
+R> ###################################################
+R> bf_gam <- gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss")
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 11: bodyfat-gamboost-prune
+R> ###################################################
+R> mstop(aic <- AIC(bf_gam))
+[1] 46
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 12: bodyfat-gamboost-plot
+R> ###################################################
+R> bf_gam <- bf_gam[mstop(aic)]
+R> fpartial <- mboost:::gamplot(bf_gam)
+R> layout(matrix(1:4, ncol = 2, byrow = TRUE))
+R> par(mai = par("mai") * c(1, 1, 0.5, 1))
+R> x <- bf_gam$data$input
+R> varorder <- rev(order(colMeans(abs(fpartial))))[1:4]
+R> 
+R> out <- sapply(varorder, function(i) {
+         plot(x[,i], fpartial[,i],  main = "",
+              xlab = colnames(x)[i], ylab = expression(f[partial]),
+              ylim = max(abs(fpartial))*c(-1, 1))
+         abline(h = 0, lty = 2, lwd = 0.5)
+         })
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 13: bodyfat-pkg-attach
+R> ###################################################
+R> source("setup.R")
+
+
+	%%%% DON'T EDIT THIS FILE
+
+\setkeys{Gin}{width = 0.95\textwidth}R> library("splines")
+R> indep <- names(bodyfat)[names(bodyfat) != "DEXfat"]
+R> bsfm <- as.formula(paste("DEXfat ~ ", paste("bs(", indep, ")", collapse = " + ", sep = ""), sep = ""))
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 14: bodyfat-bs
+R> ###################################################
+R> bsfm
+DEXfat ~ bs(age) + bs(waistcirc) + bs(hipcirc) + bs(elbowbreadth) + 
+    bs(kneebreadth) + bs(anthro3a) + bs(anthro3b) + bs(anthro3c) + 
+    bs(anthro4)
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 15: bodyfat-fpboost-fit
+R> ###################################################
+R> ctrl <- boost_control(mstop = 5000)
+R> bf_bs <- glmboost(bsfm, data = bodyfat, control = ctrl)
+R> mstop(aic <- AIC(bf_bs))
+[1] 2891
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 16: bodyfat-fpboost-plot
+R> ###################################################
+R> layout(matrix(1:4, ncol = 2, byrow = TRUE))
+R> par(mai = par("mai") * c(1, 1, 0.5, 1))
+R> cf <- coef(bf_bs[mstop(aic)])
+R> x <- bf_bs$data$x
+R> varorder <- c("hipcirc", "waistcirc", "kneebreadth", "anthro3b")
+R> fpartial <- sapply(varorder, function(v) {
+         indx <- grep(v, names(cf))
+         x[,indx] %*% cf[indx]
+     })
+R> out <- sapply(varorder, function(i) {
+         plot(bodyfat[,i], fpartial[,i],  main = "",
+              xlab = i, ylab = expression(f[partial]), ylim = max(abs(fpartial)) * c(-1, 1))
+         abline(h = 0, lty = 2, lwd = 0.5)
+         })
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 17: pkg-attach
+R> ###################################################
+R> source("setup.R")
+
+
+	%%%% DON'T EDIT THIS FILE
+
+\setkeys{Gin}{width = 0.95\textwidth}R> n <- sum(complete.cases(wpbc))
+R> p <- ncol(wpbc) - 2
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 18: wpbc-glm-fit
+R> ###################################################
+R> ### remove missing values and time variable
+R> cc <- complete.cases(wpbc)
+R> wpbc2 <- wpbc[cc, colnames(wpbc) != "time"]
+R> ### fit logistic regression model
+R> wpbc_step <- step(glm(status ~ ., data = wpbc2, family = binomial()), trace = 0)
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 19: wpbc-glm-aic
+R> ###################################################
+R> logLik(wpbc_step)
+'log Lik.' -80.13 (df=16)
+R> AIC(wpbc_step)
+[1] 192.26
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 20: wpbc-glmboost-fit
+R> ###################################################
+R> ### fit logistic regression model via gradient boosting
+R> ctrl <- boost_control(mstop = 500, center = TRUE)
+R> wpbc_glm <- glmboost(status ~ ., data = wpbc2, family = Binomial(),
+                          control = ctrl)
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 21: wpbc-glmboost-AIC
+R> ###################################################
+R> aic <- AIC(wpbc_glm, "classical") 
+R> aic
+[1] 198.45
+Optimal number of boosting iterations: 260 
+Degrees of freedom (for mstop = 260): 7.035 
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 22: wpbc-glmboost-fit2
+R> ###################################################
+R> ### fit with new mstop
+R> wpbc_glm <- wpbc_glm[mstop(aic)]
+R> coef(wpbc_glm)[abs(coef(wpbc_glm)) > 0]
+     (Intercept)     mean_texture    mean_symmetry 
+     -3.0110e-02      -2.4215e-02      -3.3878e+00 
+ mean_fractaldim       SE_texture     SE_perimeter 
+     -2.0321e+01      -2.6603e-02       4.0908e-02 
+  SE_compactness     SE_concavity SE_concavepoints 
+      7.0280e+00      -4.6303e+00      -1.5737e+01 
+     SE_symmetry     worst_radius  worst_perimeter 
+      2.8601e+00       1.7777e-02       1.2639e-03 
+      worst_area worst_smoothness            tsize 
+      1.5854e-04       8.8372e+00       3.1014e-02 
+          pnodes 
+      2.5981e-02 
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 23: wpbc-gamboost-fit
+R> ###################################################
+R> wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial(), baselearner = "bss")
+R> mopt <- mstop(aic <- AIC(wpbc_gam, "classical"))
+R> aic
+[1] 196.33
+Optimal number of boosting iterations: 84 
+Degrees of freedom (for mstop = 84): 13.754 
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 24: wpbc-gamboost-plot
+R> ###################################################
+R> fpartial <- mboost:::gamplot(wpbc_gam[mopt])
+R> x <- wpbc_gam$data$input
+R> layout(matrix(1:4, nrow = 2, byrow = TRUE))
+R> par(mai = par("mai") * c(1, 1, 0.5, 1))
+R> out <- sapply(rev(order(colMeans(abs(fpartial))))[1:4], function(i) {
+         plot(x[,i], fpartial[,i], xlab = colnames(x)[i], main = "",
+              ylab = expression(f[partial]), ylim = c(-0.5, 0.5), type = "p")
+         abline(h = 0, lty = 2, lwd = 0.5)
+             })
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 25: pkg-attach
+R> ###################################################
+R> source("setup.R")
+
+
+	%%%% DON'T EDIT THIS FILE
+
+\setkeys{Gin}{width = 0.95\textwidth}R> 
+R> 
+R> ###################################################
+R> ### chunk number 26: wpbc-glmboost-PIC
+R> ###################################################
+R> ### calculate IPC weights
+R> censored <- wpbc$status == "R"
+R> iw <- IPCweights(Surv(wpbc$time, censored))
+R> wpbc3 <- wpbc[,names(wpbc) != "status"]
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 27: wpbc-glmboost-censored-fit
+R> ###################################################
+R> ctrl <- boost_control(mstop = 500, center = TRUE)
+R> wpbc_surv <- glmboost(log(time) ~ ., data = wpbc3,
+                       control = ctrl, weights = iw)
+R> mstop(aic <- AIC(wpbc_surv))
+[1] 106
+R> wpbc_surv <- wpbc_surv[mstop(aic)]
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 28: wpbc-glmboost-coef
+R> ###################################################
+R> names(coef(wpbc_surv)[abs(coef(wpbc_surv)) > 0])
+ [1] "mean_radius"         "mean_texture"       
+ [3] "mean_smoothness"     "mean_symmetry"      
+ [5] "SE_texture"          "SE_smoothness"      
+ [7] "SE_concavepoints"    "SE_symmetry"        
+ [9] "worst_concavepoints" "pnodes"             
+R> 
+R> 
+R> ###################################################
+R> ### chunk number 29: wpbc-glmboost-censored-fit
+R> ###################################################
+R> plot(log(wpbc3$time), predict(wpbc_surv, newdata = wpbc3),
+          cex = iw, ylim = c(0, 5), xlim = c(0, 5), 
+          xlab = "Time to recurrence (log-scale)", 
+          ylab = "Predicted time to recurrence")
+R> abline(a = 0, b = 1, lty = 2, lwd = 0.5)
+R> 
+R> 
+R> 

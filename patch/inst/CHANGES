@@ -1,0 +1,358 @@
+
+                CHANGES in `mboost' VERSION 1.1-3 (2009-09-21)
+
+  o  better x-axes in plot.cvrisk and possibility to change xlab
+
+  o  parallel cvrisk on unix systems only (`multicore' isn't safe on windows)
+
+  o  included new penalty for ordinal predictors (in bols())
+
+  o  corrected bug in bspatial (centering was not used for Xna)
+
+  o  removed output of dfbase (which is seldom used) in gamboost
+
+  o  changed manual for coef.gamboost
+
+  o  make sure NAs are handled correctly when center = TRUE
+     in glmboost
+
+
+		CHANGES in `mboost' VERSION 1.1-2 (2009-07-21)
+
+  o  better weights and boundary knots handling in bspatial
+
+  o  cvrisk runs in parallel if package `multicore' is available
+
+  o  errors removed and minor improvements in the manuals
+
+  o  center = TRUE in glmboost did only apply to numeric (not integer)
+     predictors
+
+  o  for safety reasons: na.action = na.omit again
+     (causes slight changes in wpbc3 example)
+
+
+		CHANGES in `mboost' VERSION 1.1-1 (2009-04-21)
+
+  o  new quantile regression facilities.
+
+  o  fix problem with bbs baselearner and cvrisk
+
+
+		CHANGES in `mboost' VERSION 1.1-0 (2009-03-27)
+
+  o  bbs instead of bss is the default baselearner in gamboost
+
+  o  make sure bbs with weights and expanded observations
+     returns numerically the very same results
+
+  o  btree can now deal with multiple variables
+
+  o  new gMDL criterion (contributed by Zhu Wang <zhu.wang@yale.edu>)
+
+  o  make survival package happy again
+
+
+		CHANGES in `mboost' VERSION 1.0-6 (2009-01-09)
+
+  o  bols allows to specify non-default contrasts.
+
+
+		CHANGES in `mboost' VERSION 1.0-5 (2008-12-02)
+
+  o  remove experimental memory optimization steps
+
+
+		CHANGES in `mboost' VERSION 1.0-4 (2008-11-12)
+
+  o  negative gradient of GaussClass() was wrong, spotted by
+     Kao Lin <linkao@picb.ac.cn>
+
+
+		CHANGES in `mboost' VERSION 1.0-3 (2008-11-07)
+
+  o  Date was malformed in DESCRIPTION
+
+
+		CHANGES in `mboost' VERSION 1.0-2 (2008-11-05)
+
+  o  improved memory footprint in gamboost() and cvrisk()
+
+  o  option to suppress saving of ensembless added to
+     boost_control()
+
+  o  bbs(), bns(), bspatial(): default number of knots changed to
+     a fixed value (= 20)
+
+  o  changed default for grid (now uses all iterations) in
+     cvrisk() and changed plot.cvrisk()
+
+  o  bols: works now for factors and can be set-up
+     to use Ridge-estimation. Intercept can be omitted
+     now (via center = TRUE).
+
+  o  new btree() baselearner for gamboost() available
+
+  o  fix inconsistencies in regression tests
+
+  o  add coef.gamboost
+
+  o  new generic `survFit'
+
+  o  cosmetics for trace = TRUE
+
+
+		CHANGES in `mboost' VERSION 1.0-1 (2007-12-09)
+
+  o  inst/mboost_Bioinf.R was missing from mboost 1.0-0
+
+
+		CHANGES in `mboost' VERSION 1.0-0 (2007-11-13)
+
+  o  documentation updates
+
+
+		CHANGES in `mboost' VERSION 0.9-0 (internal)
+
+  o  tests update and release the new version on CRAN
+
+  o  predict(..., allIterations = TRUE) returns the matrix
+     of predictors for all boosting iterations
+
+
+		CHANGES in `mboost' VERSION 0.6-2 (internal)
+
+  o  move `mboost' to R-forge
+
+  o  improvements in `gamboost':
+     - P-splines as base learners available
+     - new formula interface for specifying the base learner
+     - new plot.gamboost
+
+  o  add the number of selected variables as degrees of freedom
+     (as mentioned in the discussion of Hastie to Buhlmann & Hothorn)
+
+  o  status information during fitting is now available via
+     boost_control(trace = TRUE) but is switched off by default
+
+  o  acknowledge constributions by Thomas Kneib and Matthias Schmid
+     in DESCRIPTION
+
+
+		CHANGES in `mboost' VERSION 0.6-1 (internal)
+
+  o  gamboost() now allows for user-specified base learners
+     via the formula interface
+
+  o  gamboost.matrix(x = x, ...) requires colnames being set
+     for `x'
+
+  o  na.action = na.omit fix for g{al}mboost()
+
+
+		CHANGES in `mboost' VERSION 0.5-8 (2007-05-31)
+
+  o  gamboost(..., weights = w) was broken
+
+
+		CHANGES in `mboost' VERSION 0.5-7 (2007-05-30)
+
+  o  extract response correctly in fitted.blackboost
+
+  o  hatvalues (and thus AICs) for GLMs with centering of
+     covariates may have been wrong since version 0.5-0
+
+  o  add paper examples to tests
+
+
+		CHANGES in `mboost' VERSION 0.5-6 (2007-05-07)
+
+  o  fix Rd problems
+
+
+		CHANGES in `mboost' VERSION 0.5-5 (2007-04-25)
+
+  o  `westbc' regenerated
+
+  o  LazyLoad: yes (no SaveImage: yes)
+
+
+		CHANGES in `mboost' VERSION 0.5-4 (2007-04-18)
+
+  o  plot() method for `glmboost' objects visualizing the
+     coefficient path (feature request by Axel Benner <benner@dkfz.de>).
+
+  o  predict(newdata = <matrix>) was broken for gamboost(),
+     thanks to Max Kuhn <Max.Kuhn@pfizer.com> for spotting this.
+
+
+		CHANGES in `mboost' VERSION 0.5-3 (2007-03-23)
+
+  o  predict() for gamboost(..., dfbase = 1) was not working correctly
+
+  o  small performance and memory improvements for glmboost()
+
+
+		CHANGES in `mboost' VERSION 0.5-2 (2007-02-28)
+
+  o  some performance improvements for `glmboost()'
+
+  o  blackboost() is now generic with formula and x, y interface
+
+  o  plot() method for cvrisk() and AIC() output now allows for ylim
+     specification without troubles
+
+
+		CHANGES in `mboost' VERSION 0.5-1 (2007-02-02)
+
+  o  depends party 0.9-9
+
+
+		CHANGES in `mboost' VERSION 0.5-0 (2007-01-30)
+
+  o  new `baselearner' argument to `gamboost' allowing to
+     specify difference component-wise base-learners to
+     be used. Currently implemented: "ssp" for smoothing splines
+     (default), "bsp" for B-splines and "ols" for linear models.
+     The latter two haven't been tested yet.
+
+  o  The `dfbase' arguments now applies to each covariate and
+     no longer to each column of the design matrix.
+
+  o  cvrisk() for blackboost() was broken, totally :-(
+
+  o  centered covariates were returned by glmboost() and gamboost()
+
+  o  Poisson() used an incorrect offset
+
+  o  check for y being positive counts when family = "Poisson()"[B
+
+  o  checks for Poisson() logLik() and AIC() methods
+
+  o  fire a warning when all u > 0 or u < 0
+
+  o  update vignette `mboost_illustrations'
+
+
+		CHANGES in `mboost' VERSION 0.4-17 (2007-01-15)
+
+  o  fix problem with `dfbase' in `gamboost', spotted by
+     Karin Eckel <Karin.Eckel@imbe.imed.uni-erlangen.de>
+
+
+		CHANGES in `mboost' VERSION 0.4-16 (2007-01-12)
+
+  o  work around stats4:::AIC
+
+
+		CHANGES in `mboost' VERSION 0.4-15 (2006-12-06)
+
+  o  fix plot problems in plot.cvrisk
+
+  o  allow for centering of the numerical covariates in glmboost and
+     gamboost
+
+
+		CHANGES in `mboost' VERSION 0.4-14 (2006-10-27)
+
+  o  AIC(..., "classical") is now faster for non-gaussian families
+
+
+		CHANGES in `mboost' VERSION 0.4-13 (2006-10-04)
+
+  o  predict(..., newdata) can take a matrix now
+
+
+		CHANGES in `mboost' VERSION 0.4-12 (2006-09-13)
+
+  o  predict(<blackboost-object>, type = "response") did not return
+     factors when the response was actually a factor
+
+  o  report offset in print methods
+
+  o  add offset attribute to coef.glmboost
+
+
+		CHANGES in `mboost' VERSION 0.4-11 (2006-09-07)
+
+  o  add `contrasts.arg' argument to `glmboost.formula'
+
+  o  more meaningful default for `grid' in `cvrisk'
+
+  o  R-2.4.0 fixes
+
+
+		CHANGES in `mboost' VERSION 0.4-10 (2006-08-30)
+
+  o  add checks for CoxPH (against coefficients and logLik of coxph)
+
+  o  add weights to CoxPH
+
+  o  the ngradient function in Family objects needs to implement
+     arguments (y, f, w), not just (y, f)
+
+  o  check for meaningful class of the response for some families
+
+
+		CHANGES in `mboost' VERSION 0.4-9 (2006-07-17)
+
+  o  some small speed improvements in `gamboost'
+
+  o  handle factors in `gamboost' properly (via a linear model)
+
+  o  the dfbase argument can take a vector now (in `gamboost')
+
+  o  update and improve entries in DESCRIPTION
+
+  o  documentation updates
+
+
+		CHANGES in `mboost' VERSION 0.4-8 (2006-07-05)
+
+  o  Huber() is `Huber Error', not `Huber Absolute Error'
+
+  o  added `CoxPH' family object for fitting Cox models
+
+  o  remove inst/LaTeX
+
+  o  use NROW / NCOL more often (now that `y' may be a `Surv' object)
+
+  o  implement `cvrisk', a general cross-validation function for the
+     empirical risk and a corresponding plot method
+
+  o  unify risk computations in all three fitting functions
+
+  o  unify names for `gb' objects
+
+  o  allow for out-of-bag risk computations
+
+  o  some cosmetics
+
+  o  update keywords in Rd-files
+
+  o  risk was always 0 in Huber()@risk when d was choosen adaptively
+
+  o  pData(westbc)$nodal.y has levels `negative' and `positive'
+     (lymph node status)
+
+
+		CHANGES in `mboost' VERSION 0.4-7 (2006-06-19)
+
+  o  add src/Makevars (required for Windows builds)
+
+  o  make sure objects that are modified at C-level get _copied_ in
+     `blackboost'
+
+
+		CHANGES in `mboost' VERSION 0.4-6 (2006-06-14)
+
+  o  some minor `codetools' fixes: removed unused variables
+     and an out-dated function
+
+  o  add `codetools' checks to regression tests
+
+  o  fix xlab in plot.gbAIC
+
+______________________________________________________________________________
+
+	`mboost' version 0.4-5 published on CRAN 2006-06-13

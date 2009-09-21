@@ -1,0 +1,68 @@
+
+  o  make sure Binomial()@loss works with large f
+
+  o  NA handling in bns and brandom!
+
+  o make sure fitfct is saved -- with Matrix in place
+    the memory demand is outweighted by speed (in cvrisk)
+
+  o make sure design matrices are only computed _once_ in
+    predict.gamboost. Sum up coefs beforehand.
+    Maybe save only xselect in large problems.
+
+  o write update method
+
+  o implement binning
+
+  o checks for QuantReg
+
+> Ein kleines Problem gibt es auch noch: Bei räumlichen Effekten müssen wir
+> die
+> plot-Funktion noch davon abhalten, eine Funktion zu zeichnen und
+> stattdessen
+> persp oder image aufrufen.
+
+    o  check status == "N" in wpbc
+
+    o  na.action defaults checken
+
+    o  wpbc3 mit na.action = na.omit ODER na.pass???
+       default in glmboost.formula!!!
+
+    o  data$x NACH center = TRUE: alles checken!
+
+    o  use better colours
+
+    o  fire a warning when AIC is called in cases the hat matrix is
+       meaningless
+
+    o  update benchmarks in cache with cvrisk
+
+    o  use col = rgb(0, 0, 0, 0.1) for lines in plot.cvrisk
+
+    o  AIC(..., "classical") as default???
+
+    o  adjust control$M when subsetting
+    
+    o  names in predict and fitted
+
+    o  multivariate responses
+
+    o  reweight generic?
+
+    o  hatvalues + AIC geht so nur fuer GaussReg!
+    o  hat matrices fuer GAMS (Hastie & Tib)
+
+    o  weighted median for offset in Huber / Laplace, see Hmisc:::wtd.quantile
+
+    o  AIC(..., "corrected") monoton steigend???
+
+    o  need party?
+
+    o  better separation of dpp and fitting (response updates in blackboost
+       and centering in gamboost / glmboost)
+
+    o  look at coffee dataset
+       http://sensor.ing.unibs.it/_people/pardo/dataset.html
+
+    o  checks for gMLD

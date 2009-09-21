@@ -1,0 +1,68 @@
+
+    Standard operating procedures for `mboost' development
+
+
+  Structure of the repository
+
+    pkg/    current development version
+            add bug fixes and new functionality
+
+    patch/  current version on CRAN
+            add bug fixes only
+
+    devel/  next generation development version; experimental stuff
+            add experimental material or 
+            start new generation package
+
+
+  Making a patch release
+
+    A bug was fixed in patch/.
+
+    Increase patch level in DESCRIPTION
+    Update Date: field in DESCRIPTION
+    Update NEWS
+
+    R CMD build patch
+    R CMD check mboost_XXX
+
+    gives no warnings / errors.
+
+    Commit changes to patch/
+
+    Ftp source package to CRAN.
+
+    Merge changes to R code or documentation to pkg/
+        cd pkg/R
+        svn merge (--dry-run) svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/patch/R
+    Make sure not to modify version numbers etc. in pkg
+
+
+  Making a minor release
+
+    Several new tools have been added to pkg/.
+
+    Increase minor level in DESCRIPTION (patch level 0)
+    Update Date: field in DESCRIPTION  
+    Update NEWS
+   
+    R CMD build pkg
+    R CMD check mboost_XXX
+   
+    gives no warnings / errors.
+
+    Commit changes to pkg/
+
+    Ftp source package to CRAN.
+
+    Merge changes to patch/
+       svn merge (--dry-run) svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/pkg
+
+    After a minor release, pkg/ and patch/ are identical.
+
+
+  Starting a new experimental version
+
+    cd mboost
+    svn copy pkg ng/mboost_XXX
+
