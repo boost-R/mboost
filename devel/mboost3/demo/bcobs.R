@@ -94,11 +94,11 @@ bcobs <- function(..., index = NULL, lambda = 1, knots = 20,
     return(ret)
 }
 
-library("mboost3")
+library("mboost")
 library("cobs")
-attach(asNamespace("mboost3"))
+attach(asNamespace("mboost"))
 
-data("bodyfat", package = "mboost3")
+data("bodyfat", package = "mboost")
 
 bb <- function(...) bcobs(..., constraint = "increase")
 bmod <- mboost(DEXfat ~ . , data = bodyfat, baselearner = bb,

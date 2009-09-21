@@ -1,6 +1,6 @@
 
-library("mboost3")
-attach(asNamespace("mboost3"))
+library("mboost")
+attach(asNamespace("mboost"))
 library("MASS")
 
 ### dgp
@@ -167,6 +167,8 @@ max(abs(coef(f1) - coef(f2)))
 all.equal(get_index(data.frame(x, x)), get_index(X))
 all.equal(get_index(data.frame(x)), get_index(X))
 
+if (FALSE) {
+
 ### spatial
 set.seed(29)
 x1 <- runif(n, min = -3, max = 3)
@@ -195,3 +197,5 @@ y <- sin(x) + rnorm(length(x), sd = 0.1)
 m1 <- mboost(y ~ mboost3:::bbs(x, df = 1, center = TRUE) + mboost3:::bols(x))
 m2 <- mboost:::gamboost(y ~ mboost:::bbs(x, df = 1, center = TRUE) + mboost:::bols(x))
 stopifnot(max(abs(fitted(m1) - fitted(m2))) < sqrt(.Machine$double.eps))
+
+}

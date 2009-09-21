@@ -181,7 +181,7 @@ CoxPH <- function()
                if (length(f) == 1)
                    f <- rep(f, length(time))
                storage.mode(f) <- "double"
-               .Call("ngradientCoxPLik", time, event, f, w, package = "mboost3")
+               .Call("ngradientCoxPLik", time, event, f, w, package = "mboost")
            },
            loss = plloss <- function(y, f, w) {
                time <- y[,1]

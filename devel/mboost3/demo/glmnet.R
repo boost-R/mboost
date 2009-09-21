@@ -1,10 +1,10 @@
 
-library("mboost3")
+library("mboost")
 library("glmnet")
 
 url <- "http://www-stat.stanford.edu/~hastie/glmnet/glmnetData"
 wd <- getwd()
-setwd(system.file("demo", package = "mboost3"))
+setwd(system.file("demo", package = "mboost"))
 if (!file.exists("Leukemia.RData"))
     download.file(paste(url, "Leukemia.RData", sep = "/"), "Leukemia.RData")
 load("Leukemia.RData")

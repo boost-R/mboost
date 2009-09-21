@@ -2,7 +2,7 @@
 lwd <- 2
 cex <- 1
 sink("tmpfile")
-library("mboost3")
+library("mboost")
 sink()
 file.remove("tmpfile")
 cat("\n\n\t%%%% DON'T EDIT THIS FILE\n\n")
@@ -29,6 +29,6 @@ perfplot <- function(x, grid, alpha = NULL, border = 1,
   lines(colMeans(x))
 }
 
-data("bodyfat", package = "mboost3")
-data("wpbc", package = "mboost3")
+data("bodyfat", package = "mboost")
+data("wpbc", package = "mboost")
 library("party")

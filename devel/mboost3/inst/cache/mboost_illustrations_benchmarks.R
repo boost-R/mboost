@@ -1,9 +1,9 @@
 
-library("mboost3")
+library("mboost")
 
 ### bodyfat benchmarks
 
-data("bodyfat", package = "mboost3")
+data("bodyfat", package = "mboost")
 bffm <- DEXfat ~ age + waistcirc + hipcirc + elbowbreadth + kneebreadth +
       anthro3a + anthro3b + anthro3c + anthro4 - 1
 

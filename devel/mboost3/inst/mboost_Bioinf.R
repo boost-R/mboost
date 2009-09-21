@@ -2,10 +2,10 @@
 ### chunk number 1: setup
 ###################################################
 options(width = 50)
-require("mboost3")
+require("mboost")
 require("Biobase")
 ### West et al data: binary classification
-data("Westbc", package = "mboost3")
+data("Westbc", package = "mboost")
 
 westbc <- new("ExpressionSet", 
               phenoData = new("AnnotatedDataFrame", data = Westbc$pheno),
@@ -16,7 +16,7 @@ if (!require("kidpack")) {
     require("kidpack")
 }
 library("survival")
-data("westbc", package = "mboost3")
+data("westbc", package = "mboost")
 data("eset", package = "kidpack")
 remove <- is.na(pData(phenoData(eset))$survival.time)
 eset <- eset[,!remove]

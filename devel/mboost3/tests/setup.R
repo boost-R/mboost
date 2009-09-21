@@ -2,7 +2,7 @@
 lwd <- 2
 cex <- 1
 sink("tmpfile")
-library("mboost3")
+library("mboost")
 sink()
 file.remove("tmpfile")
 cat("\n\n\t%%%% DON'T EDIT THIS FILE\n\n")

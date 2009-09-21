@@ -59,4 +59,4 @@ S3method(selected, mboost)
 S3method(selected, glmboost)
 S3method(update, mboost)
 
-useDynLib(mboost3)
+useDynLib(mboost)

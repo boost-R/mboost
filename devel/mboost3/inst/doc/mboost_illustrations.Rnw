@@ -142,7 +142,7 @@ coef(bf_glm)
 \begin{figure}
 \begin{center}
 <<bodyfat-oob-plot, echo = FALSE, fig = FALSE, results = hide>>=
-load(system.file("cache/bodyfat_benchmarks.rda", package = "mboost3"))
+load(system.file("cache/bodyfat_benchmarks.rda", package = "mboost"))
 aic <- AIC(bf_glm)
 pdf("figures/bodyfat_glmboost-bodyfat-oob-plot.pdf", version = "1.4", width = 6, height = 10)
 par(mai = par("mai") * c(1, 1, 0.5, 1))
@@ -349,7 +349,7 @@ out <- sapply(varorder, function(i) {
 source("setup.R")
 
 ### OK, this once required Biobase and is a very dirty hack...
-data("Westbc", package = "mboost3")
+data("Westbc", package = "mboost")
 westbc <- Westbc
 exprs <- function(x) x$assay
 pData <- function(x) x$pheno

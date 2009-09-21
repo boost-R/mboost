@@ -59,7 +59,7 @@ to be done
   \code{\link{boost_control}}, \code{\link{Family}} and  \code{\link[mboost]{methods}}}
 \examples{
 
-  data("bodyfat", package = "mboost3")
+  data("bodyfat", package = "mboost")
 
   mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc), data = bodyfat)
 

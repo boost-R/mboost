@@ -1,5 +1,5 @@
 
-require("mboost3")
+require("mboost")
 library("party")
 
 set.seed(290875)

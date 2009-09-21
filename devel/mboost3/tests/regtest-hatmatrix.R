@@ -1,5 +1,5 @@
 
-library("mboost3")
+library("mboost")
 
 set.seed(290875)
 

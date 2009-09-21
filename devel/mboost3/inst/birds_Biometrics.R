@@ -1,6 +1,6 @@
 
-library("mboost3")
-data("birds", package = "mboost3")
+library("mboost")
+data("birds", package = "mboost")
 
 # define characteristics of the boosting algorithm
 bcr <- boost_control(mstop=200, trace=TRUE)
