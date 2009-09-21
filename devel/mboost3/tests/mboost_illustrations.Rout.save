@@ -264,9 +264,9 @@ R> ### chunk number 21: wpbc-glmboost-AIC
 R> ###################################################
 R> aic <- AIC(wpbc_glm, "classical") 
 R> aic
-[1] 199.54
-Optimal number of boosting iterations: 465 
-Degrees of freedom (for mstop = 465): 9.147 
+[1] 198.45
+Optimal number of boosting iterations: 260 
+Degrees of freedom (for mstop = 260): 7.035 
 R> 
 R> 
 R> ###################################################
@@ -275,20 +275,18 @@ R> ###################################################
 R> ### fit with new mstop
 R> wpbc_glm <- wpbc_glm[mstop(aic)]
 R> coef(wpbc_glm)[abs(coef(wpbc_glm)) > 0]
-      (Intercept)       mean_radius      mean_texture 
-      -1.2511e-01       -5.8453e-03       -2.4505e-02 
-  mean_smoothness     mean_symmetry   mean_fractaldim 
-       2.8513e+00       -3.9307e+00       -2.8253e+01 
-       SE_texture      SE_perimeter    SE_compactness 
-      -8.7553e-02        5.4917e-02        1.1463e+01 
-     SE_concavity  SE_concavepoints       SE_symmetry 
-      -6.9238e+00       -2.0454e+01        5.2125e+00 
-    SE_fractaldim      worst_radius   worst_perimeter 
-       5.2187e+00        1.3468e-02        1.2108e-03 
-       worst_area  worst_smoothness worst_compactness 
-       1.8646e-04        9.9560e+00       -1.9469e-01 
-            tsize            pnodes 
-       4.1561e-02        2.4445e-02 
+     (Intercept)     mean_texture    mean_symmetry 
+     -3.0110e-02      -2.4215e-02      -3.3878e+00 
+ mean_fractaldim       SE_texture     SE_perimeter 
+     -2.0321e+01      -2.6603e-02       4.0908e-02 
+  SE_compactness     SE_concavity SE_concavepoints 
+      7.0280e+00      -4.6303e+00      -1.5737e+01 
+     SE_symmetry     worst_radius  worst_perimeter 
+      2.8601e+00       1.7777e-02       1.2639e-03 
+      worst_area worst_smoothness            tsize 
+      1.5854e-04       8.8372e+00       3.1014e-02 
+          pnodes 
+      2.5981e-02 
 R> 
 R> 
 R> ###################################################
@@ -342,7 +340,7 @@ R> ctrl <- boost_control(mstop = 500, center = TRUE)
 R> wpbc_surv <- glmboost(log(time) ~ ., data = wpbc3,
                        control = ctrl, weights = iw)
 R> mstop(aic <- AIC(wpbc_surv))
-[1] 122
+[1] 106
 R> wpbc_surv <- wpbc_surv[mstop(aic)]
 R> 
 R> 
@@ -351,16 +349,16 @@ R> ### chunk number 28: wpbc-glmboost-coef
 R> ###################################################
 R> names(coef(wpbc_surv)[abs(coef(wpbc_surv)) > 0])
  [1] "mean_radius"         "mean_texture"       
- [3] "mean_perimeter"      "mean_smoothness"    
- [5] "mean_symmetry"       "SE_texture"         
- [7] "SE_smoothness"       "SE_concavepoints"   
- [9] "SE_symmetry"         "worst_concavepoints"
+ [3] "mean_smoothness"     "mean_symmetry"      
+ [5] "SE_texture"          "SE_smoothness"      
+ [7] "SE_concavepoints"    "SE_symmetry"        
+ [9] "worst_concavepoints" "pnodes"             
 R> 
 R> 
 R> ###################################################
 R> ### chunk number 29: wpbc-glmboost-censored-fit
 R> ###################################################
-R> plot(log(wpbc3$time), predict(wpbc_surv),
+R> plot(log(wpbc3$time), predict(wpbc_surv, newdata = wpbc3),
           cex = iw, ylim = c(0, 5), xlim = c(0, 5), 
           xlab = "Time to recurrence (log-scale)", 
           ylab = "Predicted time to recurrence")
