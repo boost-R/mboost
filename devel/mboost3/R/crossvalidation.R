@@ -64,19 +64,22 @@ print.cvrisk <- function(x, ...) {
     return(invisible(x))
 }
 
-plot.cvrisk <- function(x, ylab = attr(x, "risk"), ylim = range(x),
-                        main = attr(x, "type"), ...) {
+plot.cvrisk <- function(x, ylab = attr(x, "risk"), 
+                        xlab = "Number of boosting iterations", 
+                        ylim = range(x), main = attr(x, "type"), ...) {
 
     cm <- colMeans(x)
     plot(1:ncol(x), cm, ylab = ylab, ylim = ylim,
-         type = "n", lwd = 2,
-         xlab = "Number of boosting iterations",
-         main = main, ...)
+         type = "n", lwd = 2, xlab = xlab,
+         main = main, axes = FALSE, ...)
     out <- apply(x, 1, function(y) lines(1:ncol(x),y, col = "lightgrey"))
     rm(out)
     ms <- which.min(cm)
     lines(c(ms, ms), c(min(c(0, ylim[1] * ifelse(ylim[1] < 0, 2, 0.5))), cm[ms]), lty = 2)
     lines(1:ncol(x), cm, type = "l")
+    axis(1, at = 1:ncol(x), label = attr(x, "mstop"))
+    axis(2)
+    box()
 }
 
 mstop.cvrisk <- function(object, ...)

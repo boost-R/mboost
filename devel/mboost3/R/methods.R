@@ -211,6 +211,7 @@ print.mboost <- function(x, ...) {
     cat("Number of boosting iterations: mstop =", mstop(x), "\n")
     cat("Step size: ", x$control$nu, "\n")
     cat("Offset: ", x$offset, "\n")
+    cat("\n")
     cat("Baselearner(s): \n")
     print(names(variable.names(x)))
     cat("\n")
@@ -262,3 +263,24 @@ selected.mboost <- function(object)
 
 selected.glmboost <- function(object)
    object$xselect(cw = TRUE)
+
+summary.mboost <- function(object, ...) {
+
+    ret <- list(object = object, selprob = NULL)
+    xs <- selected(object)
+    nm <- variable.names(object)
+    selprob <- tabulate(xs, nbin = length(nm)) / length(xs)
+    names(selprob) <- names(nm)
+    selprob <- sort(selprob, decreasing = TRUE)
+    ret$selprob <- selprob[selprob > 0]
+    class(ret) <- "summary.mboost"
+    return(ret)
+}
+
+print.summary.mboost <- function(x, ...) {
+
+    print(x$object)
+    cat("Selection frequencies:\n")
+    print(x$selprob)
+    cat("\n")
+}

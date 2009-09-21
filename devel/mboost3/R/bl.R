@@ -72,7 +72,8 @@ X_ols <- function(mf, vary, args) {
         K <- diag(ncol(X))
         ### for ordered factors use difference penalty
         if (ANOVA && any(sapply(mf[, names(contr), drop = FALSE], is.ordered))) {
-            K <- diff(diag(ncol(X)), differences = 1)
+            K <- diff(diag(ncol(X) + 1), differences = 1)[, -1, drop = FALSE]
+            K <- crossprod(K)
         }
         ### </FIXME>
     }
