@@ -24,7 +24,7 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
     if (is.null(loss))
         loss <- function(y, f) NA
     if (is.null(risk))
-        risk <- function(y, f, w = 1) sum(w * loss(y, f))
+        risk <- function(y, f, w = 1) sum(w * loss(y, f), na.rm = TRUE)
     RET <- new("boost_family", ngradient = ngradient, loss = loss, 
                risk = risk, offset = offset, fW = fW, check_y = check_y, 
                weights = weights, 
@@ -75,13 +75,14 @@ Laplace <- function()
            name = "Absolute Error")
 
 ### Binomial
+lfinv <- binomial()$linkinv
 Binomial <- function()
     Family(ngradient = function(y, f, w = 1) {
                exp2yf <- exp(-2 * y * f)
                -(-2 * y * exp2yf) / (log(2) * (1 + exp2yf))
            },
            loss = function(y, f) {
-               ### FIXME: this is unstable
+               f <- pmin(abs(f), 36) * sign(f)
                p <- exp(f) / (exp(f) + exp(-f))
                y <- (y + 1) / 2
                -y * log(p) - (1 - y) * log(1 - p)
@@ -91,6 +92,7 @@ Binomial <- function()
                1/2 * log(p / (1 - p))
            },
            fW = function(f) {
+               f <- pmin(abs(f), 36) * sign(f)
                p <- exp(f) / (exp(f) + exp(-f))
                4 * p * (1 - p)
            },
@@ -179,7 +181,7 @@ CoxPH <- function()
                if (length(f) == 1)
                    f <- rep(f, length(time))
                storage.mode(f) <- "double"
-               .Call("ngradientCoxPLik", time, event, f, w)
+               .Call("ngradientCoxPLik", time, event, f, w, package = "mboost")
            },
            loss = plloss <- function(y, f, w) {
                time <- y[,1]
@@ -198,7 +200,7 @@ CoxPH <- function()
                    risk[i] <- sum((time >= time[i])*ef)
                event * (f - log(risk))
            },
-           risk = function(y, f, w = 1) -sum(plloss(y, f, w)),
+           risk = function(y, f, w = 1) -sum(plloss(y, f, w), na.rm = TRUE),
            check_y = function(y) {
                if (!inherits(y, "Surv"))
                    stop("response is not an object of class ", sQuote("Surv"),

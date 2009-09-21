@@ -63,9 +63,9 @@
 \date{}
 \maketitle
 
-\noindent$^1$Institut f\"ur Medizininformatik, Biometrie und Epidemiologie\\
-     Friedrich-Alexander-Universit\"at Erlangen-N\"urnberg\\
-     Waldstra{\ss}e 6, D-91054 Erlangen, Germany \\
+\noindent$^1$Institut f\"ur Statistik \\
+           Ludwig-Maximilians-Universit\"at M\"unchen \\
+           Ludwigstra{\ss}e 33, D-80539 M\"unchen, Germany \\
      Tel: ++49--9131--8522707 \\
      Fax: ++49--9131--8525740 \\
      \texttt{Torsten.Hothorn@R-project.org}
@@ -93,6 +93,8 @@
 This document reproduces the data analyses presented in
 \cite{hothetal06}. For a description of the theory behind
 applications shown here we refer to the original manuscript.
+The results differ slightly due to technical changes or bugfixes in \textbf{mboost}
+that have been implemented after the paper was printed.
 
 \subsection{Acute myeloid leukemia}
 
@@ -100,6 +102,7 @@ applications shown here we refer to the original manuscript.
 source("setup.R")
 if (!require("ipred"))
     stop("cannot attach package ", sQuote("ipred"))
+require("party")
 
 set.seed(290875)
 CEX <- 0.85

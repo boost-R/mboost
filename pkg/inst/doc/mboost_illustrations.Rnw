@@ -66,9 +66,9 @@
 
 \maketitle
 
-\noindent$^1$ Institut f\"ur Medizininformatik, Biometrie und Epidemiologie\\
-           Friedrich-Alexander-Universit\"at Erlangen-N\"urnberg\\
-           Waldstra{\ss}e 6, D-91054 Erlangen, Germany \\
+\noindent$^1$ Institut f\"ur Statistik \\
+           Ludwig-Maximilians-Universit\"at M\"unchen \\
+           Ludwigstra{\ss}e 33, D-80539 M\"unchen, Germany \\
            \texttt{Torsten.Hothorn@R-project.org}
            \newline
 
@@ -81,7 +81,13 @@
 
 This document reproduces the data analyses presented in
 \cite{BuhlmannHothorn06}. For a description of the theory behind
-applications shown here we refer to the original manuscript.
+applications shown here we refer to the original manuscript. The results
+differ slightly due to technical changes or bugfixes in \textbf{mboost} 
+that have been implemented after the paper was printed. Most important,
+\texttt{gamboost} uses penalized $B$-splines instead of smoothing
+splines as baselearners. The computations are much faster
+and the results differ only slightly \citep{Schmid+Hothorn:2008b}.
+
 
 \SweaveOpts{prefix.string=figures/BH} 
 
@@ -119,7 +125,7 @@ initial $m_\text{stop} = 100$ and shrinkage parameter $\nu = 0.1$) by
 minimizing squared error (argument \Rcmd{family = GaussReg()} is 
 the default): 
 <<bodyfat-glmboost-fit, echo = TRUE>>=
-bf_glm <- glmboost(DEXfat ~ ., data = bodyfat, control = boost_control(center = TRUE))
+bf_glm <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)
 @
 Note that, by default, the mean of the response variable is used as an
 offset in the first step of the boosting algorithm. We center the covariates
@@ -257,18 +263,8 @@ slight non-linearity, mainly for \Robject{kneebreadth}.
 \begin{center}
 <<bodyfat-gamboost-plot, echo = FALSE, fig = TRUE>>=
 bf_gam <- bf_gam[mstop(aic)]
-fpartial <- mboost:::gamplot(bf_gam)
-layout(matrix(1:4, ncol = 2, byrow = TRUE))
-par(mai = par("mai") * c(1, 1, 0.5, 1))
-x <- bf_gam$data$input
-varorder <- rev(order(colMeans(abs(fpartial))))[1:4]
-
-out <- sapply(varorder, function(i) {
-    plot(x[,i], fpartial[,i],  main = "",
-         xlab = colnames(x)[i], ylab = expression(f[partial]),
-         ylim = max(abs(fpartial))*c(-1, 1))
-    abline(h = 0, lty = 2, lwd = 0.5)
-    })
+layout(matrix(1:4, ncol = 2))
+plot(bf_gam, which = c("hipcirc", "kneebreadth", "waistcirc", "anthro3b"))
 @
 \caption{\Robject{bodyfat} data: Partial contributions of four covariates
   in an additive model (without centering of estimated functions to mean
@@ -326,14 +322,13 @@ derived from the additive model (Figure~\ref{bodyfat-gamboost-plot}).
 <<bodyfat-fpboost-plot, echo = FALSE, fig = TRUE>>=
 layout(matrix(1:4, ncol = 2, byrow = TRUE))
 par(mai = par("mai") * c(1, 1, 0.5, 1))
-cf <- coef(bf_bs[mstop(aic)])
-x <- bf_bs$data$x
+cf <- coef(bf_bs[mstop(aic)])  
 varorder <- c("hipcirc", "waistcirc", "kneebreadth", "anthro3b")
 fpartial <- sapply(varorder, function(v) {
     indx <- grep(v, names(cf))
-    x[,indx] %*% cf[indx]
+    as.matrix(bf_bs$newX(bodyfat)[,indx]) %*% cf[indx]
 })
-out <- sapply(varorder, function(i) {
+out <- sapply(varorder, function(i) {   
     plot(bodyfat[,i], fpartial[,i],  main = "",
          xlab = i, ylab = expression(f[partial]), ylim = max(abs(fpartial)) * c(-1, 1))
     abline(h = 0, lty = 2, lwd = 0.5)
@@ -600,7 +595,7 @@ wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial(), baselearner 
 mopt <- mstop(aic <- AIC(wpbc_gam, "classical"))
 aic
 @
-This model selected $\Sexpr{sum(tabulate(wpbc_gam$ensemble[,"xselect"]) > 0)}$ out of $\Sexpr{ncol(wpbc2)-1}$
+This model selected $\Sexpr{length(unique(wpbc_gam$xselect()))}$ out of $\Sexpr{ncol(wpbc2)-1}$
 covariates. The partial contributions of the four most important variables
 are depicted in  
 Figure~\ref{wpbc-gamboost-plot} indicating a remarkable degree of non-linearity.
@@ -608,15 +603,11 @@ Figure~\ref{wpbc-gamboost-plot} indicating a remarkable degree of non-linearity.
 \begin{figure}[t]
 \begin{center}
 <<wpbc-gamboost-plot, echo = FALSE, fig = TRUE, width = 7, height = 7>>=
-fpartial <- mboost:::gamplot(wpbc_gam[mopt])
-x <- wpbc_gam$data$input
+wpbc_gam <- wpbc_gam[mopt]
+fpartial <- predict(wpbc_gam, which = 1:length(variable.names(wpbc_gam)))
 layout(matrix(1:4, nrow = 2, byrow = TRUE))
 par(mai = par("mai") * c(1, 1, 0.5, 1))
-out <- sapply(rev(order(colMeans(abs(fpartial))))[1:4], function(i) {
-    plot(x[,i], fpartial[,i], xlab = colnames(x)[i], main = "",
-         ylab = expression(f[partial]), ylim = c(-0.5, 0.5), type = "p")
-    abline(h = 0, lty = 2, lwd = 0.5)
-        })
+plot(wpbc_gam, which = rev(order(colMeans(abs(fpartial))))[1:4])
 @
 \caption{\Robject{wpbc} data: Partial contributions of four selected 
     covariates in an additive logistic model (without centering of

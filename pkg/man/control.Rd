@@ -6,23 +6,18 @@
   and other hyper-parameters for boosting algorithms.
 }
 \usage{
-boost_control(mstop = 100, nu = 0.1, constraint = FALSE,
+boost_control(mstop = 100, nu = 0.1, 
               risk = c("inbag", "oobag", "none"),
-              savedata = TRUE, center = FALSE, trace = FALSE,
-              save_ensembless=TRUE)
+              center = FALSE, trace = FALSE)
 }
 \arguments{
   \item{mstop}{ an integer giving the number of initial boosting iterations. }
   \item{nu}{ a double (between 0 and 1) defining the step size or shrinkage parameter. }
-  \item{constraint}{ a logical indicating whether the working responses
-                     should be restricted to \eqn{(-1, +1)}. }
   \item{risk}{ a character indicating how the empirical risk should be
                computed for each boosting iteration. \code{inbag} leads to
                risks computed for the learning sample (i.e., all non-zero weights),
                \code{oobag} to risks based on the out-of-bag (all observations with
                zero weights) and \code{none} to no risk computations at all.}
-  \item{savedata}{ a logical, should the data be saved in the
-                   returned object?}
   \item{center}{ a logical indicating if the numerical covariates should be mean
                  centered before fitting. Only implemented for
 		 \code{\link{glmboost}}. In \code{\link{blackboost}}
@@ -30,12 +25,10 @@ boost_control(mstop = 100, nu = 0.1, constraint = FALSE,
 		 centering is only needed if \code{\link{bols}}
 		 base-learners are specified without intercept. In this
 		 case centering of the covariates is esential and should be done
-		 manually (at the moment).}
+		 manually (at the moment). Will be removed in favor of
+                 a corresponding argument in \code{glmboost} in the future (and gives a warning).}
   \item{trace}{ a logical triggering printout of status information during
                 the fitting process.}
-  \item{save_ensembless}{ a logical indicating if the list of
-    baselearners should be saved and returned. This list is generally
-    needed but can be suppressed to reduce memory usage (not recommended). }
 }
 \details{
 

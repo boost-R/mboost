@@ -42,7 +42,7 @@ which(abs(coef(mydf.lm)) < abs(coef(mydf.gb[mstop(aic)])))
 
 #### check boosting hat matrix and subsetting / predict
 stopifnot(isTRUE(all.equal(drop(attr(ht, "hatmatrix") %*% mydf$y),
-                           as.vector(predict(mydf.gb)))))
+                           as.vector(predict(mydf.gb[1000])))))
 ht25 <- hatvalues(mydf.gb[25])
 stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
                            as.vector(predict(mydf.gb[25])))))

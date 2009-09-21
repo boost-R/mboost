@@ -1,39 +1,20 @@
 \name{gamboost}
 \alias{gamboost}
-\alias{gamboost.formula}
-\alias{gamboost.matrix}
-\alias{gamboost_fit}
-\alias{plot.gamboost}
 \title{ Gradient Boosting with Smooth Components }
 \description{
   Gradient boosting for optimizing arbitrary loss functions, where component-wise
   smoothing procedures are utilized as base learners.
 }
 \usage{
-\method{gamboost}{formula}(formula, data = list(), weights = NULL,
-        na.action = na.omit, ...)
-\method{gamboost}{matrix}(x, y, weights = NULL, ...)
-gamboost_fit(object, baselearner = c("bbs", "bss", "bols",
-             "bns", "btree"), dfbase = 4, family = GaussReg(),
-             control = boost_control(), weights = NULL)
-\method{plot}{gamboost}(x, which = NULL, ask = TRUE && dev.interactive(),
-    type = "b", ylab = expression(f[partial]), add_rug = TRUE, ...)
+gamboost(formula, data = list(), baselearner = c("bbs", "bols", "btree", "bss", "bns"),
+         dfbase = 4, ...)
 }
 \arguments{
   \item{formula}{ a symbolic description of the model to be fit. }
   \item{data}{ a data frame containing the variables in the model. }
-  \item{weights}{ an optional vector of weights to be used in the fitting
-                  process. }
-  \item{na.action}{a function which indicates what should happen when the data
-          contain \code{NA}s.}
-  \item{x}{ design matrix (for \code{gamboost.matrix}) or an object returned
-            by \code{gamboost} to be plotted via \code{plot}.}
-  \item{y}{ vector of responses. }
-  \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}. }
   \item{baselearner}{ a character specifying the component-wise base learner to be used:
-      \code{\link{bss}} means smoothing splines (see Buhlmann and Yu 2003),
-      \code{\link{bbs}} P-splines with a B-spline basis (see Schmid and Hothorn
-      2007), \code{\link{bns}} P-splines with a natural spline basis,
+      \code{\link{bbs}} means P-splines with a B-spline basis (see Schmid and Hothorn
+      2007), 
       \code{\link{bols}} linear models, \code{\link{bspatial}} bivariate tensor
       product penalized splines, and \code{\link{brandom}} random effects.
       In addition, \code{\link{btree}} boosts stumps.
@@ -45,19 +26,7 @@ gamboost_fit(object, baselearner = c("bbs", "bss", "bols",
   \item{dfbase}{ an integer vector giving the degrees of freedom for the smoothing
                  spline, either globally for all variables (when its length is one)
                  or separately for each single covariate. }
-  \item{family}{ an object of class \code{\link{boost_family-class}},
-                implementing the negative gradient corresponding
-                to the loss function to be optimized, by default, squared error loss
-                for continuous responses is used.}
-  \item{control}{ an object of class \code{\link{boost_control}}.}
-  \item{which}{ if a subset of the plots is required, specify a subset of the
-                variables. Only selected variables are plotted by default.}
-  \item{ask}{ logical; if \code{TRUE}, the user is \emph{ask}ed before each plot, see
-          \code{par(ask=.)}.}
-  \item{type}{what type of plot should be drawn: see \code{\link{plot}}.}
-  \item{ylab}{a title for the y axis: see \code{\link{title}}.}
-  \item{add_rug}{ logical; if \code{TRUE}, \code{\link{rug}}s are added.}
-  \item{\dots}{ additional arguments passed to callies. }
+  \item{\dots}{ additional arguments passed to \code{mboost}.}
 }
 \details{
 
@@ -68,16 +37,10 @@ gamboost_fit(object, baselearner = c("bbs", "bss", "bols",
   \code{formula} differ from \code{baselearner}, the latter argument will be
   ignored.
 
-  The function \code{gamboost_fit} provides access to the fitting
-  procedure without data pre-processing, e.g. for cross-validation.
-
-  Note that penalized B-splines instead of smoothing splines
-  are used as default baselearners as of version 1.1-0.
-
 }
 \value{
-  An object of class \code{gamboost} with \code{\link{print}},
-  \code{\link{AIC}} and \code{\link{predict}} methods being available.
+  An object of class \code{mboost} with \code{\link{print}},
+  \code{\link{AIC}}, \code{\link{plot}} and \code{\link{predict}} methods being available.
 }
 \references{
 
@@ -91,14 +54,13 @@ gamboost_fit(object, baselearner = c("bbs", "bss", "bols",
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable selection and
-  model choice in geoadditive regression models.
-  \emph{Biometrics}, accepted.
-  \url{http://epub.ub.uni-muenchen.de/2063/}
+  model choice in geoadditive regression models, \emph{Biometrics}, \bold{65}(2),
+  626--634.
 
-  Matthias Schmid and Torsten Hothorn (2009),
+  Matthias Schmid and Torsten Hothorn (2008),
   Boosting additive models using component-wise P-splines as
-  base-learners. \emph{Computational Statistics \& Data Analysis}, accepted.
-  \url{http://epub.ub.uni-muenchen.de/2057/}
+  base-learners. \emph{Computational Statistics \& Data Analysis}, 
+  \bold{53}(2), 298--311.
 
 }
 \seealso{\code{\link{glmboost}} for boosted linear models and
@@ -128,7 +90,7 @@ gamboost_fit(object, baselearner = c("bbs", "bss", "bols",
     ### linear model
     lines(x, fitted(lm(y ~ sin(x) - 1)), col = "red")
     ### GAM
-    lines(x, fitted(gamboost(y ~ x - 1,
+    lines(x, fitted(gamboost(y ~ x,
                     control = boost_control(mstop = 500))),
           col = "green")
 

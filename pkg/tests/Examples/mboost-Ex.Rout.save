@@ -80,34 +80,50 @@ Type 'q()' to quit R.
 > ## Use postscript as incomplete files may be viewable, unlike PDF.
 > ## Choose a size that is close to on-screen devices, fix paper
 > ps.options(width = 7, height = 7, paper = "a4", reset = TRUE)
-> grDevices::postscript("mboost-Ex.ps")
+> grDevices::postscript("mboost3-Ex.ps")
 > 
 > assign("par.postscript", graphics::par(no.readonly = TRUE), pos = "CheckExEnv")
 > options(contrasts = c(unordered = "contr.treatment", ordered = "contr.poly"))
 > options(warn = 1)
-> library('mboost')
-Loading required package: modeltools
-Loading required package: stats4
-Loading required package: party
-Loading required package: survival
-Loading required package: splines
-Loading required package: grid
-Loading required package: coin
-Loading required package: mvtnorm
-Loading required package: zoo
+> library('mboost3')
+Loading required package: Matrix
+Loading required package: lattice
 
-Attaching package: 'zoo'
+Attaching package: 'Matrix'
+
+
+	The following object(s) are masked from package:stats :
+
+	 contr.helmert,
+	 contr.poly,
+	 contr.SAS,
+	 contr.sum,
+	 contr.treatment,
+	 xtabs 
 
 
 	The following object(s) are masked from package:base :
 
-	 as.Date.numeric 
+	 rcond 
 
-Loading required package: sandwich
-Loading required package: strucchange
-Loading required package: vcd
-Loading required package: MASS
-Loading required package: colorspace
+Loading required package: splines
+Loading required package: survival
+Warning in namespaceImportFrom(self, asNamespace(ns)) :
+  replacing previous import: contr.helmert
+Warning in namespaceImportFrom(self, asNamespace(ns)) :
+  replacing previous import: contr.poly
+Warning in namespaceImportFrom(self, asNamespace(ns)) :
+  replacing previous import: contr.SAS
+Warning in namespaceImportFrom(self, asNamespace(ns)) :
+  replacing previous import: contr.sum
+Warning in namespaceImportFrom(self, asNamespace(ns)) :
+  replacing previous import: contr.treatment
+Warning in namespaceImportFrom(self, asNamespace(ns)) :
+  replacing previous import: cov2cor
+Warning in namespaceImportFrom(self, asNamespace(ns)) :
+  replacing previous import: update
+Warning in namespaceImportFrom(self, asNamespace(ns)) :
+  replacing previous import: xtabs
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
 > assign(".oldNS", loadedNamespaces(), pos = 'CheckExEnv')
@@ -135,12 +151,14 @@ Loading required package: colorspace
 +     })
 > 
 >     ### generate formula
->     fpfm <- as.formula(paste("DEXfat ~ ", paste("FP(", indep, ")",
+>     fpfm <- as.formula(paste("DEXfat ~ ", paste("FP(", indep, ", scaling = FALSE)",
 +                              collapse = "+")))
 >     fpfm
-DEXfat ~ FP(age) + FP(waistcirc) + FP(hipcirc) + FP(elbowbreadth) + 
-    FP(kneebreadth) + FP(anthro3a) + FP(anthro3b) + FP(anthro3c) + 
-    FP(anthro4)
+DEXfat ~ FP(age, scaling = FALSE) + FP(waistcirc, scaling = FALSE) + 
+    FP(hipcirc, scaling = FALSE) + FP(elbowbreadth, scaling = FALSE) + 
+    FP(kneebreadth, scaling = FALSE) + FP(anthro3a, scaling = FALSE) + 
+    FP(anthro3b, scaling = FALSE) + FP(anthro3c, scaling = FALSE) + 
+    FP(anthro4, scaling = FALSE)
 > 
 >     ### fit linear model
 >     bf_fp <- glmboost(fpfm, data = tbodyfat,
@@ -156,48 +174,48 @@ DEXfat ~ FP(age) + FP(waistcirc) + FP(hipcirc) + FP(elbowbreadth) +
 >     length(cf)
 [1] 145
 >     cf[abs(cf) > 0]
-                                FP(age)age^-2 
-                                  -1.97698853 
-                         FP(age)log(age)age^3 
-                                  -0.01230829 
-                    FP(waistcirc)waistcirc^-2 
-                                  -7.86296964 
-      FP(waistcirc)log(waistcirc)waistcirc^-2 
-                                  -7.47556696 
-       FP(waistcirc)log(waistcirc)waistcirc^3 
-                                   0.67466523 
-                FP(waistcirc)log(waistcirc)^2 
-                                   5.40114493 
-                        FP(hipcirc)hipcirc^-2 
-                                  -4.00222773 
-            FP(hipcirc)log(hipcirc)hipcirc^-2 
-                                   6.09380842 
-            FP(hipcirc)log(hipcirc)hipcirc^-1 
-                                   6.07680354 
-             FP(hipcirc)log(hipcirc)hipcirc^3 
-                                  -0.45247988 
-                    FP(hipcirc)log(hipcirc)^2 
-                                  18.07362051 
-              FP(elbowbreadth)elbowbreadth^-2 
-                                   1.19027807 
-FP(kneebreadth)log(kneebreadth)kneebreadth^-2 
-                                  -1.42177852 
-FP(kneebreadth)log(kneebreadth)kneebreadth^-1 
-                                  -3.22763358 
- FP(kneebreadth)log(kneebreadth)kneebreadth^3 
-                                   1.85814405 
-                      FP(anthro3a)anthro3a^-2 
-                                   0.16767775 
-         FP(anthro3a)log(anthro3a)anthro3a^-2 
-                                  -8.14937266 
-          FP(anthro3a)log(anthro3a)anthro3a^3 
-                                   0.90354249 
-                      FP(anthro3b)anthro3b^-2 
-                                  -0.13985229 
-          FP(anthro3b)log(anthro3b)anthro3b^3 
-                                   1.31511811 
-                      FP(anthro3c)anthro3c^-2 
-                                 -10.94522292 
+                                FP(age, scaling = FALSE)age^-2 
+                                                   -1.97698853 
+                         FP(age, scaling = FALSE)log(age)age^3 
+                                                   -0.01230829 
+                    FP(waistcirc, scaling = FALSE)waistcirc^-2 
+                                                   -7.86296964 
+      FP(waistcirc, scaling = FALSE)log(waistcirc)waistcirc^-2 
+                                                   -7.47556696 
+       FP(waistcirc, scaling = FALSE)log(waistcirc)waistcirc^3 
+                                                    0.67466523 
+                FP(waistcirc, scaling = FALSE)log(waistcirc)^2 
+                                                    5.40114493 
+                        FP(hipcirc, scaling = FALSE)hipcirc^-2 
+                                                   -4.00222773 
+            FP(hipcirc, scaling = FALSE)log(hipcirc)hipcirc^-2 
+                                                    6.09380842 
+            FP(hipcirc, scaling = FALSE)log(hipcirc)hipcirc^-1 
+                                                    6.07680354 
+             FP(hipcirc, scaling = FALSE)log(hipcirc)hipcirc^3 
+                                                   -0.45247988 
+                    FP(hipcirc, scaling = FALSE)log(hipcirc)^2 
+                                                   18.07362051 
+              FP(elbowbreadth, scaling = FALSE)elbowbreadth^-2 
+                                                    1.19027807 
+FP(kneebreadth, scaling = FALSE)log(kneebreadth)kneebreadth^-2 
+                                                   -1.42177852 
+FP(kneebreadth, scaling = FALSE)log(kneebreadth)kneebreadth^-1 
+                                                   -3.22763358 
+ FP(kneebreadth, scaling = FALSE)log(kneebreadth)kneebreadth^3 
+                                                    1.85814405 
+                      FP(anthro3a, scaling = FALSE)anthro3a^-2 
+                                                    0.16767775 
+         FP(anthro3a, scaling = FALSE)log(anthro3a)anthro3a^-2 
+                                                   -8.14937266 
+          FP(anthro3a, scaling = FALSE)log(anthro3a)anthro3a^3 
+                                                    0.90354249 
+                      FP(anthro3b, scaling = FALSE)anthro3b^-2 
+                                                   -0.13985229 
+          FP(anthro3b, scaling = FALSE)log(anthro3b)anthro3b^3 
+                                                    1.31511811 
+                      FP(anthro3c, scaling = FALSE)anthro3c^-2 
+                                                  -10.94522292 
 > 
 > 
 > 
@@ -265,283 +283,59 @@ Loss function: (y - f)^2
 > flush(stderr()); flush(stdout())
 > 
 > ### Name: baselearners
-> ### Title: Base learners for Gradient Boosting with Smooth Components
-> ### Aliases: bols bbs bns bss bspatial brandom btree
+> ### Title: Base-learners for Gradient Boosting
+> ### Aliases: bols bbs bspatial brandom btree
 > ### Keywords: models
 > 
 > ### ** Examples
 > 
-> x1 <- rnorm(100)
-> x2 <- rnorm(100) + 0.25*x1
-> x3 <- as.factor(sample(0:1, 100, replace = TRUE))
-> x4 <- gl(4, 25)
-> y <- 3*sin(x1) + x2^2 + rnorm(100)
 > 
-> knots.x2 <- quantile(x2, c(0.25,0.5,0.75))
+>   x1 <- rnorm(100)
+>   x2 <- rnorm(100) + 0.25*x1
+>   x3 <- as.factor(sample(0:1, 100, replace = TRUE))
+>   x4 <- gl(4, 25)
+>   y <- 3*sin(x1) + x2^2 + rnorm(100)
 > 
-> spline1 <- bbs(x1,knots=20,df=4)
+>   knots.x2 <- quantile(x2, c(0.25,0.5,0.75))
+> 
+>   spline1 <- bbs(x1, knots = 20, df = 4)
 > attributes(spline1)
-$dim
-[1] 100   1
-
-$dpp
-function (weights) 
-{
-    if (any(!cc)) 
-        weights <- weights[cc]
-    boundary.knots <- range(x[cc], na.rm = TRUE)
-    bnw <- range(x[cc][weights > 0], na.rm = TRUE)
-    if (!isTRUE(all.equal(boundary.knots, bnw))) 
-        warning("knots (and therefore model) depend on observations with zero weight")
-    if (length(knots) == 1) {
-        knots <- seq(from = boundary.knots[1], to = boundary.knots[2], 
-            length = knots + 2)
-        knots <- knots[2:(length(knots) - 1)]
-    }
-    newX <- function(x, z = NULL, weights = NULL, na.rm = TRUE) {
-        if (na.rm) {
-            x <- x[cc]
-            if (!is.null(z)) 
-                z <- z[cc]
-            if (!is.null(weights)) 
-                weights <- weights[cc]
-        }
-        X <- bs(x, knots = knots, degree = degree, intercept = TRUE, 
-            Boundary.knots = boundary.knots)
-        if (!is.null(z)) 
-            X <- X * z
-        if (center) {
-            K <- diff(diag(ncol(X)), differences = differences)
-            X <- tcrossprod(X, K) %*% solve(tcrossprod(K))
-        }
-        return(X)
-    }
-    X <- newX(x, z, weights = weights)
-    Xna <- X
-    if (any(!cc)) 
-        Xna <- newX(x, z, weights = weights, na.rm = FALSE)
-    if (center) {
-        K <- diag(ncol(X))
-    }
-    else {
-        K <- diff(diag(ncol(X)), differences = differences)
-        K <- crossprod(K, K)
-    }
-    lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
-    Xw <- X * weights
-    XtX <- crossprod(Xw, X)
-    Xsolve <- tcrossprod(solve(XtX + lambda * K), Xw)
-    fitfun <- function(y) {
-        if (any(!cc)) 
-            y <- y[cc]
-        coef <- Xsolve %*% y
-        predictfun <- function(newdata = NULL) {
-            if (is.null(newdata)) 
-                return(Xna %*% coef)
-            nX <- newX(x = newdata[[xname]], z = newdata[[zname]], 
-                na.rm = FALSE)
-            nX %*% coef
-        }
-        ret <- list(model = coef, predict = predictfun, fitted = function() Xna %*% 
-            coef)
-        class(ret) <- c("basefit", "baselm")
-        ret
-    }
-    ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
-    class(ret) <- "basisdpp"
-    ret
-}
-<environment: 0xa884608>
-
-> spline2 <- bns(x2,knots=knots.x2,df=5)
-Warning in bns(x2, knots = knots.x2, df = 5) :
-  non-equidistant ‘knots’ might be inappropriate
-> attributes(spline2)
-$dim
-[1] 100   5
-
-$dimnames
-$dimnames[[1]]
-NULL
-
-$dimnames[[2]]
-[1] "1" "2" "3" "4" "5"
-
-
-$degree
-[1] 3
-
-$knots
-       25%        50%        75% 
--0.7239450 -0.1837523  0.6988490 
-
-$Boundary.knots
-[1] -2.393725  2.865090
-
-$intercept
-[1] TRUE
+$names
+[1] "model.frame" "get_call"    "get_data"    "get_index"   "get_vary"   
+[6] "get_names"   "set_names"   "dpp"        
 
 $class
-[1] "ns"    "basis"
+[1] "blg"
 
-$dpp
-function (weights) 
-{
-    lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
-    Xw <- X * weights
-    XtX <- crossprod(Xw, X)
-    Xsolve <- tcrossprod(solve(XtX + lambda * K), Xw)
-    fitfun <- function(y) {
-        coef <- Xsolve %*% y
-        predictfun <- function(newdata = NULL) {
-            if (is.null(newdata)) 
-                return(X %*% coef)
-            nX <- newX(x = newdata[[xname]], z = newdata[[zname]])
-            nX %*% coef
-        }
-        ret <- list(model = coef, predict = predictfun, fitted = function() X %*% 
-            coef)
-        class(ret) <- c("basefit", "baselm")
-        ret
-    }
-    ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
-    class(ret) <- "basisdpp"
-    ret
-}
-<environment: 0xa8bb7e8>
+> spline2 <- bbs(x2,knots=knots.x2,df=5)
+> attributes(spline2)
+$names
+[1] "model.frame" "get_call"    "get_data"    "get_index"   "get_vary"   
+[6] "get_names"   "set_names"   "dpp"        
+
+$class
+[1] "blg"
 
 > olsfit <- bols(x3)
 > attributes(olsfit)
-$dim
-[1] 100   2
+$names
+[1] "model.frame" "get_call"    "get_data"    "get_index"   "get_names"  
+[6] "get_vary"    "set_names"   "dpp"        
 
-$dimnames
-$dimnames[[1]]
-  [1] "1"   "2"   "3"   "4"   "5"   "6"   "7"   "8"   "9"   "10"  "11"  "12" 
- [13] "13"  "14"  "15"  "16"  "17"  "18"  "19"  "20"  "21"  "22"  "23"  "24" 
- [25] "25"  "26"  "27"  "28"  "29"  "30"  "31"  "32"  "33"  "34"  "35"  "36" 
- [37] "37"  "38"  "39"  "40"  "41"  "42"  "43"  "44"  "45"  "46"  "47"  "48" 
- [49] "49"  "50"  "51"  "52"  "53"  "54"  "55"  "56"  "57"  "58"  "59"  "60" 
- [61] "61"  "62"  "63"  "64"  "65"  "66"  "67"  "68"  "69"  "70"  "71"  "72" 
- [73] "73"  "74"  "75"  "76"  "77"  "78"  "79"  "80"  "81"  "82"  "83"  "84" 
- [85] "85"  "86"  "87"  "88"  "89"  "90"  "91"  "92"  "93"  "94"  "95"  "96" 
- [97] "97"  "98"  "99"  "100"
-
-$dimnames[[2]]
-[1] "(Intercept)" "x1"         
-
-
-$assign
-[1] 0 1
-
-$contrasts
-$contrasts$x
-[1] "contr.treatment"
-
-
-$dpp
-function (weights) 
-{
-    if (any(!cc)) 
-        weights <- weights[cc]
-    Xw <- X * weights
-    XtX <- crossprod(Xw, X)
-    if (is.null(df) || df >= ncol(K)) {
-        Xsolve <- tcrossprod(solve(XtX), Xw)
-    }
-    else {
-        lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
-        Xsolve <- tcrossprod(solve(XtX + lambda * K), Xw)
-    }
-    fitfun <- function(y) {
-        if (any(!cc)) 
-            y <- y[cc]
-        coef <- Xsolve %*% y
-        predictfun <- function(newdata = NULL) {
-            if (is.null(newdata)) 
-                return(Xna %*% coef)
-            nX <- newX(x = newdata[[xname]], z = newdata[[zname]], 
-                na.rm = FALSE)
-            nX %*% coef
-        }
-        ret <- list(model = coef, predict = predictfun, fitted = function() Xna %*% 
-            coef)
-        class(ret) <- c("basefit", "baselm")
-        ret
-    }
-    ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
-    class(ret) <- "basisdpp"
-    ret
-}
-<environment: 0xa99b398>
+$class
+[1] "blg"
 
 > 
-> form1 <- y ~ bbs(x1,knots=20,df=4) + bns(x2,knots=knots.x2,df=5)
+> form1 <- y ~ bbs(x1,knots=20,df=4) + bbs(x2,knots=knots.x2,df=5)
 > 
 > # example for factors
 > attributes(bols(x4))
-$dim
-[1] 100   4
+$names
+[1] "model.frame" "get_call"    "get_data"    "get_index"   "get_names"  
+[6] "get_vary"    "set_names"   "dpp"        
 
-$dimnames
-$dimnames[[1]]
-  [1] "1"   "2"   "3"   "4"   "5"   "6"   "7"   "8"   "9"   "10"  "11"  "12" 
- [13] "13"  "14"  "15"  "16"  "17"  "18"  "19"  "20"  "21"  "22"  "23"  "24" 
- [25] "25"  "26"  "27"  "28"  "29"  "30"  "31"  "32"  "33"  "34"  "35"  "36" 
- [37] "37"  "38"  "39"  "40"  "41"  "42"  "43"  "44"  "45"  "46"  "47"  "48" 
- [49] "49"  "50"  "51"  "52"  "53"  "54"  "55"  "56"  "57"  "58"  "59"  "60" 
- [61] "61"  "62"  "63"  "64"  "65"  "66"  "67"  "68"  "69"  "70"  "71"  "72" 
- [73] "73"  "74"  "75"  "76"  "77"  "78"  "79"  "80"  "81"  "82"  "83"  "84" 
- [85] "85"  "86"  "87"  "88"  "89"  "90"  "91"  "92"  "93"  "94"  "95"  "96" 
- [97] "97"  "98"  "99"  "100"
-
-$dimnames[[2]]
-[1] "(Intercept)" "x2"          "x3"          "x4"         
-
-
-$assign
-[1] 0 1 1 1
-
-$contrasts
-$contrasts$x
-[1] "contr.treatment"
-
-
-$dpp
-function (weights) 
-{
-    if (any(!cc)) 
-        weights <- weights[cc]
-    Xw <- X * weights
-    XtX <- crossprod(Xw, X)
-    if (is.null(df) || df >= ncol(K)) {
-        Xsolve <- tcrossprod(solve(XtX), Xw)
-    }
-    else {
-        lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
-        Xsolve <- tcrossprod(solve(XtX + lambda * K), Xw)
-    }
-    fitfun <- function(y) {
-        if (any(!cc)) 
-            y <- y[cc]
-        coef <- Xsolve %*% y
-        predictfun <- function(newdata = NULL) {
-            if (is.null(newdata)) 
-                return(Xna %*% coef)
-            nX <- newX(x = newdata[[xname]], z = newdata[[zname]], 
-                na.rm = FALSE)
-            nX %*% coef
-        }
-        ret <- list(model = coef, predict = predictfun, fitted = function() Xna %*% 
-            coef)
-        class(ret) <- c("basefit", "baselm")
-        ret
-    }
-    ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
-    class(ret) <- "basisdpp"
-    ret
-}
-<environment: 0xa8f53d4>
+$class
+[1] "blg"
 
 > 
 > # example for bspatial
@@ -551,159 +345,52 @@ function (weights)
 > 
 > y <- sin(x1)*sin(x2) + rnorm(250, sd = 0.4)
 > 
-> spline3 <- bspatial(x1, x2, xknots=12, yknots=12)
+> spline3 <- bspatial(x1, x2, knots=12)
+Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
+ target signature "dgCMatrix#dgTMatrix".
+ "sparseMatrix#TsparseMatrix" would also be valid
+Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
+ target signature "dgTMatrix#dgCMatrix".
+ "TsparseMatrix#sparseMatrix" would also be valid
+Note: Method with signature "ANY#diagonalMatrix" chosen for function "kronecker",
+ target signature "dsCMatrix#ddiMatrix".
+ "sparseMatrix#ANY" would also be valid
+Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
+ target signature "dsCMatrix#dtTMatrix".
+ "sparseMatrix#TsparseMatrix" would also be valid
+Note: Method with signature "diagonalMatrix#ANY" chosen for function "kronecker",
+ target signature "ddiMatrix#dsCMatrix".
+ "ANY#sparseMatrix" would also be valid
+Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
+ target signature "dtTMatrix#dsCMatrix".
+ "TsparseMatrix#sparseMatrix" would also be valid
 > attributes(spline3)
-$dim
-[1] 250   1
+$names
+[1] "model.frame" "get_call"    "get_data"    "get_index"   "get_vary"   
+[6] "get_names"   "set_names"   "dpp"        
 
-$dpp
-function (weights) 
-{
-    if (any(!cc)) 
-        weights <- weights[cc]
-    xboundary.knots <- range(x[cc], na.rm = TRUE)
-    xbnw <- range(x[cc][weights > 0], na.rm = TRUE)
-    if (!isTRUE(all.equal(xboundary.knots, xbnw))) 
-        warning("knots (and therefore model) depend on observations with zero weight")
-    if (length(xknots) == 1) {
-        xknots <- seq(from = xboundary.knots[1], to = xboundary.knots[2], 
-            length = xknots + 2)
-        xknots <- xknots[2:(length(xknots) - 1)]
-    }
-    yboundary.knots <- range(y[cc], na.rm = TRUE)
-    ybnw <- range(y[cc][weights > 0], na.rm = TRUE)
-    if (!isTRUE(all.equal(yboundary.knots, ybnw))) 
-        warning("knots (and therefore model) depend on observations with zero weight")
-    if (length(yknots) == 1) {
-        yknots <- seq(from = yboundary.knots[1], to = yboundary.knots[2], 
-            length = yknots + 2)
-        yknots <- yknots[2:(length(yknots) - 1)]
-    }
-    newX <- function(x, y, z = NULL, weights = NULL, na.rm = TRUE) {
-        if (na.rm) {
-            x <- x[cc]
-            y <- y[cc]
-            if (!is.null(z)) 
-                z <- z[cc]
-            if (!is.null(weights)) 
-                weights <- weights[cc]
-        }
-        Xx <- bs(x, knots = xknots, degree = degree, intercept = TRUE, 
-            Boundary.knots = xboundary.knots)
-        Xy <- bs(y, knots = yknots, degree = degree, intercept = TRUE, 
-            Boundary.knots = yboundary.knots)
-        X <- kronecker(Xx, matrix(1, nc = ncol(Xy))) * kronecker(matrix(1, 
-            nc = ncol(Xx)), Xy)
-        if (!is.null(z)) 
-            X <- X * z
-        if (center) {
-            X <- X %*% L
-        }
-        return(X)
-    }
-    xd <- length(xknots) + degree + 1
-    yd <- length(yknots) + degree + 1
-    Kx <- diff(diag(xd), differences = differences)
-    Kx <- crossprod(Kx, Kx)
-    Ky <- diff(diag(yd), differences = differences)
-    Ky <- crossprod(Ky, Ky)
-    K <- kronecker(Kx, diag(yd)) + kronecker(diag(xd), Ky)
-    if (center) {
-        L <- 0
-        L <- eigen(K, symmetric = TRUE, EISPACK = TRUE)
-        L$vectors <- L$vectors[, 1:(xd * yd - differences^2)]
-        L$values <- sqrt(L$values[1:(xd * yd - differences^2)])
-        L <- L$vectors %*% diag(1/L$values)
-        K <- diag(ncol(L))
-    }
-    X <- newX(x, y, z)
-    Xna <- X
-    if (any(!cc)) 
-        Xna <- newX(x, y, z, weights = weights, na.rm = FALSE)
-    lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
-    Xw <- X * weights
-    XtX <- crossprod(Xw, X)
-    Xsolve <- tcrossprod(solve(XtX + lambda * K), Xw)
-    fitfun <- function(y) {
-        coef <- Xsolve %*% y
-        predictfun <- function(newdata = NULL) {
-            if (is.null(newdata)) 
-                return(Xna %*% coef)
-            nX <- newX(x = newdata[[xname]], y = newdata[[yname]], 
-                z = newdata[[zname]], na.rm = FALSE)
-            nX %*% coef
-        }
-        ret <- list(model = coef, predict = predictfun, fitted = function() Xna %*% 
-            coef)
-        class(ret) <- c("basefit", "baselm")
-        ret
-    }
-    ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
-    class(ret) <- "basisdpp"
-    ret
-}
-<environment: 0xa9b39ac>
+$class
+[1] "blg"
 
 > 
-> form2 <- y ~ bspatial(x1, x2, xknots=12, yknots=12)
+> form2 <- y ~ bspatial(x1, x2, knots=12)
 > 
 > # decompose spatial effect into parametric part and deviation with 1 df
 > 
 > form2 <- y ~ bols(x1) + bols(x2) + bols(x1*x2) +
-+              bspatial(x1, x2, xknots=12, yknots=12, center = TRUE, df=1)
++              bspatial(x1, x2, knots=12, center = TRUE, df=1)
 > 
 > # random intercept
 > 
 > id <- factor(rep(1:10, each=5))
 > raneff <- brandom(id)
 > attributes(raneff)
-$dim
-[1] 50 10
+$names
+[1] "model.frame" "get_call"    "get_data"    "get_index"   "get_names"  
+[6] "get_vary"    "set_names"   "dpp"        
 
-$dimnames
-$dimnames[[1]]
- [1] "1"  "2"  "3"  "4"  "5"  "6"  "7"  "8"  "9"  "10" "11" "12" "13" "14" "15"
-[16] "16" "17" "18" "19" "20" "21" "22" "23" "24" "25" "26" "27" "28" "29" "30"
-[31] "31" "32" "33" "34" "35" "36" "37" "38" "39" "40" "41" "42" "43" "44" "45"
-[46] "46" "47" "48" "49" "50"
-
-$dimnames[[2]]
- [1] "x1"  "x2"  "x3"  "x4"  "x5"  "x6"  "x7"  "x8"  "x9"  "x10"
-
-
-$assign
- [1] 1 1 1 1 1 1 1 1 1 1
-
-$contrasts
-$contrasts$x
-[1] "contr.treatment"
-
-
-$dpp
-function (weights) 
-{
-    lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
-    Xw <- X * weights
-    XtX <- crossprod(Xw, X)
-    Xsolve <- tcrossprod(solve(XtX + lambda * K), Xw)
-    fitfun <- function(y) {
-        coef <- Xsolve %*% y
-        predictfun <- function(newdata = NULL) {
-            if (is.null(newdata)) 
-                return(X %*% coef)
-            nX <- newX(x = newdata[[xname]], z = newdata[[zname]])
-            nX %*% coef
-        }
-        ret <- list(model = coef, predict = predictfun, fitted = function() X %*% 
-            coef)
-        class(ret) <- c("basefit", "baselm")
-        ret
-    }
-    ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
-    class(ret) <- "basisdpp"
-    ret
-}
-<environment: 0xa52a8a8>
+$class
+[1] "blg"
 
 > 
 > # random slope
@@ -711,66 +398,25 @@ function (weights)
 > z <- runif(50)
 > raneff <- brandom(id, z=z)
 > attributes(raneff)
-$assign
- [1] 1 1 1 1 1 1 1 1 1 1
+$names
+[1] "model.frame" "get_call"    "get_data"    "get_index"   "get_names"  
+[6] "get_vary"    "set_names"   "dpp"        
 
-$contrasts
-$contrasts$x
-[1] "contr.treatment"
-
-
-$dim
-[1] 50 10
-
-$dimnames
-$dimnames[[1]]
- [1] "1"  "2"  "3"  "4"  "5"  "6"  "7"  "8"  "9"  "10" "11" "12" "13" "14" "15"
-[16] "16" "17" "18" "19" "20" "21" "22" "23" "24" "25" "26" "27" "28" "29" "30"
-[31] "31" "32" "33" "34" "35" "36" "37" "38" "39" "40" "41" "42" "43" "44" "45"
-[46] "46" "47" "48" "49" "50"
-
-$dimnames[[2]]
- [1] "x1"  "x2"  "x3"  "x4"  "x5"  "x6"  "x7"  "x8"  "x9"  "x10"
-
-
-$dpp
-function (weights) 
-{
-    lambda <- df2lambda(X, df = df, dmat = K, weights = weights)
-    Xw <- X * weights
-    XtX <- crossprod(Xw, X)
-    Xsolve <- tcrossprod(solve(XtX + lambda * K), Xw)
-    fitfun <- function(y) {
-        coef <- Xsolve %*% y
-        predictfun <- function(newdata = NULL) {
-            if (is.null(newdata)) 
-                return(X %*% coef)
-            nX <- newX(x = newdata[[xname]], z = newdata[[zname]])
-            nX %*% coef
-        }
-        ret <- list(model = coef, predict = predictfun, fitted = function() X %*% 
-            coef)
-        class(ret) <- c("basefit", "baselm")
-        ret
-    }
-    ret <- list(fit = fitfun, hatmatrix = function() X %*% Xsolve)
-    class(ret) <- "basisdpp"
-    ret
-}
-<environment: 0xae43cf8>
+$class
+[1] "blg"
 
 > 
 > # remove intercept from base learner
 > # and add explicit intercept to the model
 > 
 > tmpdata <- data.frame(x = 1:100, y = rnorm(1:100), int = rep(1, 100))
-> mod <- gamboost(y ~ bols(int, center = TRUE) + bols(x, center = TRUE),
+> mod <- gamboost(y ~ bols(int, intercept = FALSE) + bols(x, intercept = FALSE),
 +                 data = tmpdata, control = boost_control(mstop = 2500))
 > cf <- unlist(coef(mod))
 > cf[1] <- cf[1] + mod$offset
 > cf
-bols(int, center = TRUE).x   bols(x, center = TRUE).x 
-               0.239120107               -0.004211271 
+bols(int,intercept=FALSE)   bols(x,intercept=FALSE) 
+              0.239120107              -0.004211271 
 > coef(lm(y ~ x, data = tmpdata))
  (Intercept)            x 
  0.239120133 -0.004211272 
@@ -785,7 +431,7 @@ bols(int, center = TRUE).x   bols(x, center = TRUE).x
 > 
 > ### Name: blackboost
 > ### Title: Gradient Boosting with Regression Trees
-> ### Aliases: blackboost blackboost.formula blackboost.matrix blackboost_fit
+> ### Aliases: blackboost
 > ### Keywords: models regression
 > 
 > ### ** Examples
@@ -794,12 +440,32 @@ bols(int, center = TRUE).x   bols(x, center = TRUE).x
 >     ### a simple two-dimensional example: cars data
 >     cars.gb <- blackboost(dist ~ speed, data = cars,
 +                           control = boost_control(mstop = 50))
+Loading required package: party
+Loading required package: grid
+Loading required package: modeltools
+Loading required package: stats4
+Loading required package: coin
+Loading required package: mvtnorm
+Loading required package: zoo
+
+Attaching package: 'zoo'
+
+
+	The following object(s) are masked from package:base :
+
+	 as.Date.numeric 
+
+Loading required package: sandwich
+Loading required package: strucchange
+Loading required package: vcd
+Loading required package: MASS
+Loading required package: colorspace
 >     cars.gb
 
-	 Tree-Based Gradient Boosting
+	 Model-based Boosting
 
 Call:
-blackboost.formula(formula = dist ~ speed, data = cars, control = boost_control(mstop = 50))
+blackboost(formula = dist ~ speed, data = cars, control = boost_control(mstop = 50))
 
 
 	 Squared Error (Regression) 
@@ -810,6 +476,9 @@ Loss function: (y - f)^2
 Number of boosting iterations: mstop = 50 
 Step size:  0.1 
 Offset:  42.98 
+
+Baselearner(s): 
+NULL
 
 > 
 >     ### plot fit
@@ -880,7 +549,7 @@ Loss function: abs(y - f)
 > 
 > ### Name: cvrisk
 > ### Title: Cross-Validation
-> ### Aliases: cvrisk
+> ### Aliases: cvrisk cv
 > ### Keywords: models regression
 > 
 > ### ** Examples
@@ -891,6 +560,8 @@ Loss function: abs(y - f)
 >   ### fit linear model to data
 >   model <- glmboost(DEXfat ~ ., data = bodyfat,
 +                     control = boost_control(center = TRUE))
+Warning in glmboost.formula(DEXfat ~ ., data = bodyfat, control = boost_control(center = TRUE)) :
+  boost_control(center = TRUE) is deprecated, use glmboost(..., center = TRUE)
 > 
 >   ### AIC-based selection of number of boosting iterations
 >   maic <- AIC(model)
@@ -908,10 +579,17 @@ Degrees of freedom (for mstop = 45): 1.917234
 >   n <- nrow(bodyfat)
 >   k <- 10
 >   ntest <- floor(n / k)
->   cv10f <- matrix(c(rep(c(rep(0, ntest), rep(1, n)), k - 1),
-+                     rep(0, n * k - (k - 1) * (n + ntest))), nrow = n)
+>   cv10f <- cv(model.weights(model), type = "kfold")
 >   cvm <- cvrisk(model, folds = cv10f)
 Loading required package: multicore
+
+Attaching package: 'multicore'
+
+
+	The following object(s) are masked from package:lattice :
+
+	 parallel 
+
 >   print(cvm)
 
 	 Cross-validated Squared Error (Regression) 
@@ -949,7 +627,7 @@ Loading required package: multicore
 [1] 60
 >   plot(cvm)
 > 
->   ### 25 bootstrap iterations
+>   ### 25 bootstrap iterations (manually)
 >   set.seed(290875)
 >   bs25 <- rmultinom(25, n, rep(1, n)/n)
 >   cvm <- cvrisk(model, folds = bs25)
@@ -989,12 +667,67 @@ Loading required package: multicore
 >   mstop(cvm)
 [1] 53
 > 
+>   ### same
+>   cvrisk(model)
+
+	 Cross-validated Squared Error (Regression) 
+	 glmboost.formula(formula = DEXfat ~ ., data = bodyfat, control = boost_control(center = TRUE)) 
+
+        1         2         3         4         5         6         7         8 
+113.34903  97.75110  84.39732  73.72527  64.95557  57.23990  50.70182  45.22719 
+        9        10        11        12        13        14        15        16 
+ 40.82639  37.00885  33.50835  30.95360  28.55473  26.58338  24.94980  23.57663 
+       17        18        19        20        21        22        23        24 
+ 22.35674  21.29944  20.50763  19.71728  19.03535  18.52925  18.07959  17.67749 
+       25        26        27        28        29        30        31        32 
+ 17.30937  17.03299  16.79070  16.55563  16.37665  16.16714  16.02089  15.86690 
+       33        34        35        36        37        38        39        40 
+ 15.73522  15.59649  15.49594  15.37960  15.30045  15.24378  15.14410  15.07273 
+       41        42        43        44        45        46        47        48 
+ 15.00208  14.94143  14.92821  14.84110  14.81782  14.72153  14.73372  14.67178 
+       49        50        51        52        53        54        55        56 
+ 14.65112  14.61564  14.57942  14.58378  14.53192  14.52370  14.51352  14.49515 
+       57        58        59        60        61        62        63        64 
+ 14.46941  14.46838  14.44719  14.41961  14.41380  14.41644  14.41371  14.40680 
+       65        66        67        68        69        70        71        72 
+ 14.38919  14.39623  14.38927  14.36407  14.38006  14.35352  14.36525  14.36855 
+       73        74        75        76        77        78        79        80 
+ 14.34882  14.35304  14.35731  14.36211  14.34919  14.34586  14.35953  14.35271 
+       81        82        83        84        85        86        87        88 
+ 14.34869  14.35215  14.35375  14.35588  14.35442  14.35995  14.36787  14.36094 
+       89        90        91        92        93        94        95        96 
+ 14.35570  14.36483  14.36403  14.35646  14.37317  14.36747  14.37121  14.37671 
+       97        98        99       100 
+ 14.37874  14.38462  14.37637  14.38360 
+
+	 Optimal number of boosting iterations: 78 
+> 
 >   layout(matrix(1:2, ncol = 2))
 >   plot(cvm)
 > 
 >   ### trees
 >   blackbox <- blackboost(DEXfat ~ ., data = bodyfat)
->   cvtree <- cvrisk(blackbox, folds = bs25)
+Loading required package: party
+Loading required package: grid
+Loading required package: modeltools
+Loading required package: stats4
+Loading required package: coin
+Loading required package: mvtnorm
+Loading required package: zoo
+
+Attaching package: 'zoo'
+
+
+	The following object(s) are masked from package:base :
+
+	 as.Date.numeric 
+
+Loading required package: sandwich
+Loading required package: strucchange
+Loading required package: vcd
+Loading required package: MASS
+Loading required package: colorspace
+>   cvtree <- cvrisk(blackbox)
 >   plot(cvtree)
 > 
 > 
@@ -1008,8 +741,7 @@ Loading required package: multicore
 > 
 > ### Name: gamboost
 > ### Title: Gradient Boosting with Smooth Components
-> ### Aliases: gamboost gamboost.formula gamboost.matrix gamboost_fit
-> ###   plot.gamboost
+> ### Aliases: gamboost
 > ### Keywords: models nonlinear
 > 
 > ### ** Examples
@@ -1020,10 +752,10 @@ Loading required package: multicore
 +                         control = boost_control(mstop = 50))
 >     cars.gb
 
-	 Generalized Additive Models Fitted via Gradient Boosting
+	 Model-based Boosting
 
 Call:
-gamboost.formula(formula = dist ~ speed, data = cars, dfbase = 4,     control = boost_control(mstop = 50))
+gamboost(formula = dist ~ speed, data = cars, dfbase = 4, control = boost_control(mstop = 50))
 
 
 	 Squared Error (Regression) 
@@ -1035,10 +767,13 @@ Number of boosting iterations: mstop = 50
 Step size:  0.1 
 Offset:  42.98 
 
+Baselearner(s): 
+[1] "baselearner(speed)"
+
 >     AIC(cars.gb, method = "corrected")
-[1] 6.60797
-Optimal number of boosting iterations: 24 
-Degrees of freedom (for mstop = 24): 4.481722 
+[1] 6.669124
+Optimal number of boosting iterations: 21 
+Degrees of freedom (for mstop = 21): 6.393244 
 > 
 >     ### plot fit for mstop = 1, ..., 50
 >     plot(dist ~ speed, data = cars)
@@ -1054,7 +789,7 @@ Degrees of freedom (for mstop = 24): 4.481722
 >     ### linear model
 >     lines(x, fitted(lm(y ~ sin(x) - 1)), col = "red")
 >     ### GAM
->     lines(x, fitted(gamboost(y ~ x - 1,
+>     lines(x, fitted(gamboost(y ~ x,
 +                     control = boost_control(mstop = 500))),
 +           col = "green")
 > 
@@ -1068,7 +803,7 @@ Degrees of freedom (for mstop = 24): 4.481722
 > 
 > ### Name: glmboost
 > ### Title: Gradient Boosting with Component-wise Linear Models
-> ### Aliases: glmboost glmboost.formula glmboost.matrix glmboost_fit
+> ### Aliases: glmboost glmboost.formula glmboost.matrix glmboost.default
 > ###   plot.glmboost
 > ### Keywords: models regression
 > 
@@ -1169,6 +904,49 @@ attr(,"offset")
 > 
 > 
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
+> cleanEx(); nameEx("mboost")
+> ### * mboost
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: mboost
+> ### Title: Model-based Gradient Boosting
+> ### Aliases: mboost mboost_fit
+> ### Keywords: models nonlinear
+> 
+> ### ** Examples
+> 
+> 
+>   data("bodyfat", package = "mboost3")
+> 
+>   mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc), data = bodyfat)
+Loading required package: party
+Loading required package: grid
+Loading required package: modeltools
+Loading required package: stats4
+Loading required package: coin
+Loading required package: mvtnorm
+Loading required package: zoo
+
+Attaching package: 'zoo'
+
+
+	The following object(s) are masked from package:base :
+
+	 as.Date.numeric 
+
+Loading required package: sandwich
+Loading required package: strucchange
+Loading required package: vcd
+Loading required package: MASS
+Loading required package: colorspace
+> 
+>   layout(matrix(1:3, nc = 3))
+>   plot(mod, ask = FALSE)
+> 
+> 
+> 
+> 
 > cleanEx(); nameEx("methods")
 > ### * methods
 > 
@@ -1176,10 +954,10 @@ attr(,"offset")
 > 
 > ### Name: methods
 > ### Title: Methods for Gradient Boosting Objects
-> ### Aliases: print.glmboost coef.glmboost coef.gamboost print.gamboost
-> ###   AIC.gamboost AIC.glmboost predict.gb predict.blackboost mstop
-> ###   mstop.gbAIC mstop.gb mstop.cvrisk mstop.blackboost fitted.gb
-> ###   logLik.gb
+> ### Aliases: print.glmboost coef.glmboost coef.mboost print.mboost
+> ###   AIC.mboost predict.mboost predict.glmboost mstop mstop.gbAIC
+> ###   mstop.mboost mstop.cvrisk fitted.mboost logLik.mboost
+> ###   hatvalues.mboost hatvalues.glmboost
 > ### Keywords: methods
 > 
 > ### ** Examples
@@ -1243,10 +1021,14 @@ attr(,"offset")
 > 
 > ### Name: survFit
 > ### Title: Survival Curves for a Cox Proportional Hazards Model
-> ### Aliases: survFit survFit.gb survFit.blackboost plot.survFit
+> ### Aliases: survFit survFit.mboost plot.survFit
 > 
 > 
 > ### ** Examples
+> 
+> 
+> library("survival")
+> data("ovarian", package = "survival")
 > 
 > fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps
 > fit <- glmboost(fm, data = ovarian, family = CoxPH(),
@@ -1270,7 +1052,8 @@ $surv
 [12,] 0.4633558
 
 $time
- [1]  59 115 156 268 329 353 365 431 464 475 563 638
+  1   2   3  22  23  24  25   5   7   8  10  11 
+ 59 115 156 268 329 353 365 431 464 475 563 638 
 
 $n.event
  [1] 1 1 1 1 1 1 1 1 1 1 1 1
@@ -1296,7 +1079,8 @@ $surv
 [12,] 0.1829547 0.2529419 0.6203097
 
 $time
- [1]  59 115 156 268 329 353 365 431 464 475 563 638
+  1   2   3  22  23  24  25   5   7   8  10  11 
+ 59 115 156 268 329 353 365 431 464 475 563 638 
 
 $n.event
  [1] 1 1 1 1 1 1 1 1 1 1 1 1
@@ -1327,25 +1111,25 @@ attr(,"class")
 >     coef(glmboost(status ~ ., data = wpbc[,colnames(wpbc) != "time"], 
 +                   family = Binomial()))
         (Intercept)         mean_radius        mean_texture      mean_perimeter 
-       0.000000e+00        0.000000e+00       -6.138116e-04        0.000000e+00 
+       0.0000000000        0.0000000000       -0.0006008601        0.0000000000 
           mean_area     mean_smoothness    mean_compactness      mean_concavity 
-       0.000000e+00        0.000000e+00        0.000000e+00        0.000000e+00 
+       0.0000000000        0.0000000000        0.0000000000        0.0000000000 
  mean_concavepoints       mean_symmetry     mean_fractaldim           SE_radius 
-       0.000000e+00        0.000000e+00        0.000000e+00        0.000000e+00 
+       0.0000000000        0.0000000000        0.0000000000        0.0000000000 
          SE_texture        SE_perimeter             SE_area       SE_smoothness 
-      -8.842521e-02        0.000000e+00        5.800290e-04        0.000000e+00 
+      -0.0885905098        0.0000000000        0.0006354682        0.0000000000 
      SE_compactness        SE_concavity    SE_concavepoints         SE_symmetry 
-       0.000000e+00       -1.727113e+00       -3.711237e+00        0.000000e+00 
+       0.0000000000       -1.7311449167       -3.7137850359        0.0000000000 
       SE_fractaldim        worst_radius       worst_texture     worst_perimeter 
-       0.000000e+00        0.000000e+00        0.000000e+00        0.000000e+00 
+       0.0000000000        0.0000000000        0.0000000000        0.0000000000 
          worst_area    worst_smoothness   worst_compactness     worst_concavity 
-       9.995163e-05        0.000000e+00        0.000000e+00        0.000000e+00 
+       0.0000968127        0.0000000000        0.0000000000        0.0000000000 
 worst_concavepoints      worst_symmetry    worst_fractaldim               tsize 
-       0.000000e+00        0.000000e+00        0.000000e+00        5.728343e-03 
+       0.0000000000        0.0000000000        0.0000000000        0.0057306264 
              pnodes 
-       2.225939e-02 
+       0.0222476787 
 attr(,"offset")
-[1] -0.5842854
+[1] -0.5835661
 > 
 > 
 > 
@@ -1353,7 +1137,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  9.668 0.12 10.946 0.964 0.964 
+Time elapsed:  24.853 0.916 28.209 2.688 2.688 
 > grDevices::dev.off()
 null device 
           1 

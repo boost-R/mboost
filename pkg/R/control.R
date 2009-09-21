@@ -1,12 +1,12 @@
 
-boost_control <- function(mstop = 100, nu = 0.1, constraint = FALSE,
+boost_control <- function(mstop = 100, nu = 0.1, 
                           risk = c("inbag", "oobag", "none"),
-                          savedata = TRUE, center = FALSE, trace = FALSE, save_ensembless=TRUE) {
+                          center = FALSE, trace = FALSE) {
 
    risk <- match.arg(risk)
-   RET <- list(mstop = mstop, nu = nu, constraint = constraint,
-               risk = risk, savedata = savedata, center = center,
-               trace = trace, saveensss=save_ensembless)
+   RET <- list(mstop = mstop, nu = nu, 
+               risk = risk, center = center,
+               trace = trace)
    class(RET) <- c("boost_control")
    RET
 }

@@ -1,20 +1,39 @@
 \name{cvrisk}
 \alias{cvrisk}
+\alias{cv}
 \title{ Cross-Validation }
 \description{
   Cross-validated estimation of the empirical risk
   for hyper-parameter selection.
 }
 \usage{
-cvrisk(object, folds, grid = c(1:mstop(object)), ...)
+cvrisk(object, folds = cv(model.weights(object)), grid = 1:mstop(object),
+       parallel = require("multicore"), fun = NULL, ...)
+cv(weights, type = c("bootstrap", "kfold", "subsampling"),
+   B = ifelse(type == "kfold", 10, 25), 
+   prob = 0.5, strata = NULL)
 }
 \arguments{
-  \item{object}{ an object of class \code{gb}.}
+  \item{object}{ an object of class \code{mboost}.}
   \item{folds}{ a weight matrix with number of rows equal to the number
                 of observations. The number of columns corresponds to
-                the number of cross-validation runs.}
+                the number of cross-validation runs. Can be computed
+                using function \code{cv} and defaults to 25 bootstrap samples.}
   \item{grid}{ a vector of stopping parameters the empirical risk
                 is to be evaluated for. }
+  \item{parallel}{ logical indicating if the computations are to be delegated to
+                   multiple processors or cores (via \code{\link[multicore]{mclapply}}.}
+  \item{fun}{ if \code{fun} is NULL, the out-of-sample risk is returned. \code{fun},
+              as a function of \code{object}, may extract any other characteristic
+              of the cross-validated models. These are returned as is.}
+  \item{weights}{ a numeric vector of weights for the model to be cross-validated.}
+  \item{type}{ character argument for specifying the cross-validation
+               method. Currently (stratified) bootstrap, k-fold crossvalidation
+               and subsampling are implemented.}
+  \item{B}{ number of folds}
+  \item{prob}{ percentage of observations to be included in the learning samples
+               for subsampling.}
+  \item{strata}{ a factor of the same length as \code{weights} for stratification.}
   \item{...}{additional arguments passed to \code{\link[multicore]{mclapply}}
              eventually.}
 }
@@ -38,14 +57,8 @@ cvrisk(object, folds, grid = c(1:mstop(object)), ...)
   No trace output is given when running in parallel.
 
 }
-\note{
-
-  The model \code{object} needs to be fitted with option
-  \code{savedata = TRUE} in \code{\link{boost_control}}.
-
-}
 \value{
-  An object of class \code{cvrisk}, basically a matrix
+  An object of class \code{cvrisk} (when \code{fun} wasn't specified), basically a matrix
   containing estimates of the empirical risk for a varying number
   of bootstrap iterations. \code{plot} and \code{print} methods
   are available as well as a \code{mstop} method.
@@ -57,7 +70,7 @@ cvrisk(object, folds, grid = c(1:mstop(object)), ...)
   \emph{Journal of Computational and Graphical Statistics}, \bold{14}(3),
   675--699.
 }
-\seealso{\code{\link{AIC.gamboost}} or \code{\link{AIC.glmboost}} for
+\seealso{\code{\link{AIC.mboost}} or \code{\link{AIC.mboost}} for
   \code{AIC} based selection of the stopping iteration. Use \code{mstop}
   to extract the optimal stopping iteratation from \code{cvrisk}
   object.}
@@ -82,26 +95,28 @@ cvrisk(object, folds, grid = c(1:mstop(object)), ...)
   n <- nrow(bodyfat)
   k <- 10
   ntest <- floor(n / k)
-  cv10f <- matrix(c(rep(c(rep(0, ntest), rep(1, n)), k - 1),
-                    rep(0, n * k - (k - 1) * (n + ntest))), nrow = n)
+  cv10f <- cv(model.weights(model), type = "kfold")
   cvm <- cvrisk(model, folds = cv10f)
   print(cvm)
   mstop(cvm)
   plot(cvm)
 
-  ### 25 bootstrap iterations
+  ### 25 bootstrap iterations (manually)
   set.seed(290875)
   bs25 <- rmultinom(25, n, rep(1, n)/n)
   cvm <- cvrisk(model, folds = bs25)
   print(cvm)
   mstop(cvm)
 
+  ### same
+  cvrisk(model)
+
   layout(matrix(1:2, ncol = 2))
   plot(cvm)
 
   ### trees
   blackbox <- blackboost(DEXfat ~ ., data = bodyfat)
-  cvtree <- cvrisk(blackbox, folds = bs25)
+  cvtree <- cvrisk(blackbox)
   plot(cvtree)
 
 }

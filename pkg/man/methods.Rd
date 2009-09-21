@@ -1,53 +1,50 @@
 \name{methods}
 \alias{print.glmboost}
 \alias{coef.glmboost}
-\alias{coef.gamboost}
-\alias{print.gamboost}
-\alias{AIC.gamboost}
-\alias{AIC.glmboost}
-\alias{predict.gb}
-\alias{predict.blackboost}
+\alias{coef.mboost}
+\alias{print.mboost}
+\alias{AIC.mboost}
+\alias{predict.mboost}
+\alias{predict.glmboost}
 \alias{mstop}
 \alias{mstop.gbAIC}
-\alias{mstop.gb}
+\alias{mstop.mboost}
 \alias{mstop.cvrisk}
-\alias{mstop.blackboost}
-\alias{fitted.gb}
-\alias{logLik.gb}
+\alias{fitted.mboost}
+\alias{logLik.mboost}
+\alias{hatvalues.mboost}
+\alias{hatvalues.glmboost}
 \title{ Methods for Gradient Boosting Objects }
 \description{
   Methods for models fitted by boosting algorithms.
 }
 \usage{
 \method{print}{glmboost}(x, ...)
-\method{print}{gamboost}(x, ...)
+\method{print}{mboost}(x, ...)
 \method{coef}{glmboost}(object, ...)
-\method{coef}{gamboost}(object, ...)
-\method{AIC}{gamboost}(object, method = c("corrected", "classical", "gMDL"), ..., k = 2)
-\method{AIC}{glmboost}(object, method = c("corrected", "classical", "gMDL"),
+\method{coef}{mboost}(object, ...)
+\method{AIC}{mboost}(object, method = c("corrected", "classical", "gMDL"),
     df = c("trace", "actset"), ..., k = 2)
 \method{mstop}{gbAIC}(object, ...)
-\method{mstop}{gb}(object, ...)
+\method{mstop}{mboost}(object, ...)
 \method{mstop}{cvrisk}(object, ...)
-\method{mstop}{blackboost}(object, ...)
-\method{predict}{gb}(object, newdata = NULL, type = c("lp", "response"),
-       allIterations = FALSE, ...)
-\method{predict}{blackboost}(object, newdata = NULL, type = c("lp", "response"),
-       allIterations = FALSE, ...)
-\method{fitted}{gb}(object, type = c("lp", "response"), ...)
-\method{logLik}{gb}(object, ...)
+\method{predict}{mboost}(object, type = c("lp", "response"), ...)
+\method{predict}{glmboost}(object, newdata = NULL, type = c("lp", "response"), ...)
+\method{fitted}{mboost}(object, ...)
+\method{logLik}{mboost}(object, ...)
+\method{hatvalues}{mboost}(model, ...)
+\method{hatvalues}{glmboost}(model, ...)
 }
 \arguments{
   \item{object}{ objects of class \code{glmboost}, \code{gamboost},
     \code{blackboost} or \code{gbAIC}. }
   \item{x}{ objects of class \code{glmboost} or \code{gamboost}. }
+  \item{model}{objects of class mboost}
   \item{newdata}{ optionally, a data frame in which to look for variables with
           which to predict. }
   \item{type}{ a character indicating whether the fit or the response
                (classes) should be predicted in case of classification
                problems. }
-  \item{allIterations}{ computes the (linear) predictor for all boosting
-               iterations simultaneously and returns a matrix.}
   \item{method}{ a character specifying if the corrected AIC criterion or
                  a classical (-2 logLik + k * df) should be computed.}
   \item{df}{ a character specifying how degrees of freedom should be computed:
@@ -63,7 +60,8 @@
   These functions can be used to extract details from fitted models. \code{print}
   shows a dense representation of the model fit and \code{coef} extracts the
   regression coefficients of a linear model fitted using the \code{\link{glmboost}}
-  function or the \code{\link{gamboost}} function.
+  function (for \code{\link{gamboost}} objects, \code{coef} only works
+  when \code{\link{bols}} is used as baselearner).
 
   The \code{predict} function can be used to predict the status of the response variable
   for new observations whereas \code{fitted} extracts the regression fit for the observations

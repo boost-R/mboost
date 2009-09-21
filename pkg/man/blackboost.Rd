@@ -1,48 +1,26 @@
 \name{blackboost}
 \alias{blackboost}
-\alias{blackboost.formula}
-\alias{blackboost.matrix}
-\alias{blackboost_fit}
 \title{ Gradient Boosting with Regression Trees }
 \description{
   Gradient boosting for optimizing arbitrary loss functions where regression
   trees are utilized as base learners.
 }
 \usage{
-\method{blackboost}{formula}(formula, data = list(), weights = NULL, ...)
-\method{blackboost}{matrix}(x, y, weights = NULL, ...)
-blackboost_fit(object, tree_controls =
-    ctree_control(teststat = "max",
-                  testtype = "Teststatistic",
-                  mincriterion = 0,
-                  maxdepth = 2),
-    fitmem = ctree_memory(object, TRUE), family = GaussReg(),
-    control = boost_control(), weights = NULL)
+blackboost(formula, data = list(), tree_controls = ctree_control(teststat = "max",
+           testtype = "Teststatistic",
+           mincriterion = 0,
+           maxdepth = 2), ...)
 }
 \arguments{
   \item{formula}{ a symbolic description of the model to be fit. }
   \item{data}{ a data frame containing the variables in the model. }
-  \item{weights}{ an optional vector of weights to be used in the fitting
-                  process. }
-  \item{x}{ design matrix. }
-  \item{y}{ vector of responses. }
-  \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}. }
-  \item{tree_controls}{ an object of class \code{\link[party]{TreeControl}}, which can be
+  \item{tree_controls}{ an object of class \code{"\linkS4class{TreeControl}"}, which can be
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base learners.
                   It is wise
                   to make sure to understand the consequences of altering any of its
                   arguments.}
-  \item{fitmem}{ an object of class \code{\link[party]{TreeFitMemory}}.}
-  \item{family}{ an object of class \code{\link{boost_family-class}},
-                implementing the negative gradient corresponding
-                to the loss function to be optimized. By default,
-                squared error loss
-                for continuous responses is used.}
-  \item{control}{ an object of class \code{\link{boost_control}}
-                  which defines the hyper-parameters of the
-                  boosting algorithm.}
-  \item{\dots}{ additional arguments passed to callies. }
+  \item{\dots}{ additional arguments passed to \code{mboost}. }
 }
 \details{
 
@@ -59,14 +37,9 @@ blackboost_fit(object, tree_controls =
   The regression fit is a black box prediction machine and thus
   hardly interpretable.
 
-  Usually, the formula based interface \code{blackboost} should be used.
-  When necessary (for example for cross-validation), function
-  \code{blackboost_fit} operating on objects of class \code{boost_data}
-  is faster alternative.
-
 }
 \value{
-  An object of class \code{blackboost} with \code{\link{print}}
+  An object of class \code{mboost} with \code{\link{print}}
   and \code{\link{predict}} methods being available.
 }
 \references{

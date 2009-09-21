@@ -2,7 +2,7 @@
 \alias{glmboost}
 \alias{glmboost.formula}
 \alias{glmboost.matrix}
-\alias{glmboost_fit}
+\alias{glmboost.default}
 \alias{plot.glmboost}
 \title{ Gradient Boosting with Component-wise Linear Models }
 \description{
@@ -11,10 +11,10 @@
 }
 \usage{
 \method{glmboost}{formula}(formula, data = list(), weights = NULL,
-             contrasts.arg = NULL, na.action = na.omit, ...)
-\method{glmboost}{matrix}(x, y, weights = NULL, ...)
-glmboost_fit(object, family = GaussReg(),
-             control = boost_control(), weights = NULL)
+                           na.action = na.pass, contrasts.arg = NULL,
+                           center = FALSE, control = boost_control(), ...)
+\method{glmboost}{matrix}(x, y, center = FALSE, control = boost_control(), ...)
+\method{glmboost}{default}(x,  ...)
 \method{plot}{glmboost}(x, main = deparse(x$call), col = NULL, ...)
 }
 \arguments{
@@ -28,14 +28,11 @@ glmboost_fit(object, family = GaussReg(),
           See \code{\link{model.matrix.default}}.}
   \item{na.action}{a function which indicates what should happen when the data
           contain \code{NA}s.}
-  \item{x}{ design matrix or an object of class \code{glmboost} for plotting. }
+  \item{center}{logical indicating of the predictor variables are centered before fitting.}
+  \item{control}{ a list of parameters controlling the algorithm.}
+  \item{x}{ design matrix or an object of class \code{glmboost} for plotting. 
+            Sparse matrices of class \code{Matrix} can be used as well.}
   \item{y}{ vector of responses. }
-  \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}.}
-  \item{family}{ an object of class \code{\link{boost_family-class}},
-                implementing the negative gradient corresponding
-                to the loss function to be minimized. By default, squared error loss
-                for continuous responses is used.}
-  \item{control}{ an object of class \code{\link{boost_control}}.}
   \item{main}{ a title for the plot.}
   \item{col}{ (a vector of) colors for plotting the lines representing
              the coefficient paths.}
@@ -47,9 +44,6 @@ glmboost_fit(object, family = GaussReg(),
   univariate linear models. The fit, i.e., the regression coefficients, can be
   interpreted in the usual way. The methodology is described in
   Buhlmann and Yu (2003), Buhlmann (2006), and Buhlmann and Hothorn (2007).
-
-  The function \code{glmboost_fit} provides access to the fitting
-  procedure without data pre-processing, e.g. for cross-validation.
 
 }
 \value{
