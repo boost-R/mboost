@@ -1,5 +1,5 @@
 
-                CHANGES in `mboost' VERSION 1.1-3 (2009-09-xx)
+                CHANGES in `mboost' VERSION 1.1-3 (2009-09-21)
 
   o  better x-axes in plot.cvrisk and possibility to change xlab
 
@@ -9,12 +9,12 @@
 
   o  corrected bug in bspatial (centering was not used for Xna)
 
-  o  added summary methods for glmboost and gamboost objects
-     that prints the selection frequencies of base-learners
-
   o  removed output of dfbase (which is seldom used) in gamboost
 
   o  changed manual for coef.gamboost
+
+  o  make sure NAs are handled correctly when center = TRUE
+     in glmboost
 
 
 		CHANGES in `mboost' VERSION 1.1-2 (2009-07-21)

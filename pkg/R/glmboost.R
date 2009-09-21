@@ -277,33 +277,6 @@ print.glmboost <- function(x, ...) {
     invisible(x)
 }
 
-### methods: summary
-summary.glmboost <- function(x, ...) {
-
-    print(x)
-
-    cat("Number of selections in",  mstop(x), "iterations:\n")
-    fs <- freq.sel.glmboost(x)
-    for (i in 1:length(fs))
-        cat("\t", names(fs[i]), ":\t", fs[i], "\n", sep="")
-
-    invisible(x)
-
-}
-
-## function to extract selection frequencies of base-learners
-freq.sel.glmboost <- function(object){
-    x <- object$data$x
-    ret <- rep(0, ncol(x))
-    names(ret) <- colnames(x)
-
-    for (i in 1:ncol(x)){
-        ret[i] <- sum(object$ensemble[,1] == i)
-    }
-    ret <- sort(ret, decreasing=TRUE)
-    return(ret)
-}
-
 plot.glmboost <- function(x, main = deparse(x$call),
                           col = NULL, ...) {
 

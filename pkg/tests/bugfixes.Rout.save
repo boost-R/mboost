@@ -69,6 +69,7 @@ Loading required package: colorspace
 > bs <- rmultinom(3, n, rep(1, n) / n)
 > x <- seq(from = 10, to = 500, by = 10)
 > cv <- cvrisk(bb, bs, grid = x)
+Loading required package: multicore
 > ctrl$risk <- "oobag"
 > tmp <- blackboost(DEXfat ~ ., data = bodyfat, control = ctrl,
 +                  weights = bs[,3])
@@ -297,10 +298,10 @@ Warning messages:
 +            data = cars, control = xx)
 + }
 > mod <- myfun(cars, xx = ctl, zz = tctl)
-[   1] ...................................... -- risk: 12645.93 
-[  41] ...................................... -- risk: 12297.56 
+[   1] ...................................... -- risk: 9246.895 
+[  41] ...................................... -- risk: 9006.37 
 [  81] ..................
-Final risk: 12208.95 
+Final risk: 8976.954 
 > 
 > ### bbs with weights and expanded data
 > x <- runif(100)

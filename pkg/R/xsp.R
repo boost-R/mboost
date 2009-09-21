@@ -511,11 +511,12 @@ bols <- function(x, z = NULL, xname = NULL, zname = NULL, center = FALSE,
      if (any(!cc))
          Xna <- newX(x, z, na.rm = FALSE)
 
-     if (center && !is.ordered(x)) {
+     ### penalized differences for ordered x
+     if (!is.ordered(x)) {
          K <- diag(ncol(X))
      } else {
          K <- diff(diag(ncol(X)+1), differences = 1)
-         K <- K[,-1]
+         K <- K[, -1, drop = FALSE]
          K <- crossprod(K, K)
      }
 

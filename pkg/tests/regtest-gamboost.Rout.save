@@ -67,7 +67,6 @@ Loss function: (y - f)^2
 Number of boosting iterations: mstop = 50 
 Step size:  0.1 
 Offset:  0 
-Degree of freedom:  4 
 
 > aic <- AIC(cars.gb, method = "corrected")
 > aic
