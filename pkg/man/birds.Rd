@@ -14,7 +14,7 @@
     \item{\code{DBH}}{Mean diameter of the largest three trees}
     \item{\code{AOT}}{Age of oldest tree}
     \item{\code{AFS}}{Age of forest stand}
-    \item{\code{DWC}}{Amound of dead wood of conifers}
+    \item{\code{DWC}}{Amount of dead wood of conifers}
     \item{\code{LOG}}{Amount of logs per grid}
     \item{\code{x_gk}}{grid location, x coordinate}
     \item{\code{y_gk}}{grid location, y coordinate}

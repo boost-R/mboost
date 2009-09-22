@@ -106,7 +106,7 @@
 }
 \seealso{ \code{\link{gamboost}}, \code{\link{glmboost}} and
   \code{\link{blackboost}} for model fitting. See \code{\link{cvrisk}} for
-  cross-validated stoping iteration.}
+  cross-validated stopping iteration.}
 \examples{
 
     ### a simple two-dimensional example: cars data

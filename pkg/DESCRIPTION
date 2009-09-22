@@ -16,3 +16,4 @@ Suggests: multicore, party, ipred
 LazyLoad: yes
 LazyData: yes
 License: GPL-2
+Packaged: 2009-09-22 11:26:58 UTC; hothorn

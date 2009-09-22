@@ -20,7 +20,7 @@ gamboost(formula, data = list(), baselearner = c("bbs", "bols", "btree", "bss", 
       In addition, \code{\link{btree}} boosts stumps.
       Component-wise smoothing splines
       have been considered in Buhlmann and Yu (2003) and Schmid and Hothorn (2007) investigate P-splines with
-      a B-spline basis. Kneib, Hothorn and Tutz (2007) also utilise P-splines with a B-spline basis,
+      a B-spline basis. Kneib, Hothorn and Tutz (2007) also utilize P-splines with a B-spline basis,
       supplement them with their bivariate tensor product version to estimate interaction surfaces and spatial effects
       and also consider random effects base learners.}
   \item{dfbase}{ an integer vector giving the degrees of freedom for the smoothing
@@ -66,7 +66,7 @@ gamboost(formula, data = list(), baselearner = c("bbs", "bols", "btree", "bss", 
 \seealso{\code{\link{glmboost}} for boosted linear models and
   \code{\link{blackboost}} for boosted trees. See e.g. \code{\link{bbs}}
   for possible base-learners. See \code{\link{cvrisk}} for
-  cross-validated stoping iteration. Furthermore see
+  cross-validated stopping iteration. Furthermore see
   \code{\link{boost_control}}, \code{\link{Family}} and  \code{\link[mboost]{methods}}}
 \examples{
 

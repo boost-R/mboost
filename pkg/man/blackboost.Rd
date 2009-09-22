@@ -63,7 +63,7 @@ blackboost(formula, data = list(), tree_controls = ctree_control(teststat = "max
 }
 \seealso{\code{\link{glmboost}} for boosted linear models and
   \code{\link{gamboost}} for boosted smooth models. See
-  \code{\link{cvrisk}} for cross-validated stoping iteration.
+  \code{\link{cvrisk}} for cross-validated stopping iteration.
   Furthermore see \code{\link{boost_control}},  \code{\link{Family}} and
   \code{\link[mboost]{methods}}}
 \examples{

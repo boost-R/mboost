@@ -64,7 +64,7 @@ QuantReg(tau = 0.5, qoffset = 0.5)
   Pre-fabricated functions for the most commonly used loss functions are
   available as well.
 
-  The \code{offset} function returns the population minimizers evaluated
+  The \code{offset} function returns the population minimisers evaluated
   at the response, i.e., \eqn{1/2 \log(p / (1 - p))} for \code{Binomial()} or
   \code{AdaExp()} and \eqn{(\sum w_i)^{-1} \sum w_i y_i} for \code{GaussReg} and the median
   for \code{Huber} and \code{Laplace}.

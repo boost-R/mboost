@@ -29,13 +29,13 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
   \item{df}{ trace of the hat matrix for the base learner defining the base learner
              complexity. Low values of \code{df} correspond to a large amount of smoothing and
              thus to "weaker" base learners. Certain restrictions have to be kept for the
-             specification of \code{df} since most of the base learners rely on penalisation
+             specification of \code{df} since most of the base learners rely on penalization
              approaches with a non-trivial null space. For example, for P-splines fitted with
              \code{bbs}, \code{df} has to be larger than the order of differences employed in
              the construction of the penalty term. However, when option \code{center=TRUE},
              the effect is centered around its unpenalized part and therefore any positive number
              is admissible for \code{df}.}
-  \item{lambda}{ smoothing penality, computed from \code{df} when missing.}
+  \item{lambda}{ smoothing penalty, computed from \code{df} when missing.}
   \item{knots}{ either the number of (equidistant) interior knots to be used for
                 the regression spline fit or a vector including the positions of the interior
                 knots. For multiple predictor variables, \code{knots} may be a named list.}
@@ -81,7 +81,7 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
   of the univariate penalties in \code{x} and \code{y} directions, see Kneib, Hothorn
   and Tutz (2009) for details. Note that the dimensions of the penalty matrix
   increase (quickly) with the number of knots.
-  with strong impact on computational time. Thus, both should not be choosen to large.
+  with strong impact on computational time. Thus, both should not be chosen to large.
 
   \code{brandom} specifies a random effects base learner based on a factor variable
   \code{x} that defines the grouping structure of the data set. For each level of
@@ -117,7 +117,7 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
   \code{bols(x)}. For \code{bspatial} and, for example, second order
   differences, a linear effect of \code{x} (\code{bols(x)}), a linear effect of
   \code{y} (\code{bols(y)}), and their interaction (\code{bols(x*y)}) are
-  substracted from the effect and have to be added seperately to the model
+  substracted from the effect and have to be added separately to the model
   equation. More details on centering can be found in Kneib, Hothorn and Tutz
   (2009) and Fahrmeir, Kneib and Lang (2004).
 

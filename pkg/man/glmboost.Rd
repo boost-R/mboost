@@ -70,7 +70,7 @@
 }
 \seealso{\code{\link{gamboost}} for boosted smooth models and
   \code{\link{blackboost}} for boosted trees. See \code{\link{cvrisk}} for
-  cross-validated stoping iteration. Furthermore see
+  cross-validated stopping iteration. Furthermore see
   \code{\link{boost_control}}, \code{\link{Family}} and  \code{\link[mboost]{methods}}}
 \examples{
 

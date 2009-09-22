@@ -54,13 +54,13 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
 
 plot.glmboost <- function(x, main = deparse(x$call), col = NULL, ...) {
 
-    cp <- coef(x, aggregate = "cumsum")
+    which <- sort(unique(selected(x)))
+    cp <- coef(x, aggregate = "cumsum")[which, , drop = FALSE]
     cf <- cp[, ncol(cp)]
     if (is.null(col))  
         col <- hcl(h = 40, l = 50, c= abs(cf) / max(abs(cf)) * 490)
     matplot(t(cp), type = "l", lty = 1, xlab = "Number of boosting iterations",
             ylab = "Coefficients", main = main, col = col, ...)
     abline(h = 0, lty = 1, col = "lightgray")
-    axis(4, at = cf, labels = variable.names(x), las = 1)
-
+    axis(4, at = cf, labels = variable.names(x)[which], las = 1)
 }
