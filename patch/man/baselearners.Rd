@@ -64,7 +64,7 @@ btree(..., tree_controls = ctree_control(stump = TRUE,
                  only the deviation effect is fitted. The unpenalized, parametric part has then
 		 to be included in separate base learners using \code{bols} (see the examples below).}
   \item{contrasts.arg}{ a character suitable for input to the \code{\link{contrasts}} replacement function.}
-  \item{tree_controls}{ an object of class \code{\link[party]{TreeControl}}, which can be
+  \item{tree_controls}{ an object of class \code{"\linkS4class{TreeControl}"}, which can be
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base learners,
                   stumps are fitted by default.}

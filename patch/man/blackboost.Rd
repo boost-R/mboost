@@ -27,14 +27,14 @@ blackboost_fit(object, tree_controls =
   \item{x}{ design matrix. }
   \item{y}{ vector of responses. }
   \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}. }
-  \item{tree_controls}{ an object of class \code{\link[party]{TreeControl}}, which can be
+  \item{tree_controls}{ an object of class \code{"\linkS4class{TreeControl}"}, which can be
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base learners.
                   It is wise
                   to make sure to understand the consequences of altering any of its
                   arguments.}
-  \item{fitmem}{ an object of class \code{\link[party]{TreeFitMemory}}.}
-  \item{family}{ an object of class \code{\link{boost_family-class}},
+  \item{fitmem}{ an object of class \code{TreeFitMemory}.}
+  \item{family}{ an object of class \code{"\linkS4class{boost_family}"},
                 implementing the negative gradient corresponding
                 to the loss function to be optimized. By default,
                 squared error loss
