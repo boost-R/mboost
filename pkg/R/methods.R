@@ -175,7 +175,7 @@ predict.glmboost <- function(object, newdata = NULL, type = c("lp", "response"),
     return(pr)
 }
 
-coef.glmboost <- function(object, which = NULL, ...) {
+coef.glmboost <- function(object, ...) {
     cf <- object$coef(...)
     off <- attr(cf, "offset")
     cf <- cf[[1]]
