@@ -80,12 +80,12 @@ Type 'q()' to quit R.
 > ## Use postscript as incomplete files may be viewable, unlike PDF.
 > ## Choose a size that is close to on-screen devices, fix paper
 > ps.options(width = 7, height = 7, paper = "a4", reset = TRUE)
-> grDevices::postscript("mboost3-Ex.ps")
+> grDevices::postscript("mboost-Ex.ps")
 > 
 > assign("par.postscript", graphics::par(no.readonly = TRUE), pos = "CheckExEnv")
 > options(contrasts = c(unordered = "contr.treatment", ordered = "contr.poly"))
 > options(warn = 1)
-> library('mboost3')
+> library('mboost')
 Loading required package: Matrix
 Loading required package: lattice
 
@@ -917,7 +917,7 @@ attr(,"offset")
 > ### ** Examples
 > 
 > 
->   data("bodyfat", package = "mboost3")
+>   data("bodyfat", package = "mboost")
 > 
 >   mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc), data = bodyfat)
 Loading required package: party
