@@ -408,7 +408,7 @@ gamboost <- function(formula, data = list(), baselearner = c("bbs", "bols", "btr
     }
     stopifnot(is.function(baselearner))
     if (isTRUE(all.equal(baselearner, bbs)))
-        baselearner <- function(...) bbs(..., df = dfbase)
+        baselearner <- function(...) bbs(as.data.frame(list(...)), df = dfbase)
     ret <- mboost(formula = formula, data = data, baselearner = baselearner, ...)
     ret$call <- match.call()
     ret
