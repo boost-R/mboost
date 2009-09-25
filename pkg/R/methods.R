@@ -1,19 +1,51 @@
 
 ### compute predictions
-### <FIXME>: add arguments (for documentation)
+### <FIXME>: 
 ###          add link argument (family needs to be touched)
 ### </FIXME>
-predict.mboost <- function(object, type = c("lp", "response"), ...) {
-    pr <- object$predict(...)
+.predictmboost <- function(y, pr, type, nm) {
+    if (NROW(pr) == length(pr)) {
+        pr <- as.vector(pr)
+        names(pr) <- nm
+    } else {
+        rownames(pr) <- nm
+        if (type != "link")
+            warning("argument link is ignored")
+        return(pr)
+    }
+    if (type == "link") return(pr)
+    if (!is.factor(y)) {
+        warning("argument type not yet implemented")
+        return(pr)
+    }
+    if (type == "class") {
+        ret <- factor(levels(y)[(pr > 0) + 1], levels = levels(y))
+        names(ret) <- names(pr)
+        return(ret)
+    }
+    f <- pmin(abs(pr), 36) * sign(pr)
+    p <- exp(f) / (exp(f) + exp(-f))
+    names(p) <- names(pr)
+    return(p)
+}
+
+predict.mboost <- function(object, newdata = NULL, 
+    type = c("link", "response", "class"), which = NULL,
+    aggregate = c("sum", "cumsum", "none"), ...) {
+
     type <- match.arg(type)
-    if (is.factor(y <- object$response) && type == "response")
-        return(factor(levels(y)[(pr > 0) + 1], levels = levels(y)))
-    return(pr)
+    pr <- object$predict(newdata = newdata, 
+                         which = which, aggregate = aggregate)
+    nm <- rownames(newdata)
+    if (is.null(newdata)) nm <- object$rownames
+    .predictmboost(object$response, pr, type, nm)
 }
 
 ### extract coefficients
-coef.mboost <- function(object, ...)
-    object$coef(...)
+coef.mboost <- function(object, which = NULL, 
+    aggregate = c("sum", "cumsum", "none"), ...)
+
+    object$coef(which = which, aggregate = aggregate)
 
 ### compute boosting hat matrix and its trace
 hatvalues.mboost <- function(model, ...) {
@@ -130,9 +162,15 @@ mstop.gbAIC <- function(object, ...) attr(object, "mstop")
 ### compute fitted values
 fitted.mboost <- function(object, ...) {
     args <- list(...)
-    if (length(args) == 0)
-        return(object$fitted())
-    object$predict(...)
+    if (length(args) == 0) {
+        ret <- object$fitted()
+        names(ret) <- object$rownames
+    } else {
+        ret <- object$predict(...)
+        if (NROW(ret) == length(ret)) 
+            rownames(ret) <- object$rownames
+    }
+    ret
 }
 
 ### residuals (the current negative gradient)
@@ -163,20 +201,24 @@ model.frame.mboost <- function(formula, ...)
 response.mboost <- function(object, ...)
     object$response
 
-predict.glmboost <- function(object, newdata = NULL, type = c("lp", "response"), ...) {
+predict.glmboost <- function(object, newdata = NULL, 
+    type = c("link", "response", "class"), which = NULL,
+    aggregate = c("sum", "cumsum", "none"), ...) {
 
-    if (!is.null(newdata)) {
+    if (!is.null(newdata))
         newdata <- object$newX(newdata)
-    }
-    pr <- object$predict(newdata = newdata, ...)
+    pr <- object$predict(newdata = newdata, which = which,
+        aggregate = aggregate)
     type <- match.arg(type)
-    if (is.factor(y <- object$response) && type == "response")
-        return(factor(levels(y)[(pr > 0) + 1], levels = levels(y)))
-    return(pr)
+    nm <- rownames(newdata)
+    if (is.null(newdata)) nm <- object$rownames
+    .predictmboost(object$response, pr, type, nm)
 }
 
-coef.glmboost <- function(object, ...) {
-    cf <- object$coef(...)
+coef.glmboost <- function(object, which = NULL, 
+    aggregate = c("sum", "cumsum", "none"), ...) {
+
+    cf <- object$coef(which = which, aggregate = aggregate)
     off <- attr(cf, "offset")
     cf <- cf[[1]]
     names(cf) <- variable.names(object)

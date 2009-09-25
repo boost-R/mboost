@@ -1,5 +1,7 @@
 
-  o checks for QuantReg
+    o  add missing files to svn (in inst)
+
+    o  checks for QuantReg
 
     o  check status == "N" in wpbc
 
@@ -13,8 +15,6 @@
     o  use col = rgb(0, 0, 0, 0.1) for lines in plot.cvrisk
 
     o  AIC(..., "classical") as default???
-
-    o  names in predict and fitted
 
     o  multivariate responses
 

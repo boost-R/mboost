@@ -6,7 +6,7 @@ set.seed(290875)
 ### predict did not return factor levels for blackboost models
 dummy <- data.frame(y = gl(2, 100), x = runif(200))
 pr <- predict(blackboost(y ~ x, data = dummy, family = Binomial()), 
-              newdata = dummy, type = "response")
+              newdata = dummy, type = "class")
 stopifnot(is.factor(pr) && all(levels(pr) %in% levels(dummy$y)))
 
 ### predict for g{al}mboost.matrix did not work
@@ -165,11 +165,11 @@ for (i in s)
 
 x <- gamboost(y ~ ., data = df)
 for (i in s)   
-    stopifnot(max(abs(predict(x[i]) - predict(x, agg = "cumsum")[,i])) < eps)
+    stopifnot(max(abs(predict(x[i]) - predict(x[max(s)], agg = "cumsum")[,i])) < eps)
 
 x <- blackboost(y ~ ., data = df)
 for (i in s)   
-    stopifnot(max(abs(predict(x[i]) - predict(x, agg = "cumsum")[,i])) < eps)
+    stopifnot(max(abs(predict(x[i]) - predict(x[max(s)], agg = "cumsum")[,i])) < eps)
 
 ### negative gradient of GaussClass was incorrectly specified
 ### negative gradient of GaussClass was incorrectly specified
@@ -181,21 +181,21 @@ stump <- blackboost(Class ~ ., data = tmp[learn,],
     tree_controls = ctree_control(teststat = "max",
         testtype = "Teststatistic", mincriterion = 0, stump = TRUE), 
     control = boost_control(mstop = 176), family = GaussClass())
-mean(predict(stump, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
+mean(predict(stump, newdata = tmp[-learn,], type = "class") != tmp[-learn, "Class"])
 
 stump <- blackboost(Class ~ ., data = tmp[learn,],    
     tree_controls = ctree_control(teststat = "max",
         testtype = "Teststatistic", mincriterion = 0, stump = TRUE),
     control = boost_control(mstop = 275), family = GaussClass())
-mean(predict(stump, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
+mean(predict(stump, newdata = tmp[-learn,], type = "class") != tmp[-learn, "Class"])
 
 cspline <- gamboost(Class ~ ., data = tmp[learn,],
     control = boost_control(mstop = 126), family = GaussClass())
-mean(predict(cspline, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
+mean(predict(cspline, newdata = tmp[-learn,], type = "class") != tmp[-learn, "Class"])
  
 cspline <- gamboost(Class ~ ., data = tmp[learn,], 
     control = boost_control(mstop = 73), family = GaussClass())
-mean(predict(cspline, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
+mean(predict(cspline, newdata = tmp[-learn,], type = "class") != tmp[-learn, "Class"])
 
 ### make sure environment(formula) is used for evaluation
 data("cars")

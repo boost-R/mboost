@@ -5,7 +5,7 @@ Version: 2.0-0
 Author: Torsten Hothorn, Peter Buhlmann, Thomas Kneib, Matthias Schmid and
   Benjamin Hofner
 Maintainer: Torsten Hothorn <Torsten.Hothorn@R-project.org>
-Description: Functional gradient descent algorithms 
+Description: Functional gradient descent algorithm
   (boosting) for optimizing general loss functions utilizing 
   componentwise least squares, either of parametric linear form or
   smoothing splines, or regression trees as base learners for fitting

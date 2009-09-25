@@ -21,15 +21,21 @@
 \usage{
 \method{print}{glmboost}(x, ...)
 \method{print}{mboost}(x, ...)
-\method{coef}{glmboost}(object, ...)
-\method{coef}{mboost}(object, ...)
+\method{coef}{glmboost}(object, which = NULL,
+    aggregate = c("sum", "cumsum", "none"), ...)
+\method{coef}{mboost}(object, which = NULL,
+    aggregate = c("sum", "cumsum", "none"), ...)
 \method{AIC}{mboost}(object, method = c("corrected", "classical", "gMDL"),
     df = c("trace", "actset"), ..., k = 2)
 \method{mstop}{gbAIC}(object, ...)
 \method{mstop}{mboost}(object, ...)
 \method{mstop}{cvrisk}(object, ...)
-\method{predict}{mboost}(object, type = c("lp", "response"), ...)
-\method{predict}{glmboost}(object, newdata = NULL, type = c("lp", "response"), ...)
+\method{predict}{mboost}(object, newdata = NULL,
+    type = c("link", "response", "class"), which = NULL,
+    aggregate = c("sum", "cumsum", "none"), ...)
+\method{predict}{glmboost}(object, newdata = NULL,
+    type = c("link", "response", "class"), which = NULL,
+    aggregate = c("sum", "cumsum", "none"), ...)
 \method{fitted}{mboost}(object, ...)
 \method{logLik}{mboost}(object, ...)
 \method{hatvalues}{mboost}(model, ...)
@@ -42,9 +48,24 @@
   \item{model}{objects of class mboost}
   \item{newdata}{ optionally, a data frame in which to look for variables with
           which to predict. }
-  \item{type}{ a character indicating whether the fit or the response
-               (classes) should be predicted in case of classification
-               problems. }
+  \item{which}{ a subset of base-learners to take into account for computing
+                predictions or coefficients. If \code{which} is given
+                (as an integer vector or characters corresponding
+                 to base-learners) a list is returned.}
+  \item{type}{ the type of prediction required.  The default is on the scale
+          of the predictors; the alternative \code{"response"} is on
+          the scale of the response variable.  Thus for a
+          binomial model the default predictions are of log-odds
+          (probabilities on logit scale) and \code{type = "response"} gives
+          the predicted probabilities.  The \code{"class"} option returns 
+          predicted classes.}
+  \item{aggregate}{ a character specifying how to aggregate predictions
+                    of single base-learners. The default returns the prediction
+                    for the final number of boosting iterations. \code{"cumsum"}
+                    returns a matrix with the predictions for all iterations
+                    simultaneously (in columns). \code{"none"} returns
+                    a matrix where the jth columns contains the predictions
+                    of the base-learner of the jth boosting iteration.}
   \item{method}{ a character specifying if the corrected AIC criterion or
                  a classical (-2 logLik + k * df) should be computed.}
   \item{df}{ a character specifying how degrees of freedom should be computed:
@@ -65,8 +86,7 @@
 
   The \code{predict} function can be used to predict the status of the response variable
   for new observations whereas \code{fitted} extracts the regression fit for the observations
-  in the learning sample. When \code{allIterations = TRUE}, the matrix
-  of all (linear) predictors for boosting iterations 1 to \code{mstop} is returned.
+  in the learning sample. 
 
   For (generalized) linear and additive models, the \code{AIC} function can be used
   to compute both the classical and corrected AIC (Hurvich et al., 1998, only available
