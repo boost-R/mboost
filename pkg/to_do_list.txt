@@ -1,4 +1,6 @@
 
+    o  do we need Matrix on attach?
+
     o  add missing files to svn (in inst)
 
     o  checks for QuantReg
