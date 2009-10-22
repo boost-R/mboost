@@ -47,7 +47,9 @@
   \item{x}{ objects of class \code{glmboost} or \code{gamboost}. }
   \item{model}{objects of class mboost}
   \item{newdata}{ optionally, a data frame in which to look for variables with
-          which to predict. }
+          which to predict. In case the model was fitted using the \code{matrix}
+          interface to \code{\link{glmboost}}, \code{newdata} must be a \code{matrix} 
+          as well (an error is given otherwise).}
   \item{which}{ a subset of base-learners to take into account for computing
                 predictions or coefficients. If \code{which} is given
                 (as an integer vector or characters corresponding

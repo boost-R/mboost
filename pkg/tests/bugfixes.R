@@ -224,3 +224,10 @@ stopifnot(max(abs(m1 - m2)) < sqrt(.Machine$double.eps))
 stopifnot(max(abs(fitted(gamboost(DEXfat ~ age, data = bodyfat)) - 
                   fitted(gamboost(DEXfat ~ bbs(age), data = bodyfat)))) < 
           sqrt(.Machine$double.eps))
+
+### predict for matrix interface to glmboost
+x <- matrix(runif(1000), ncol = 10)
+y <- rowMeans(x) + rnorm(nrow(x))
+mod <- glmboost(x = x, y = y)
+stopifnot(length(predict(mod, newdata = x[1:2,])) == 2)
+try(predict(mod, newdata = as.data.frame(x[1:2,])))

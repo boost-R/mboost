@@ -512,7 +512,7 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
 }
 
 glmboost.matrix <- function(x, y, center = FALSE, 
-                            control = boost_control(), ...) {
+                            control = boost_control(), ...) {q
 
     X <- x
     if (control$center) {
@@ -529,6 +529,8 @@ glmboost.matrix <- function(x, y, center = FALSE,
             if (all(colnames(X) == colnames(newdata)))
                 return(newdata)
         }
+        stop(sQuote("newdata"), " is not a matrix with the same variables as ", 
+              sQuote("x"))
         return(NULL)
     }
     bl <- list(bolscw(X))
