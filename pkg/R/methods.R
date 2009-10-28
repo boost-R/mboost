@@ -187,7 +187,7 @@ logLik.mboost <- function(object, ...)
     stopifnot(length(i) == 1 && i > 0)
     x$subset(i)
     if (return) return(x)
-    return(NULL)
+    return(invisible(NULL))
 }
 
 mstop.mboost <- function(object, ...) object$mstop()
