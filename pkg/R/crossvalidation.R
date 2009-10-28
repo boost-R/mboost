@@ -116,11 +116,11 @@ cvkfold <- function(n, k) {
     fl <- floor(n/k)
     folds <- c(rep(c(rep(0, fl), rep(1, n)), k - 1), 
                rep(0, n * k - (k - 1) * (fl + n)))
-    matrix(folds, nrow = n)
+    matrix(folds, nrow = n)[sample(1:n),, drop = FALSE]
 }
 
 cvsub <- function(n, prob, B) {
     k <- floor(n * prob)
     indx <- rep(c(0, 1), c(n - k, k))
-    replicate(B, sample(indx))
+    replicate(B, sample(indx))[sample(1:n),, drop = FALSE]
 }

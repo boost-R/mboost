@@ -7,8 +7,8 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
     which <- x$which(which, usedonly = TRUE)
     pr <- predict(x, which = which)
     if (is.null(ylim)) ylim <- range(pr)
-    stopifnot(length(xlab) %in% c(1, length(variable.names(x))))
-    stopifnot(length(ylab) %in% c(1, length(variable.names(x))))
+    stopifnot(length(xlab) %in% c(1, length(which)))
+    stopifnot(length(ylab) %in% c(1, length(which)))
 
     for (w in which) {
 
