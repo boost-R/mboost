@@ -253,9 +253,7 @@ print.mboost <- function(x, ...) {
     cat("Number of boosting iterations: mstop =", mstop(x), "\n")
     cat("Step size: ", x$control$nu, "\n")
     cat("Offset: ", x$offset, "\n")
-    cat("\n")
-    cat("Baselearner(s): \n")
-    print(names(variable.names(x)))
+    cat("Number of baselearners: ", length(variable.names(x)), "\n")
     cat("\n")
     invisible(x)
 }
