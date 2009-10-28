@@ -49,7 +49,7 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                      xlab = v, ylab = "Partial Dependency", ylim = ylim, ...)
             }
         }
-   }
+    }
 }
 
 plot.glmboost <- function(x, main = deparse(x$call), col = NULL, ...) {
