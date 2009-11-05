@@ -219,6 +219,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             if (!nw) return(pr)
             ### only if no selection of baselearners
             ### was made via the `which' argument
+            if (!is.matrix(pr)) pr <- matrix(pr, nrow = 1)
             return(offset + matrix(rowSums(pr), ncol = 1))
         }, "cumsum" = {
             if (!nw) {
