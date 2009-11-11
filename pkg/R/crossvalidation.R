@@ -13,7 +13,7 @@ cvrisk <- function(object, folds = cv(model.weights(object)), grid = 1:mstop(obj
         ### bootstrap by default
         folds <- rmultinom(25, length(weights), weights / sum(weights))
     } else {
-        stopifnot(is.matrix(folds) && 
+        stopifnot(is.matrix(folds) &&
                   nrow(folds) == length(weights))
     }
 
@@ -40,7 +40,7 @@ cvrisk <- function(object, folds = cv(model.weights(object)), grid = 1:mstop(obj
         }
     }
 
-    oobrisk <- MYapply(1:ncol(folds), function(i) dummyfct(folds[,i]), 
+    oobrisk <- MYapply(1:ncol(folds), function(i) dummyfct(folds[,i]),
                        parallel = parallel, ...)
     if (!is.null(fun)) return(oobrisk)
     oobrisk <- t(as.data.frame(oobrisk))
@@ -50,7 +50,7 @@ cvrisk <- function(object, folds = cv(model.weights(object)), grid = 1:mstop(obj
     attr(oobrisk, "risk") <- fam_name
     attr(oobrisk, "call") <- call
     attr(oobrisk, "mstop") <- grid
-    attr(oobrisk, "type") <- ifelse(!is.null(attr(folds, "type")), 
+    attr(oobrisk, "type") <- ifelse(!is.null(attr(folds, "type")),
         attr(folds, "type"), "user-defined")
     class(oobrisk) <- "cvrisk"
     oobrisk
@@ -64,8 +64,8 @@ print.cvrisk <- function(x, ...) {
     return(invisible(x))
 }
 
-plot.cvrisk <- function(x, ylab = attr(x, "risk"), 
-                        xlab = "Number of boosting iterations", 
+plot.cvrisk <- function(x, ylab = attr(x, "risk"),
+                        xlab = "Number of boosting iterations",
                         ylim = range(x), main = attr(x, "type"), ...) {
 
     cm <- colMeans(x)
@@ -86,35 +86,36 @@ mstop.cvrisk <- function(object, ...)
     attr(object, "mstop")[which.min(colSums(object))]
 
 cv <- function(weights, type = c("bootstrap", "kfold", "subsampling"),
-               B = ifelse(type == "kfold", 10, 25), 
+               B = ifelse(type == "kfold", 10, 25),
                prob = 0.5, strata = NULL) {
 
     type <- match.arg(type)
     n <- length(weights)
 
     if (is.null(strata)) strata <- gl(1, n)
+    if (!is.factor(strata)) stop(sQuote("strata"), " must be a factor")
     folds <- matrix(0, nrow = n, ncol = B)
 
     ### <FIXME> handling of weights needs careful documentation </FIXME>
     for (s in levels(strata)) {
         indx <- which(strata == s)
-        folds[indx,] <- switch(type, 
-            "bootstrap" = cvboot(length(indx), B = B, weights),
+        folds[indx,] <- switch(type,
+            "bootstrap" = cvboot(length(indx), B = B, weights[indx]),
             "kfold" = cvkfold(length(indx), k = B) * weights[indx],
             "subsampling" = cvsub(length(indx), prob = prob, B = B) * weights[indx])
     }
     attr(folds, "type") <- paste(B, "-fold ", type, sep = "")
     return(folds)
 }
-	
 
-cvboot <- function(n, B, weights) 
+
+cvboot <- function(n, B, weights)
     rmultinom(B, n, weights / sum(weights))
 
 cvkfold <- function(n, k) {
     if (k > n / 2) stop("k > n/2")
     fl <- floor(n/k)
-    folds <- c(rep(c(rep(0, fl), rep(1, n)), k - 1), 
+    folds <- c(rep(c(rep(0, fl), rep(1, n)), k - 1),
                rep(0, n * k - (k - 1) * (fl + n)))
     matrix(folds, nrow = n)[sample(1:n),, drop = FALSE]
 }

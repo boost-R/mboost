@@ -31,7 +31,6 @@ Poisson()
 CoxPH()
 QuantReg(tau = 0.5, qoffset = 0.5)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{ngradient}{ a function with arguments \code{y}, \code{f} and \code{w} implementing the
                     \emph{negative} gradient of the \code{loss} function (which is to be minimized). }
@@ -51,32 +50,34 @@ QuantReg(tau = 0.5, qoffset = 0.5)
   \item{qoffset}{ quantile of response distribution to be used as offset.}
 }
 \details{
-
   The boosting algorithms implemented in \code{\link{glmboost}}, \code{\link{gamboost}} or
   \code{\link{blackboost}} aim at minimizing the (weighted) empirical risk function
   \code{risk(y, f, w)} with respect to \code{f}. By default, the risk function is the
   weighted sum of the loss function \code{loss(y, f)} but can be chosen arbitrarily.
   The \code{ngradient(y, f)} function is the negative gradient of \code{loss(y, f)} with
   respect to \code{f}.
-  For binary classification problems we assume that the response \code{y} is coded by
-  \eqn{-1} and \eqn{+1}.
 
   Pre-fabricated functions for the most commonly used loss functions are
-  available as well.
+  available as well. For binary classification problems the response
+  \code{y} has to be a \code{factor}. Internally \code{y} is re-coded
+  to \eqn{-1} and \eqn{+1} (Buhlmann and Hothorn 2007).
 
   The \code{offset} function returns the population minimisers evaluated
   at the response, i.e., \eqn{1/2 \log(p / (1 - p))} for \code{Binomial()} or
   \code{AdaExp()} and \eqn{(\sum w_i)^{-1} \sum w_i y_i} for \code{GaussReg} and the median
   for \code{Huber} and \code{Laplace}.
 
+  Buhlmann and Hothorn (2007) give an overview of the available loss functions.
   Boosting for quantile regression with the \code{QuantReg} family is
   introduced in Fenske et al. (2009).
-
 }
 \value{
   An object of class \code{boost_family}.
 }
 \references{
+    Peter Buhlmann and Torsten Hothorn (2007),
+    Boosting algorithms: regularization, prediction and model fitting.
+    \emph{Statistical Science}, \bold{22}(4), 477--505.
 
     Nora Fenke, Thomas Kneib, and Torsten Hothorn (2009).
     Identifying risk factors for severe childhood malnutrition by

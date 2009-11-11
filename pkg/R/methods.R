@@ -1,6 +1,6 @@
 
 ### compute predictions
-### <FIXME>: 
+### <FIXME>:
 ###          add link argument (family needs to be touched)
 ### </FIXME>
 .predictmboost <- function(y, pr, type, nm) {
@@ -29,12 +29,12 @@
     return(p)
 }
 
-predict.mboost <- function(object, newdata = NULL, 
+predict.mboost <- function(object, newdata = NULL,
     type = c("link", "response", "class"), which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...) {
 
     type <- match.arg(type)
-    pr <- object$predict(newdata = newdata, 
+    pr <- object$predict(newdata = newdata,
                          which = which, aggregate = aggregate)
     nm <- rownames(newdata)
     if (is.null(newdata)) nm <- object$rownames
@@ -42,7 +42,7 @@ predict.mboost <- function(object, newdata = NULL,
 }
 
 ### extract coefficients
-coef.mboost <- function(object, which = NULL, 
+coef.mboost <- function(object, which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...)
 
     object$coef(which = which, aggregate = aggregate)
@@ -58,7 +58,7 @@ hatvalues.mboost <- function(model, ...) {
         fitm <- predict(model, aggregate = "cumsum")
         op <- bhatmat(n, H, model$xselect(cw = TRUE), fitm, model$family@fW)
     }
-    RET <- diag(op[[1]])  
+    RET <- diag(op[[1]])
     attr(RET, "hatmatrix") <- op[[1]]
     attr(RET, "trace") <- op[[2]]
     RET
@@ -72,7 +72,7 @@ AIC.mboost <- function(object, method = c("corrected", "classical", "gMDL"),
         hatval <- hatvalues(object)
         RET <- AICboost(object, method = method,
                          df = attr(hatval, "trace"), k = k)
-    } 
+    }
     if (df == "actset") {
         ### compute active set: number of non-zero coefficients
         ### for each boosting iteration
@@ -84,7 +84,7 @@ AIC.mboost <- function(object, method = c("corrected", "classical", "gMDL"),
         ### no offset computed at all!
         if (object$offset != 0) df <- df + 1
         ### </FIXME>
-        RET <- AICboost(object, method = method, 
+        RET <- AICboost(object, method = method,
                          df = df, k = k)
     }
     return(RET)
@@ -102,7 +102,7 @@ AICboost <- function(object, method = c("corrected", "classical", "gMDL"), df, k
         stop("corrected AIC method not implemented for non-Gaussian family")
 
     sumw <- sum(model.weights(object)[!is.na(fitted(object))])
-    if (method == "corrected") 
+    if (method == "corrected")
         AIC <- log(object$risk() / sumw) +
                (1 + df/sumw) / (1 - (df + 2)/sumw)
 
@@ -118,7 +118,7 @@ AICboost <- function(object, method = c("corrected", "classical", "gMDL"), df, k
     RET <- AIC[mstop]
 
     attr(RET, "mstop") <- which.min(AIC)
-    attr(RET, "df") <- df  
+    attr(RET, "df") <- df
     attr(RET, "AIC") <- AIC
     attr(RET, "corrected") <- method == "corrected"
 
@@ -150,7 +150,7 @@ plot.gbAIC <- function(x, y = NULL, ...) {
     } else {
         ymin <- x - x/2
     }
-    lines(c(mstop, mstop), 
+    lines(c(mstop, mstop),
           c(ymin, x), lty = 2)
 }
 
@@ -167,14 +167,14 @@ fitted.mboost <- function(object, ...) {
         names(ret) <- object$rownames
     } else {
         ret <- object$predict(...)
-        if (NROW(ret) == length(ret)) 
+        if (NROW(ret) == length(ret))
             rownames(ret) <- object$rownames
     }
     ret
 }
 
 ### residuals (the current negative gradient)
-resid.mboost <- function(object, ...) 
+resid.mboost <- function(object, ...)
     object$resid()
 
 logLik.mboost <- function(object, ...)
@@ -187,7 +187,7 @@ logLik.mboost <- function(object, ...)
     stopifnot(length(i) == 1 && i > 0)
     x$subset(i)
     if (return) return(x)
-    return(invisible(NULL))
+    invisible(NULL)
 }
 
 mstop.mboost <- function(object, ...) object$mstop()
@@ -201,7 +201,7 @@ model.frame.mboost <- function(formula, ...)
 response.mboost <- function(object, ...)
     object$response
 
-predict.glmboost <- function(object, newdata = NULL, 
+predict.glmboost <- function(object, newdata = NULL,
     type = c("link", "response", "class"), which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...) {
 
@@ -215,7 +215,7 @@ predict.glmboost <- function(object, newdata = NULL,
     .predictmboost(object$response, pr, type, nm)
 }
 
-coef.glmboost <- function(object, which = NULL, 
+coef.glmboost <- function(object, which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...) {
 
     cf <- object$coef(which = which, aggregate = aggregate)
@@ -235,8 +235,8 @@ hatvalues.glmboost <- function(model, ...) {
                 as.integer(model$xselect(cw = TRUE)),
                 PACKAGE = "mboost")
     RET <- diag(op[[1]])
-    attr(RET, "hatmatrix") <- op[[1]]  
-    attr(RET, "trace") <- op[[2]] 
+    attr(RET, "hatmatrix") <- op[[1]]
+    attr(RET, "trace") <- op[[2]]
     RET
 }
 
@@ -282,7 +282,7 @@ print.glmboost <- function(x, ...) {
 
 variable.names.mboost <- function(object, ...) {
     ### <FIXME> is pasting what we want?
-    ret <- sapply(object$baselearner, function(x) 
+    ret <- sapply(object$baselearner, function(x)
                   paste(x$get_names(), collapse = ", "))
     ### </FIXME>
     if (is.matrix(ret)) ret <- ret[, , drop = TRUE]
@@ -318,7 +318,6 @@ summary.mboost <- function(object, ...) {
 }
 
 print.summary.mboost <- function(x, ...) {
-
     print(x$object)
     cat("Selection frequencies:\n")
     print(x$selprob)

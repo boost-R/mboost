@@ -1,19 +1,28 @@
 \name{methods}
 \alias{print.glmboost}
+\alias{print.mboost}
+
+\alias{summary.mboost}
+
 \alias{coef.glmboost}
 \alias{coef.mboost}
-\alias{print.mboost}
+
+\alias{[.mboost}
+
 \alias{AIC.mboost}
 \alias{predict.mboost}
 \alias{predict.glmboost}
+
 \alias{mstop}
 \alias{mstop.gbAIC}
 \alias{mstop.mboost}
 \alias{mstop.cvrisk}
+
 \alias{fitted.mboost}
 \alias{logLik.mboost}
 \alias{hatvalues.mboost}
 \alias{hatvalues.glmboost}
+
 \title{ Methods for Gradient Boosting Objects }
 \description{
   Methods for models fitted by boosting algorithms.
@@ -21,21 +30,30 @@
 \usage{
 \method{print}{glmboost}(x, ...)
 \method{print}{mboost}(x, ...)
+
+\method{summary}{mboost}(object, ...)
+
 \method{coef}{glmboost}(object, which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...)
 \method{coef}{mboost}(object, which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...)
+
+\method{[}{mboost}(x, i, return = TRUE, ...)
+
 \method{AIC}{mboost}(object, method = c("corrected", "classical", "gMDL"),
     df = c("trace", "actset"), ..., k = 2)
-\method{mstop}{gbAIC}(object, ...)
+
 \method{mstop}{mboost}(object, ...)
+\method{mstop}{gbAIC}(object, ...)
 \method{mstop}{cvrisk}(object, ...)
+
 \method{predict}{mboost}(object, newdata = NULL,
     type = c("link", "response", "class"), which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...)
 \method{predict}{glmboost}(object, newdata = NULL,
     type = c("link", "response", "class"), which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...)
+
 \method{fitted}{mboost}(object, ...)
 \method{logLik}{mboost}(object, ...)
 \method{hatvalues}{mboost}(model, ...)
@@ -48,7 +66,7 @@
   \item{model}{objects of class mboost}
   \item{newdata}{ optionally, a data frame in which to look for variables with
           which to predict. In case the model was fitted using the \code{matrix}
-          interface to \code{\link{glmboost}}, \code{newdata} must be a \code{matrix} 
+          interface to \code{\link{glmboost}}, \code{newdata} must be a \code{matrix}
           as well (an error is given otherwise).}
   \item{which}{ a subset of base-learners to take into account for computing
                 predictions or coefficients. If \code{which} is given
@@ -59,7 +77,7 @@
           the scale of the response variable.  Thus for a
           binomial model the default predictions are of log-odds
           (probabilities on logit scale) and \code{type = "response"} gives
-          the predicted probabilities.  The \code{"class"} option returns 
+          the predicted probabilities.  The \code{"class"} option returns
           predicted classes.}
   \item{aggregate}{ a character specifying how to aggregate predictions
                     of single base-learners. The default returns the prediction
@@ -68,6 +86,13 @@
                     simultaneously (in columns). \code{"none"} returns
                     a matrix where the jth columns contains the predictions
                     of the base-learner of the jth boosting iteration.}
+  \item{i}{ integer. Index specifying the model to extract. If \code{i}
+            is smaller than the initial \code{mstop}, a subset is used.
+            If \code{i} is larger than the initial \code{mstop},
+            additional boosting steps are performed until step \code{i}
+            is reached. See details for more information. }
+  \item{return}{ a logical indicating whether the changed object is
+                 returned. }
   \item{method}{ a character specifying if the corrected AIC criterion or
                  a classical (-2 logLik + k * df) should be computed.}
   \item{df}{ a character specifying how degrees of freedom should be computed:
@@ -81,14 +106,23 @@
 \details{
 
   These functions can be used to extract details from fitted models. \code{print}
-  shows a dense representation of the model fit and \code{coef} extracts the
+  shows a dense representation of the model fit and \code{summary} gives
+  a more detailed representation. The function \code{coef} extracts the
   regression coefficients of a linear model fitted using the \code{\link{glmboost}}
-  function (for \code{\link{gamboost}} objects, \code{coef} only works
-  when \code{\link{bols}} is used as baselearner).
+  function or an additive model fitted using the \code{\link{gamboost}}.
 
   The \code{predict} function can be used to predict the status of the response variable
   for new observations whereas \code{fitted} extracts the regression fit for the observations
-  in the learning sample. 
+  in the learning sample.
+
+  The \code{[.mstop} function can be used to enhance or restrict a given
+  boosting model to the specified boosting iteration \code{i}. Note that
+  in both cases the original \code{x} will be changed to reduce the
+  memory footage. If the boosting model is enhanced by specifying an
+  index that is larger than the initial \code{mstop}, only the missing
+  \code{i - mstop} steps are fitted. If the model is restricted,
+  the spare steps are not dropped, i.e. if we increase mstop again,
+  these boosting steps are immediately available.
 
   For (generalized) linear and additive models, the \code{AIC} function can be used
   to compute both the classical and corrected AIC (Hurvich et al., 1998, only available
@@ -106,6 +140,10 @@
   Note that \code{logLik} and \code{AIC} only make sense when the corresponding
   \code{\link{Family}} implements the appropriate loss function.
 
+}
+\note{
+  The \code{[.mstop} function changes the original object, i.e.
+  \code{gbmodel[10]} changes \code{gbmodel} directly!
 }
 \references{
 
@@ -143,11 +181,17 @@
     aic <- AIC(cars.gb, method = "corrected")
     aic
 
+    ### enhance or restrict model
+    cars.gb <- gamboost(dist ~ speed, data = cars,
+                        control = boost_control(mstop = 100, trace=TRUE))
+    cars.gb[10]
+    cars.gb[100, return=FALSE] # no refitting required
+    cars.gb[150, return=FALSE] # only iterations 101 to 150 are newly fitted
+
     ### coefficients for optimal number of boosting iterations
     coef(cars.gb[mstop(aic)])
     plot(cars$dist, predict(cars.gb[mstop(aic)]),
          ylim = range(cars$dist))
     abline(a = 0, b = 1)
-
 }
 \keyword{methods}

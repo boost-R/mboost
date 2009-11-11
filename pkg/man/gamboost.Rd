@@ -12,31 +12,34 @@ gamboost(formula, data = list(), baselearner = c("bbs", "bols", "btree", "bss", 
 \arguments{
   \item{formula}{ a symbolic description of the model to be fit. }
   \item{data}{ a data frame containing the variables in the model. }
-  \item{baselearner}{ a character specifying the component-wise base learner to be used:
-      \code{\link{bbs}} means P-splines with a B-spline basis (see Schmid and Hothorn
-      2007), 
-      \code{\link{bols}} linear models, \code{\link{bspatial}} bivariate tensor
-      product penalized splines, and \code{\link{brandom}} random effects.
-      In addition, \code{\link{btree}} boosts stumps.
-      Component-wise smoothing splines
-      have been considered in Buhlmann and Yu (2003) and Schmid and Hothorn (2007) investigate P-splines with
-      a B-spline basis. Kneib, Hothorn and Tutz (2007) also utilize P-splines with a B-spline basis,
-      supplement them with their bivariate tensor product version to estimate interaction surfaces and spatial effects
-      and also consider random effects base learners.}
+  \item{baselearner}{ a character specifying the component-wise base
+    learner to be used: \code{\link{bbs}} means P-splines with a
+    B-spline basis (see Schmid and Hothorn 2007), \code{\link{bols}}
+    linear models abd \code{\link{btree}} boosts stumps.
+    \code{\link{bss}} and \code{\link{bns}} are only used for backward
+    compatibility. You should consider to use \code{\link{bbs}} instead.
+    Component-wise smoothing splines have been considered in Buhlmann
+    and Yu (2003) and Schmid and Hothorn (2007) investigate P-splines
+    with a B-spline basis. Kneib, Hothorn and Tutz (2007) also utilize
+    P-splines with a B-spline basis, supplement them with their
+    bivariate tensor product version to estimate interaction surfaces
+    and spatial effects and also consider random effects base
+    learners.} 
   \item{dfbase}{ an integer vector giving the degrees of freedom for the smoothing
-                 spline, either globally for all variables (when its length is one)
-                 or separately for each single covariate. }
+    spline, either globally for all variables (when its length is one)
+    or separately for each single covariate. }
   \item{\dots}{ additional arguments passed to \code{mboost}.}
 }
 \details{
 
   A (generalized) additive model is fitted using a boosting algorithm based on
-  component-wise univariate base learners. The base learner can either be
+  component-wise univariate base learners. The base-learners can either be
   specified via the \code{formula} object or via the \code{baselearner} argument
   (see \code{\link{bbs}} for an example). If the base learners specified in
   \code{formula} differ from \code{baselearner}, the latter argument will be
-  ignored.
-
+  ignored. Furthermore, two additional base-learners can be specified in
+  \code{formula}: \code{\link{bspatial}} for bivariate tensor product
+  penalized splines and \code{\link{brandom}} for random effects. 
 }
 \value{
   An object of class \code{mboost} with \code{\link{print}},

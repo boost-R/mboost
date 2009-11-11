@@ -6,7 +6,7 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
     if (!is.null(df))
         if (df > ncol(X)) return(c(df = df, lambda = 0))
 
-    # Demmler-Reinsch Orthogonalization (cf. Ruppert et al., 2003, 
+    # Demmler-Reinsch Orthogonalization (cf. Ruppert et al., 2003,
     # Semiparametric Regression, Appendix B.1.1).
 
     ### option
@@ -16,7 +16,7 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
     decomp <- svd(crossprod(Rm, dmat) %*% Rm)
     d <- decomp$d[decomp$d > sqrt(.Machine$double.eps)]
 
-    if (!is.null(lambda)) 
+    if (!is.null(lambda))
         return(c(df = sum(1 / (1 + lambda * d)), lambda = lambda))
     if (df >= length(d)) return(c(df = df, lambda = 0))
 
@@ -26,17 +26,17 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
 
     ### option
     if (df2l(1e+10) > 0) return(c(df = df, lambda = 1e+10))
-    return(c(df = df, 
-             lambda = uniroot(df2l, c(0, 1e+10), 
+    return(c(df = df,
+             lambda = uniroot(df2l, c(0, 1e+10),
                               tol = sqrt(.Machine$double.eps))$root))
 }
 
 ### hyper parameters for ols baselearner
-hyper_ols <- function(df = NULL, lambda = NULL, intercept = TRUE, 
-                      contrasts.arg = "contr.treatment") 
+hyper_ols <- function(df = NULL, lambda = NULL, intercept = TRUE,
+                      contrasts.arg = "contr.treatment")
     list(pen = !is.null(df) || !is.null(lambda),
          df = df, lambda = lambda,
-         intercept = intercept, 
+         intercept = intercept,
          contrasts.arg = contrasts.arg)
 
 ### model.matrix for ols baselearner
@@ -47,7 +47,7 @@ X_ols <- function(mf, vary, args) {
         contr <- NULL
     } else {
         ### set up model matrix
-        fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary], 
+        fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary],
                     collapse = "+"), sep = "")
         if (!args$intercept)
             fm <- paste(fm, "-1", sep = "")
@@ -65,7 +65,7 @@ X_ols <- function(mf, vary, args) {
         ### <FIXME> penalize intercepts???
         ### set up penalty matrix
         ANOVA <- (!is.null(contr) && (length(contr) == 1)) && (ncol(mf) == 1)
-        if (ANOVA) { 
+        if (ANOVA) {
             diag <- Diagonal
             X <- Matrix(X)
         }
@@ -81,20 +81,20 @@ X_ols <- function(mf, vary, args) {
 }
 
 ### hyper parameters for P-splines baselearner (including tensor product P-splines)
-hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4, 
+hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4,
                       lambda = NULL, center = FALSE) {
 
-    knotf <- function(x, knots) {	
+    knotf <- function(x, knots) {
         boundary.knots <- range(x, na.rm = TRUE)
         if (length(knots) == 1) {
-            knots <- seq(from = boundary.knots[1], 
+            knots <- seq(from = boundary.knots[1],
                          to = boundary.knots[2], length = knots + 2)
             knots <- knots[2:(length(knots) - 1)]
         }
         list(knots = knots, boundary.knots = boundary.knots)
     }
     nm <- colnames(mf)[colnames(mf) != vary]
-    if (is.list(knots)) stopifnot(all(names(knots) %in% nm))
+    if (is.list(knots)) if(!all(names(knots) %in% nm)) stop("variable names and knot names must be the same")
     ret <- vector(mode = "list", length = length(nm))
     names(ret) <- nm
     for (n in nm)
@@ -136,13 +136,13 @@ X_bbs <- function(mf, vary, args) {
         }
     }
     if (length(mm) == 2) {
-        X <- kronecker(mm[[1]], matrix(1, nc = ncol(mm[[2]]))) * 
+        X <- kronecker(mm[[1]], matrix(1, nc = ncol(mm[[2]]))) *
              kronecker(matrix(1, nc = ncol(mm[[1]])), mm[[2]])
         Kx <- diff(diag(ncol(mm[[1]])), differences = args$differences)
         Kx <- crossprod(Kx)
         Ky <- diff(diag(ncol(mm[[2]])), differences = args$differences)
         Ky <- crossprod(Ky)
-        K <- kronecker(Kx, diag(ncol(mm[[2]]))) + 
+        K <- kronecker(Kx, diag(ncol(mm[[2]]))) +
              kronecker(diag(ncol(mm[[1]])), Ky)
         ### <FIXME>
         if (vary != "") {
@@ -159,6 +159,8 @@ X_bbs <- function(mf, vary, args) {
             K <- as(diag(ncol(X)), "matrix")
         }
     }
+    if (length(mm) > 2)
+        stop("not possible to specify more than two variables in ", sQuote("..."), " argument of smooth base-learners")
     return(list(X = X, K = K))
 }
 
@@ -190,7 +192,7 @@ bols <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lambd
     ### option
     DOINDEX <- is.data.frame(mf) && (nrow(mf) > 10000 || is.factor(mf[[1]]))
     if (is.null(index)) {
-        ### try to remove duplicated observations or 
+        ### try to remove duplicated observations or
         ### observations with missings
         if (!CC || DOINDEX) {
             index <- get_index(mf)
@@ -199,7 +201,7 @@ bols <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lambd
         }
     }
 
-    ret <- list(model.frame = function() 
+    ret <- list(model.frame = function()
                     if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
                 get_call = function() cll,
                 get_data = function() mf,
@@ -210,13 +212,13 @@ bols <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lambd
     class(ret) <- "blg"
 
     ret$dpp <- bl_lin(ret, Xfun = X_ols, args = hyper_ols(
-                      df = df, lambda = lambda, 
+                      df = df, lambda = lambda,
                       intercept = intercept, contrasts.arg = contrasts.arg))
     return(ret)
 }
 
 ### P-spline (and tensor-product spline) baselearner
-bbs <- function(..., z = NULL, index = NULL, knots = 20, degree = 3, 
+bbs <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
                  differences = 2, df = 4, lambda = NULL, center = FALSE) {
 
     cll <- match.call()
@@ -256,7 +258,7 @@ bbs <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
         }
     }
 
-    ret <- list(model.frame = function() 
+    ret <- list(model.frame = function()
                     if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
                 get_call = function() cll,
                 get_data = function() mf,
@@ -266,14 +268,14 @@ bbs <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
                 set_names = function(value) attr(mf, "names") <<- value)
     class(ret) <- "blg"
 
-    ret$dpp <- bl_lin(ret, Xfun = X_bbs, 
+    ret$dpp <- bl_lin(ret, Xfun = X_bbs,
                       args = hyper_bbs(mf, vary, knots = knots,
-                      degree = degree, differences = differences, 
+                      degree = degree, differences = differences,
                       df = df, lambda = lambda, center = center))
     return(ret)
 }
 
-### workhorse for fitting (Ridge-penalized) baselearners 
+### workhorse for fitting (Ridge-penalized) baselearners
 bl_lin <- function(blg, Xfun, args) {
 
     mf <- blg$get_data()
@@ -312,10 +314,10 @@ bl_lin <- function(blg, Xfun, args) {
             XtXC <- Cholesky(forceSymmetric(XtX))
             mysolve <- function(y) solve(XtXC, crossprod(X, y))
         } else {
-            mysolve <- function(y) 
-                .Call("La_dgesv", XtX, crossprod(X, y), .Machine$double.eps, 
+            mysolve <- function(y)
+                .Call("La_dgesv", XtX, crossprod(X, y), .Machine$double.eps,
                       PACKAGE = "base")
-        }	
+        }
 
         fit <- function(y) {
             if (!is.null(index)) {
@@ -324,7 +326,7 @@ bl_lin <- function(blg, Xfun, args) {
                 y <- y * weights
             }
             coef <- mysolve(y)
-            ret <- list(model = coef, 
+            ret <- list(model = coef,
                         fitted = function() {
                             ret <- as.vector(X %*% coef)
                             if (is.null(index)) return(ret)
@@ -344,8 +346,8 @@ bl_lin <- function(blg, Xfun, args) {
 
         ### actually used degrees of freedom (trace of hat matrix)
         df <- function() {
-            if (args$pen) 
-                return(df2lambda(X, df = NULL, lambda = lambda, 
+            if (args$pen)
+                return(df2lambda(X, df = NULL, lambda = lambda,
                                  dmat = K, weights = w))
             return(ncol(X))
         }
@@ -366,7 +368,7 @@ bl_lin <- function(blg, Xfun, args) {
                 X <- newX(newdata)$X
             }
             aggregate <- match.arg(aggregate)
-            pr <- switch(aggregate, "sum" = 
+            pr <- switch(aggregate, "sum" =
                 as(X %*% rowSums(cf), "matrix"),
             "cumsum" = {
                 M <- triu(crossprod(Matrix(1, nc = ncol(cf))))
@@ -377,8 +379,8 @@ bl_lin <- function(blg, Xfun, args) {
             return(pr[index,,drop = FALSE])
         }
 
-        ret <- list(fit = fit, hatvalues = hatvalues, 
-                    predict = predict, df = df, 
+        ret <- list(fit = fit, hatvalues = hatvalues,
+                    predict = predict, df = df,
                     Xnames = colnames(X))
         class(ret) <- c("bl_lin", "bl")
         return(ret)

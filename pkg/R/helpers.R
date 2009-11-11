@@ -21,7 +21,7 @@ get_index <- function(x) {
             }
         ### go for data.frames with >= 2 variables
         } else {
-            tmp <- do.call("paste", x)           
+            tmp <- do.call("paste", x)
             nd <- which(!duplicated(tmp))
             nd <- nd[complete.cases(x[nd,])]
             index <- match(tmp, tmp[nd])
@@ -59,7 +59,7 @@ MYapply <- function(X, FUN, parallel = FALSE, ...) {
 
     myapply <- lapply
     if (parallel && .Platform$OS.type == "unix") {
-        if (!multicore:::isChild()) 
+        if (!multicore:::isChild())
             myapply <- mclapply
     }
     myapply(X, FUN, ...)
@@ -102,28 +102,28 @@ FP <- function(x, p = c(-2, -1, -0.5, 0.5, 1, 2, 3), scaling = TRUE) {
 }
 
 ### trace boosting iterations
-do_trace <- function(m, risk, step = options("width")$width / 2,
+do_trace <- function(m, mstop, risk, step = options("width")$width / 2,
                      width = 1000) {
-
+    m <- m - mstop
     if (m != width) {
         if ((m - 1) %/% step == (m - 1) / step) {
-            mchr <- formatC(m, format = "d", width = nchar(width) + 1,
+            mchr <- formatC(m+mstop, format = "d", width = nchar(width) + 1,
                             big.mark = "'")
             cat(paste("[", mchr, "] ",sep = ""))
         } else {
             if ((m %/% step != m / step)) {
                 cat(".")
             } else {
-                cat(" -- risk:", risk[m], "\n")
+                cat(" -- risk:", risk[m+mstop], "\n")
             }
-        }    
+        }
     } else {
-        cat("\nFinal risk:", risk[m], "\n")
+        cat("\nFinal risk:", risk[m+mstop], "\n")
     }
 }
 
 bhatmat <- function(n, H, xselect, fitm, fW) {
-     
+
     B <- matrix(0, nrow = n, ncol = n)
     I <- diag(n)
     tr <- numeric(length(xselect))

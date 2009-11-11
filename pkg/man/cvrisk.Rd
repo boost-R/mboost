@@ -10,7 +10,7 @@
 cvrisk(object, folds = cv(model.weights(object)), grid = 1:mstop(object),
        parallel = require("multicore"), fun = NULL, ...)
 cv(weights, type = c("bootstrap", "kfold", "subsampling"),
-   B = ifelse(type == "kfold", 10, 25), 
+   B = ifelse(type == "kfold", 10, 25),
    prob = 0.5, strata = NULL)
 }
 \arguments{
@@ -30,7 +30,8 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   \item{type}{ character argument for specifying the cross-validation
                method. Currently (stratified) bootstrap, k-fold crossvalidation
                and subsampling are implemented.}
-  \item{B}{ number of folds}
+  \item{B}{ number of folds, per default 25 for \code{bootstrap} and
+            \code{subsampling} and 10 for \code{kfold}.}
   \item{prob}{ percentage of observations to be included in the learning samples
                for subsampling.}
   \item{strata}{ a factor of the same length as \code{weights} for stratification.}
@@ -54,8 +55,11 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   runs in parallel on cores/processors available. The scheduling
   can be changed by the corresponding arguments of
   \code{\link[multicore]{mclapply}} (via the dot arguments).
-  No trace output is given when running in parallel.
 
+  The function \code{cv} can be used to build an appropriate
+  weight matrix to be used with \code{cvrisk}. If \code{strata} is defined
+  sampling is performed in each stratum separately thus preserving
+  the distribution of the \code{strata} variable in each fold.
 }
 \value{
   An object of class \code{cvrisk} (when \code{fun} wasn't specified), basically a matrix
@@ -79,8 +83,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   data("bodyfat", package = "mboost")
 
   ### fit linear model to data
-  model <- glmboost(DEXfat ~ ., data = bodyfat,
-                    control = boost_control(center = TRUE))
+  model <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)
 
   ### AIC-based selection of number of boosting iterations
   maic <- AIC(model)
@@ -92,9 +95,6 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   abline(v = mstop(maic), col = "lightgray")
 
   ### 10-fold cross-validation
-  n <- nrow(bodyfat)
-  k <- 10
-  ntest <- floor(n / k)
   cv10f <- cv(model.weights(model), type = "kfold")
   cvm <- cvrisk(model, folds = cv10f)
   print(cvm)
@@ -103,6 +103,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
 
   ### 25 bootstrap iterations (manually)
   set.seed(290875)
+  n <- nrow(bodyfat)
   bs25 <- rmultinom(25, n, rep(1, n)/n)
   cvm <- cvrisk(model, folds = bs25)
   print(cvm)
@@ -110,6 +111,11 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
 
   ### same
   cvrisk(model)
+
+  ## 25 bootstrap iterations (using cv)
+  set.seed(290875)
+  bs25_2 <- cv(model.weights(model), type="bootstrap")
+  all(bs25 == bs25_2)
 
   layout(matrix(1:2, ncol = 2))
   plot(cvm)

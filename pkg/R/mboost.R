@@ -1,5 +1,5 @@
 
-mboost_fit <- function(blg, response, weights = NULL, offset = NULL, 
+mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                        family = GaussReg(), control = boost_control()) {
 
     ### hyper parameters
@@ -112,9 +112,9 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             ### print status information
             ### print xselect???
             if (trace)
-                do_trace(m, risk = mrisk, step = tracestep, width = niter)
+                do_trace(m, mstop = mstop, risk = mrisk, step = tracestep, width = niter)
         }
-        mstop <<- mstop + niter 
+        mstop <<- mstop + niter
         return(TRUE)
     }
     ### actually go for initial mstop iterations!
@@ -138,7 +138,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         control$risk <- risk
         ### use user specified offset only (since it depends on weights otherwise)
         if (!is.null(offsetarg)) offsetarg <- offset
-        mboost_fit(blg = blg, response = response, weights = weights, 
+        mboost_fit(blg = blg, response = response, weights = weights,
                    offset = offsetarg, family = family, control = control)
     }
 
@@ -177,7 +177,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             if (any(is.na(i)))
                 warning(paste(which[is.na(i)], collapse = ","), " not found")
             which <- i
-        } 
+        }
         ### return only those selected so far
         if (usedonly) which <- which[which %in% RET$xselect()]
         return(which)
@@ -190,7 +190,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     ###   boosting iterations done so far ("cumsum") or
     ###   not aggregated at all ("none")
     ### - always returns a matrix
-    RET$predict <- function(newdata = NULL, which = NULL, 
+    RET$predict <- function(newdata = NULL, which = NULL,
                             aggregate = c("sum", "cumsum", "none")) {
 
         indx <- ((1:length(xselect)) <= mstop)
@@ -207,7 +207,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 if (agg == "sum") return(rep.int(0, n))
                 return(m)
             }
-            ret <- nu * bl[[w]]$predict(ens[ix],         
+            ret <- nu * bl[[w]]$predict(ens[ix],
                    newdata = newdata, aggregate = agg)
             if (agg == "sum") return(ret)
             m[, which(ix)] <- ret
@@ -262,21 +262,21 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     ### updates take place in THIS ENVIRONMENT,
     ### some models are CHANGED!
     RET$subset <- function(i) {
-        if (i <= mstop || length(xselect) > i) {
+        if (i <= mstop || i <= length(xselect)) {
             mstop <<- i
             fit <<- RET$predict()
             u <<- ngradient(y, fit, weights)
         } else {
             tmp <- boost(i - mstop)
         }
-    } 
+    }
 
     ### if baselearners have a notion of coefficients,
     ### extract these either aggregated ("sum"),
     ### their coefficient path ("cumsum") or not
     ### aggregated at all ("none")
     RET$coef <- function(which = NULL, aggregate = c("sum", "cumsum", "none")) {
-        
+
         indx <- ((1:length(xselect)) <= mstop)
         which <- thiswhich(which, usedonly = is.null(which))
         if (length(which) == 0) return(NULL)
@@ -287,7 +287,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             if (!any(ix)) return(NULL)
             cf <- sapply(ens[ix], coef)
             if (!is.matrix(cf)) cf <- matrix(cf, nrow = 1)
-            ret <- switch(aggregate, 
+            ret <- switch(aggregate,
                 "sum" = rowSums(cf) * nu,
                 "cumsum" = {
                     M <- triu(crossprod(Matrix(1, nc = ncol(cf))))
@@ -324,7 +324,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 ### is evaluated as
 ###     y ~ bols3(x1) + baselearner(x2) + btree(x3)
 ### see mboost_fit for the dots
-mboost <- function(formula, data = list(), 
+mboost <- function(formula, data = list(),
     baselearner = c("bbs", "bols", "btree", "bss", "bns"), ...) {
 
     if (is.character(baselearner)) {
@@ -334,7 +334,7 @@ mboost <- function(formula, data = list(),
             warning("bss and bns are deprecated, bbs is used instead")
             baselearner <- "bbs"
         }
-        baselearner <- get(baselearner, mode = "function", 
+        baselearner <- get(baselearner, mode = "function",
                            envir = parent.frame())
     } else {
         bname <- deparse(substitute(baselearner))
@@ -345,7 +345,7 @@ mboost <- function(formula, data = list(),
     if (length(formula[[3]]) == 1) {
         if (as.name(formula[[3]]) == ".") {
             formula <- as.formula(paste(deparse(formula[[2]]),
-                "~", paste(names(data)[names(data) != all.vars(formula[[2]])], 
+                "~", paste(names(data)[names(data) != all.vars(formula[[2]])],
                            collapse = "+"), collapse = ""))
         }
     }
@@ -364,7 +364,7 @@ mboost <- function(formula, data = list(),
         c(a, b)
     }
     ### set up all baselearners
-    bl <- eval(as.expression(formula[[3]]), envir = c(as.list(data), list("+" = get("+"))), 
+    bl <- eval(as.expression(formula[[3]]), envir = c(as.list(data), list("+" = get("+"))),
                enclos = environment(formula))
     ### rhs was one single baselearner
     if (inherits(bl, "blg")) bl <- list(bl)
@@ -372,7 +372,7 @@ mboost <- function(formula, data = list(),
     if (!is.list(bl)) bl <- list(baselearner(bl))
     ### just a check
     stopifnot(all(sapply(bl, inherits, what = "blg")))
-    ### we need identifiers for the baselearners, 
+    ### we need identifiers for the baselearners,
     ### split the formula at `+'
     nm <- strsplit(paste(deparse(formula[[3]]), collapse = ""), "\\+")[[1]]
     nm <- gsub(" ", "", nm)
@@ -396,14 +396,14 @@ mboost <- function(formula, data = list(),
     ret <- mboost_fit(bl, response = response, ...)
     if (is.data.frame(data) && nrow(data) == length(response))
         ret$rownames <- rownames(data)
-    else 
+    else
         ret$rownames <- 1:NROW(response)
     ret$call <- match.call()
     ret
 }
 
 ### nothing to do there
-gamboost <- function(formula, data = list(), 
+gamboost <- function(formula, data = list(),
     baselearner = c("bbs", "bols", "btree", "bss", "bns"), dfbase = 4, ...) {
 
     if (is.character(baselearner)) {
@@ -425,7 +425,7 @@ gamboost <- function(formula, data = list(),
 
 
 ### just one single tree-based baselearner
-blackboost <- function(formula, data = list(), 
+blackboost <- function(formula, data = list(),
     tree_controls = ctree_control(teststat = "max",
                                testtype = "Teststatistic",
                                mincriterion = 0,
@@ -453,8 +453,8 @@ blackboost <- function(formula, data = list(),
 ### fit a linear model componentwise
 glmboost <- function(x, ...) UseMethod("glmboost", x)
 
-glmboost.formula <- function(formula, data = list(), weights = NULL, 
-                             na.action = na.pass, contrasts.arg = NULL, 
+glmboost.formula <- function(formula, data = list(), weights = NULL,
+                             na.action = na.pass, contrasts.arg = NULL,
                              center = FALSE, control = boost_control(), ...) {
 
     ### get the model frame first
@@ -472,7 +472,7 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
         warning("boost_control(center = TRUE) is deprecated, use glmboost(..., center = TRUE)")
     }
     ### set up the model.matrix and center (if requested)
-    X <- model.matrix(attr(mf, "terms"), data = mf, 
+    X <- model.matrix(attr(mf, "terms"), data = mf,
                       contrasts.arg = contrasts.arg)
     cm <- rep(0, ncol(X))
     if (center) {
@@ -484,7 +484,7 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     }
     ### this function will be used for predictions later
     newX <- function(newdata) {
-        mf <- model.frame(delete.response(attr(mf, "terms")), 
+        mf <- model.frame(delete.response(attr(mf, "terms")),
             data = newdata, na.action = na.pass)
         X <- model.matrix(delete.response(attr(mf, "terms")), data = mf,
                           contrasts.arg = contrasts.arg)
@@ -495,7 +495,7 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     bl <- list(bolscw(X))
     response <- model.response(mf)
     weights <- model.weights(mf)
-    ret <- mboost_fit(bl, response = response, weights = weights, 
+    ret <- mboost_fit(bl, response = response, weights = weights,
                       control = control, ...)
     ret$newX <- newX
     ret$call <- cl
@@ -512,7 +512,7 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     return(ret)
 }
 
-glmboost.matrix <- function(x, y, center = FALSE, 
+glmboost.matrix <- function(x, y, center = FALSE,
                             control = boost_control(), ...) {q
 
     X <- x
@@ -530,7 +530,7 @@ glmboost.matrix <- function(x, y, center = FALSE,
             if (all(colnames(X) == colnames(newdata)))
                 return(newdata)
         }
-        stop(sQuote("newdata"), " is not a matrix with the same variables as ", 
+        stop(sQuote("newdata"), " is not a matrix with the same variables as ",
               sQuote("x"))
         return(NULL)
     }
@@ -554,6 +554,6 @@ glmboost.matrix <- function(x, y, center = FALSE,
 glmboost.default <- function(x, ...) {
     if (extends(class(x), "Matrix"))
         return(glmboost.matrix(x = x, ...))
-    stop("no method for objects of class ", sQuote(class(x)), 
+    stop("no method for objects of class ", sQuote(class(x)),
          " implemented")
 }

@@ -1,4 +1,8 @@
 
+    o  replace z in base-learners with by as in mgcv (see ?s) ?
+
+    o  Documentation for families needed (e.g. what means AdaExp, ...)
+
     o  do we need Matrix on attach?
 
     o  add missing files to svn (in inst)
