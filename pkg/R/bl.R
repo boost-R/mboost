@@ -165,8 +165,8 @@ X_bbs <- function(mf, vary, args) {
 }
 
 ### Linear baselearner, potentially Ridge-penalized
-bols <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lambda = NULL,
-                  contrasts.arg = "contr.treatment") {
+bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL, lambda = NULL,
+                 contrasts.arg = "contr.treatment", z = NULL) {
 
     cll <- match.call()
     mf <- list(...)
@@ -181,11 +181,23 @@ bols <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lambd
         colnames(mf) <- sapply(cl, function(x) as.character(x))
     }
     vary <- ""
+    ## support of deprecated argument z:
     if (!is.null(z)) {
+        if(is.null(by)){
+            stopifnot(is.data.frame(mf))
+            stopifnot(is.numeric(z) || (is.factor(z) && nlevels(z) == 2))
+            mf <- cbind(mf, z)
+            colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(z))
+            warning("argument ", sQuote("z"), " is deprecated, use ", sQuote("by"), " instead")
+        } else {
+            stop("specify only ", sQuote("by"), " (which replaces ", sQuote("z"), ")")
+        }
+    }
+    if (!is.null(by)){
         stopifnot(is.data.frame(mf))
-        stopifnot(is.numeric(z) || (is.factor(z) && nlevels(z) == 2))
-        mf <- cbind(mf, z)
-        colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(z))
+        stopifnot(is.numeric(by) || (is.factor(by) && nlevels(by) == 2))
+        mf <- cbind(mf, by)
+        colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(by))
     }
 
     CC <- all(Complete.cases(mf))
@@ -218,8 +230,8 @@ bols <- function(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lambd
 }
 
 ### P-spline (and tensor-product spline) baselearner
-bbs <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
-                 differences = 2, df = 4, lambda = NULL, center = FALSE) {
+bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
+                 differences = 2, df = 4, lambda = NULL, center = FALSE, z = NULL) {
 
     cll <- match.call()
     mf <- list(...)
@@ -232,19 +244,29 @@ bbs <- function(..., z = NULL, index = NULL, knots = 20, degree = 3,
     }
     stopifnot(is.data.frame(mf))
     if(!(all(sapply(mf, is.numeric)))) {
-        if (ncol(mf) == 1) return(bols(..., z = z, index = index))
+        if (ncol(mf) == 1) return(bols(..., by = by, index = index))
         stop("cannot compute bbs for non-numeric variables")
     }
     ### use bols when appropriate
     if (!is.null(df) & !center) {
         if (df <= ncol(mf))
-            return(bols(..., z = z, index = index))
+            return(bols(..., by = by, index = index))
     }
     vary <- ""
     if (!is.null(z)) {
-        stopifnot(is.numeric(z) || (is.factor(z) && nlevels(z) == 2))
-        mf <- cbind(mf, z)
-        colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(z))
+        if(is.null(by)){
+            stopifnot(is.numeric(z) || (is.factor(z) && nlevels(z) == 2))
+            mf <- cbind(mf, z)
+            colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(z))
+            warning("argument ", sQuote("z"), " is deprecated, use ", sQuote("by"), " instead")
+        } else {
+            stop("specify only ", sQuote("by"), " (which replaces ", sQuote("z"), ")")
+        }
+    }
+    if (!is.null(by)){
+        stopifnot(is.numeric(by) || (is.factor(by) && nlevels(by) == 2))
+        mf <- cbind(mf, by)
+        colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(by))
     }
 
     CC <- all(Complete.cases(mf))

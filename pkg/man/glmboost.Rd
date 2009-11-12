@@ -68,7 +68,8 @@
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 
 }
-\seealso{\code{\link{gamboost}} for boosted smooth models and
+\seealso{\code{\link{mboost}} for the generic boosting function and
+  \code{\link{gamboost}} for boosted additive models and 
   \code{\link{blackboost}} for boosted trees. See \code{\link{cvrisk}} for
   cross-validated stopping iteration. Furthermore see
   \code{\link{boost_control}}, \code{\link{Family}} and  \code{\link[mboost]{methods}}}

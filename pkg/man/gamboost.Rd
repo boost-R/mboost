@@ -66,7 +66,8 @@ gamboost(formula, data = list(), baselearner = c("bbs", "bols", "btree", "bss", 
   \bold{53}(2), 298--311.
 
 }
-\seealso{\code{\link{glmboost}} for boosted linear models and
+\seealso{\code{\link{mboost}} for the generic boosting function and
+  \code{\link{glmboost}} for boosted linear models and
   \code{\link{blackboost}} for boosted trees. See e.g. \code{\link{bbs}}
   for possible base-learners. See \code{\link{cvrisk}} for
   cross-validated stopping iteration. Furthermore see

@@ -4,15 +4,17 @@
 \alias{bspatial}
 \alias{brandom}
 \alias{btree}
+\alias{bns}
+\alias{bss}
 \title{ Base-learners for Gradient Boosting }
 \description{
   base-learners to be utilized in the formula specification of \code{mboost}.
 }
 \usage{
-bols(..., z = NULL, index = NULL, intercept = TRUE, df = NULL, lambda = NULL,
-     contrasts.arg = "contr.treatment")
-bbs(..., z = NULL, index = NULL, knots = 20, degree = 3,
-    differences = 2, df = 4, lambda = NULL, center = FALSE)
+bols(..., by = NULL, index = NULL, intercept = TRUE, df = NULL, lambda = NULL,
+     contrasts.arg = "contr.treatment", z = NULL)
+bbs(..., by = NULL, index = NULL, knots = 20, degree = 3,
+    differences = 2, df = 4, lambda = NULL, center = FALSE, z = NULL)
 bspatial(...)
 brandom(..., df = 4)
 btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
@@ -20,10 +22,8 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
 \arguments{
   \item{...}{ one or more predictor variables or one data frame of
               predictor variables.}
-  \item{z}{ an optional variable defining varying coefficients.
-            For \code{bols} it might be categorical or numeric,
-            for \code{bbs} only numeric and binary variables are
-            allowed at the moment.}
+  \item{by}{ an optional variable defining varying coefficients
+             either binary or numeric.}
   \item{index}{ a vector of integers for expanding the variables in \code{...}.
                 For example, \code{bols(x, index)} is equal to \code{bols(x[index]}.}
   \item{df}{ trace of the hat matrix for the base-learner defining the base-learner
@@ -55,12 +55,14 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners,
                   stumps are fitted by default.}
+ \item{z}{ Kept for downward compatibility. Use \code{by} to specify an
+   optional variable defining varying coefficients either binary or numeric.}
 }
 \details{
   \code{bols} refers to linear base-learners (ordinary least squares fit), while
   \code{bbs} refer to penalized regression splines. \code{bspatial}
   fits bivariate surfaces and \code{brandom} defines random effects base-learners.
-  In combination with option \code{z}, all base-learners can be turned into varying
+  In combination with option \code{by}, all base-learners can be turned into varying
   coefficient terms.
 
   Linear base-learners can be set up using \code{bols}. The function
@@ -100,16 +102,17 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
   differences of the adjacent categories (similar to
   Gertheiss and Tutz 2009) is applied.
 
-  If \code{z} is specified as an additional argument, a
-  varying coefficients term is estimated, where \code{z} is the
+  If \code{by} is specified as an additional argument, a
+  varying coefficients term is estimated, where \code{by} is the
   interaction variable and the effect modifier is given by either
-  \code{x} or \code{x} and \code{y}. If \code{bbs} used, this corresponds to the
+  \code{x} or \code{x} and \code{y} (specified via \code{...}).
+  If \code{bbs} is used, this corresponds to the
   classical situation of varying coefficients, where the effect of
-  \code{z} varies over the co-domain of \code{x}. In case of \code{bspatial} as
-  base-learner, the effect of \code{z} varies with respect to both
+  \code{by} varies over the co-domain of \code{x}. In case of \code{bspatial} as
+  base-learner, the effect of \code{by} varies with respect to both
   \code{x} and \code{y}, i.e. an interaction surface between \code{x} and
-  \code{y} is specified as effect modifier. For \code{brandom} specification of \code{z}
-  leads to the estimation of random slopes for covariate \code{z} with grouping structure
+  \code{y} is specified as effect modifier. For \code{brandom} specification of \code{by}
+  leads to the estimation of random slopes for covariate \code{by} with grouping structure
   defined by factor \code{x} instead of a simple random intercept.
 
   For \code{bbs} and \code{bspatial}, option \code{center} requests that the
@@ -219,7 +222,7 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
 
 # random slope
   z <- runif(50)
-  raneff <- brandom(id, z=z)
+  raneff <- brandom(id, by=z)
   attributes(raneff)
 
 # remove intercept from base-learner

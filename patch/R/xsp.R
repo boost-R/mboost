@@ -480,6 +480,13 @@ bols <- function(x, z = NULL, xname = NULL, zname = NULL, center = FALSE,
      if (is.null(xname)) xname = deparse(substitute(x))
      if (is.null(zname)) zname = deparse(substitute(z))
 
+    if (!is.numeric(z) && (is.factor(z) && length(unique(z)) != 2))
+        stop(sQuote("z"), " must be binary or numeric")
+
+    if(is.factor(z) && length(unique(z)) == 2)
+        ## FIXME is there a more elegant way to produce a binary with 0/1?
+        z <- as.numeric(z[, drop = TRUE]) - 1
+
      cc <- complete_cases(x = x, z = z)
 
      newX <- function(x, z = NULL, na.rm = TRUE) {

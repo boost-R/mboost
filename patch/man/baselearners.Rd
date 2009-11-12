@@ -31,8 +31,7 @@ btree(..., tree_controls = ctree_control(stump = TRUE,
      ordered factor. }
   \item{y}{ a vector containing numeric data. }
   \item{z}{ an optional vector containing data. \code{z} can be numeric
-    in all cases. For \code{bols} it can also be a factor. For all other
-    baselearners \code{z} can be a binary (factor). }
+    or a binary (factor). }
   \item{xname}{ an optional string indicating the name of the variable whose
                 data values are given by the vector \code{x}.}
   \item{yname}{ an optional string indicating the name of the variable whose
