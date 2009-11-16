@@ -24,8 +24,9 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
               predictor variables.}
   \item{by}{ an optional variable defining varying coefficients
              either binary or numeric.}
-  \item{index}{ a vector of integers for expanding the variables in \code{...}.
-                For example, \code{bols(x, index)} is equal to \code{bols(x[index]}.}
+  \item{index}{ a vector of integers for expanding the variables in \code{...}-
+                For example, \code{bols(x, index)} is equal to \code{bols(x[index])},
+                where \code{index} is of length greater or equal to \code{length(x)}.}
   \item{df}{ trace of the hat matrix for the base-learner defining the base-learner
              complexity. Low values of \code{df} correspond to a large amount of smoothing and
              thus to "weaker" base-learners. Certain restrictions have to be kept for the
