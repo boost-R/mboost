@@ -5,11 +5,12 @@
 \alias{summary.mboost}
 
 \alias{coef.glmboost}
-\alias{coef.mboost}
+\alias{coef.gamboost}
 
 \alias{[.mboost}
 
-\alias{AIC.mboost}
+\alias{AIC.gamboost}
+\alias{AIC.glmboost}
 \alias{predict.mboost}
 \alias{predict.glmboost}
 
@@ -20,7 +21,7 @@
 
 \alias{fitted.mboost}
 \alias{logLik.mboost}
-\alias{hatvalues.mboost}
+\alias{hatvalues.gamboost}
 \alias{hatvalues.glmboost}
 
 \title{ Methods for Gradient Boosting Objects }
@@ -35,13 +36,14 @@
 
 \method{coef}{glmboost}(object, which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...)
-\method{coef}{mboost}(object, which = NULL,
+\method{coef}{gamboost}(object, which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...)
 
 \method{[}{mboost}(x, i, return = TRUE, ...)
 
-\method{AIC}{mboost}(object, method = c("corrected", "classical", "gMDL"),
+\method{AIC}{gamboost}(object, method = c("corrected", "classical", "gMDL"),
     df = c("trace", "actset"), ..., k = 2)
+\method{AIC}{glmboost}(object, ...)
 
 \method{mstop}{mboost}(object, ...)
 \method{mstop}{gbAIC}(object, ...)
@@ -56,7 +58,7 @@
 
 \method{fitted}{mboost}(object, ...)
 \method{logLik}{mboost}(object, ...)
-\method{hatvalues}{mboost}(model, ...)
+\method{hatvalues}{gamboost}(model, ...)
 \method{hatvalues}{glmboost}(model, ...)
 }
 \arguments{
@@ -107,9 +109,14 @@
 
   These functions can be used to extract details from fitted models. \code{print}
   shows a dense representation of the model fit and \code{summary} gives
-  a more detailed representation. The function \code{coef} extracts the
+  a more detailed representation.
+
+  The function \code{coef} extracts the
   regression coefficients of a linear model fitted using the \code{\link{glmboost}}
   function or an additive model fitted using the \code{\link{gamboost}}.
+  Per default, only coeffiecients of selected base-learners are
+  returned. However, any desired coefficient can be extracted using the
+  \code{which} argument (see examples for details).
 
   The \code{predict} function can be used to predict the status of the response variable
   for new observations whereas \code{fitted} extracts the regression fit for the observations
@@ -132,7 +139,7 @@
   boosting hat matrix (which is rather slow even for moderate sample sizes)
   or the number of variables (non-zero coefficients) that entered the model so far
   (faster but only meaningful for linear models fitted via \code{\link{gamboost}}
-  (see Hastie, 2007).
+  (see Hastie, 2007)).
 
   In addition, the general Minimum Description Length criterion (Buhlmann and Yu, 2006)
   can be computed using function \code{AIC}.
@@ -168,7 +175,6 @@
   \code{\link{blackboost}} for model fitting. See \code{\link{cvrisk}} for
   cross-validated stopping iteration.}
 \examples{
-
     ### a simple two-dimensional example: cars data
     cars.gb <- glmboost(dist ~ speed, data = cars,
                         control = boost_control(mstop = 2000))
@@ -193,5 +199,25 @@
     plot(cars$dist, predict(cars.gb[mstop(aic)]),
          ylim = range(cars$dist))
     abline(a = 0, b = 1)
+
+    ### example for extraction of coefficients and predictions
+    set.seed(1907)
+    x1 <- rnorm(100)
+    x2 <- rnorm(100)
+    x3 <- rnorm(100)
+    x4 <- rnorm(100)
+    int <- rep(1, 100)
+    y <- 3 * x1^2 - 0.5 * x2 + rnorm(100, sd=0.1)
+    df <- data.frame(y = y, int = int, x1 = x1, x2 = x2, x3 = x3, x4 = x4)
+
+    model <- gamboost(y ~ bols(int, intercept=FALSE) +  bbs(x1,
+                          center=TRUE, df=1) +
+                          bols(x1, intercept=FALSE) +
+                          bols(x2, intercept=FALSE) + bols(x3, intercept=FALSE) +
+                          bols(x4, intercept=FALSE), data = df,
+                      control=boost_control(mstop=500))
+    coef(model) # standard output (only selected base-learners)
+    coef(model, which=model$which()) # show all base-learners
+    coef(model, which="x1") # shows all base-learners for x1
 }
 \keyword{methods}

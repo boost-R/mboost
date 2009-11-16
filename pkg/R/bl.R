@@ -49,14 +49,14 @@ X_ols <- function(mf, vary, args) {
         ### set up model matrix
         fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary],
                     collapse = "+"), sep = "")
-        if (!args$intercept)
-            fm <- paste(fm, "-1", sep = "")
         X <- model.matrix(as.formula(fm), data = mf, contrasts.arg = args$contrasts.arg)
+        if (!args$intercept)
+            X <- X[ , -1, drop=FALSE]
         contr <- attr(X, "contrasts")
         ### <FIXME>
         if (vary != "") {
-            z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
-            X <- X * z
+            by <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
+            X <- X * by
         }
         ### </FIXME>
     }
@@ -123,8 +123,8 @@ X_bbs <- function(mf, vary, args) {
         X <- mm[[1]]
         ### <FIXME>
         if (vary != "") {
-            z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
-            X <- X * z
+            by <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
+            X <- X * by
         }
         ### </FIXME>
         K <- diff(diag(ncol(X)), differences = args$differences)
@@ -146,8 +146,8 @@ X_bbs <- function(mf, vary, args) {
              kronecker(diag(ncol(mm[[1]])), Ky)
         ### <FIXME>
         if (vary != "") {
-            z <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
-            X <- X * z
+            by <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
+            X <- X * by
         }
         ### </FIXME>
         if (args$center) {
@@ -166,7 +166,7 @@ X_bbs <- function(mf, vary, args) {
 
 ### Linear baselearner, potentially Ridge-penalized
 bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL, lambda = NULL,
-                 contrasts.arg = "contr.treatment", z = NULL) {
+                 contrasts.arg = "contr.treatment") {
 
     cll <- match.call()
     mf <- list(...)
@@ -181,18 +181,6 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL, lamb
         colnames(mf) <- sapply(cl, function(x) as.character(x))
     }
     vary <- ""
-    ## support of deprecated argument z:
-    if (!is.null(z)) {
-        if(is.null(by)){
-            stopifnot(is.data.frame(mf))
-            stopifnot(is.numeric(z) || (is.factor(z) && nlevels(z) == 2))
-            mf <- cbind(mf, z)
-            colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(z))
-            warning("argument ", sQuote("z"), " is deprecated, use ", sQuote("by"), " instead")
-        } else {
-            stop("specify only ", sQuote("by"), " (which replaces ", sQuote("z"), ")")
-        }
-    }
     if (!is.null(by)){
         stopifnot(is.data.frame(mf))
         stopifnot(is.numeric(by) || (is.factor(by) && nlevels(by) == 2))
@@ -231,7 +219,7 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL, lamb
 
 ### P-spline (and tensor-product spline) baselearner
 bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
-                 differences = 2, df = 4, lambda = NULL, center = FALSE, z = NULL) {
+                 differences = 2, df = 4, lambda = NULL, center = FALSE) {
 
     cll <- match.call()
     mf <- list(...)
@@ -253,16 +241,6 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
             return(bols(..., by = by, index = index))
     }
     vary <- ""
-    if (!is.null(z)) {
-        if(is.null(by)){
-            stopifnot(is.numeric(z) || (is.factor(z) && nlevels(z) == 2))
-            mf <- cbind(mf, z)
-            colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(z))
-            warning("argument ", sQuote("z"), " is deprecated, use ", sQuote("by"), " instead")
-        } else {
-            stop("specify only ", sQuote("by"), " (which replaces ", sQuote("z"), ")")
-        }
-    }
     if (!is.null(by)){
         stopifnot(is.numeric(by) || (is.factor(by) && nlevels(by) == 2))
         mf <- cbind(mf, by)

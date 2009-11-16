@@ -12,9 +12,9 @@
 }
 \usage{
 bols(..., by = NULL, index = NULL, intercept = TRUE, df = NULL, lambda = NULL,
-     contrasts.arg = "contr.treatment", z = NULL)
+     contrasts.arg = "contr.treatment")
 bbs(..., by = NULL, index = NULL, knots = 20, degree = 3,
-    differences = 2, df = 4, lambda = NULL, center = FALSE, z = NULL)
+    differences = 2, df = 4, lambda = NULL, center = FALSE)
 bspatial(...)
 brandom(..., df = 4)
 btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
@@ -24,7 +24,7 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
               predictor variables.}
   \item{by}{ an optional variable defining varying coefficients
              either binary or numeric.}
-  \item{index}{ a vector of integers for expanding the variables in \code{...}-
+  \item{index}{ a vector of integers for expanding the variables in \code{...}.
                 For example, \code{bols(x, index)} is equal to \code{bols(x[index])},
                 where \code{index} is of length greater or equal to \code{length(x)}.}
   \item{df}{ trace of the hat matrix for the base-learner defining the base-learner
@@ -56,8 +56,6 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners,
                   stumps are fitted by default.}
- \item{z}{ Kept for downward compatibility. Use \code{by} to specify an
-   optional variable defining varying coefficients either binary or numeric.}
 }
 \details{
   \code{bols} refers to linear base-learners (ordinary least squares fit), while
@@ -66,12 +64,17 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
   In combination with option \code{by}, all base-learners can be turned into varying
   coefficient terms.
 
-  Linear base-learners can be set up using \code{bols}. The function
-  \code{bols(x)} can deal with both numeric and factor variables \code{x}.
-  By default, an intercept term is added to the corresponding design matrix
+  Linear base-learners can be specified using \code{bols}. The function
+  \code{bols(x)} can deal with both numeric and factor variables
+  \code{x}. By default, an intercept term is added to the corresponding design matrix
   (which can be omitted using \code{intercept = FALSE}). When \code{df} is
   given, a ridge estimator with \code{df} degrees of freedom (trace of hat matrix)
-  is used as base-learner.
+  is used as base-learner. If multiple predictor variables are specified, e.g.,
+  \code{bols(x1, x2)}, \emph{one} base-learner with a common design matrix
+  for all specified covariates (\code{x1}, \code{x2}) is used. \code{x1}
+  and \code{x2} are treated as a group, i.e., they enter the model
+  together if the corresponding base-learner is selected and
+  additive linear effects are estimated for \code{x1} and \code{x2}.
 
   With \code{bbs}, the P-spline approach of Eilers and Marx (1996) is
   used. P-splines use a squared \emph{k}-th-order difference penalty
@@ -189,6 +192,12 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
 
 # example for factors
   attributes(bols(x4))
+
+# example for grouped linear effects
+  model <- gamboost(y ~ bols(x1, x2, intercept=FALSE) + bols(x1, intercept=FALSE) + bols(x2, intercept=FALSE),
+                    control=boost_control(mstop=400))
+  coef(model, which=1)   # one base-learner for x1 and x2
+  coef(model, which=2:3) # two separate base-learners for x1 and x2
 
 # example for bspatial
   x1 <- runif(250,-pi,pi)

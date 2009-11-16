@@ -30,21 +30,21 @@ fm <- SG4 ~ bols(GST) + bols(DBH) + bols(AOT) + bols(AFS) + bols(DWC) +
             bols(LOG)
 sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
 table(sp$xselect())
-coef(sp)[1:6]
+coef(sp, which=1:6)
 
 # Variable selection in a GLM with high df spatial component
 fm <- SG4 ~ bols(GST) + bols(DBH) + bols(AOT) + bols(AFS) + bols(DWC) +
             bols(LOG) + bspatial(x_gk, y_gk, df=5, differences=1, knots=c(12,12))
 sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
 table(sp$xselect())
-coef(sp)[1:6]
+coef(sp, which=1:6)
 
 # Variable selection in a GLM with small df spatial component
 fm <- SG4 ~ bols(GST) + bols(DBH) + bols(AOT) + bols(AFS) + bols(DWC) +
             bols(LOG) + bspatial(x_gk, y_gk, df=1, differences=1, knots=c(12,12), center=TRUE)
 sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
 table(sp$xselect())
-coef(sp)[1:6]
+coef(sp, which=1:6)
 
 
 # Geoadditive regression model without centering
@@ -77,15 +77,15 @@ birds$DWC <- (birds$DWC-min(birds$DWC))/(max(birds$DWC)-min(birds$DWC))
 birds$LOG <- (birds$LOG-min(birds$LOG))/(max(birds$LOG)-min(birds$LOG))
 
 # Space-varying coefficient models (with centered spatial effects)
-fm <- SG5 ~ bols(GST) + bspatial(x_gk, y_gk, z = GST, df=1, differences=1,
+fm <- SG5 ~ bols(GST) + bspatial(x_gk, y_gk, by = GST, df=1, differences=1,
               knots=c(12, 12), center=TRUE) +
-            bols(AOT) + bspatial(x_gk, y_gk, z = AOT, df=1, differences=1,
+            bols(AOT) + bspatial(x_gk, y_gk, by = AOT, df=1, differences=1,
               knots=c(12, 12), center=TRUE) +
-            bols(AFS) + bspatial(x_gk, y_gk, z = AFS, df=1, differences=1,
+            bols(AFS) + bspatial(x_gk, y_gk, by = AFS, df=1, differences=1,
               knots=c(12, 12), center=TRUE) +
-            bols(DWC) + bspatial(x_gk, y_gk, z = DWC, df=1, differences=1,
+            bols(DWC) + bspatial(x_gk, y_gk, by = DWC, df=1, differences=1,
               knots=c(12, 12), center=TRUE) +
-            bols(LOG) + bspatial(x_gk, y_gk, z = LOG, df=1, differences=1,
+            bols(LOG) + bspatial(x_gk, y_gk, by = LOG, df=1, differences=1,
               knots=c(12, 12), center=TRUE) +
             bspatial(x_gk, y_gk, df=1, differences=1, knots=c(12, 12),
               center=TRUE)

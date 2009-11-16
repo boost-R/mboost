@@ -5,7 +5,7 @@
 ##
 
 cvrisk <- function(object, folds = cv(model.weights(object)), grid = 1:mstop(object),
-                   parallel = require("multicore"), fun = NULL, ...) {
+                   papply = lapply, fun = NULL, ...) {
 
     weights <- model.weights(object)
     if (any(weights == 0)) warning("zero weights")
@@ -40,8 +40,8 @@ cvrisk <- function(object, folds = cv(model.weights(object)), grid = 1:mstop(obj
         }
     }
 
-    oobrisk <- MYapply(1:ncol(folds), function(i) dummyfct(folds[,i]),
-                       parallel = parallel, ...)
+    oobrisk <- papply(1:ncol(folds), function(i) dummyfct(folds[,i]), ...)
+
     if (!is.null(fun)) return(oobrisk)
     oobrisk <- t(as.data.frame(oobrisk))
     oobrisk <- oobrisk/colSums(folds == 0)

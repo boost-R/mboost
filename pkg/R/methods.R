@@ -42,13 +42,13 @@ predict.mboost <- function(object, newdata = NULL,
 }
 
 ### extract coefficients
-coef.mboost <- function(object, which = NULL,
+coef.gamboost <- function(object, which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...)
 
     object$coef(which = which, aggregate = aggregate)
 
 ### compute boosting hat matrix and its trace
-hatvalues.mboost <- function(model, ...) {
+hatvalues.gamboost <- function(model, ...) {
     H <- model$hatvalues(...)
     n <- length(model$response)
     if (checkL2(model)) {
@@ -64,7 +64,7 @@ hatvalues.mboost <- function(model, ...) {
     RET
 }
 
-AIC.mboost <- function(object, method = c("corrected", "classical", "gMDL"),
+AIC.gamboost <- function(object, method = c("corrected", "classical", "gMDL"),
                        df = c("trace", "actset"), ..., k = 2) {
 
     df <- match.arg(df)
@@ -88,6 +88,10 @@ AIC.mboost <- function(object, method = c("corrected", "classical", "gMDL"),
                          df = df, k = k)
     }
     return(RET)
+}
+
+AIC.glmboost <- function(object, ...){
+    AIC.gamboost(object, ...)
 }
 
 AICboost <- function(object, method = c("corrected", "classical", "gMDL"), df, k = 2) {
@@ -228,7 +232,7 @@ coef.glmboost <- function(object, which = NULL,
 
 hatvalues.glmboost <- function(model, ...) {
 
-    if (!checkL2(model)) return(hatvalues.mboost(model))
+    if (!checkL2(model)) return(hatvalues.gamboost(model))
     Xf <- t(model$basemodel[[1]]$MPinv()) * model$control$nu
     X <- model$baselearner[[1]]$get_data()
     op <- .Call("R_trace_glmboost", X, Xf,

@@ -55,16 +55,6 @@ Complete.cases <- function(x) {
     complete.cases(x)
 }
 
-MYapply <- function(X, FUN, parallel = FALSE, ...) {
-
-    myapply <- lapply
-    if (parallel && .Platform$OS.type == "unix") {
-        if (!multicore:::isChild())
-            myapply <- mclapply
-    }
-    myapply(X, FUN, ...)
-}
-
 ### fractional polynomials transformation
 ### all powers `p' of `x', all powers `p' of `x' times `log(x)' and `log(x)'
 ### see Sauerbrei & Royston (1999), JRSS A (162), 71--94

@@ -420,6 +420,7 @@ gamboost <- function(formula, data = list(),
         baselearner <- function(...) bbs(as.data.frame(list(...)), df = dfbase)
     ret <- mboost(formula = formula, data = data, baselearner = baselearner, ...)
     ret$call <- match.call()
+    class(ret) <- c("gamboost", class(ret))
     ret
 }
 

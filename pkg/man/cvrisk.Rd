@@ -8,7 +8,7 @@
 }
 \usage{
 cvrisk(object, folds = cv(model.weights(object)), grid = 1:mstop(object),
-       parallel = require("multicore"), fun = NULL, ...)
+       papply = lapply, fun = NULL, ...)
 cv(weights, type = c("bootstrap", "kfold", "subsampling"),
    B = ifelse(type == "kfold", 10, 25),
    prob = 0.5, strata = NULL)
@@ -21,8 +21,11 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
                 using function \code{cv} and defaults to 25 bootstrap samples.}
   \item{grid}{ a vector of stopping parameters the empirical risk
                 is to be evaluated for. }
-  \item{parallel}{ logical indicating if the computations are to be delegated to
-                   multiple processors or cores (via \code{\link[multicore]{mclapply}}.}
+  \item{papply}{ (parallel) apply function. Per default sequential
+    computaions via \code{\link{lapply}} are performed. Alternatively,
+    parallel computing via \code{\link[multicore]{mclapply}} (package \code{multicore}),
+    or \code{\link[snow]{clusterApplyLB}} (package \code{snow}) can be used. In the
+    latter case, usually more setup is needed (see example for some details).}
   \item{fun}{ if \code{fun} is NULL, the out-of-sample risk is returned. \code{fun},
               as a function of \code{object}, may extract any other characteristic
               of the cross-validated models. These are returned as is.}
@@ -51,8 +54,9 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   10-fold cross-validation or bootstrapping. The weights (zero weights
   correspond to test cases) are defined via the \code{folds} matrix.
 
-  If package \code{multicore} is available, \code{cvrisk}
-  runs in parallel on cores/processors available. The scheduling
+  If package \code{multicore} is available, \code{cvrisk} can be easily
+  used in parallel on cores/processors available by specifying
+  \code{papply = mcapply}. The scheduling
   can be changed by the corresponding arguments of
   \code{\link[multicore]{mclapply}} (via the dot arguments).
 
@@ -74,56 +78,75 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   \emph{Journal of Computational and Graphical Statistics}, \bold{14}(3),
   675--699.
 }
-\seealso{\code{\link{AIC.mboost}} or \code{\link{AIC.mboost}} for
+\seealso{\code{\link{AIC.gamboost}} or \code{\link{AIC.glmboost}} for
   \code{AIC} based selection of the stopping iteration. Use \code{mstop}
   to extract the optimal stopping iteration from \code{cvrisk}
   object.}
 \examples{
 
-  data("bodyfat", package = "mboost")
+data("bodyfat", package = "mboost")
 
-  ### fit linear model to data
-  model <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)
+### fit linear model to data
+model <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)
 
-  ### AIC-based selection of number of boosting iterations
-  maic <- AIC(model)
-  maic
+### AIC-based selection of number of boosting iterations
+maic <- AIC(model)
+maic
 
-  ### inspect coefficient path and AIC-based stopping criterion
-  par(mai = par("mai") * c(1, 1, 1, 1.8))
-  plot(model)
-  abline(v = mstop(maic), col = "lightgray")
+### inspect coefficient path and AIC-based stopping criterion
+par(mai = par("mai") * c(1, 1, 1, 1.8))
+plot(model)
+abline(v = mstop(maic), col = "lightgray")
 
-  ### 10-fold cross-validation
-  cv10f <- cv(model.weights(model), type = "kfold")
-  cvm <- cvrisk(model, folds = cv10f)
-  print(cvm)
-  mstop(cvm)
-  plot(cvm)
+### 10-fold cross-validation
+cv10f <- cv(model.weights(model), type = "kfold")
+cvm <- cvrisk(model, folds = cv10f)
+print(cvm)
+mstop(cvm)
+plot(cvm)
 
-  ### 25 bootstrap iterations (manually)
-  set.seed(290875)
-  n <- nrow(bodyfat)
-  bs25 <- rmultinom(25, n, rep(1, n)/n)
-  cvm <- cvrisk(model, folds = bs25)
-  print(cvm)
-  mstop(cvm)
+### 25 bootstrap iterations (manually)
+set.seed(290875)
+n <- nrow(bodyfat)
+bs25 <- rmultinom(25, n, rep(1, n)/n)
+cvm <- cvrisk(model, folds = bs25)
+print(cvm)
+mstop(cvm)
 
-  ### same
-  cvrisk(model)
+### same
+cvrisk(model)
 
-  ## 25 bootstrap iterations (using cv)
-  set.seed(290875)
-  bs25_2 <- cv(model.weights(model), type="bootstrap")
-  all(bs25 == bs25_2)
+### 25 bootstrap iterations (using cv)
+set.seed(290875)
+bs25_2 <- cv(model.weights(model), type="bootstrap")
+all(bs25 == bs25_2)
 
-  layout(matrix(1:2, ncol = 2))
-  plot(cvm)
+layout(matrix(1:2, ncol = 2))
+plot(cvm)
 
-  ### trees
-  blackbox <- blackboost(DEXfat ~ ., data = bodyfat)
-  cvtree <- cvrisk(blackbox)
-  plot(cvtree)
+### trees
+blackbox <- blackboost(DEXfat ~ ., data = bodyfat)
+cvtree <- cvrisk(blackbox)
+plot(cvtree)
+
+
+### cvrisk in parallel modes:
+
+\dontrun{## multicore only runs properly on unix systems
+  library(multicore)
+  cvrisk(model, papply=mcapply)
+}
+\dontrun{## infrastructure needs to be set up in advance
+  library(snow)
+  cl <- makePVMcluster(25) # e.g. to run cvrisk on 25 nodes via PVM
+  myApply <- function(X, FUN, cl, ...){
+     clusterEvalQ(cl, library(mboost)) # load mboost on nodes
+     ## further set up steps as required
+     clusterApplyLB(cl = cl, X, FUN, ...)
+  }
+  cvrisk(model, papply=myApply, cl=cl)
+  stopCluster(cl)
+}
 
 }
 \keyword{models}

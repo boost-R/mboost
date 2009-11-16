@@ -5,9 +5,9 @@ import(splines)
 import(stats)
 import(survival)
 
-export(glmboost, 
-       gamboost, 
-       blackboost, 
+export(glmboost,
+       gamboost,
+       blackboost,
        mboost,
        boost_control, mstop, Family,
        GaussReg, GaussClass, Laplace, Binomial, Poisson, QuantReg,
@@ -27,14 +27,15 @@ S3method(summary, mboost)
 S3method(print, summary.mboost)
 S3method(plot, mboost)
 S3method(plot, survFit)
-S3method(coef, mboost)
+S3method(coef, gamboost)
 S3method(coef, glmboost)
-S3method(hatvalues, mboost)
+S3method(hatvalues, gamboost)
 S3method(hatvalues, glmboost)
 S3method(fitted, mboost)
 S3method(predict, mboost)
 S3method(predict, glmboost)
-S3method(AIC, mboost)
+S3method(AIC, gamboost)
+S3method(AIC, glmboost)
 S3method(logLik, mboost)
 S3method(resid, mboost)
 S3method(variable.names, mboost)
