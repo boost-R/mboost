@@ -447,6 +447,7 @@ blackboost <- function(formula, data = list(),
     ret <- mboost_fit(bl, response = response, ...)
     ret$call <- cl
     ret$rownames <- rownames(mf)
+    class(ret) <- c("blackboost", class(ret))
     ret
 }
 
