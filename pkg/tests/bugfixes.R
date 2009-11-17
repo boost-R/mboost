@@ -242,3 +242,13 @@ data <- data.frame(y=y, x=x, z=z)
 model <- gamboost(y ~ bbs(x) + bbs(x, by=z), data = data)
 stopifnot(!is.na(predict(model,data[1,-1])))
 
+
+### bols with intercept = FALSE for categorical covariates was broken
+x <- gl(2, 50)
+y <- c(rnorm(50, mean = -1), rnorm(50, mean = 1))
+stopifnot(length(coef(gamboost(y ~ bols(x, intercept=FALSE)))) == 1)
+
+# check also for conntinuous x
+x <- rnorm(100)
+y <- c(rnorm(100, mean = 1 * x))
+stopifnot(length(coef(gamboost(y ~ bols(x, intercept=FALSE)))) == 1)
