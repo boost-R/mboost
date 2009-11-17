@@ -5,18 +5,18 @@ set.seed(290875)
 
 ### predict did not return factor levels for blackboost models
 dummy <- data.frame(y = gl(2, 100), x = runif(200))
-pr <- predict(blackboost(y ~ x, data = dummy, family = Binomial()), 
+pr <- predict(blackboost(y ~ x, data = dummy, family = Binomial()),
               newdata = dummy, type = "response")
 stopifnot(is.factor(pr) && all(levels(pr) %in% levels(dummy$y)))
 
 ### predict for g{al}mboost.matrix did not work
 ctrl <- boost_control(mstop = 10)
 X <- cbind(int = 1, x = dummy$x)
-gb <- glmboost(x = X, y = dummy$y, family = Binomial(), 
+gb <- glmboost(x = X, y = dummy$y, family = Binomial(),
                control = ctrl)
 stopifnot(all.equal(predict(gb), predict(gb, newdata = X)))
 
-gb <- gamboost(x = X, y = dummy$y, family = Binomial(), 
+gb <- gamboost(x = X, y = dummy$y, family = Binomial(),
                control = ctrl)
 stopifnot(all.equal(predict(gb), predict(gb, newdata = X)))
 
@@ -39,8 +39,8 @@ stopifnot(identical(max(abs(tmp$risk[x] / sum(bs[,3] == 0)  - cv[3,])), 0))
 
 gb <- glmboost(DEXfat ~ ., data = bodyfat, control = boost_control(center = TRUE))
 cv1 <- cvrisk(gb, folds = bs)
-tmp <- glmboost(DEXfat ~ ., data = bodyfat, 
-                control = boost_control(center = TRUE, risk = "oobag"), 
+tmp <- glmboost(DEXfat ~ ., data = bodyfat,
+                control = boost_control(center = TRUE, risk = "oobag"),
                 weights = bs[,3])
 stopifnot(identical(max(tmp$risk[attr(cv1, "mstop")] / sum(bs[,3] == 0) - cv1[3,]), 0))
 
@@ -81,7 +81,7 @@ y <- gl(2, 10)
 xn <- rnorm(20)
 xnm <- xn - mean(xn)
 xf <- gl(2, 10)
-gc <- glmboost(y ~ xn + xf, control = boost_control(center = TRUE), 
+gc <- glmboost(y ~ xn + xf, control = boost_control(center = TRUE),
                family = Binomial())
 g <- glmboost(y ~ xnm + xf, family = Binomial())
 cgc <- coef(gc)
@@ -91,7 +91,7 @@ names(cg) <- NULL
 stopifnot(all.equal(cgc, cg))
 stopifnot(all.equal(mstop(AIC(gc, "classical")), mstop(AIC(g, "classical"))))
 
-gc <- gamboost(y ~ xn + xf, control = boost_control(center = TRUE), 
+gc <- gamboost(y ~ xn + xf, control = boost_control(center = TRUE),
                family = Binomial())
 g <- gamboost(y ~ xnm + xf, family = Binomial())
 stopifnot(all.equal(mstop(AIC(gc, "classical")), mstop(AIC(g, "classical"))))
@@ -101,7 +101,7 @@ gc <- gamboost(y ~ xn + xf, control = boost_control(center = TRUE))
 g <- gamboost(y ~ xnm + xf)
 stopifnot(all.equal(mstop(AIC(gc, "corrected")), mstop(AIC(g, "corrected"))))
 
-### check gamboost with weights (use weighted some of residuals 
+### check gamboost with weights (use weighted some of residuals
 ### for variable selection)
 data("bodyfat", package = "mboost")
 
@@ -131,8 +131,8 @@ attributes(aic2) <- NULL
 
 stopifnot(all.equal(round(aic1, 1), round(aic2, 1)))
 
-mod1 <- blackboost(DEXfat ~ ., data = bodyfat, weights = w)            
-mod2 <- blackboost(DEXfat ~ ., data = bodyfat[rep(1:n, w),])            
+mod1 <- blackboost(DEXfat ~ ., data = bodyfat, weights = w)
+mod2 <- blackboost(DEXfat ~ ., data = bodyfat[rep(1:n, w),])
 
 ratio <- mod1$risk / mod2$risk
 stopifnot(ratio[1] > 0.95 && ratio[2] < 1.05)
@@ -153,18 +153,18 @@ stopifnot(abs(coef(lm(mod1$risk ~ mod2$risk - 1)) - 1) < 0.01)
 ### not really a bug, a new feature; test fastp
 df <- data.frame(y = rnorm(100), x = runif(100), z = runif(100))
 eps <- sqrt(.Machine$double.eps)
-s <- seq(from = 1, to = 100, by = 3) 
+s <- seq(from = 1, to = 100, by = 3)
 
 x <- glmboost(y ~ ., data = df)
-for (i in s)   
+for (i in s)
     stopifnot(max(abs(predict(x[i]) - predict(x, all = TRUE)[,i])) < eps)
 
 x <- gamboost(y ~ ., data = df)
-for (i in s)   
+for (i in s)
     stopifnot(max(abs(predict(x[i]) - predict(x, all = TRUE)[,i])) < eps)
 
 x <- blackboost(y ~ ., data = df)
-for (i in s)   
+for (i in s)
     stopifnot(max(abs(predict(x[i]) - predict(x, all = TRUE)[,i])) < eps)
 
 ### negative gradient of GaussClass was incorrectly specified
@@ -175,11 +175,11 @@ learn <- sample(1:nrow(tmp), ceiling(nrow(tmp) * 0.7))
 
 stump <- blackboost(Class ~ ., data = tmp[learn,],
     tree_controls = ctree_control(teststat = "max",
-        testtype = "Teststatistic", mincriterion = 0, stump = TRUE), 
+        testtype = "Teststatistic", mincriterion = 0, stump = TRUE),
     control = boost_control(mstop = 176), family = GaussClass())
 mean(predict(stump, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
 
-stump <- blackboost(Class ~ ., data = tmp[learn,],    
+stump <- blackboost(Class ~ ., data = tmp[learn,],
     tree_controls = ctree_control(teststat = "max",
         testtype = "Teststatistic", mincriterion = 0, stump = TRUE),
     control = boost_control(mstop = 275, constraint = TRUE), family = GaussClass())
@@ -188,17 +188,17 @@ mean(predict(stump, newdata = tmp[-learn,], type = "response") != tmp[-learn, "C
 cspline <- gamboost(Class ~ ., data = tmp[learn,],
     control = boost_control(mstop = 126), family = GaussClass())
 mean(predict(cspline, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
- 
-cspline <- gamboost(Class ~ ., data = tmp[learn,], 
+
+cspline <- gamboost(Class ~ ., data = tmp[learn,],
     control = boost_control(mstop = 73, constraint = FALSE), family = GaussClass())
 mean(predict(cspline, newdata = tmp[-learn,], type = "response") != tmp[-learn, "Class"])
 
 ### make sure environment(formula) is used for evaluation
 data("cars")
 ctl  <- boost_control(mstop = 100, trace = TRUE)
-tctl <- ctree_control(teststat = "max", testtype = "Teststat", 
+tctl <- ctree_control(teststat = "max", testtype = "Teststat",
                       mincrit = 0, maxdepth = 5, savesplitstat = FALSE)
-myfun <- function(cars, xx, zz){ 
+myfun <- function(cars, xx, zz){
   gamboost(dist ~ btree(speed, tree_controls = zz),
            data = cars, control = xx)
 }
@@ -211,8 +211,35 @@ knots <- seq(from = 0.1, to = 0.9, by = 0.1)
 w <- rmultinom(1, length(x), rep(1, length(x)) / length(x))[,1]
 iw <- rep(1:length(x), w)
 
-m1 <- attr(bbs(x, knots = knots), "dpp")(w)$fit(y)$model 
-m2 <- attr(bbs(x[iw], knots = knots), "dpp")(rep(1, length(x)))$fit(y[iw])$model 
+m1 <- attr(bbs(x, knots = knots), "dpp")(w)$fit(y)$model
+m2 <- attr(bbs(x[iw], knots = knots), "dpp")(rep(1, length(x)))$fit(y[iw])$model
 
 stopifnot(max(abs(m1 - m2)) < sqrt(.Machine$double.eps))
 
+### predict for varying coefficient models with categorical z
+## (coercion of factor to design matrix did not work)
+set.seed(1907)
+x <- rnorm(100)
+z <- gl(2,50)
+y <- rnorm(100, sd = 0.1)
+data <- data.frame(y=y, x=x, z=z)
+
+model <- gamboost(y ~ bols(x, z=z), data = data)
+stopifnot(!is.na(predict(model,data[1,-1])))
+
+model <- gamboost(y ~ bbs(x, z=z), data = data)
+stopifnot(!is.na(predict(model,data[1,-1])))
+
+model <- gamboost(y ~ bns(x, z=z), data = data)
+stopifnot(!is.na(predict(model,data[1,-1])))
+
+x <- as.factor(sample(1:10, 100, replace=TRUE))
+data <- data.frame(y=y, x=x, z=z)
+model <- gamboost(y ~ brandom(x, z=z), data = data)
+stopifnot(!is.na(predict(model,data[1,-1])))
+
+x1 <- rnorm(100)
+x2 <- rnorm(100)
+data <- data.frame(y=y, x1=x1, x2=x2, z=z)
+model <- gamboost(y ~ bspatial(x1,x2, z=z), data = data)
+stopifnot(!is.na(predict(model,data[1,-1])))

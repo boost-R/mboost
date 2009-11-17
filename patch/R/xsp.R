@@ -61,9 +61,9 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
     if (!is.numeric(z) && (is.factor(z) && length(unique(z)) != 2))
         stop(sQuote("z"), " must be binary or numeric")
 
-    if(is.factor(z) && length(unique(z)) == 2)
-        ## FIXME is there a more elegant way to produce a binary with 0/1?
-        z <- as.numeric(z[, drop = TRUE]) - 1
+    #if(is.factor(z) && length(unique(z)) == 2)
+    #    ## FIXME is there a more elegant way to produce a binary with 0/1?
+    #    z <- as.numeric(z[, drop = TRUE]) - 1
 
     if (!differences %in% 1:3)
         stop(sQuote("differences"), " are not in 1:3")
@@ -106,8 +106,12 @@ bbs <- function(x, z = NULL, df = 4, knots = 20, degree = 3, differences = 2,
             }
             X <- bs(x, knots = knots, degree = degree, intercept = TRUE,
                     Boundary.knots = boundary.knots)
-            if (!is.null(z))
+            if (!is.null(z)){
+                ## FIXME is there a more elegant way to produce a binary with 0/1?
+                if(is.factor(z))  # check if z is binary only at the time of fitting
+                    z <- as.numeric(z[, drop = TRUE]) - 1
                 X <- X * z
+            }
             if (center) {
                 K <- diff(diag(ncol(X)), differences = differences)
                 X <- tcrossprod(X, K) %*% solve(tcrossprod(K))
@@ -230,9 +234,9 @@ bns <- function(x, z = NULL, df = 4, knots = 20, differences = 2,
     if (!is.numeric(z) && (is.factor(z) && length(unique(z)) != 2))
         stop(sQuote("z"), " must be binary or numeric")
 
-    if(is.factor(z) && length(unique(z)) == 2)
-        ## FIXME is there a more elegant way to produce a binary with 0/1?
-        z <- as.numeric(z[, drop=T]) - 1
+    #if(is.factor(z) && length(unique(z)) == 2)
+    #    ## FIXME is there a more elegant way to produce a binary with 0/1?
+    #    z <- as.numeric(z[, drop=T]) - 1
 
     if (!differences %in% 1:3)
         stop(sQuote("differences"), " are not in 1:3")
@@ -255,8 +259,11 @@ bns <- function(x, z = NULL, df = 4, knots = 20, differences = 2,
         epsilon <- diff(range(x)) / 10
         X <- ns(x, knots = knots, intercept = TRUE, Boundary.knots = c(min(x)-epsilon,
         max(x)+epsilon) )
-        if (!is.null(z))
+        if (!is.null(z)){
+            if(is.factor(z))  # check if z is binary only at the time of fitting
+                z <- as.numeric(z[, drop = TRUE]) - 1
             X <- X * z
+        }
         return(X)
     }
     X <- newX(x, z)
@@ -335,9 +342,9 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
     if (!is.numeric(z) && (is.factor(z) && length(unique(z)) != 2))
         stop(sQuote("z"), " must be binary or numeric")
 
-    if(is.factor(z) && length(unique(z)) == 2)
-        ## FIXME is there a more elegant way to produce a binary with 0/1?
-        z <- as.numeric(z[, drop=T]) - 1
+    #if(is.factor(z) && length(unique(z)) == 2)
+    #    ## FIXME is there a more elegant way to produce a binary with 0/1?
+    #    z <- as.numeric(z[, drop=T]) - 1
 
     if (is.null(xname)) xname = deparse(substitute(x))
     if (is.null(yname)) yname = deparse(substitute(y))
@@ -416,8 +423,11 @@ bspatial <- function(x, y, z = NULL, df = 5, xknots = 20, yknots = 20,
             Xy <- bs(y, knots = yknots, degree = degree, intercept = TRUE,
                      Boundary.knots = yboundary.knots)
             X <- kronecker(Xx, matrix(1, nc = ncol(Xy))) * kronecker(matrix(1, nc = ncol(Xx)), Xy)
-            if (!is.null(z))
+            if (!is.null(z)){
+                if(is.factor(z))  # check if z is binary only at the time of fitting
+                    z <- as.numeric(z[, drop = TRUE]) - 1
                 X <- X * z
+            }
             if(center){
                 X <- X%*%L
             }
@@ -483,9 +493,9 @@ bols <- function(x, z = NULL, xname = NULL, zname = NULL, center = FALSE,
     if (!is.numeric(z) && (is.factor(z) && length(unique(z)) != 2))
         stop(sQuote("z"), " must be binary or numeric")
 
-    if(is.factor(z) && length(unique(z)) == 2)
-        ## FIXME is there a more elegant way to produce a binary with 0/1?
-        z <- as.numeric(z[, drop = TRUE]) - 1
+    #if(is.factor(z) && length(unique(z)) == 2)
+    #    ## FIXME is there a more elegant way to produce a binary with 0/1?
+    #    z <- as.numeric(z[, drop = TRUE]) - 1
 
      cc <- complete_cases(x = x, z = z)
 
@@ -510,7 +520,11 @@ bols <- function(x, z = NULL, xname = NULL, zname = NULL, center = FALSE,
              Xtmp[cc,] <- X
              X <- Xtmp
          }
-         if (!is.null(z)) X <- X * z
+         if (!is.null(z)){
+             if(is.factor(z))  # check if z is binary only at the time of fitting
+                 z <- as.numeric(z[, drop = TRUE]) - 1
+             X <- X * z
+         }
          X
      }
      X <- newX(x, z)
@@ -573,15 +587,18 @@ brandom <- function(x, z = NULL, df = 4, xname = NULL,
     if (!is.numeric(z) && (is.factor(z) && length(unique(z)) != 2))
         stop(sQuote("z"), " must be binary or numeric")
 
-    if(is.factor(z) && length(unique(z)) == 2)
-        ## FIXME is there a more elegant way to produce a binary with 0/1?
-        z <- as.numeric(z[, drop=T]) - 1
+    #if(is.factor(z) && length(unique(z)) == 2)
+    #    ## FIXME is there a more elegant way to produce a binary with 0/1?
+    #    z <- as.numeric(z[, drop=T]) - 1
 
     newX <- function(x, z = NULL) {
         if (!is.factor(x)) stop(sQuote("x"), " is not a factor")
         X <- model.matrix(~ x - 1)
-        if (!is.null(z))
+        if (!is.null(z)){
+            if(is.factor(z))  # check if z is binary only at the time of fitting
+                z <- as.numeric(z[, drop = TRUE]) - 1
             X <- X * z
+        }
         return(X)
     }
     X <- newX(x, z)
