@@ -172,7 +172,8 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         if (is.character(which)) {
             i <- sapply(which, function(w) {
                 wi <- grep(w, names(bl), fixed = TRUE)
-                ifelse(length(wi) > 0, wi, NA)
+                if (length(wi) > 0) return(wi)
+                return(NA)
             })
             if (any(is.na(i)))
                 warning(paste(which[is.na(i)], collapse = ","), " not found")

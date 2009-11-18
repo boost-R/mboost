@@ -355,6 +355,7 @@ bl_lin <- function(blg, Xfun, args) {
         ### prepare for computing predictions
         predict <- function(bm, newdata = NULL, aggregate = c("sum", "cumsum", "none")) {
             cf <- sapply(bm, coef)
+            if (!is.matrix(cf)) cf <- matrix(cf, nrow = 1)
             if(!is.null(newdata)) {
                 index <- NULL
                 nm <- names(blg)
