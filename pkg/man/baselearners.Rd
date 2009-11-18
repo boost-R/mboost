@@ -103,8 +103,7 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
   trace of the hat matrix, as indicated by \code{df}. If \code{df} is
   specified in \code{bols} a ridge penalty with the according degrees of
   freedom is used. For ordinal variables, a ridge penalty for the
-  differences of the adjacent categories (similar to
-  Gertheiss and Tutz 2009) is applied.
+  differences of the adjacent categories (Gertheiss and Tutz 2009) is applied.
 
   If \code{by} is specified as an additional argument, a
   varying coefficients term is estimated, where \code{by} is the

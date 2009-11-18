@@ -237,11 +237,25 @@ try(predict(mod, newdata = as.data.frame(x[1:2,])))
 set.seed(1907)
 x <- rnorm(100)
 z <- gl(2,50)
-y <- rnorm(100, mean= (1.5 * x * as.numeric(z == 1)) + (0.5 * x * as.numeric(z == 2)), sd = 0.1)
+y <- rnorm(100, sd = 0.1)
 data <- data.frame(y=y, x=x, z=z)
-model <- gamboost(y ~ bbs(x) + bbs(x, by=z), data = data)
+
+model <- gamboost(y ~ bols(x, by=z), data = data)
 stopifnot(!is.na(predict(model,data[1,-1])))
 
+model <- gamboost(y ~ bbs(x, by=z), data = data)
+stopifnot(!is.na(predict(model,data[1,-1])))
+
+x <- as.factor(sample(1:10, 100, replace=TRUE))
+data <- data.frame(y=y, x=x, z=z)
+model <- gamboost(y ~ brandom(x, by=z), data = data)
+stopifnot(!is.na(predict(model,data[1,-1])))
+
+x1 <- rnorm(100)
+x2 <- rnorm(100)
+data <- data.frame(y=y, x1=x1, x2=x2, z=z)
+model <- gamboost(y ~ bspatial(x1,x2, by=z), data = data)
+stopifnot(!is.na(predict(model,data[1,-1])))
 
 ### bols with intercept = FALSE for categorical covariates was broken
 x <- gl(2, 50)
@@ -252,3 +266,22 @@ stopifnot(length(coef(gamboost(y ~ bols(x, intercept=FALSE)))) == 1)
 x <- rnorm(100)
 y <- c(rnorm(100, mean = 1 * x))
 stopifnot(length(coef(gamboost(y ~ bols(x, intercept=FALSE)))) == 1)
+
+### check interface of coef
+set.seed(1907)
+x1 <- rnorm(100)
+int <- rep(1, 100)
+y <- 3 * x1 + rnorm(100, sd=0.1)
+dummy <- data.frame(y = y, int = int, x1 = x1)
+
+gbm <- gamboost(y ~ bols(int, intercept=FALSE) +  bols(x1, intercept=FALSE) + bbs(x1, center=TRUE, df=1), data = dummy)
+
+stopifnot(names(coef(gbm, which=1:3)) == c("bols(int,intercept=FALSE)", "bols(x1,intercept=FALSE)", "bbs(x1,center=TRUE,df=1)"))
+stopifnot(names(coef(gbm)) == c("bols(x1,intercept=FALSE)", "bbs(x1,center=TRUE,df=1)"))
+stopifnot(names(coef(gbm, "x1")) == c("bols(x1,intercept=FALSE)", "bbs(x1,center=TRUE,df=1)"))
+stopifnot(names(coef(gbm, "bbs")) ==  "bbs(x1,center=TRUE,df=1)")
+stopifnot(names(coef(gbm, "center=TRUE")) == "bbs(x1,center=TRUE,df=1)")
+
+### check prediction if intercept=FALSE
+gbm <- gamboost(y ~ bols(x1, intercept=FALSE), data = dummy)
+stopifnot(!is.na(predict(gbm)) & max(abs(predict(gbm) - fitted(gbm))) < sqrt(.Machine$double.eps))

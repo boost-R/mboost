@@ -8,7 +8,7 @@
 }
 \usage{
 cvrisk(object, folds = cv(model.weights(object)), grid = 1:mstop(object),
-       papply = if (require("multicore")) mclapply else lappy, fun = NULL, ...)
+       papply = if (require("multicore")) mclapply else lapply, fun = NULL, ...)
 cv(weights, type = c("bootstrap", "kfold", "subsampling"),
    B = ifelse(type == "kfold", 10, 25),
    prob = 0.5, strata = NULL)
