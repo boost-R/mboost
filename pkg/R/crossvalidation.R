@@ -5,7 +5,7 @@
 ##
 
 cvrisk <- function(object, folds = cv(model.weights(object)), grid = 1:mstop(object),
-                   papply = lapply, fun = NULL, ...) {
+                   papply = if (require("multicore")) mclapply else lapply, fun = NULL, ...) {
 
     weights <- model.weights(object)
     if (any(weights == 0)) warning("zero weights")

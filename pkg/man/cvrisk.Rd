@@ -8,7 +8,7 @@
 }
 \usage{
 cvrisk(object, folds = cv(model.weights(object)), grid = 1:mstop(object),
-       papply = lapply, fun = NULL, ...)
+       papply = if (require("multicore")) mclapply else lappy, fun = NULL, ...)
 cv(weights, type = c("bootstrap", "kfold", "subsampling"),
    B = ifelse(type == "kfold", 10, 25),
    prob = 0.5, strata = NULL)
@@ -21,7 +21,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
                 using function \code{cv} and defaults to 25 bootstrap samples.}
   \item{grid}{ a vector of stopping parameters the empirical risk
                 is to be evaluated for. }
-  \item{papply}{ (parallel) apply function. Per default sequential
+  \item{papply}{ (parallel) apply function. In the absence of package \code{multicore} sequential
     computaions via \code{\link{lapply}} are performed. Alternatively,
     parallel computing via \code{\link[multicore]{mclapply}} (package \code{multicore}),
     or \code{\link[snow]{clusterApplyLB}} (package \code{snow}) can be used. In the
