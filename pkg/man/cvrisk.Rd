@@ -133,18 +133,18 @@ plot(cvtree)
 ### cvrisk in parallel modes:
 
 \dontrun{## multicore only runs properly on unix systems
-  library(multicore)
-  cvrisk(model, papply=mcapply)
+  library("multicore")
+  cvrisk(model, papply = mcapply)
 }
 \dontrun{## infrastructure needs to be set up in advance
-  library(snow)
+  library("snow")
   cl <- makePVMcluster(25) # e.g. to run cvrisk on 25 nodes via PVM
   myApply <- function(X, FUN, cl, ...){
-     clusterEvalQ(cl, library(mboost)) # load mboost on nodes
+     clusterEvalQ(cl, library("mboost")) # load mboost on nodes
      ## further set up steps as required
      clusterApplyLB(cl = cl, X, FUN, ...)
   }
-  cvrisk(model, papply=myApply, cl=cl)
+  cvrisk(model, papply = myApply, cl = cl)
   stopCluster(cl)
 }
 
