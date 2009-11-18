@@ -1,5 +1,5 @@
 
-R version 2.9.0 (2009-04-17)
+R version 2.10.0 (2009-10-26)
 Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -79,7 +79,7 @@ Type 'q()' to quit R.
 > ## before loading the package.
 > ## Use postscript as incomplete files may be viewable, unlike PDF.
 > ## Choose a size that is close to on-screen devices, fix paper
-> ps.options(width = 7, height = 7, paper = "a4", reset = TRUE)
+> grDevices::ps.options(width = 7, height = 7, paper = "a4", reset = TRUE)
 > grDevices::postscript("mboost-Ex.ps")
 > 
 > assign("par.postscript", graphics::par(no.readonly = TRUE), pos = "CheckExEnv")
@@ -308,8 +308,11 @@ function (weights)
         }
         X <- bs(x, knots = knots, degree = degree, intercept = TRUE, 
             Boundary.knots = boundary.knots)
-        if (!is.null(z)) 
+        if (!is.null(z)) {
+            if (is.factor(z)) 
+                z <- as.numeric(z[, drop = TRUE]) - 1
             X <- X * z
+        }
         if (center) {
             K <- diff(diag(ncol(X)), differences = differences)
             X <- tcrossprod(X, K) %*% solve(tcrossprod(K))
@@ -351,7 +354,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0xa884608>
+<environment: 0xa7867f0>
 
 > spline2 <- bns(x2,knots=knots.x2,df=5)
 Warning in bns(x2, knots = knots.x2, df = 5) :
@@ -382,7 +385,7 @@ $intercept
 [1] TRUE
 
 $class
-[1] "ns"    "basis"
+[1] "ns"     "basis"  "matrix"
 
 $dpp
 function (weights) 
@@ -408,7 +411,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0xa8bb7e8>
+<environment: 0xa79d43c>
 
 > olsfit <- bols(x3)
 > attributes(olsfit)
@@ -473,7 +476,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0xa99b398>
+<environment: 0xa7afe18>
 
 > 
 > form1 <- y ~ bbs(x1,knots=20,df=4) + bns(x2,knots=knots.x2,df=5)
@@ -541,7 +544,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0xa8f53d4>
+<environment: 0xa708348>
 
 > 
 > # example for bspatial
@@ -594,8 +597,11 @@ function (weights)
             Boundary.knots = yboundary.knots)
         X <- kronecker(Xx, matrix(1, nc = ncol(Xy))) * kronecker(matrix(1, 
             nc = ncol(Xx)), Xy)
-        if (!is.null(z)) 
+        if (!is.null(z)) {
+            if (is.factor(z)) 
+                z <- as.numeric(z[, drop = TRUE]) - 1
             X <- X * z
+        }
         if (center) {
             X <- X %*% L
         }
@@ -642,7 +648,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0xa9b39ac>
+<environment: 0xa688120>
 
 > 
 > form2 <- y ~ bspatial(x1, x2, xknots=12, yknots=12)
@@ -703,7 +709,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0xa52a8a8>
+<environment: 0xa50b4d8>
 
 > 
 > # random slope
@@ -757,7 +763,7 @@ function (weights)
     class(ret) <- "basisdpp"
     ret
 }
-<environment: 0xae43cf8>
+<environment: 0xa0fe108>
 
 > 
 > # remove intercept from base learner
@@ -856,7 +862,7 @@ Offset:  42.98
 > flush(stderr()); flush(stdout())
 > 
 > ### Name: boost_family-class
-> ### Title: Class "boost_family": Gradient Boosting Family
+> ### Title: Class "boost\_family": Gradient Boosting Family
 > ### Aliases: boost_family-class show,boost_family-method
 > ### Keywords: classes
 > 
@@ -1245,7 +1251,6 @@ attr(,"offset")
 > ### Title: Survival Curves for a Cox Proportional Hazards Model
 > ### Aliases: survFit survFit.gb survFit.blackboost plot.survFit
 > 
-> 
 > ### ** Examples
 > 
 > fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps
@@ -1353,7 +1358,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  9.668 0.12 10.946 0.964 0.964 
+Time elapsed:  10.148 0.112 11.537 0.932 0.932 
 > grDevices::dev.off()
 null device 
           1 
