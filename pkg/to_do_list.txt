@@ -1,5 +1,5 @@
 
-    o  replace z in base-learners with by as in mgcv (see ?s) ?
+    o  coef.glmboost with correct which
 
     o  Documentation for families needed (e.g. what means AdaExp, ...)
 
