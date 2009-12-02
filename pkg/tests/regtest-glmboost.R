@@ -111,7 +111,7 @@ if (require("survival")) {
     stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, method = "breslow")),
                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test,
                        family = CoxPH(), 
-                       control = boost_control(mstop = 2000, nu = 1)))[2]))
+                       control = boost_control(mstop = 2000, nu = 1)), which = 1:2)[2]))
 
     stopifnot(all.equal(cx$loglik[2], logLik(gl)))
 
@@ -122,7 +122,7 @@ if (require("survival")) {
                                    method = "breslow")),
                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test, weights = w,
                        family = CoxPH(), 
-                       control = boost_control(mstop = 200, nu = 1)))[2]))
+                       control = boost_control(mstop = 200, nu = 1)), which = 1:2)[2]))
 
     stopifnot(all.equal(cx$loglik[2], logLik(gl)))
 
@@ -133,7 +133,7 @@ if (require("survival")) {
                                    method = "breslow")),
                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test, weights = w,
                        family = CoxPH(), 
-                       control = boost_control(mstop = 1000)))[2]))
+                       control = boost_control(mstop = 1000)), which = 1:2)[2], tolerance = .Machine$double.eps ^ 0.125))
 
     stopifnot(all.equal(cx$loglik[2], logLik(gl)))
 }

@@ -1,5 +1,5 @@
 
-    o  coef.glmboost with correct which
+    o  predict.glmboost via coef.glmboost. Remove special code in bolscw
 
     o  Documentation for families needed (e.g. what means AdaExp, ...)
 

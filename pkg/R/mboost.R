@@ -64,7 +64,9 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     u <- ustart <- ngradient(y, fit, weights)
 
     ### set up function for fitting baselearner(s)
+    cwlin <- FALSE
     if (length(bl) > 1) {
+        bnames <- names(bl)
         basefit <- function(u, m) {
            tsums <- rep(-1, length(bl))
            ### fit least squares to residuals _componentwise_
@@ -80,9 +82,20 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
            return(ss[[xselect[m]]])
         }
     } else {
-        basefit <- function(u, m) {
-            xselect[m] <<- 1
-            return(fit1(y = u))
+        cwlin <- inherits(bl[[1]], "bl_cwlin")
+        if (cwlin) {
+            bnames <- bl[[1]]$Xnames
+            basefit <- function(u, m) {
+                mod <- fit1(y = u)
+                xselect[m] <<- mod$model["xselect"]
+                return(mod)
+            }
+        } else {
+            bnames <- names(bl)
+            basefit <- function(u, m) {
+                xselect[m] <<- 1L
+                return(fit1(y = u))
+            }
         }
     }
 
@@ -128,7 +141,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 control = control,          ### control parameters
                 family = family,            ### family object
                 response = response,        ### the response variable
-                rownames = NULL,            ### rownames of learning data
+                rownames = bnames,            ### rownames of learning data
                 "(weights)" = weights       ### weights used for fitting
     )
 
@@ -146,13 +159,8 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     RET$mstop <- function() mstop
 
     ### which basemodels have been selected so far?
-    RET$xselect <- function(cw = FALSE) {
-        ### <FIXME> is this the right place?
-        if (inherits(bl[[1]], "bl_cwlin") && (length(bl) == 1 && cw))
-            return(as.integer(sapply(ens[1:mstop], function(m) m$model[2])))
-        ### </FIXME>
+    RET$xselect <- function()
         return(xselect[1:mstop])
-    }
 
     ### current fitted values
     RET$fitted <- function() as.vector(fit)
@@ -168,10 +176,10 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
     ### figure out which baselearners are requested
     thiswhich <- function(which = NULL, usedonly = FALSE) {
-        if (is.null(which)) which <- 1:length(bl)
+        if (is.null(which)) which <- 1:max(RET$xselect())
         if (is.character(which)) {
             i <- sapply(which, function(w) {
-                wi <- grep(w, names(bl), fixed = TRUE)
+                wi <- grep(w, bnames, fixed = TRUE)
                 if (length(wi) > 0) return(wi)
                 return(NA)
             })
@@ -208,6 +216,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 if (agg == "sum") return(rep.int(0, n))
                 return(m)
             }
+            if (cwlin) w <- 1
             ret <- nu * bl[[w]]$predict(ens[ix],
                    newdata = newdata, aggregate = agg)
             if (agg == "sum") return(ret)
@@ -227,22 +236,22 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 pr <- lapply(which, pfun, agg = "none")
                 M <- triu(crossprod(Matrix(1, nc = sum(indx))))
                 pr <- lapply(pr, function(x) as(x %*% M, "matrix"))
-                names(pr) <- names(bl)[which]
+                names(pr) <- bnames[which]
                 return(pr)
             } else {
                 ret <- Matrix(0, nrow = n, ncol = sum(indx))
-                for (i in 1:length(bl)) ret <- ret + pfun(i, agg = "none")
+                for (i in 1:max(xselect)) ret <- ret + pfun(i, agg = "none")
                 M <- triu(crossprod(Matrix(1, nc = sum(indx))))
                 return(as(ret %*% M, "matrix") + offset)
             }
          }, "none" = {
             if (!nw) {
                 pr <- lapply(which, pfun, agg = "none")
-                names(pr) <- names(bl)[which]
+                names(pr) <- bnames[which]
                 return(pr)
             } else {
                 ret <- Matrix(0, nrow = n, ncol = sum(indx))
-                for (i in 1:length(bl)) ret <- ret + pfun(i, agg = "none")
+                for (i in 1:max(xselect)) ret <- ret + pfun(i, agg = "none")
                 return(as(ret, "matrix"))
             }
          })
@@ -253,7 +262,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     RET$model.frame <- function(which = NULL) {
         which <- thiswhich(which, usedonly = is.null(which))
         ret <- lapply(blg[which], model.frame)
-        names(ret) <- names(bl)[which]
+        names(ret) <- bnames[which]
         ret
     }
 
@@ -285,8 +294,17 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         aggregate <- match.arg(aggregate)
         cfun <- function(w) {
             ix <- (xselect == w & indx)
-            if (!any(ix)) return(NULL)
-            cf <- sapply(ens[ix], coef)
+            cf <- numeric(mstop)
+            if (!any(ix)) {
+                if (!cwlin)
+                    cf <- matrix(0, nrow = length(bl[[w]]$Xnames), ncol = mstop)
+            } else {
+                cftmp <- sapply(ens[ix], coef)
+                nr <- NROW(cftmp)
+                if (!is.matrix(cftmp)) nr <- 1
+                cf <- matrix(0, nrow = nr, ncol = mstop)
+                cf[, which(ix)] <- cftmp
+            }
             if (!is.matrix(cf)) cf <- matrix(cf, nrow = 1)
             ret <- switch(aggregate,
                 "sum" = rowSums(cf) * nu,
@@ -298,7 +316,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             )
         }
         ret <- lapply(which, cfun)
-        names(ret) <- names(bl)[which]
+        names(ret) <- bnames[which]
         attr(ret, "offset") <- offset
         return(ret)
     }
@@ -310,7 +328,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         ### non-selected baselearners receive NULL
         ret <- vector(mode = "list", length = length(bl))
         ret[which] <- lapply(bl[which], function(b) hatvalues(b) * nu)
-        names(ret) <- names(bl)
+        names(ret) <- bnames
         ret
     }
 
@@ -506,7 +524,7 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     ret$hatvalues <- function() {
         H <- vector(mode = "list", length = ncol(X))
         MPinv <- ret$basemodel[[1]]$MPinv()
-        for (j in unique(ret$xselect(cw = TRUE)))
+        for (j in unique(ret$xselect()))
             H[[j]] <- (X[,j] %*% MPinv[j, ,drop = FALSE]) * control$nu
         H
     }
@@ -519,6 +537,7 @@ glmboost.matrix <- function(x, y, center = FALSE,
                             control = boost_control(), ...) {q
 
     X <- x
+    if (is.null(colnames(X))) colnames(X) <- paste("V", 1:ncol(X), sep = "")
     if (control$center) {
         center <- TRUE
         warning("boost_control center deprecated")
@@ -545,7 +564,7 @@ glmboost.matrix <- function(x, y, center = FALSE,
     ret$hatvalues <- function() {
         H <- vector(mode = "list", length = ncol(X))
         MPinv <- ret$basemodel[[1]]$MPinv()
-        for (j in unique(ret$xselect(cw = TRUE)))
+        for (j in unique(ret$xselect()))
             H[[j]] <- (X[,j] %*% MPinv[j, ,drop = FALSE]) * control$nu
         H
     }

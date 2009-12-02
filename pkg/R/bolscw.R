@@ -40,7 +40,7 @@ bolscw <- function(X) {
             mmu <- max(amu <- abs(mu <- MPinvS %*% y))
             xselect <- which(as.logical(mmu == amu))[1]
             coef <- mu[xselect] / sxtx[xselect]
-            ret <- list(model = c(coef, xselect, p),
+            ret <- list(model = c(coef = coef, xselect = xselect, p = p),
                         fitted = function() {
                             if (is.null(index)) return(coef * X[,xselect, drop = FALSE])
                             return(coef * X[index, xselect,drop = FALSE])
@@ -54,7 +54,7 @@ bolscw <- function(X) {
 
             aggregate <- match.arg(aggregate)
             cf <- switch(aggregate, "sum" = {
-                cf <- rep(0, bm[[1]]$model[3])
+                cf <- rep(0, bm[[1]]$model["p"])
                 for (i in 1:length(bm)) {
                     m <- bm[[i]]$model
                     cf[m[2]] <- cf[m[2]] + m[1]
@@ -62,15 +62,19 @@ bolscw <- function(X) {
                 cf
             },
             "cumsum" = {
-                cf <- coef(bm[[1]])
-                for (i in 2:length(bm))
-                    cf <- cbind(cf, cf[[i-1]] + coef(bm[[i]]))
+                cf <- matrix(coef(bm[[1]], all = TRUE), ncol = 1)
+                if (length(bm) > 2) {
+                    for (i in 2:length(bm))
+                        cf <- cbind(cf, cf[[i-1]] + coef(bm[[i]], all = TRUE))
+                }
                 cf
             },
             "none" = {
-                cf <- coef(bm[[1]])
-                for (i in 2:length(bm))
-                    cf <- cbind(cf, coef(bm[[i]]))
+                cf <- matrix(coef(bm[[1]], all = TRUE), ncol = 1)
+                if (length(bm) > 2) {
+                    for (i in 2:length(bm))
+                        cf <- cbind(cf, coef(bm[[i]], all = TRUE))
+                }
                 cf
             })
 
@@ -94,7 +98,8 @@ bolscw <- function(X) {
     return(ret)
 }
 
-coef.bm_cwlin <- function(object, ...) {
+coef.bm_cwlin <- function(object, all = FALSE, ...) {
+    if (!all) return(object$model[1])
     cf <- numeric(object$model[3])
     cf[object$model[2]] <- object$model[1]
     cf

@@ -53,10 +53,10 @@ hatvalues.gamboost <- function(model, ...) {
     n <- length(model$response)
     if (checkL2(model)) {
         op <- .Call("R_trace_gamboost", as.integer(n), H,
-                    as.integer(model$xselect(cw = TRUE)), PACKAGE = "mboost")
+                    as.integer(model$xselect()), PACKAGE = "mboost")
     } else {
         fitm <- predict(model, aggregate = "cumsum")
-        op <- bhatmat(n, H, model$xselect(cw = TRUE), fitm, model$family@fW)
+        op <- bhatmat(n, H, model$xselect(), fitm, model$family@fW)
     }
     RET <- diag(op[[1]])
     attr(RET, "hatmatrix") <- op[[1]]
@@ -76,7 +76,7 @@ AIC.gamboost <- function(object, method = c("corrected", "classical", "gMDL"),
     if (df == "actset") {
         ### compute active set: number of non-zero coefficients
         ### for each boosting iteration
-        xs <- object$xselect(cw = TRUE)
+        xs <- object$xselect()
         xu <- sort(sapply(unique(xs), function(i) which(xs == i)[1]))
         xu <- c(xu, mstop(object) + 1)
         df <- rep(1:(length(xu) - 1), diff(xu))
@@ -211,6 +211,7 @@ predict.glmboost <- function(object, newdata = NULL,
 
     if (!is.null(newdata))
         newdata <- object$newX(newdata)
+
     pr <- object$predict(newdata = newdata, which = which,
         aggregate = aggregate)
     type <- match.arg(type)
@@ -222,13 +223,12 @@ predict.glmboost <- function(object, newdata = NULL,
 coef.glmboost <- function(object, which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...) {
 
+    aggregate <- match.arg(aggregate)
     cf <- object$coef(which = which, aggregate = aggregate)
-    off <- attr(cf, "offset")
-    cf <- cf[[1]]
-    names(cf) <- variable.names(object)
-    attr(cf, "offset") <- off
+    if (aggregate == "sum") cf <- unlist(cf)
     cf
 }
+
 
 hatvalues.glmboost <- function(model, ...) {
 
@@ -236,7 +236,7 @@ hatvalues.glmboost <- function(model, ...) {
     Xf <- t(model$basemodel[[1]]$MPinv()) * model$control$nu
     X <- model$baselearner[[1]]$get_data()
     op <- .Call("R_trace_glmboost", X, Xf,
-                as.integer(model$xselect(cw = TRUE)),
+                as.integer(model$xselect()),
                 PACKAGE = "mboost")
     RET <- diag(op[[1]])
     attr(RET, "hatmatrix") <- op[[1]]
@@ -304,9 +304,6 @@ selected <- function(object) UseMethod("selected", object)
 
 selected.mboost <- function(object)
     object$xselect()
-
-selected.glmboost <- function(object)
-   object$xselect(cw = TRUE)
 
 summary.mboost <- function(object, ...) {
 
