@@ -4,10 +4,11 @@
 ###          add link argument (family needs to be touched)
 ### </FIXME>
 .predictmboost <- function(y, pr, type, nm) {
-    if (NROW(pr) == length(pr)) {
+    if (!isMATRIX(pr)) {
         pr <- as.vector(pr)
         names(pr) <- nm
-    } else {
+    } 
+    if (is.list(pr)) {
         rownames(pr) <- nm
         if (type != "link")
             warning("argument link is ignored")
@@ -34,11 +35,17 @@ predict.mboost <- function(object, newdata = NULL,
     aggregate = c("sum", "cumsum", "none"), ...) {
 
     type <- match.arg(type)
+    aggregate <- match.arg(aggregate)
+    if (aggregate != "sum") 
+        stopifnot(type == "link")
     pr <- object$predict(newdata = newdata,
                          which = which, aggregate = aggregate)
     nm <- rownames(newdata)
     if (is.null(newdata)) nm <- object$rownames
-    .predictmboost(object$response, pr, type, nm)
+    if (is.list(pr))
+        return(lapply(pr, .predictmboost, y = object$response, 
+                      type = type, nm = nm))
+    .predictmboost(object$response, pr, type = type, nm = nm)
 }
 
 ### extract coefficients
@@ -209,11 +216,20 @@ predict.glmboost <- function(object, newdata = NULL,
     type = c("link", "response", "class"), which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...) {
 
+
+    aggregate <- match.arg(aggregate)
+
+    ### X <- object$baselearner[[1]]$get_data()
     if (!is.null(newdata))
         newdata <- object$newX(newdata)
 
+    ### <FIXME> implement predictions here </FIXME>
+    ### which <- object$which(which, usedonly = nw <- is.null(which))    
+    ### cf <- coef(object, which = which, aggregate = aggregate)
+    ### pr <- X[, which, drop = FALSE] %*% cf
+
     pr <- object$predict(newdata = newdata, which = which,
-        aggregate = aggregate)
+                         aggregate = aggregate)
     type <- match.arg(type)
     nm <- rownames(newdata)
     if (is.null(newdata)) nm <- object$rownames

@@ -161,3 +161,10 @@ tmp <- max(abs(cf - coef(lm(y ~ x, data = df))))
 stopifnot(tmp < 1e-5)
 tmp <- max(abs(fitted(mod) - fitted(lm(y ~ x, data = df))))
 stopifnot(tmp < 1e-5)
+
+### predictions <FIXME>: more tests </FIXME>
+data("bodyfat", package = "mboost")
+amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth, 
+                 data = bodyfat, baselearner = "bbs")
+pr <- predict(amod, aggre = "cumsum", which = 1:2)
+pr <- predict(amod, aggre = "none", which = 1:2)
