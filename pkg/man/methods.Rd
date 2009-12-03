@@ -24,6 +24,8 @@
 \alias{hatvalues.gamboost}
 \alias{hatvalues.glmboost}
 
+\alias{selected.mboost}
+
 \title{ Methods for Gradient Boosting Objects }
 \description{
   Methods for models fitted by boosting algorithms.
@@ -60,6 +62,9 @@
 \method{logLik}{mboost}(object, ...)
 \method{hatvalues}{gamboost}(model, ...)
 \method{hatvalues}{glmboost}(model, ...)
+
+\method{selected}{mboost}(object)
+
 }
 \arguments{
   \item{object}{ objects of class \code{glmboost}, \code{gamboost},
@@ -130,6 +135,9 @@
   \code{i - mstop} steps are fitted. If the model is restricted,
   the spare steps are not dropped, i.e. if we increase mstop again,
   these boosting steps are immediately available.
+
+  The ids of base-learners selected during the fitting process
+  can be extracted using \code{selected()}.
 
   For (generalized) linear and additive models, the \code{AIC} function can be used
   to compute both the classical and corrected AIC (Hurvich et al., 1998, only available
