@@ -7,7 +7,7 @@
     if (!isMATRIX(pr)) {
         pr <- as.vector(pr)
         names(pr) <- nm
-    } 
+    }
     if (is.list(pr)) {
         rownames(pr) <- nm
         if (type != "link")
@@ -36,14 +36,14 @@ predict.mboost <- function(object, newdata = NULL,
 
     type <- match.arg(type)
     aggregate <- match.arg(aggregate)
-    if (aggregate != "sum") 
+    if (aggregate != "sum")
         stopifnot(type == "link")
     pr <- object$predict(newdata = newdata,
                          which = which, aggregate = aggregate)
     nm <- rownames(newdata)
     if (is.null(newdata)) nm <- object$rownames
     if (is.list(pr))
-        return(lapply(pr, .predictmboost, y = object$response, 
+        return(lapply(pr, .predictmboost, y = object$response,
                       type = type, nm = nm))
     .predictmboost(object$response, pr, type = type, nm = nm)
 }
@@ -224,7 +224,7 @@ predict.glmboost <- function(object, newdata = NULL,
         newdata <- object$newX(newdata)
 
     ### <FIXME> implement predictions here </FIXME>
-    ### which <- object$which(which, usedonly = nw <- is.null(which))    
+    ### which <- object$which(which, usedonly = nw <- is.null(which))
     ### cf <- coef(object, which = which, aggregate = aggregate)
     ### pr <- X[, which, drop = FALSE] %*% cf
 
@@ -233,7 +233,10 @@ predict.glmboost <- function(object, newdata = NULL,
     type <- match.arg(type)
     nm <- rownames(newdata)
     if (is.null(newdata)) nm <- object$rownames
-    .predictmboost(object$response, pr, type, nm)
+    if (is.list(pr))
+        return(lapply(pr, .predictmboost, y = object$response,
+                      type = type, nm = nm))
+    .predictmboost(object$response, pr, type = type, nm = nm)
 }
 
 coef.glmboost <- function(object, which = NULL,

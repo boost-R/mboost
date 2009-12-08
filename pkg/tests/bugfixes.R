@@ -285,3 +285,11 @@ stopifnot(names(coef(gbm, "center=TRUE")) == "bbs(x1,center=TRUE,df=1)")
 ### check prediction if intercept=FALSE
 gbm <- gamboost(y ~ bols(x1, intercept=FALSE), data = dummy)
 stopifnot(!is.na(predict(gbm)) & max(abs(predict(gbm) - fitted(gbm))) < sqrt(.Machine$double.eps))
+
+### check coef.glmboost
+set.seed(1907)
+x1 <- rnorm(100)
+x2 <- rnorm(100)
+y <- rnorm(100, mean= 3 * x1,sd=0.01)
+linMod <- glmboost(y ~ x1 + x2)
+stopifnot(length(coef(linMod)) == 2)

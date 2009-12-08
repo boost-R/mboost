@@ -20,7 +20,7 @@ mydf <- dgp(beta = c(1, 2.5, rep(0, 2)))
 fm <- GaussReg()
 fm@offset <- function(y, w) 0
 
-mydf.gb <- glmboost(y ~ ., data = mydf, family = fm, 
+mydf.gb <- glmboost(y ~ ., data = mydf, family = fm,
                     control = boost_control(mstop = 1000, nu = 1))
 mydf.lm <- lm(y ~ ., data = mydf)
 
@@ -30,7 +30,7 @@ stopifnot(max(abs(coef(mydf.gb) - coef(mydf.lm))) < 1e-10)
 ### a little bit more difficult
 mydf <- dgp(beta = c(1, 2.5, rep(0, 38)))
 
-mydf.gb <- glmboost(y ~ ., data = mydf, family = fm, 
+mydf.gb <- glmboost(y ~ ., data = mydf, family = fm,
                     control = boost_control(mstop = 1000, nu = 1))
 aic <- AIC(mydf.gb, method = "corrected")
 ht <- hatvalues(mydf.gb)
@@ -51,7 +51,7 @@ stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
 
 ### a simple two-dimensional example from `glmboost.Rd'
 data("cars")
-cars.gb <- glmboost(dist ~ speed, data = cars, family = fm, 
+cars.gb <- glmboost(dist ~ speed, data = cars, family = fm,
                     control = boost_control(mstop = 1000, nu = 1))
 cars.gb
 
@@ -61,15 +61,15 @@ attr(cf, "offset") <- NULL
 stopifnot(all.equal(cf, coef(lm(dist ~ speed, data = cars))))
 
 ### logistic regression
-mydf <- data.frame(x = runif(100), z = rnorm(100), 
+mydf <- data.frame(x = runif(100), z = rnorm(100),
                    y = factor(c(rep(0, 30), rep(1, 70))))
-bmod <- glmboost(y ~ x + z, data = mydf, family = Binomial(), 
+bmod <- glmboost(y ~ x + z, data = mydf, family = Binomial(),
                  control = boost_control(mstop = 1000, nu = 1))
 gmod <- glm(y ~ x + z, data = mydf, family = binomial())
 llg <- logLik(gmod)
 attributes(llg) <- NULL
 stopifnot(all.equal(logLik(bmod), llg))
-stopifnot(max(abs(predict(gmod, type = "link")/2 - fitted(bmod))) < 
+stopifnot(max(abs(predict(gmod, type = "link")/2 - fitted(bmod))) <
                   sqrt(.Machine$double.eps))
 cfb <- (coef(bmod) + c(bmod$offset, 0, 0)) * 2
 attr(cfb, "offset") <- NULL
@@ -79,7 +79,7 @@ stopifnot(abs(AIC(gmod) - attr(aic, "AIC")[mstop(bmod)]) < 1e-5)
 
 ### weighted least squares problem
 
-x <- runif(100)  
+x <- runif(100)
 df <- data.frame(y = 2 + 3 * x + rnorm(length(x)),
                  x = x, z = runif(length(x)),
                  w = runif(length(x)) * 10)
@@ -95,11 +95,11 @@ lmb <- glmboost(y ~ x + z, data = df, weights = df$w,
 stopifnot(max(abs(fitted(lmmod) -fitted(lmb))) < sqrt(.Machine$double.eps))
 
 ### compare hat matrices
-stopifnot(max(abs(hatvalues(lmmod) - hatvalues(lmb))) < sqrt(.Machine$double.eps))      
+stopifnot(max(abs(hatvalues(lmmod) - hatvalues(lmb))) < sqrt(.Machine$double.eps))
 
 ### compare boosting hat matrix with fitted values
 stopifnot(max(abs(attr(hatvalues(lmb), "hatmatrix") %*% (df$y - lmb$offset) + lmb$offset -
-        fitted(lmb))) < sqrt(.Machine$double.eps)) 
+        fitted(lmb))) < sqrt(.Machine$double.eps))
 
 ### Cox model (check for CoxPH family)
 if (require("survival")) {
@@ -110,7 +110,7 @@ if (require("survival")) {
 
     stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, method = "breslow")),
                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test,
-                       family = CoxPH(), 
+                       family = CoxPH(),
                        control = boost_control(mstop = 2000, nu = 1)), which = 1:2)[2]))
 
     stopifnot(all.equal(cx$loglik[2], logLik(gl)))
@@ -118,10 +118,10 @@ if (require("survival")) {
     indx <- c(1, 1, 1, 2:10)
     w <- tabulate(indx)
 
-    stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, weights = w, 
+    stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, weights = w,
                                    method = "breslow")),
                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test, weights = w,
-                       family = CoxPH(), 
+                       family = CoxPH(),
                        control = boost_control(mstop = 200, nu = 1)), which = 1:2)[2]))
 
     stopifnot(all.equal(cx$loglik[2], logLik(gl)))
@@ -129,10 +129,10 @@ if (require("survival")) {
     indx <- c(1, 1, 1, 3:10)
     w <- tabulate(indx)
 
-    stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test[indx,], 
+    stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test[indx,],
                                    method = "breslow")),
                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test, weights = w,
-                       family = CoxPH(), 
+                       family = CoxPH(),
                        control = boost_control(mstop = 1000)), which = 1:2)[2], tolerance = .Machine$double.eps ^ 0.125))
 
     stopifnot(all.equal(cx$loglik[2], logLik(gl)))
@@ -143,9 +143,9 @@ if (require("survival")) {
 
 fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps - 1
 fit <- coxph(fm, data = ovarian)
-fit2 <- glmboost(fm, data = ovarian, family = CoxPH(), 
+fit2 <- glmboost(fm, data = ovarian, family = CoxPH(),
     control=boost_control(mstop = 1000, center = TRUE))
-fit3 <- glmboost(fm, data = ovarian, family = CoxPH(), 
+fit3 <- glmboost(fm, data = ovarian, family = CoxPH(),
     control=boost_control(mstop = 1000, center = FALSE))
 
 A1 <- survfit(fit)
@@ -202,3 +202,73 @@ stopifnot(all.equal(logLik(gbmod), llg))
 stopifnot(abs(AIC(gmod) - attr(AIC(gbmod, "classical"), "AIC")[mstop(gbmod)]) < 1)
 
 stopifnot(max(abs(predict(gmod) -  predict(gbmod))) < 1e-4)
+
+### predictions:
+set.seed(1907)
+x1 <- rnorm(100)
+x2 <- rnorm(100)
+x3 <- rnorm(100)
+y <- rnorm(100, mean = 3 * x1, sd = 2)
+DF <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
+
+amod <- glmboost(y ~ x1 + x2 + x3, data = DF)
+
+pr1 <- predict(amod, aggre = "cumsum", which = 1:2)
+pr2 <- predict(amod, aggre = "none", which = 1:2)
+pr3 <- predict(amod, aggre = "sum", which= 1:2)
+stopifnot(max(abs(pr3 - sapply(pr1, function(obj) obj[,ncol(obj)]))) < 1e-10)
+stopifnot(max(abs(pr3 - sapply(pr2, function(obj) rowSums(obj)))) < 1e-10)
+
+foo <- DF
+foo$x2 <- 0
+foo$x3 <- 0
+pr4 <- predict(amod, aggre = "sum", newdata=foo)
+stopifnot(length(unique(round(rowSums(pr3) - pr4, 6))) == 1) # changes in level are ok
+
+newData <- as.data.frame(rbind(mean(DF)[-1], mean(DF)[-2]+1*sd(DF)[-1]))
+if (!is.list(pr <- predict(amod, newdata=newData, which=1:2)))
+    warning("predict(amod, newdata=newData, which=1:2) does not return a list") # no list but a matrix is returned!
+stopifnot(is.list(pr <- predict(amod, newdata=newData, aggregate="cumsum", which=1:2)))
+
+amod[10]
+pr <- predict(amod, which=1:3)
+stopifnot(ncol(pr) == 3 || all(pr[,c(1,ncol)] == 0))
+amod[100]
+
+set.seed(1907)
+x1 <- rnorm(100)
+p <- 1/(1 + exp(- 3 * x1))
+y <- as.factor(runif(100) < p)
+DF <- data.frame(y = y, x1 = x1)
+
+logitBoost <- glmboost(y ~ x1, family = Binomial(),
+                 data = DF,  control=boost_control(mstop=5000))
+logit <- glm(y ~ x1, data=DF, family=binomial)
+stopifnot(coef(logitBoost)[2]*2 - coef(logit)[2] < 1e-5) # * 2 as we use y = {-1, 1}
+
+pr <- predict(logitBoost)
+pr2 <- predict(logit)
+stopifnot(pr * 2 - pr2 < 1e-5)  # * 2 as we use y = {-1, 1}
+
+pr <- predict(logitBoost, type="class")
+pr2 <- predict(logit, type="response") > 0.5
+foo <- table(pr, pr2)
+stopifnot(foo[1,2] + foo[2,1] == 0)
+
+pr <- predict(logitBoost, type="response")
+pr2 <- predict(logit, type="response")
+stopifnot(pr - pr2 < 1e-10)
+
+### coefficients:
+set.seed(1907)
+x1 <- rnorm(100)
+x2 <- rnorm(100)
+x3 <- rnorm(100)
+y <- rnorm(100, mean = 3 * x1, sd = 2)
+DF <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
+amod <- glmboost(y ~ x1 + x2 + x3, data = DF)
+
+stopifnot(length(coef(amod)) == 4)
+amod[10]
+stopifnot(length(coef(amod)) == 1)
+stopifnot(length(coef(amod, which=1:3)) == 3)
