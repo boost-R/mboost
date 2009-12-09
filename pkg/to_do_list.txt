@@ -1,7 +1,8 @@
 
-    o  predict.glmboost via coef.glmboost. Remove special code in bolscw
+    o  richer Family objects are nedded (e.g., prediction and extraction of
+       coefs needs to be handled with care if familiy=Binomial())
 
-    o  Documentation for families needed (e.g. what means AdaExp, ...)
+    o  predict.glmboost via coef.glmboost. Remove special code in bolscw
 
     o  do we need Matrix on attach?
 

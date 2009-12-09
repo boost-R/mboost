@@ -64,39 +64,49 @@ QuantReg(tau = 0.5, qoffset = 0.5)
   \eqn{1/2 \log(p / (1 - p))} for \code{Binomial()} or \code{AdaExp()}
   and \eqn{(\sum w_i)^{-1} \sum w_i y_i} for \code{GaussReg()} and the
   median for \code{Huber()} and \code{Laplace()}. A short summary of the
-  available families is given in the following paragraphs: 
-  
+  available families is given in the following paragraphs:
+
   \code{AdaExp()}, \code{Binomial()} and \code{GaussClass()} implement
   families for binary classification. \code{AdaExp()} uses the
-  exponential loss, which essentially leeds to the AdaBoost algorithm 
+  exponential loss, which essentially leeds to the AdaBoost algorithm
   of Freund and Schapire (1996). \code{Binomial()} implements the
   negative binomial log-likelihood as loss function. Thus, using
-  \code{Binomial} family corresponds to fitting a logit model. 
+  \code{Binomial} family closely corresponds to fitting a logit model.
+  However, the coefficients resulting from boosting with family
+  \code{Binomial} are \eqn{1/2} of the coefficients of a logit model
+  obtained via \code{\link{glm}}. This is due to the internatal recoding
+  of the response to \eqn{-1} and \eqn{+1} (see below).
   \code{GaussClass()} implements an \eqn{L_2} loss for binary
   classification. However, Buhlmann and Hothorn (2007) argue that the
   family \code{Binomial} is the preferred choice for binary
   classification. For binary classification problems the response
   \code{y} has to be a \code{factor}. Internally \code{y} is re-coded
   to \eqn{-1} and \eqn{+1} (Buhlmann and Hothorn 2007).
-  
+
   \code{GaussReg()} is the default family in \code{\link{mboost}}. It
   implements \eqn{L_2}Boosting for continuous response.
   \code{Huber()} implements a robust version for boosting with
   continuous response, where the Huber-loss is used. \code{Laplace()}
   implements another strategy for continuous outcomes and uses the
   \eqn{L_1}-loss instead of the \eqn{L_2}-loss as used by
-  \code{GaussReg()}. 
+  \code{GaussReg()}.
 
   \code{Poisson()} implements a family for fitting count data with
   boosting methods. The implemented loss function is the negative
   Poisson log-likelihood. Note that the natural link function
   \eqn{log(\mu) = \eta} is assumed.
-  
+
   \code{CoxPH()} implements the negative partial log-likeliood for Cox
   models. Hence, survival models can be boosted using this family.
-  
+
   \code{QuantReg()} implements boosting for quantile regression, which is
-  introduced in Fenske et al. (2009).  
+  introduced in Fenske et al. (2009).
+}
+\section{Warning}{
+  The coefficients resulting from boosting with family
+  \code{Binomial} are \eqn{1/2} of the coefficients of a logit model
+  obtained via \code{\link{glm}}. This is due to the internatal recoding
+  of the response to \eqn{-1} and \eqn{+1} (see above).
 }
 \value{
   An object of class \code{boost_family}.
