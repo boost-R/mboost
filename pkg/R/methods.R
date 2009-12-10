@@ -244,7 +244,9 @@ coef.glmboost <- function(object, which = NULL,
 
     aggregate <- match.arg(aggregate)
     cf <- object$coef(which = which, aggregate = aggregate)
+    offset <- attr(cf, "offset")
     if (aggregate == "sum") cf <- unlist(cf)
+    attr(cf, "offset") <- offset
     cf
 }
 

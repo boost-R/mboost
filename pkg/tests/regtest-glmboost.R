@@ -211,30 +211,52 @@ x3 <- rnorm(100)
 y <- rnorm(100, mean = 3 * x1, sd = 2)
 DF <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
 
-amod <- glmboost(y ~ x1 + x2 + x3, data = DF)
+amod <- glmboost(y ~ -1 + x1 + x2, data = DF)
+agg <- c("none", "sum", "cumsum")
+whi <- list(NULL, 1, 2, c(1,2))
+for (i in 1:4){
+    pred <- vector("list", length=3)
+    for (j in 1:3){
+        pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
+    }
+    if (i == 1){
+        stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
+        if ((pred[[2]] - rowSums(pred[[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
+            warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
+        stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
+    } else {
+        stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
+        stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
+    }
+}
 
-pr1 <- predict(amod, aggre = "cumsum", which = 1:2)
-pr2 <- predict(amod, aggre = "none", which = 1:2)
-pr3 <- predict(amod, aggre = "sum", which= 1:2)
-stopifnot(max(abs(pr3 - sapply(pr1, function(obj) obj[,ncol(obj)]))) < 1e-10)
-stopifnot(max(abs(pr3 - sapply(pr2, function(obj) rowSums(obj)))) < 1e-10)
-
+amod <- glmboost(y ~ 1+ x1 + x2, data = DF)
+pr1 <- predict(amod, aggre = "sum", which= 1:2)
 foo <- DF
 foo$x2 <- 0
-foo$x3 <- 0
-pr4 <- predict(amod, aggre = "sum", newdata=foo)
-stopifnot(length(unique(round(rowSums(pr3) - pr4, 6))) == 1) # changes in level are ok
-
+pr2 <- predict(amod, aggre = "sum", newdata=foo)
+stopifnot(rowSums(pr1) + attr(coef(amod),"offset") - pr2 < sqrt(.Machine$double.eps)) # changes in level are ok
 newData <- as.data.frame(rbind(mean(DF)[-1], mean(DF)[-2]+1*sd(DF)[-1]))
 if (!is.list(pr <- predict(amod, newdata=newData, which=1:2)))
     warning("predict(amod, newdata=newData, which=1:2) does not return a list") # no list but a matrix is returned!
 stopifnot(is.list(pr <- predict(amod, newdata=newData, aggregate="cumsum", which=1:2)))
-
 amod[10]
 pr <- predict(amod, which=1:3)
 stopifnot(ncol(pr) == 3 || all(pr[,c(1,ncol)] == 0))
 amod[100]
 
+# compare predictions with gamboost
+mod1 <- glmboost(y ~ -1 + x1 + x2 + x3, data = DF)
+mod2 <- gamboost(y ~ x1 + x2 + x3, data = DF, baselearner= function(x) bols(x, intercept=FALSE))
+pr1_2 <- predict(mod2, aggre = "cumsum")
+pr2_2 <- predict(mod2, aggre = "none")
+pr3_2 <- predict(mod2, aggre = "sum")
+
+stopifnot(max(abs(predict(mod1) - predict(mod2))) < sqrt(.Machine$double.eps))
+stopifnot(max(abs(predict(mod1, aggre = "none") - predict(mod2, aggre = "none"))) < sqrt(.Machine$double.eps))
+stopifnot(max(abs(predict(mod1, aggre = "cumsum") - predict(mod2, aggre = "cumsum"))) < sqrt(.Machine$double.eps))
+
+# check type argument
 set.seed(1907)
 x1 <- rnorm(100)
 p <- 1/(1 + exp(- 3 * x1))
@@ -257,7 +279,7 @@ stopifnot(foo[1,2] + foo[2,1] == 0)
 
 pr <- predict(logitBoost, type="response")
 pr2 <- predict(logit, type="response")
-stopifnot(pr - pr2 < 1e-10)
+stopifnot(pr - pr2 < sqrt(.Machine$double.eps))
 
 ### coefficients:
 set.seed(1907)

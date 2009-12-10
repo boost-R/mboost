@@ -164,29 +164,43 @@ stopifnot(tmp < 1e-5)
 
 ### predictions:
 data("bodyfat", package = "mboost")
+amod <- gamboost(DEXfat ~ hipcirc + anthro3a, data = bodyfat, baselearner = "bbs")
+
+agg <- c("none", "sum", "cumsum")
+whi <- list(NULL, 1, 2, c(1,2))
+for (i in 1:4){
+    pred <- vector("list", length=3)
+    for (j in 1:3){
+        pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
+    }
+    if (i == 1){
+        stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
+        if ((pred[[2]] - rowSums(pred[[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
+            warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
+        stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
+    } else {
+        stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
+        stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
+    }
+}
+
 amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth,
                  data = bodyfat, baselearner = "bbs")
-pr1 <- predict(amod, aggre = "cumsum", which = 1:2)
-pr2 <- predict(amod, aggre = "none", which = 1:2)
-pr3 <- predict(amod, aggre = "sum", which= 1:2)
-stopifnot(max(abs(pr3 - sapply(pr1, function(obj) obj[,ncol(obj)]))) < 1e-10)
-stopifnot(max(abs(pr3 - sapply(pr2, function(obj) rowSums(obj)))) < 1e-10)
-
+pr1 <- predict(amod, aggre = "sum", which= 1:2)
 foo <- bodyfat[,names(bodyfat) %in% c("hipcirc", "anthro3a", "kneebreadth")]
 foo$kneebreadth <- mean(bodyfat$kneebreadth)
-pr4 <- predict(amod, aggre = "sum", newdata=foo)
-stopifnot(length(unique(rowSums(pr3) - pr4)) == 1) # changes in level are ok
-
+pr2 <- predict(amod, aggre = "sum", newdata=foo)
+stopifnot(length(unique(rowSums(pr1) - pr2)) == 1) # changes in level are ok
 newData <- as.data.frame(rbind(mean(bodyfat)[-2], mean(bodyfat)[-2]+1*sd(bodyfat)[-2]))
 if (!is.list(pr <- predict(amod, newdata=newData, which=1:2)))
     warning("predict(amod, newdata=newData, which=1:2) does not return a list") # no list but a matrix is returned!
 stopifnot(is.list(pr <- predict(amod, newdata=newData, aggregate="cumsum", which=1:2)))
-
 amod[10]
 pr <- predict(amod, which=1:3)
 stopifnot(ncol(pr) == 3 || all(pr[,ncol] == 0))
 amod[100]
 
+# check type argument
 set.seed(1907)
 x1 <- rnorm(100)
 p <- 1/(1 + exp(- 3 * x1))
@@ -196,7 +210,7 @@ DF <- data.frame(y = y, x1 = x1)
 logitBoost <- gamboost(y ~ x1, family = Binomial(),
                  data = DF, baselearner = "bols", control=boost_control(mstop=5000))
 logit <- glm(y ~ x1, data=DF, family=binomial)
-stopifnot(coef(logitBoost)[[1]][2]*2 - coef(logit)[2] < 1e-5) # * 2 as we use y = {-1, 1}
+stopifnot(coef(logitBoost)[[1]][2]*2 - coef(logit)[2]  < sqrt(.Machine$double.eps)) # * 2 as we use y = {-1, 1}
 
 pr <- predict(logitBoost)
 pr2 <- predict(logit)
@@ -209,7 +223,7 @@ stopifnot(foo[1,2] + foo[2,1] == 0)
 
 pr <- predict(logitBoost, type="response")
 pr2 <- predict(logit, type="response")
-stopifnot(pr - pr2 < 1e-10)
+stopifnot(pr - pr2  < sqrt(.Machine$double.eps))
 
 ### coefficients:
 data("bodyfat", package = "mboost")
