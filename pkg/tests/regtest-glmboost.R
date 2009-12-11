@@ -230,12 +230,36 @@ for (i in 1:4){
     }
 }
 
+agg <- c("none", "sum", "cumsum")
+whi <- list(NULL, "x1", "x2", c("x1","x2"))
+for (i in 1:4){
+    pred <- vector("list", length=3)
+    for (j in 1:3){
+        pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
+    }
+    if (i == 1){
+        stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
+        if ((pred[[2]] - rowSums(pred[[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
+            warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
+        stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
+    } else {
+        stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
+        stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
+    }
+}
+
+y <- rnorm(100, mean = 3 * x1^2, sd = 2)
+DF2 <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
+amod <- glmboost(y ~ -1 + x1 + I(x1^2), data = DF2)
+stopifnot(ncol(predict(amod, which="x1")) == 2 && all(rowSums(predict(amod, which="x1")) + attr(coef(amod), "offset") - predict(amod) < sqrt(.Machine$double.eps)))
+
+
 amod <- glmboost(y ~ 1+ x1 + x2, data = DF)
 pr1 <- predict(amod, aggre = "sum", which= 1:2)
 foo <- DF
 foo$x2 <- 0
 pr2 <- predict(amod, aggre = "sum", newdata=foo)
-stopifnot(rowSums(pr1) + attr(coef(amod),"offset") - pr2 < sqrt(.Machine$double.eps)) # changes in level are ok
+stopifnot(rowSums(pr1) + attr(coef(amod),"offset") - pr2 < sqrt(.Machine$double.eps))
 newData <- as.data.frame(rbind(mean(DF)[-1], mean(DF)[-2]+1*sd(DF)[-1]))
 if (!is.list(pr <- predict(amod, newdata=newData, which=1:2)))
     warning("predict(amod, newdata=newData, which=1:2) does not return a list") # no list but a matrix is returned!

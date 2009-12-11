@@ -184,6 +184,29 @@ for (i in 1:4){
     }
 }
 
+# use names in which instead of numbers
+agg <- c("none", "sum", "cumsum")
+whi <- list(NULL, "hipcirc", "anthro3a", c("hipcirc", "anthro3a"))
+for (i in 1:4){
+    pred <- vector("list", length=3)
+    for (j in 1:3){
+        pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
+    }
+    if (i == 1){
+        stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
+        if ((pred[[2]] - rowSums(pred[[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
+            warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
+        stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
+    } else {
+        stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
+        stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
+    }
+}
+
+# use which to extract all effects for one covariate e.g. for plotting purposes
+amod <- gamboost(DEXfat ~ bols(hipcirc, intercept=FALSE) + bbs(hipcirc, df = 1, center=TRUE), data = bodyfat)
+stopifnot(ncol(predict(amod, which="hip")) == 2 && all(rowSums(predict(amod, which="hip")) + attr(coef(amod), "offset") - predict(amod) < sqrt(.Machine$double.eps)))
+
 amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth,
                  data = bodyfat, baselearner = "bbs")
 pr1 <- predict(amod, aggre = "sum", which= 1:2)
