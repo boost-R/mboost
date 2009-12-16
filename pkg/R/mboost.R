@@ -234,15 +234,13 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
         }, "cumsum" = {
             if (!nw) {
                 pr <- lapply(which, pfun, agg = "none")
-                M <- triu(crossprod(Matrix(1, nc = sum(indx))))
-                pr <- lapply(pr, function(x) as(x %*% M, "matrix"))
+                pr <- lapply(pr, function(x) .Call("R_mcumsum", as(x, "matrix")))
                 names(pr) <- bnames[which]
                 return(pr)
             } else {
                 ret <- Matrix(0, nrow = n, ncol = sum(indx))
                 for (i in 1:max(xselect)) ret <- ret + pfun(i, agg = "none")
-                M <- triu(crossprod(Matrix(1, nc = sum(indx))))
-                return(as(ret %*% M, "matrix") + offset)
+                return(.Call("R_mcumsum", as(ret, "matrix")) + offset)
             }
          }, "none" = {
             if (!nw) {
@@ -309,8 +307,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             ret <- switch(aggregate,
                 "sum" = rowSums(cf) * nu,
                 "cumsum" = {
-                    M <- triu(crossprod(Matrix(1, nc = ncol(cf))))
-                    as.matrix(nu * (cf %*% M))
+                    .Call("R_mcumsum", as(cf, "matrix"))
                 },
                 "none" = nu * cf
             )

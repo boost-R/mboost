@@ -322,3 +322,33 @@ SEXP R_risk (SEXP time, SEXP expf) {
     UNPROTECT(1);
     return(ans);
 }
+
+SEXP R_mcumsum (SEXP x) {
+
+    SEXP ans;
+    double *dans, *dx;
+    int nr, nc, i, j, jj;
+    
+    nr = nrow(x);
+    nc = ncol(x);
+
+    PROTECT(ans = allocMatrix(REALSXP, nr, nc));
+    dans = REAL(ans);
+    dx = REAL(x);
+
+    for (j = 0; j < nc; j++) {
+        for (i = 0; i < nr; i++) {
+            dans[j * nr + i] = 0.0;
+        }
+    }
+
+    for (jj = 0; jj < nc; jj++) {
+        for (j = jj; j < nc; j++) {
+            for (i = 0; i < nr; i++) {
+                dans[j * nr + i] += dx[jj * nr + i];
+            }
+        }
+    }
+    UNPROTECT(1);
+    return(ans);
+}
