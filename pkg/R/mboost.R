@@ -17,14 +17,10 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     yna <- is.na(response)
     y <- response
     if (any(yna)) {
-        weights[] <- 0
+        weights[yna] <- 0
         y[is.na(y)] <- y[1]
     }
-    check_y_family(response, family)
-
-    ### recode to -1, +1
-    if (is.factor(response))
-        y <- c(-1, 1)[as.integer(y)]
+    y <- check_y_family(response, family)
 
     ### unweighted problem
     if (is.null(weights)) weights <- rep.int(1, NROW(y))
@@ -124,7 +120,8 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             ### print status information
             ### print xselect???
             if (trace)
-                do_trace(m, mstop = mstop, risk = mrisk, step = tracestep, width = niter)
+                do_trace(m, mstop = mstop, risk = mrisk, 
+                         step = tracestep, width = niter)
         }
         mstop <<- mstop + niter
         return(TRUE)
@@ -140,7 +137,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 control = control,          ### control parameters
                 family = family,            ### family object
                 response = response,        ### the response variable
-                rownames = bnames,            ### rownames of learning data
+                rownames = bnames,          ### rownames of learning data
                 "(weights)" = weights       ### weights used for fitting
     )
 
