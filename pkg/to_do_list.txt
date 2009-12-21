@@ -1,30 +1,35 @@
 
-    o  new base-learners (by example, brad, bmrf)
+2.0-0
 
-    o  mboost-package + NEWS + startup message
+    o  mboost-package (BH) + NEWS (BH) + startup message (TH)
 
     o  richer Family objects are nedded (e.g., prediction and extraction of
        coefs needs to be handled with care if family=Binomial())
-       scale parameter
-       offset?
-       coefficients
+       scale parameter NBinomial, PropOdds, Weibull 
+                       (-> Docu + Examples MS)
+       linkinv -> predict (type = "response") (TH)
+       weighted median for offset in Huber / Laplace, 
+       see Hmisc:::wtd.quantile (TH)
 
-    o  predict.glmboost via coef.glmboost. Remove special code in bolscw
+    o  predict.glmboost via coef.glmboost. 
+       Remove special code in bolscw (TH)
 
-    o  do we need Matrix on attach?
+    o  do we need Matrix on attach? (TH)
 
-    o  add missing files to svn (in inst)
+    o  add missing files to svn (in inst)  (TH)
 
-    o  checks for QuantReg
+    o  fire a warning when AIC is called in cases the hat matrix is
+       meaningless (TH)
+
+future
+
+    o  new base-learners (by example, brad, bmrf)
 
     o  check status == "N" in wpbc
 
     o  na.action defaults checken
 
     o  use better colours
-
-    o  fire a warning when AIC is called in cases the hat matrix is
-       meaningless
 
     o  use col = rgb(0, 0, 0, 0.1) for lines in plot.cvrisk
 
@@ -36,8 +41,6 @@
 
     o  hatvalues + AIC geht so nur fuer GaussReg!
     o  hat matrices fuer GAMS (Hastie & Tib)
-
-    o  weighted median for offset in Huber / Laplace, see Hmisc:::wtd.quantile
 
     o  AIC(..., "corrected") monoton steigend???
 
