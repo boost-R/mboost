@@ -33,7 +33,8 @@ stopifnot(max(abs(H %*% (mydf$y - weighted.mean(mydf$y, w)) - fitted(mod2) + wei
           sqrt(.Machine$double.eps))
 
 ### hat matrix: directly in R
-mod2$family <- Laplace()
-H <- attr(hatvalues(mod2), "hatmatrix")
-stopifnot(max(abs(H %*% (mydf$y - weighted.mean(mydf$y, w)) - fitted(mod2) + weighted.mean(mydf$y, w))) <
-          sqrt(.Machine$double.eps))
+# <FIXME> this is non-sense </FIXME>
+#mod2$family <- Laplace()
+#H <- attr(hatvalues(mod2), "hatmatrix")
+#stopifnot(max(abs(H %*% (mydf$y - weighted.mean(mydf$y, w)) - fitted(mod2) + weighted.mean(mydf$y, w))) <
+#          sqrt(.Machine$double.eps))
