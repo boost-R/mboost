@@ -2,7 +2,7 @@
 setClass("boost_family", representation = representation(
     ngradient  = "function",
     risk       = "function",
-    offset     = "function", ### optim(risk)
+    offset     = "function",
     check_y    = "function",
     weights    = "function",
     name       = "character",
@@ -20,10 +20,10 @@ setMethod("show", "boost_family", function(object) {
     cat("Loss function:", object@charloss, "\n")
 })
 
-Family <- function(ngradient, loss = NULL, risk = NULL, 
+Family <- function(ngradient, loss = NULL, risk = NULL,
                    offset = function(y, w) 
                        optimize(risk, interval = range(y), y = y, w = w)$minimum, 
-                   check_y = function(y) TRUE,
+                   check_y = function(y) y,
                    weights = c("any", "none", "zeroone", "case"), 
                    name = "user-specified", fW = NULL, linkinv = NULL)
 {
@@ -50,7 +50,7 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
                weights = check_w, name = name, charloss = charloss)
     stopifnot(!xor(is.null(fW), is.null(linkinv)))
     if (!is.null(linkinv))
-        RET <- new("boost_family_glm", ngradient = ngradient,
+        RET <- new("boost_family_glm", ngradient = ngradient, 
                    risk = risk, offset = offset, fW = fW, check_y = check_y, 
                    weights = check_w, name = name, linkinv = linkinv,
                    charloss= charloss)
@@ -66,7 +66,7 @@ Gaussian <- function()
                if (!is.numeric(y) || !is.null(dim(y)))
                    stop("response is not a numeric vector but ",
                         sQuote("family = GaussReg()"))
-               TRUE
+               y
            },
            name = "Squared Error (Regression)",
            fW = function(f) return(rep(1, length = length(f))),
@@ -87,7 +87,7 @@ Laplace <- function()
                if (!is.numeric(y) || !is.null(dim(y)))
                    stop("response is not a numeric vector but ",
                         sQuote("family = Laplace()"))
-               TRUE
+               y
            },
            name = "Absolute Error")
 
@@ -125,7 +125,7 @@ Binomial <- function()
                if (nlevels(y) != 2)
                    stop("response is not a factor at two levels but ",
                            sQuote("family = Binomial()"))
-               TRUE
+               c(-1, 1)[as.integer(y)]
            },
            name = "Negative Binomial Likelihood")
 
@@ -140,7 +140,7 @@ Poisson <- function()
                if (any(y < 0) || any((y - round(y)) > 0))
                    stop("response is not an integer variable but ",
                         sQuote("family = Poisson()"))
-               TRUE
+               y
            },
            name = "Poisson Likelihood")
 
@@ -166,7 +166,7 @@ Huber <- function(d = NULL) {
                if (!is.numeric(y) || !is.null(dim(y)))
                    stop("response is not a numeric vector but ",
                         sQuote("family = Huber()"))
-               TRUE
+               y
            },
            name = paste("Huber Error", 
                ifelse(is.null(d), "(with adaptive d)", 
@@ -188,7 +188,7 @@ AdaExp <- function()
                if (nlevels(y) != 2)
                    stop("response is not a factor at two levels but ",
                            sQuote("family = AdaExp()"))
-               TRUE
+               c(-1, 1)[as.integer(y)]
            },
            name = "Adaboost Exponential Error")
 
@@ -231,7 +231,7 @@ CoxPH <- function() {
                if (!inherits(y, "Surv"))
                    stop("response is not an object of class ", sQuote("Surv"),
                         " but ", sQuote("family = CoxPH()"))
-               TRUE
+               y
            },
            name = "Cox Partial Likelihood")
 }
@@ -250,7 +250,87 @@ QuantReg <- function(tau = 0.5, qoffset = 0.5) {
             if (!is.numeric(y) || !is.null(dim(y)))
                 stop("response is not a numeric vector but ", 
                      sQuote("family = QuantReg()"))
-            return(TRUE)
+            y
         },
         name = "Quantile Regression")
+}
+
+NBinomial <- function(interval = c(0, 100)) {
+    sigma <- 1
+
+    plloss <- function(sigma, y, f)
+        - (lgamma(y + sigma) - lgamma(sigma) - lgamma(y + 1) +
+           sigma * log(sigma) - sigma*log(exp(f) + sigma) + y * f -
+           y * log(exp(f) + sigma))
+
+    riskS <- function(sigma, y, fit, w = 1) 
+        sum(w * plloss(y = y, f = fit, sigma = sigma))
+    risk <- function(y, f, w = 1) 
+       sum(w * plloss(y = y, f = f, sigma = sigma))
+
+    ngradient <- function(y, f, w = 1) {
+        sigma <<- optimize(riskS, interval = interval, 
+                           y = y, fit = f, w = w)$minimum
+        y - (y + sigma)/(exp(f) + sigma) * exp(f)
+    }
+	
+    Family(ngradient = ngradient, risk = risk,
+           check_y = function(y) {
+               stopifnot(all.equal(unique(y - floor(y)), 0))
+               y
+           },
+           name = "Negative Negative-Binomial Likelihood")
+}
+
+PropOdds <- function(start = seq(from = -0.1, to = 0.1, 
+                                 length = max(as.integer(y)) - 1),
+                     interval = c(0, 1000)) {
+
+    sigma <- 0
+    delta <- 0
+
+    d2s <- function(delta)
+        cumsum(delta[1] + c(0, exp(delta[-1])))
+
+    plloss <- function(sigma, y, f, w=1) {
+        tmp <- sapply(1:(length(sigma) + 1), function(i) {
+            if (i == 1) return(1+exp(f-sigma[i]))
+            if (i == (length(sigma) + 1)) return(1 - 1/(1+exp(f-sigma[i - 1])))
+            return(1 / (1 + exp(f - sigma[i])) - 1/(1 + exp(f - sigma[i-1])))
+        })
+        sum(log(tmp[y]) * c(1, -1)[(y > levels(y)[1]) + 1])
+    }
+
+    riskS <- function(sigma, y, fit, w = 1) 
+        sum(w * plloss(y = y, f = fit, sigma = sigma))
+    risk <- function(y, f, w = 1) 
+        sum(w * plloss(y = y, f = f, sigma = sigma))
+
+    ngradient <- function(y, f, w = 1) {
+        delta <<- optim(par = delta, fn = riskS, y = y, 
+                        fit = f, w = w, method = "BFGS")$par
+        sigma <<- d2s(delta)
+        tmp <- sapply(1:(length(sigma) + 1), function(i) {
+            if (i == 1) return(-1/(1 + exp(sigma[i] - f)))
+            if (i == (length(sigma) + 1)) 
+                return(1 / (1 + exp(f - sigma[i - 1])))
+            return((1 - exp(2 * f - sigma[i - 1] - sigma[i])) / 
+                   (1+exp(f-sigma[i - 1])+exp(f-sigma[i])+exp(2*f-sigma[i - 1]-sigma[i])))
+        })
+        sum(tmp[y])
+    }
+
+    offset <- function(y, w = 1) {
+        delta <<- start
+        sigma <<- d2s(delta)
+        optimize(risk, interval = interval, y = y, w = w)$minimum
+    }
+
+    Family(ngradient = ngradient, 
+           risk = risk, offset = offset,
+           check_y = function(y) {
+               stopifnot(is.ordered(y))
+               y
+           },
+           name = "Proportional Odds")
 }
