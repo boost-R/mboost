@@ -20,7 +20,7 @@
 Family(ngradient, loss = NULL, risk = NULL,
        offset = function(y, w)
            optimize(risk, interval = range(y), y = y, w = w)$minimum,
-       check_y = function(y) TRUE,
+       check_y = function(y) y,
        weights = c("any", "none", "zeroone", "case"),
        name = "user-specified", fW = NULL, linkinv = NULL)
 AdaExp()
@@ -46,7 +46,8 @@ QuantReg(tau = 0.5, qoffset = 0.5)
              approximation of the boosting hat matrix for loss functions other than
              squared error.}
   \item{linkinv}{ inverse link function of a GLM.}
-  \item{check_y}{ a function for checking the class / mode of a response variable.}
+  \item{check_y}{ a function for checking and transforming 
+                  the class / mode of a response variable.}
   \item{weights}{ a character indicating if weights are allowed. }
   \item{name}{ a character giving the name of the loss function for pretty printing. }
   \item{d}{ delta parameter for Huber loss function. If omitted, it is chosen adaptively.}
