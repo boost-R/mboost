@@ -122,7 +122,7 @@ application: we employ the \Rcmd{glmboost} function from package
 to fit a linear regression model by means of $L_2$Boosting with componentwise
 linear least squares. By default, the function \Rcmd{glmboost} fits a linear model (with 
 initial $m_\text{stop} = 100$ and shrinkage parameter $\nu = 0.1$) by
-minimizing squared error (argument \Rcmd{family = GaussReg()} is 
+minimizing squared error (argument \Rcmd{family = Gaussian()} is 
 the default): 
 <<bodyfat-glmboost-fit, echo = TRUE>>=
 bf_glm <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)

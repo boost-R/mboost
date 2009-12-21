@@ -1,6 +1,6 @@
 
 mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
-                       family = GaussReg(), control = boost_control()) {
+                       family = Gaussian(), control = boost_control()) {
 
     ### hyper parameters
     mstop <- 0
@@ -28,8 +28,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
     ### unweighted problem
     if (is.null(weights)) weights <- rep.int(1, NROW(y))
-    WONE <- (max(abs(weights - 1)) < .Machine$double.eps)
-    if (!family@weights && !WONE)
+    if (!family@weights(weights))
         stop(sQuote("family"), " is not able to deal with weights")
 
     ### rescale weights (because of the AIC criterion)

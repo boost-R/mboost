@@ -9,7 +9,7 @@
 \usage{
 mboost(formula, data = list(), baselearner = c("bbs", "bols", "btree", "bss", "bns"), ...) 
 mboost_fit(blg, response, weights = NULL, offset = NULL,
-           family = GaussReg(), control = boost_control())
+           family = Gaussian(), control = boost_control())
 }
 \arguments{
   \item{formula}{ a symbolic description of the model to be fit. }

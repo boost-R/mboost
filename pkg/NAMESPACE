@@ -10,7 +10,7 @@ export(glmboost,
        blackboost,
        mboost,
        boost_control, mstop, Family,
-       GaussReg, GaussClass, Laplace, Binomial, Poisson, QuantReg,
+       GaussReg, Gaussian, GaussClass, Laplace, Binomial, Poisson, QuantReg,
        Huber, AdaExp, CoxPH, FP, IPCweights, cvrisk, cv, bbs,
        bols, bspatial, brandom, btree, survFit, selected)
        ###, basesel, fitsel)

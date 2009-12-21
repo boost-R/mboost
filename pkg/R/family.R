@@ -1,14 +1,18 @@
 
 setClass("boost_family", representation = representation(
     ngradient  = "function",
-    loss       = "function",
     risk       = "function",
-    offset     = "function",
-    fW         = "function",
+    offset     = "function", ### optim(risk)
     check_y    = "function",
-    weights    = "logical",
+    weights    = "function",
     name       = "character",
     charloss   = "character"
+))
+
+setClass("boost_family_glm", contains = "boost_family",
+    representation = representation(
+        linkinv = "function",
+        fW      = "function"
 ))
 
 setMethod("show", "boost_family", function(object) {
@@ -17,23 +21,44 @@ setMethod("show", "boost_family", function(object) {
 })
 
 Family <- function(ngradient, loss = NULL, risk = NULL, 
-                   offset = function(y, w) 0, 
-                   fW = function(f) rep(1, length(f)), check_y = function(y) TRUE,
-                   weights = TRUE, name = "user-specified") {
+                   offset = function(y, w) 
+                       optimize(risk, interval = range(y), y = y, w = w)$minimum, 
+                   check_y = function(y) TRUE,
+                   weights = c("any", "none", "zeroone", "case"), 
+                   name = "user-specified", fW = NULL, linkinv = NULL)
+{
 
-    if (is.null(loss))
-        loss <- function(y, f) NA
-    if (is.null(risk))
+    if (is.null(loss)) {
+        charloss <- ""
+        stopifnot(!is.null(risk))
+    }
+    if (is.null(risk)) {
+        stopifnot(!is.null(loss))
+        charloss <- paste(deparse(body(loss)), "\n")
         risk <- function(y, f, w = 1) sum(w * loss(y, f), na.rm = TRUE)
-    RET <- new("boost_family", ngradient = ngradient, loss = loss, 
-               risk = risk, offset = offset, fW = fW, check_y = check_y, 
-               weights = weights, 
-               name = name, charloss = paste(deparse(body(loss)), "\n"))
+    }
+    weights <- match.arg(weights)
+    check_w <- function(w) {
+        switch(weights, 
+            "any" = TRUE,
+            "none" = isTRUE(all.equal(unique(w), 1)),
+            "zeroone" = isTRUE(all.equal(unique(w + abs(w - 1)), 1)),
+            "case" = isTRUE(all.equal(unique(w - floor(w)), 0)))
+    }
+    RET <- new("boost_family", ngradient = ngradient, 
+               risk = risk, offset = offset, check_y = check_y, 
+               weights = check_w, name = name, charloss = charloss)
+    stopifnot(!xor(is.null(fW), is.null(linkinv)))
+    if (!is.null(linkinv))
+        RET <- new("boost_family_glm", ngradient = ngradient,
+                   risk = risk, offset = offset, fW = fW, check_y = check_y, 
+                   weights = check_w, name = name, linkinv = linkinv,
+                   charloss= charloss)
     RET
 }
 
 ### Gaussian (Regression)
-GaussReg <- function()
+Gaussian <- function()
     Family(ngradient = function(y, f, w = 1) y - f,
            loss = function(y, f) (y - f)^2,
            offset = weighted.mean,
@@ -43,28 +68,20 @@ GaussReg <- function()
                         sQuote("family = GaussReg()"))
                TRUE
            },
-           name = "Squared Error (Regression)")
+           name = "Squared Error (Regression)",
+           fW = function(f) return(rep(1, length = length(f))),
+           linkinv = function(f) f)
+GaussReg <- Gaussian
 
 ### Gaussian (-1 / 1 Binary Classification)
 GaussClass <- function()
-    Family(ngradient = function(y, f, w = 1) 2 * y - 2 * y * f,
-           loss = function(y, f) 1 - 2 * y * f + (y * f)^2,
-           check_y = function(y) {
-               if (!is.factor(y))
-                   stop("response is not a factor but ",
-                           sQuote("family = GaussClass()"))  
-               if (nlevels(y) != 2)
-                   stop("response is not a factor at two levels but ",
-                           sQuote("family = GaussClass()"))
-               TRUE
-           },
-
-           name = "Squared Error (Classification)")
+    stop("Family", sQuote("GaussClass"), "has been removed")
 
 ### Laplace
 Laplace <- function()
     Family(ngradient = function(y, f, w = 1) sign(y - f),
            loss = function(y, f) abs(y - f),
+           ### <FIXME> offset??? </FIXME>
            offset = function(y, w) median(y),
            check_y = function(y) {
                if (!is.numeric(y) || !is.null(dim(y)))
@@ -96,6 +113,11 @@ Binomial <- function()
                p <- exp(f) / (exp(f) + exp(-f))
                4 * p * (1 - p)
            },
+           linkinv = function(f) {
+               f <- pmin(abs(f), 36) * sign(f)
+               p <- exp(f) / (exp(f) + exp(-f))
+               return(p)
+           },
            check_y = function(y) {
                if (!is.factor(y))
                    stop("response is not a factor but ",
@@ -113,6 +135,7 @@ Poisson <- function()
            loss = function(y, f) -dpois(y, exp(f), log = TRUE),
            offset = function(y, w) log(weighted.mean(y, w)),
            fW = function(f) exp(f),
+           linkinv = function(f) exp(f),
            check_y = function(y) {
                if (any(y < 0) || any((y - round(y)) > 0))
                    stop("response is not an integer variable but ",
@@ -170,7 +193,24 @@ AdaExp <- function()
            name = "Adaboost Exponential Error")
 
 ### Cox proportional hazards model (partial likelihood)
-CoxPH <- function()
+CoxPH <- function() {
+    plloss <- function(y, f, w) {
+        time <- y[,1]
+        event <- y[,2]
+        n <- length(time)
+        if (length(f) == 1) f <- rep(f, n)
+        if (length(w) == 1) w <- rep(w, n)
+        indx <- rep(1:n, w)
+        time <- time[indx]
+        event <- event[indx]
+        ef <- exp(f)[indx]
+        f <- f[indx]
+        n <- length(time)
+        risk <- rep(0, n)
+        for (i in 1:n)
+               risk[i] <- sum((time >= time[i])*ef)
+        event * (f - log(risk))
+    }
     Family(ngradient = function(y, f, w) {
                time <- y[,1]
                storage.mode(time) <- "double"
@@ -183,32 +223,18 @@ CoxPH <- function()
                storage.mode(f) <- "double"
                .Call("ngradientCoxPLik", time, event, f, w, package = "mboost")
            },
-           loss = plloss <- function(y, f, w) {
-               time <- y[,1]
-               event <- y[,2]
-               n <- length(time)
-               if (length(f) == 1) f <- rep(f, n)
-               if (length(w) == 1) w <- rep(w, n)
-               indx <- rep(1:n, w)
-               time <- time[indx]
-               event <- event[indx]
-               ef <- exp(f)[indx]
-               f <- f[indx]
-               n <- length(time)
-               risk <- rep(0, n)
-               for (i in 1:n)
-                   risk[i] <- sum((time >= time[i])*ef)
-               event * (f - log(risk))
-           },
-           risk = function(y, f, w = 1) -sum(plloss(y, f, w), na.rm = TRUE),
+           risk = risk <- function(y, f, w = 1) -sum(plloss(y, f, w), na.rm = TRUE),
+           offset = function(y, w) 
+               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)), 
+                        y = y, w = w)$minimum, 
            check_y = function(y) {
                if (!inherits(y, "Surv"))
                    stop("response is not an object of class ", sQuote("Surv"),
                         " but ", sQuote("family = CoxPH()"))
                TRUE
            },
-           weights = TRUE, 
-           name = "Partial Likelihood")
+           name = "Cox Partial Likelihood")
+}
 
 QuantReg <- function(tau = 0.5, qoffset = 0.5) {
     stopifnot(tau > 0 && tau < 1)
@@ -219,6 +245,7 @@ QuantReg <- function(tau = 0.5, qoffset = 0.5) {
         loss = function(y, f) tau*(y-f)*((y-f)>=0) - (1-tau)*(y-f)*((y-f)<0) ,
         offset = function(y, w = rep(1, length(y))) 
             quantile(y[rep(1:length(y), w)], qoffset),
+        weights = "case",
         check_y = function(y) {
             if (!is.numeric(y) || !is.null(dim(y)))
                 stop("response is not a numeric vector but ", 

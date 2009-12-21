@@ -41,9 +41,10 @@ check_y_family <- function(y, family)
     family@check_y(y)
 
 ### check for negative gradient corresponding to L2 loss
+### <FIXME> better check? </FIXME>
 checkL2 <- function(object)
-    isTRUE(all.equal(attributes(object$family)[-c(4:8)],
-                     attributes(GaussReg())[-c(4:8)]))
+    isTRUE(all.equal(attributes(object$family)[1],
+                     attributes(Gaussian())[1]))
 
 ### check for classical or Matrix matrices
 isMATRIX <- function(x)

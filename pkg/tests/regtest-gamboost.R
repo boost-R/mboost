@@ -4,7 +4,7 @@ require("mboost")
 set.seed(290875)
 
 ### for boosting hat matrix checks
-fm <- GaussReg()
+fm <- Gaussian()
 fm@offset <- function(y, w) 0
 
 ### a simple two-dimensional example from `gamboost.Rd'

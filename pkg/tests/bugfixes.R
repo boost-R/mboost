@@ -171,32 +171,6 @@ x <- blackboost(y ~ ., data = df)
 for (i in s)
     stopifnot(max(abs(predict(x[i]) - predict(x[max(s)], agg = "cumsum")[,i])) < eps)
 
-### negative gradient of GaussClass was incorrectly specified
-### negative gradient of GaussClass was incorrectly specified
-data("BreastCancer", package = "mlbench")
-tmp <- BreastCancer[complete.cases(BreastCancer), -1]
-learn <- sample(1:nrow(tmp), ceiling(nrow(tmp) * 0.7))
-
-stump <- blackboost(Class ~ ., data = tmp[learn,],
-    tree_controls = ctree_control(teststat = "max",
-        testtype = "Teststatistic", mincriterion = 0, stump = TRUE),
-    control = boost_control(mstop = 176), family = GaussClass())
-mean(predict(stump, newdata = tmp[-learn,], type = "class") != tmp[-learn, "Class"])
-
-stump <- blackboost(Class ~ ., data = tmp[learn,],
-    tree_controls = ctree_control(teststat = "max",
-        testtype = "Teststatistic", mincriterion = 0, stump = TRUE),
-    control = boost_control(mstop = 275), family = GaussClass())
-mean(predict(stump, newdata = tmp[-learn,], type = "class") != tmp[-learn, "Class"])
-
-cspline <- gamboost(Class ~ ., data = tmp[learn,],
-    control = boost_control(mstop = 126), family = GaussClass())
-mean(predict(cspline, newdata = tmp[-learn,], type = "class") != tmp[-learn, "Class"])
-
-cspline <- gamboost(Class ~ ., data = tmp[learn,],
-    control = boost_control(mstop = 73), family = GaussClass())
-mean(predict(cspline, newdata = tmp[-learn,], type = "class") != tmp[-learn, "Class"])
-
 ### make sure environment(formula) is used for evaluation
 data("cars")
 ctl  <- boost_control(mstop = 100, trace = TRUE)
@@ -293,3 +267,15 @@ x2 <- rnorm(100)
 y <- rnorm(100, mean= 3 * x1,sd=0.01)
 linMod <- glmboost(y ~ x1 + x2)
 stopifnot(length(coef(linMod)) == 2)
+
+### automated offset computation in Family
+x <- rnorm(100)
+y <- rnorm(100)
+w <- drop(rmultinom(1, 100, rep(1 / 100, 100)))
+
+G <- Gaussian()
+fm <- Family(ngradient = G@ngradient, risk = G@risk)
+
+m1 <- glmboost(y ~ x, family = G)
+m2 <- glmboost(y ~ x, family = fm)
+stopifnot(all.equal(coef(m1), coef(m2)))

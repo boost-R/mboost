@@ -1,4 +1,3 @@
-
 ### compute predictions
 ### <FIXME>:
 ###          add link argument (family needs to be touched)
@@ -58,6 +57,7 @@ coef.gamboost <- function(object, which = NULL,
 hatvalues.gamboost <- function(model, ...) {
     H <- model$hatvalues(...)
     n <- length(model$response)
+    stopifnot(extends(class(model$family), "boost_family_glm"))
     if (checkL2(model)) {
         op <- .Call("R_trace_gamboost", as.integer(n), H,
                     as.integer(model$xselect()), PACKAGE = "mboost")
@@ -78,7 +78,7 @@ AIC.gamboost <- function(object, method = c("corrected", "classical", "gMDL"),
     if (df == "trace") {
         hatval <- hatvalues(object)
         RET <- AICboost(object, method = method,
-                         df = attr(hatval, "trace"), k = k)
+                        df = attr(hatval, "trace"), k = k)
     }
     if (df == "actset") {
         ### compute active set: number of non-zero coefficients
@@ -92,7 +92,7 @@ AIC.gamboost <- function(object, method = c("corrected", "classical", "gMDL"),
         if (object$offset != 0) df <- df + 1
         ### </FIXME>
         RET <- AICboost(object, method = method,
-                         df = df, k = k)
+                        df = df, k = k)
     }
     return(RET)
 }

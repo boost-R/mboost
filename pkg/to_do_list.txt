@@ -1,6 +1,13 @@
 
+    o  new base-learners (by example, brad, bmrf)
+
+    o  mboost-package + NEWS + startup message
+
     o  richer Family objects are nedded (e.g., prediction and extraction of
-       coefs needs to be handled with care if familiy=Binomial())
+       coefs needs to be handled with care if family=Binomial())
+       scale parameter
+       offset?
+       coefficients
 
     o  predict.glmboost via coef.glmboost. Remove special code in bolscw
 

@@ -17,7 +17,7 @@ dgp <- function(n = 100, beta = rep(0, 10), sd = 1) {
 mydf <- dgp(beta = c(1, 2.5, rep(0, 2)))
 
 ### for easy comparison with lm
-fm <- GaussReg()
+fm <- Gaussian()
 fm@offset <- function(y, w) 0
 
 mydf.gb <- glmboost(y ~ ., data = mydf, family = fm,
