@@ -163,7 +163,7 @@
 \section{Warning}{
   The coefficients resulting from boosting with family
   \code{\link{Binomial}} are \eqn{1/2} of the coefficients of a logit model
-  obtained via \code{\link{glm}}. This is due to the internatal recoding
+  obtained via \code{\link{glm}}. This is due to the internal recoding
   of the response to \eqn{-1} and \eqn{+1} (see \code{\link{Binomial}}).
 }
 \references{
