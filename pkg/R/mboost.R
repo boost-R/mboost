@@ -140,8 +140,9 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 family = family,            ### family object
                 response = response,        ### the response variable
                 rownames = bnames,          ### rownames of learning data
-                "(weights)" = weights,       ### weights used for fitting
-                nuisance = nuisance         ### list of nuisance parameters
+                "(weights)" = weights,      ### weights used for fitting
+                nuisance = 
+                    function() nuisance     ### list of nuisance parameters
     )
 
     ### update to new weights; just a fresh start

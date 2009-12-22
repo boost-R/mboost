@@ -13,7 +13,7 @@ export(glmboost,
        GaussReg, Gaussian, GaussClass, Laplace, Binomial, Poisson, QuantReg,
        NBinomial, PropOdds, mboost_fit,
        Huber, AdaExp, CoxPH, FP, IPCweights, cvrisk, cv, bbs,
-       bols, bspatial, brandom, btree, survFit, selected)
+       bols, bspatial, brandom, btree, survFit, selected, nuisance)
        ###, basesel, fitsel)
 exportClasses("boost_family")
 exportMethods("show")
@@ -49,6 +49,7 @@ S3method(plot, cvrisk)
 S3method(mstop, gbAIC)
 S3method(mstop, cvrisk)
 S3method(mstop, mboost)
+S3method(nuisance, mboost)
 S3method(survFit, mboost)
 S3method("[", mboost)
 S3method(dpp, blg)

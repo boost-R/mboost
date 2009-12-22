@@ -345,3 +345,9 @@ print.summary.mboost <- function(x, ...) {
     print(x$selprob)
     cat("\n")
 }
+
+nuisance <- function(object)
+    UseMethod("nuisance")
+
+nuisance.mboost <- function(object)
+    object$nuisance()[[mstop(object)]]

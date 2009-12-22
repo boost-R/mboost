@@ -17,17 +17,18 @@ x <- rnorm(100)
 y <- rnbinom(length(x), size = 2, mu = exp(x * 2))
 mod <- glmboost(y ~ x, family = NBinomial())
 mod[1000]
-get("sigma", environment(mod$family@ngradient))
+coef(mod)
+nuisance(mod)
 
 if (require("MASS")) {
 
 summary(glm.nb(y ~ x))
 
-y <- cut(x, breaks = c(-Inf, quantile(x), Inf), ordered = TRUE)
+y <- cut(x, breaks = c(-Inf, quantile(x, prob = c(0.25, 0.5, 0.75)), Inf), ordered = TRUE)
 x <- rnorm(100)
 polr(y ~ x)
 mod <- glmboost(y ~ x, family = PropOdds())
-mod$nuisance[[100]] - attr(coef(mod), "offset")
+nuisance(mod) - attr(coef(mod), "offset")
 coef(mod)
 
 }

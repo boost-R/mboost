@@ -12,7 +12,8 @@ Description: Functional gradient descent algorithm
   generalized linear, additive and interaction models to potentially 
   high-dimensional data.
 Depends: R (>= 2.4.0), Matrix, splines, methods, stats, survival
-Suggests: multicore, party, ipred
+Suggests: multicore, party, ipred, MASS
 LazyLoad: yes
 LazyData: yes
 License: GPL-2
+Packaged: 2009-12-22 11:53:30 UTC; hothorn

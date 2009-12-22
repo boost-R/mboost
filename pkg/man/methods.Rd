@@ -27,6 +27,11 @@
 \alias{selected}
 \alias{selected.mboost}
 
+\alias{nuisance}
+\alias{nuisance.mboost}
+
+
+
 \title{ Methods for Gradient Boosting Objects }
 \description{
   Methods for models fitted by boosting algorithms.
@@ -65,6 +70,8 @@
 \method{hatvalues}{glmboost}(model, ...)
 
 \method{selected}{mboost}(object)
+
+\method{nuisance}{mboost}(object)
 }
 \arguments{
   \item{object}{ objects of class \code{glmboost}, \code{gamboost},
@@ -137,7 +144,9 @@
   these boosting steps are immediately available.
 
   The ids of base-learners selected during the fitting process
-  can be extracted using \code{selected()}.
+  can be extracted using \code{selected()}. The \code{nuisance()} method
+  extracts nuisance parameters from the fit that are handled internally
+  by the corresponding family object, see \code{"\linkS4class{boost_family}"}.
 
   For (generalized) linear and additive models, the \code{AIC} function can be used
   to compute both the classical and corrected AIC (Hurvich et al., 1998, only available
