@@ -25,7 +25,7 @@ Family(ngradient, loss = NULL, risk = NULL,
        check_y = function(y) y,
        weights = c("any", "none", "zeroone", "case"),
        nuisance = function() return(NULL),
-       name = "user-specified", fW = NULL, linkinv = NULL)
+       name = "user-specified", fW = NULL, response = function(f) NA)
 AdaExp()
 Binomial()
 GaussClass()
@@ -50,7 +50,8 @@ PropOdds(nuirange = c(-0.5, -1), offrange = c(-5, 5))
   \item{fW}{ transformation of the fit for the diagonal weights matrix for an
              approximation of the boosting hat matrix for loss functions other than
              squared error.}
-  \item{linkinv}{ inverse link function of a GLM.}
+  \item{response}{ inverse link function of a GLM or any other transformation
+                   on the scale of the response.}
   \item{check_y}{ a function for checking and transforming 
                   the class / mode of a response variable.}
   \item{nuisance}{ a function for extracting nuisance parameters from the family.}

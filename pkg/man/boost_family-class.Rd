@@ -20,6 +20,8 @@ Objects can be created by calls of the form \code{\link{Family}(...)}
     \item{\code{weights}:}{ a logical indicating if weights are allowed. }
     \item{\code{check_y}:}{ a function for checking the class / mode of a response variable.}
     \item{\code{nuisance}:}{ a function for extracting nuisance parameters.}
+    \item{\code{response}:}{inverse link function of a GLM or any other transformation
+                   on the scale of the response.}
     \item{\code{name}:}{ a character giving the name of the loss function
                          for pretty printing. }
     \item{\code{charloss}:}{ a character, the deparsed loss function.}

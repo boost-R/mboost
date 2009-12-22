@@ -7,7 +7,6 @@
        coefs needs to be handled with care if family=Binomial())
        scale parameter NBinomial, PropOdds, Weibull 
                        (-> Docu + Examples MS)
-       linkinv -> predict (type = "response") (TH)
 
     o  predict.glmboost via coef.glmboost. 
        Remove special code in bolscw (TH)

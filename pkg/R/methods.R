@@ -2,7 +2,7 @@
 ### <FIXME>:
 ###          add link argument (family needs to be touched)
 ### </FIXME>
-.predictmboost <- function(y, pr, type, nm) {
+.predictmboost <- function(y, pr, type, nm, family) {
     if (!isMATRIX(pr)) {
         pr <- as.vector(pr)
         names(pr) <- nm
@@ -13,20 +13,19 @@
             warning("argument link is ignored")
         return(pr)
     }
-    if (type == "link") return(pr)
-    if (!is.factor(y)) {
-        warning("argument type not yet implemented")
-        return(pr)
-    }
+    if (type == "link") ret <- pr
+    if (type == "response") ret <- family@response(pr)
     if (type == "class") {
-        ret <- factor(levels(y)[(pr > 0) + 1], levels = levels(y))
-        names(ret) <- names(pr)
-        return(ret)
+        if (!is.factor(y)) stop("response is not a factor")
+        if (nlevels(y) == 2) {
+            ret <- factor(levels(y)[(pr > 0) + 1], levels = levels(y))
+        } else {
+            ret <- factor(levels(y)[apply(family@response(pr), 1, which.max)], 
+                          levels = levels(y))
+        }
     }
-    f <- pmin(abs(pr), 36) * sign(pr)
-    p <- exp(f) / (exp(f) + exp(-f))
-    names(p) <- names(pr)
-    return(p)
+    names(ret) <- names(pr)
+    return(ret)
 }
 
 predict.mboost <- function(object, newdata = NULL,
@@ -43,8 +42,9 @@ predict.mboost <- function(object, newdata = NULL,
     if (is.null(newdata)) nm <- object$rownames
     if (is.list(pr))
         return(lapply(pr, .predictmboost, y = object$response,
-                      type = type, nm = nm))
-    .predictmboost(object$response, pr, type = type, nm = nm)
+                      type = type, nm = nm, family = object$family))
+    .predictmboost(object$response, pr, type = type, nm = nm, 
+                   family = object$family)
 }
 
 ### extract coefficients
@@ -244,8 +244,9 @@ predict.glmboost <- function(object, newdata = NULL,
     if (is.null(newdata)) nm <- object$rownames
     if (is.list(pr))
         return(lapply(pr, .predictmboost, y = object$response,
-                      type = type, nm = nm))
-    .predictmboost(object$response, pr, type = type, nm = nm)
+                      type = type, nm = nm, family = object$family))
+    .predictmboost(object$response, pr, type = type, nm = nm,
+                   family = object$family)
 }
 
 coef.glmboost <- function(object, which = NULL,

@@ -6,13 +6,13 @@ setClass("boost_family", representation = representation(
     check_y    = "function",
     weights    = "function",
     nuisance   = "function",
+    response   = "function",
     name       = "character",
     charloss   = "character"
 ))
 
 setClass("boost_family_glm", contains = "boost_family",
     representation = representation(
-        linkinv = "function",
         fW      = "function"
 ))
 
@@ -27,7 +27,7 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
                    check_y = function(y) y,
                    weights = c("any", "none", "zeroone", "case"), 
                    nuisance = function() return(NULL),
-                   name = "user-specified", fW = NULL, linkinv = NULL)
+                   name = "user-specified", fW = NULL, response = function(f) NA)
 {
 
     if (is.null(loss)) {
@@ -48,13 +48,12 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
             "case" = isTRUE(all.equal(unique(w - floor(w)), 0)))
     }
     RET <- new("boost_family", ngradient = ngradient, nuisance = nuisance,
-               risk = risk, offset = offset, check_y = check_y, 
+               risk = risk, offset = offset, check_y = check_y, response = response,
                weights = check_w, name = name, charloss = charloss)
-    stopifnot(!xor(is.null(fW), is.null(linkinv)))
-    if (!is.null(linkinv))
+    if (!is.null(fW))
         RET <- new("boost_family_glm", ngradient = ngradient, nuisance = nuisance,
                    risk = risk, offset = offset, fW = fW, check_y = check_y, 
-                   weights = check_w, name = name, linkinv = linkinv,
+                   weights = check_w, name = name, response = response,
                    charloss= charloss)
     RET
 }
@@ -72,7 +71,7 @@ Gaussian <- function()
            },
            name = "Squared Error (Regression)",
            fW = function(f) return(rep(1, length = length(f))),
-           linkinv = function(f) f)
+           response = function(f) f)
 GaussReg <- Gaussian
 
 ### Gaussian (-1 / 1 Binary Classification)
@@ -92,7 +91,7 @@ Laplace <- function()
            name = "Absolute Error")
 
 ### Binomial
-lfinv <- binomial()$linkinv
+# lfinv <- binomial()$linkinv
 Binomial <- function()
     Family(ngradient = function(y, f, w = 1) {
                exp2yf <- exp(-2 * y * f)
@@ -113,7 +112,7 @@ Binomial <- function()
                p <- exp(f) / (exp(f) + exp(-f))
                4 * p * (1 - p)
            },
-           linkinv = function(f) {
+           response = function(f) {
                f <- pmin(abs(f), 36) * sign(f)
                p <- exp(f) / (exp(f) + exp(-f))
                return(p)
@@ -135,7 +134,7 @@ Poisson <- function()
            loss = function(y, f) -dpois(y, exp(f), log = TRUE),
            offset = function(y, w) log(weighted.mean(y, w)),
            fW = function(f) exp(f),
-           linkinv = function(f) exp(f),
+           response = function(f) exp(f),
            check_y = function(y) {
                if (any(y < 0) || any((y - round(y)) > 0))
                    stop("response is not an integer variable but ",
@@ -347,5 +346,14 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
                y
            },
            nuisance = function() return(sigma),
-           name = "Proportional Odds")
+           response = function(f) {
+               ret <- sapply(1:(length(sigma) + 1), function(i) {
+                   if (i == 1) return(1 / (1 + exp(f - sigma[i])))
+                   if (i == (length(sigma) + 1))
+                       return(1 - 1/(1 + exp(f - sigma[i - 1])))
+                   return(1 / (1 + exp(f - sigma[i])) -  
+                       1 / (1 + exp(f - sigma[i - 1])))
+                   })
+               ret
+               })
 }
