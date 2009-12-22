@@ -57,8 +57,17 @@ coef.gamboost <- function(object, which = NULL,
 hatvalues.gamboost <- function(model, ...) {
     H <- model$hatvalues(...)
     n <- length(model$response)
-    stopifnot(extends(class(model$family), "boost_family_glm"))
-    if (checkL2(model)) {
+    
+    ### <FIXME> better checks
+    L2 <- FALSE
+    if (!extends(class(model$family), "boost_family_glm")) {
+        warning("AIC might not be reasonable for family ", model$family@name)
+        L2 <- TRUE
+    } else {
+        fW <- model$family@fW
+    }
+    ### </FIXME>
+    if (checkL2(model) || L2) {
         op <- .Call("R_trace_gamboost", as.integer(n), H,
                     as.integer(model$xselect()), PACKAGE = "mboost")
     } else {

@@ -10,7 +10,6 @@
        linkinv -> predict (type = "response") (TH)
        weighted median for offset in Huber / Laplace, 
        see Hmisc:::wtd.quantile (TH)
-       mod$nuisance + subset (TH)
 
     o  predict.glmboost via coef.glmboost. 
        Remove special code in bolscw (TH)
@@ -18,9 +17,6 @@
     o  do we need Matrix on attach? (TH)
 
     o  add missing files to svn (in inst)  (TH)
-
-    o  fire a warning when AIC is called in cases the hat matrix is
-       meaningless (TH); glmboost-AIC example fails
 
 future
 
