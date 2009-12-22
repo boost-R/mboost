@@ -8,8 +8,6 @@
        scale parameter NBinomial, PropOdds, Weibull 
                        (-> Docu + Examples MS)
        linkinv -> predict (type = "response") (TH)
-       weighted median for offset in Huber / Laplace, 
-       see Hmisc:::wtd.quantile (TH)
 
     o  predict.glmboost via coef.glmboost. 
        Remove special code in bolscw (TH)

@@ -83,8 +83,6 @@ GaussClass <- function()
 Laplace <- function()
     Family(ngradient = function(y, f, w = 1) sign(y - f),
            loss = function(y, f) abs(y - f),
-           ### <FIXME> offset??? </FIXME>
-           offset = function(y, w) median(y),
            check_y = function(y) {
                if (!is.numeric(y) || !is.null(dim(y)))
                    stop("response is not a numeric vector but ",
@@ -163,7 +161,6 @@ Huber <- function(d = NULL) {
                if (is.null(d)) d <- median(abs(y - fit))
                ifelse((a <- abs(y - f)) < d, a^2/2, d*(a - d/2))
            },
-           offset = function(y, w) median(y),
            check_y = function(y) {
                if (!is.numeric(y) || !is.null(dim(y)))
                    stop("response is not a numeric vector but ",
