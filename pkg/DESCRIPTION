@@ -1,6 +1,6 @@
 Package: mboost
 Title: Model-Based Boosting
-Date: 2009-09-21
+Date: 2009-12-22
 Version: 2.0-0
 Author: Torsten Hothorn, Peter Buhlmann, Thomas Kneib, Matthias Schmid and
   Benjamin Hofner
@@ -16,4 +16,3 @@ Suggests: multicore, party, ipred, MASS
 LazyLoad: yes
 LazyData: yes
 License: GPL-2
-Packaged: 2009-12-22 11:53:30 UTC; hothorn
