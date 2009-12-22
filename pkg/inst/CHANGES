@@ -1,7 +1,55 @@
 
-                CHANGES in `mboost' VERSION 2.0-0 (2009-10-xx)
+                CHANGES in `mboost' VERSION 2.0-0 (2010-01-xx)
+
+  o  df2lambda (new definition for df; we need to include this?!?)
+
+  o  new families added (...)
+
+  o  changed family interface
+
+  o  speed up of predict()
+
+  o  added interface to extract selected base-learners (selected())
+
+  o  added interface for parallel computations in cvrisk with 
+     arbitrary packages (e.g. snow)
+
+  o  added "which" argmuent in predict and coef functions and improved
+     usability of "which" in plot-function. Users can specify "which" as
+     numeric value or as a character string
+
+  o  added function cv() to generate matrices for k-fold crossvalidation, 
+     subsampling and bootsrap
+
+  o  added function model.weights() to extract the weights
+
+  o  added interface to expand model by increasing mstop in
+     model[mstop]
+
+  o  changed behavior of subset method (model[mstop]). Object
+     is directly altered and not duplicated
+
+  o  included package matrix (reduces memory usage)
+
+  o  changed interface of base-learners: 
+     - argument "center" in bols replaced with "intercept" 
+     - argument "z" in base-learners replaced with "by"
+
+  o  print and plot methods rewritten
+
+  o  bns and bss deprecated; 
+     use bbs instead
+
+  o  changed engine in the background,
+     changes in returned values
+
+  o  changes to manual and checks
 
 
+		CHANGES in `mboost' VERSION 1.1-4 (2009-11-18)
+
+  o  fixed bug in prediction with varying coefficients for binary
+     effect modifiers
 
                 CHANGES in `mboost' VERSION 1.1-3 (2009-09-21)
 

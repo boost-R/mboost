@@ -6,10 +6,15 @@
     o  scale parameter NBinomial, PropOdds, Weibull 
                        (-> Docu + Examples MS)
 
+    o  coef(gamboost(y ~ x1 + x2, baselearner="bbs")) returns a list with names
+       "baselearner(x1)" and "baselearner(x2)" (TH)
+
     o  predict.glmboost via coef.glmboost. 
        Remove special code in bolscw (TH)
 
     o  add missing files to svn (in inst)  (TH)
+
+    o  add functionality to df2lambda to choose definition of df
 
 future
 
