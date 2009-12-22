@@ -11,8 +11,10 @@ Description: Functional gradient descent algorithm
   smoothing splines, or regression trees as base learners for fitting
   generalized linear, additive and interaction models to potentially 
   high-dimensional data.
-Depends: R (>= 2.4.0), Matrix, splines, methods, stats, survival
+Depends: R (>= 2.4.0), stats
+Imports: Matrix, survival, methods, splines, lattice
 Suggests: multicore, party, ipred, MASS
 LazyLoad: yes
 LazyData: yes
 License: GPL-2
+Packaged: 2009-12-22 14:02:33 UTC; hothorn

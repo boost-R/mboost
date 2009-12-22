@@ -4,6 +4,7 @@ import(Matrix)
 import(splines)
 import(stats)
 import(survival)
+import(lattice)
 
 export(glmboost,
        gamboost,

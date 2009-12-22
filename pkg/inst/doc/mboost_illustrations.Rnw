@@ -11,6 +11,7 @@
 %%\usepackage{Sweave}
 
 %%\VignetteIndexEntry{mboost Illustrations}
+%%\VignetteDepends{mboost, survival}
 
 \newcommand{\Rpackage}[1]{{\normalfont\fontseries{b}\selectfont #1}}
 \newcommand{\Robject}[1]{\texttt{#1}}
@@ -628,6 +629,7 @@ make use of the additionally available time information for modeling
 the time to recurrence, i.e., all observations with non-recurrence are censored.
 First, we calculate IPC weights 
 <<wpbc-glmboost-PIC, echo = TRUE>>=
+library("survival")
 ### calculate IPC weights
 censored <- wpbc$status == "R"
 iw <- IPCweights(Surv(wpbc$time, censored))

@@ -245,6 +245,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
          }, "none" = {
             if (!nw) {
                 pr <- lapply(which, pfun, agg = "none")
+                for (i in 1:length(pr)) pr[[i]] <- as(pr[[i]], "matrix")
                 names(pr) <- bnames[which]
                 return(pr)
             } else {

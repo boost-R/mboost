@@ -2,6 +2,7 @@
 library("mboost")
 attach(asNamespace("mboost"))
 library("MASS")
+library("Matrix")
 
 ### dgp
 n <- 20000
