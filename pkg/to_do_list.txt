@@ -3,15 +3,11 @@
 
     o  mboost-package (BH) + NEWS (BH) + startup message (TH)
 
-    o  richer Family objects are nedded (e.g., prediction and extraction of
-       coefs needs to be handled with care if family=Binomial())
-       scale parameter NBinomial, PropOdds, Weibull 
+    o  scale parameter NBinomial, PropOdds, Weibull 
                        (-> Docu + Examples MS)
 
     o  predict.glmboost via coef.glmboost. 
        Remove special code in bolscw (TH)
-
-    o  do we need Matrix on attach? (TH)
 
     o  add missing files to svn (in inst)  (TH)
 
