@@ -10,6 +10,8 @@
 \alias{Poisson}
 \alias{CoxPH}
 \alias{QuantReg}
+\alias{NBinomial}
+\alias{PropOdds}
 \title{ Gradient Boosting Families }
 \description{
     \code{boost_family} objects provide a convenient way to specify loss functions
@@ -22,6 +24,7 @@ Family(ngradient, loss = NULL, risk = NULL,
            optimize(risk, interval = range(y), y = y, w = w)$minimum,
        check_y = function(y) y,
        weights = c("any", "none", "zeroone", "case"),
+       nuisance = function() return(NULL),
        name = "user-specified", fW = NULL, linkinv = NULL)
 AdaExp()
 Binomial()
@@ -33,6 +36,8 @@ Laplace()
 Poisson()
 CoxPH()
 QuantReg(tau = 0.5, qoffset = 0.5)
+NBinomial(nuirange = c(0, 100))
+PropOdds(nuirange = c(-0.5, -1), offrange = c(-5, 5))
 }
 \arguments{
   \item{ngradient}{ a function with arguments \code{y}, \code{f} and \code{w} implementing the
@@ -48,11 +53,14 @@ QuantReg(tau = 0.5, qoffset = 0.5)
   \item{linkinv}{ inverse link function of a GLM.}
   \item{check_y}{ a function for checking and transforming 
                   the class / mode of a response variable.}
+  \item{nuisance}{ a function for extracting nuisance parameters from the family.}
   \item{weights}{ a character indicating if weights are allowed. }
   \item{name}{ a character giving the name of the loss function for pretty printing. }
   \item{d}{ delta parameter for Huber loss function. If omitted, it is chosen adaptively.}
   \item{tau}{ the quantile to be estimated, a number strictly between 0 and 1.}
   \item{qoffset}{ quantile of response distribution to be used as offset.}
+  \item{nuirange}{ range of starting values for the nuisance parameter.}
+  \item{offrange}{ interval to search for offset in.}
 }
 \details{
   The boosting algorithms implemented in \code{\link{glmboost}}, \code{\link{gamboost}} or

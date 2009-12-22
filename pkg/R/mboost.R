@@ -44,6 +44,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
     xselect <- NA
     ens <- vector(mode = "list", length = control$mstop)
+    nuisance <- vector(mode = "list", length = control$mstop)
 
     ### vector of empirical risks for all boosting iterations
     ### (either in-bag or out-of-bag)
@@ -116,6 +117,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
             ### save the model
             ens[[m]] <<- basess
+            nuisance[[m]] <<- family@nuisance()
 
             ### print status information
             ### print xselect???
@@ -138,7 +140,8 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 family = family,            ### family object
                 response = response,        ### the response variable
                 rownames = bnames,          ### rownames of learning data
-                "(weights)" = weights       ### weights used for fitting
+                "(weights)" = weights,       ### weights used for fitting
+                nuisance = nuisance         ### list of nuisance parameters
     )
 
     ### update to new weights; just a fresh start

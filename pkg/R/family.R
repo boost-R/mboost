@@ -5,6 +5,7 @@ setClass("boost_family", representation = representation(
     offset     = "function",
     check_y    = "function",
     weights    = "function",
+    nuisance   = "function",
     name       = "character",
     charloss   = "character"
 ))
@@ -25,6 +26,7 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
                        optimize(risk, interval = range(y), y = y, w = w)$minimum, 
                    check_y = function(y) y,
                    weights = c("any", "none", "zeroone", "case"), 
+                   nuisance = function() return(NULL),
                    name = "user-specified", fW = NULL, linkinv = NULL)
 {
 
@@ -45,12 +47,12 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
             "zeroone" = isTRUE(all.equal(unique(w + abs(w - 1)), 1)),
             "case" = isTRUE(all.equal(unique(w - floor(w)), 0)))
     }
-    RET <- new("boost_family", ngradient = ngradient, 
+    RET <- new("boost_family", ngradient = ngradient, nuisance = nuisance,
                risk = risk, offset = offset, check_y = check_y, 
                weights = check_w, name = name, charloss = charloss)
     stopifnot(!xor(is.null(fW), is.null(linkinv)))
     if (!is.null(linkinv))
-        RET <- new("boost_family_glm", ngradient = ngradient, 
+        RET <- new("boost_family_glm", ngradient = ngradient, nuisance = nuisance,
                    risk = risk, offset = offset, fW = fW, check_y = check_y, 
                    weights = check_w, name = name, linkinv = linkinv,
                    charloss= charloss)
@@ -255,7 +257,7 @@ QuantReg <- function(tau = 0.5, qoffset = 0.5) {
         name = "Quantile Regression")
 }
 
-NBinomial <- function(interval = c(0, 100)) {
+NBinomial <- function(nuirange = c(0, 100)) {
     sigma <- 1
 
     plloss <- function(sigma, y, f)
@@ -269,7 +271,7 @@ NBinomial <- function(interval = c(0, 100)) {
        sum(w * plloss(y = y, f = f, sigma = sigma))
 
     ngradient <- function(y, f, w = 1) {
-        sigma <<- optimize(riskS, interval = interval, 
+        sigma <<- optimize(riskS, interval = nuirange, 
                            y = y, fit = f, w = w)$minimum
         y - (y + sigma)/(exp(f) + sigma) * exp(f)
     }
@@ -279,30 +281,35 @@ NBinomial <- function(interval = c(0, 100)) {
                stopifnot(all.equal(unique(y - floor(y)), 0))
                y
            },
+           nuisance = function() return(sigma),
            name = "Negative Negative-Binomial Likelihood")
 }
 
-PropOdds <- function(start = seq(from = -0.1, to = 0.1, 
-                                 length = max(as.integer(y)) - 1),
-                     interval = c(0, 1000)) {
+PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
 
     sigma <- 0
     delta <- 0
 
     d2s <- function(delta)
-        cumsum(delta[1] + c(0, exp(delta[-1])))
+        delta[1] + cumsum(c(0, exp(delta[-1])))
 
-    plloss <- function(sigma, y, f, w=1) {
-        tmp <- sapply(1:(length(sigma) + 1), function(i) {
-            if (i == 1) return(1+exp(f-sigma[i]))
-            if (i == (length(sigma) + 1)) return(1 - 1/(1+exp(f-sigma[i - 1])))
-            return(1 / (1 + exp(f - sigma[i])) - 1/(1 + exp(f - sigma[i-1])))
+    plloss <- function(sigma, y, f, w = 1) {
+        if (length(f) == 1) f <- rep(f, length(y))
+        tmp <- lapply(1:(length(sigma) + 1), function(i) {
+            if (i == 1) return(1 + exp(f - sigma[i]))
+            if (i == (length(sigma) + 1)) 
+                return(1 - 1/(1 + exp(f - sigma[i - 1])))
+            return(1 / (1 + exp(f - sigma[i])) -  
+                   1 / (1 + exp(f - sigma[i - 1])))
         })
-        sum(log(tmp[y]) * c(1, -1)[(y > levels(y)[1]) + 1])
+        loss <- log(tmp[[1]]) * (y == levels(y)[1])
+        for (i in 2:nlevels(y))
+            loss <- loss - log(tmp[[i]]) * (y == levels(y)[i])
+        return(loss)
     }
 
-    riskS <- function(sigma, y, fit, w = 1) 
-        sum(w * plloss(y = y, f = fit, sigma = sigma))
+    riskS <- function(delta, y, fit, w = 1) 
+        sum(w * plloss(y = y, f = fit, sigma = d2s(delta)))
     risk <- function(y, f, w = 1) 
         sum(w * plloss(y = y, f = f, sigma = sigma))
 
@@ -310,20 +317,30 @@ PropOdds <- function(start = seq(from = -0.1, to = 0.1,
         delta <<- optim(par = delta, fn = riskS, y = y, 
                         fit = f, w = w, method = "BFGS")$par
         sigma <<- d2s(delta)
-        tmp <- sapply(1:(length(sigma) + 1), function(i) {
-            if (i == 1) return(-1/(1 + exp(sigma[i] - f)))
-            if (i == (length(sigma) + 1)) 
-                return(1 / (1 + exp(f - sigma[i - 1])))
-            return((1 - exp(2 * f - sigma[i - 1] - sigma[i])) / 
-                   (1+exp(f-sigma[i - 1])+exp(f-sigma[i])+exp(2*f-sigma[i - 1]-sigma[i])))
+        if (length(f) == 1) f <- rep(f, length(y))
+        ng <- sapply(1:(length(sigma) + 1), function(i) {
+            if (i > 1 & i < (length(sigma) + 1)) {
+                ret <- (1 - exp(2 * f - sigma[i - 1] - sigma[i])) / 
+                   (1 + exp(f - sigma[i - 1]) + 
+                        exp(f - sigma[i]) + 
+                        exp(2 * f - sigma[i - 1] - sigma[i]))
+            } else {
+                if (i == 1) {
+                    ret <- -1/(1 + exp(sigma[i] - f))
+                } else {
+                    ret <- 1 / (1 + exp(f - sigma[i - 1]))
+                }
+            }
+            return(ret * (y == levels(y)[i]))
         })
-        sum(tmp[y])
+        rowSums(ng)
     }
 
     offset <- function(y, w = 1) {
-        delta <<- start
+        delta <<- seq(from = nuirange[1], to = nuirange[2], 
+                      length = nlevels(y) - 1)
         sigma <<- d2s(delta)
-        optimize(risk, interval = interval, y = y, w = w)$minimum
+        optimize(risk, interval = offrange, y = y, w = w)$minimum
     }
 
     Family(ngradient = ngradient, 
@@ -332,5 +349,6 @@ PropOdds <- function(start = seq(from = -0.1, to = 0.1,
                stopifnot(is.ordered(y))
                y
            },
+           nuisance = function() return(sigma),
            name = "Proportional Odds")
 }

@@ -19,12 +19,16 @@ mod <- glmboost(y ~ x, family = NBinomial())
 mod[1000]
 get("sigma", environment(mod$family@ngradient))
 
-library("MASS")
+if (require("MASS")) {
+
 summary(glm.nb(y ~ x))
 
 y <- cut(x, breaks = c(-Inf, quantile(x), Inf), ordered = TRUE)
 x <- rnorm(100)
 polr(y ~ x)
+mod <- glmboost(y ~ x, family = PropOdds())
+mod$nuisance[[100]] - attr(coef(mod), "offset")
+coef(mod)
 
-# mod <- glmboost(y ~ x, family = PropOdds())
+}
 

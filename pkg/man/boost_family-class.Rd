@@ -19,6 +19,7 @@ Objects can be created by calls of the form \code{\link{Family}(...)}
                  for computing a \emph{scalar} offset. }
     \item{\code{weights}:}{ a logical indicating if weights are allowed. }
     \item{\code{check_y}:}{ a function for checking the class / mode of a response variable.}
+    \item{\code{nuisance}:}{ a function for extracting nuisance parameters.}
     \item{\code{name}:}{ a character giving the name of the loss function
                          for pretty printing. }
     \item{\code{charloss}:}{ a character, the deparsed loss function.}
