@@ -24,7 +24,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   \item{papply}{ (parallel) apply function. In the absence of package \code{multicore} sequential
     computaions via \code{\link{lapply}} are performed. Alternatively,
     parallel computing via \code{\link[multicore]{mclapply}} (package \code{multicore}),
-    or \code{\link[snow]{clusterApplyLB}} (package \code{snow}) can be used. In the
+    or \code{clusterApplyLB} (package \code{snow}) can be used. In the
     latter case, usually more setup is needed (see example for some details).}
   \item{fun}{ if \code{fun} is NULL, the out-of-sample risk is returned. \code{fun},
               as a function of \code{object}, may extract any other characteristic
