@@ -372,8 +372,7 @@ bl_lin <- function(blg, Xfun, args) {
             pr <- switch(aggregate, "sum" =
                 as(X %*% rowSums(cf), "matrix"),
             "cumsum" = {
-                M <- triu(crossprod(Matrix(1, nc = ncol(cf))))
-                as(X %*% (cf %*% M), "matrix")
+                as(X %*% .Call("R_mcumsum", as(cf, "matrix")), "matrix")
             },
             "none" = as(X %*% cf, "matrix"))
             if (is.null(index)) return(pr[,,drop = FALSE])
