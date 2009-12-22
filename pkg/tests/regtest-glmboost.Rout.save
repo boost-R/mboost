@@ -1,5 +1,5 @@
 
-R version 2.9.0 (2009-04-17)
+R version 2.10.0 (2009-10-26)
 Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -18,28 +18,15 @@ Type 'q()' to quit R.
 > 
 > require("mboost")
 Loading required package: mboost
-Loading required package: modeltools
-Loading required package: stats4
-Loading required package: party
-Loading required package: survival
+Loading required package: Matrix
+Loading required package: lattice
 Loading required package: splines
-Loading required package: grid
-Loading required package: coin
-Loading required package: mvtnorm
-Loading required package: zoo
-
-Attaching package: 'zoo'
-
-
-	The following object(s) are masked from package:base :
-
-	 as.Date.numeric 
-
-Loading required package: sandwich
-Loading required package: strucchange
-Loading required package: vcd
-Loading required package: MASS
-Loading required package: colorspace
+Loading required package: survival
+Warning messages:
+1: In namespaceImportFrom(self, asNamespace(ns)) :
+  replacing previous import: cov2cor
+2: In namespaceImportFrom(self, asNamespace(ns)) :
+  replacing previous import: update
 > 
 > set.seed(290875)
 > 
@@ -57,10 +44,10 @@ Loading required package: colorspace
 > mydf <- dgp(beta = c(1, 2.5, rep(0, 2)))
 > 
 > ### for easy comparison with lm
-> fm <- GaussReg()
+> fm <- Gaussian()
 > fm@offset <- function(y, w) 0
 > 
-> mydf.gb <- glmboost(y ~ ., data = mydf, family = fm, 
+> mydf.gb <- glmboost(y ~ ., data = mydf, family = fm,
 +                     control = boost_control(mstop = 1000, nu = 1))
 > mydf.lm <- lm(y ~ ., data = mydf)
 > 
@@ -70,7 +57,7 @@ Loading required package: colorspace
 > ### a little bit more difficult
 > mydf <- dgp(beta = c(1, 2.5, rep(0, 38)))
 > 
-> mydf.gb <- glmboost(y ~ ., data = mydf, family = fm, 
+> mydf.gb <- glmboost(y ~ ., data = mydf, family = fm,
 +                     control = boost_control(mstop = 1000, nu = 1))
 > aic <- AIC(mydf.gb, method = "corrected")
 > ht <- hatvalues(mydf.gb)
@@ -80,12 +67,19 @@ Loading required package: colorspace
 > 
 > ### compare coefficients
 > which(abs(coef(mydf.lm)) < abs(coef(mydf.gb[mstop(aic)])))
- X1 X35 
-  2  36 
+(Intercept)          X2          X4          X5          X6          X7 
+          1           3           5           6           7           8 
+         X8          X9         X14         X17         X20         X24 
+          9          10          15          18          21          25 
+        X25         X27         X29         X35         X38 
+         26          28          30          36          39 
+Warning message:
+In abs(coef(mydf.lm)) < abs(coef(mydf.gb[mstop(aic)])) :
+  longer object length is not a multiple of shorter object length
 > 
 > #### check boosting hat matrix and subsetting / predict
 > stopifnot(isTRUE(all.equal(drop(attr(ht, "hatmatrix") %*% mydf$y),
-+                            as.vector(predict(mydf.gb)))))
++                            as.vector(predict(mydf.gb[1000])))))
 > ht25 <- hatvalues(mydf.gb[25])
 > stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
 +                            as.vector(predict(mydf.gb[25])))))
@@ -94,14 +88,14 @@ Loading required package: colorspace
 > 
 > ### a simple two-dimensional example from `glmboost.Rd'
 > data("cars")
-> cars.gb <- glmboost(dist ~ speed, data = cars, family = fm, 
+> cars.gb <- glmboost(dist ~ speed, data = cars, family = fm,
 +                     control = boost_control(mstop = 1000, nu = 1))
 > cars.gb
 
 	 Generalized Linear Models Fitted via Gradient Boosting
 
 Call:
-glmboost.formula(formula = dist ~ speed, data = cars, family = fm,     control = boost_control(mstop = 1000, nu = 1))
+glmboost.formula(formula = dist ~ speed, data = cars, control = boost_control(mstop = 1000,     nu = 1), family = fm)
 
 
 	 Squared Error (Regression) 
@@ -126,15 +120,15 @@ attr(,"offset")
 > stopifnot(all.equal(cf, coef(lm(dist ~ speed, data = cars))))
 > 
 > ### logistic regression
-> mydf <- data.frame(x = runif(100), z = rnorm(100), 
+> mydf <- data.frame(x = runif(100), z = rnorm(100),
 +                    y = factor(c(rep(0, 30), rep(1, 70))))
-> bmod <- glmboost(y ~ x + z, data = mydf, family = Binomial(), 
+> bmod <- glmboost(y ~ x + z, data = mydf, family = Binomial(),
 +                  control = boost_control(mstop = 1000, nu = 1))
 > gmod <- glm(y ~ x + z, data = mydf, family = binomial())
 > llg <- logLik(gmod)
 > attributes(llg) <- NULL
 > stopifnot(all.equal(logLik(bmod), llg))
-> stopifnot(max(abs(predict(gmod, type = "link")/2 - fitted(bmod))) < 
+> stopifnot(max(abs(predict(gmod, type = "link")/2 - fitted(bmod))) <
 +                   sqrt(.Machine$double.eps))
 > cfb <- (coef(bmod) + c(bmod$offset, 0, 0)) * 2
 > attr(cfb, "offset") <- NULL
@@ -144,7 +138,7 @@ attr(,"offset")
 > 
 > ### weighted least squares problem
 > 
-> x <- runif(100)  
+> x <- runif(100)
 > df <- data.frame(y = 2 + 3 * x + rnorm(length(x)),
 +                  x = x, z = runif(length(x)),
 +                  w = runif(length(x)) * 10)
@@ -160,11 +154,11 @@ attr(,"offset")
 > stopifnot(max(abs(fitted(lmmod) -fitted(lmb))) < sqrt(.Machine$double.eps))
 > 
 > ### compare hat matrices
-> stopifnot(max(abs(hatvalues(lmmod) - hatvalues(lmb))) < sqrt(.Machine$double.eps))      
+> stopifnot(max(abs(hatvalues(lmmod) - hatvalues(lmb))) < sqrt(.Machine$double.eps))
 > 
 > ### compare boosting hat matrix with fitted values
 > stopifnot(max(abs(attr(hatvalues(lmb), "hatmatrix") %*% (df$y - lmb$offset) + lmb$offset -
-+         fitted(lmb))) < sqrt(.Machine$double.eps)) 
++         fitted(lmb))) < sqrt(.Machine$double.eps))
 > 
 > ### Cox model (check for CoxPH family)
 > if (require("survival")) {
@@ -175,30 +169,30 @@ attr(,"offset")
 + 
 +     stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, method = "breslow")),
 +                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test,
-+                        family = CoxPH(), 
-+                        control = boost_control(mstop = 2000, nu = 1)))[2]))
++                        family = CoxPH(),
++                        control = boost_control(mstop = 2000, nu = 1)), which = 1:2)[2]))
 + 
 +     stopifnot(all.equal(cx$loglik[2], logLik(gl)))
 + 
 +     indx <- c(1, 1, 1, 2:10)
 +     w <- tabulate(indx)
 + 
-+     stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, weights = w, 
++     stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, weights = w,
 +                                    method = "breslow")),
 +                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test, weights = w,
-+                        family = CoxPH(), 
-+                        control = boost_control(mstop = 200, nu = 1)))[2]))
++                        family = CoxPH(),
++                        control = boost_control(mstop = 200, nu = 1)), which = 1:2)[2]))
 + 
 +     stopifnot(all.equal(cx$loglik[2], logLik(gl)))
 + 
 +     indx <- c(1, 1, 1, 3:10)
 +     w <- tabulate(indx)
 + 
-+     stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test[indx,], 
++     stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test[indx,],
 +                                    method = "breslow")),
 +                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test, weights = w,
-+                        family = CoxPH(), 
-+                        control = boost_control(mstop = 1000)))[2]))
++                        family = CoxPH(),
++                        control = boost_control(mstop = 1000)), which = 1:2)[2], tolerance = .Machine$double.eps ^ 0.125))
 + 
 +     stopifnot(all.equal(cx$loglik[2], logLik(gl)))
 + }
@@ -208,10 +202,18 @@ attr(,"offset")
 > 
 > fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps - 1
 > fit <- coxph(fm, data = ovarian)
-> fit2 <- glmboost(fm, data = ovarian, family = CoxPH(), 
+> fit2 <- glmboost(fm, data = ovarian, family = CoxPH(),
 +     control=boost_control(mstop = 1000, center = TRUE))
-> fit3 <- glmboost(fm, data = ovarian, family = CoxPH(), 
+Warning messages:
+1: In glmboost.formula(fm, data = ovarian, family = CoxPH(), control = boost_control(mstop = 1000,  :
+  boost_control(center = TRUE) is deprecated, use glmboost(..., center = TRUE)
+2: In optimize(risk, interval = c(0, max(y[, 1], na.rm = TRUE)), y = y,  :
+  NA/Inf replaced by maximum positive value
+> fit3 <- glmboost(fm, data = ovarian, family = CoxPH(),
 +     control=boost_control(mstop = 1000, center = FALSE))
+Warning message:
+In optimize(risk, interval = c(0, max(y[, 1], na.rm = TRUE)), y = y,  :
+  NA/Inf replaced by maximum positive value
 > 
 > A1 <- survfit(fit)
 > A2 <- survFit(fit2)
@@ -239,6 +241,9 @@ attr(,"offset")
 > xnm <- xn - mean(xn)
 > xf <- gl(2, 10)
 > gc <- glmboost(y ~ xn + xf, control = boost_control(center = TRUE))
+Warning message:
+In glmboost.formula(y ~ xn + xf, control = boost_control(center = TRUE)) :
+  boost_control(center = TRUE) is deprecated, use glmboost(..., center = TRUE)
 > g <- glmboost(y ~ xnm + xf)
 > cgc <- coef(gc)
 > cg <- coef(g)
@@ -271,4 +276,192 @@ attr(,"offset")
 > stopifnot(abs(AIC(gmod) - attr(AIC(gbmod, "classical"), "AIC")[mstop(gbmod)]) < 1)
 > 
 > stopifnot(max(abs(predict(gmod) -  predict(gbmod))) < 1e-4)
+> 
+> ### predictions:
+> set.seed(1907)
+> x1 <- rnorm(100)
+> x2 <- rnorm(100)
+> x3 <- rnorm(100)
+> y <- rnorm(100, mean = 3 * x1, sd = 2)
+> DF <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
+> 
+> amod <- glmboost(y ~ -1 + x1 + x2, data = DF)
+> agg <- c("none", "sum", "cumsum")
+> whi <- list(NULL, 1, 2, c(1,2))
+> for (i in 1:4){
++     pred <- vector("list", length=3)
++     for (j in 1:3){
++         pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
++     }
++     if (i == 1){
++         stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
++         if ((pred[[2]] - rowSums(pred[[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
++             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
++         stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
++     } else {
++         stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
++         stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
++     }
++ }
+Warning message:
+'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
+> 
+> agg <- c("none", "sum", "cumsum")
+> whi <- list(NULL, "x1", "x2", c("x1","x2"))
+> for (i in 1:4){
++     pred <- vector("list", length=3)
++     for (j in 1:3){
++         pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
++     }
++     if (i == 1){
++         stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
++         if ((pred[[2]] - rowSums(pred[[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
++             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
++         stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
++     } else {
++         stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
++         stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
++     }
++ }
+Warning message:
+'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
+> 
+> y <- rnorm(100, mean = 3 * x1^2, sd = 2)
+> DF2 <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
+> amod <- glmboost(y ~ -1 + x1 + I(x1^2), data = DF2)
+> stopifnot(ncol(predict(amod, which="x1")) == 2 && all(rowSums(predict(amod, which="x1")) + attr(coef(amod), "offset") - predict(amod) < sqrt(.Machine$double.eps)))
+> 
+> 
+> amod <- glmboost(y ~ 1+ x1 + x2, data = DF)
+> pr1 <- predict(amod, aggre = "sum", which= 1:2)
+> foo <- DF
+> foo$x2 <- 0
+> pr2 <- predict(amod, aggre = "sum", newdata=foo)
+> stopifnot(rowSums(pr1) + attr(coef(amod),"offset") - pr2 < sqrt(.Machine$double.eps))
+> newData <- as.data.frame(rbind(mean(DF)[-1], mean(DF)[-2]+1*sd(DF)[-1]))
+> if (!is.list(pr <- predict(amod, newdata=newData, which=1:2)))
++     warning("predict(amod, newdata=newData, which=1:2) does not return a list") # no list but a matrix is returned!
+Warning message:
+predict(amod, newdata=newData, which=1:2) does not return a list 
+> stopifnot(is.list(pr <- predict(amod, newdata=newData, aggregate="cumsum", which=1:2)))
+> amod[10]
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ 1 + x1 + x2, data = DF)
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 10 
+Step size:  0.1 
+Offset:  0.05114654 
+
+Coefficients: 
+      x1 
+2.095157 
+attr(,"offset")
+[1] 0.05114654
+
+> pr <- predict(amod, which=1:3)
+> stopifnot(ncol(pr) == 3 || all(pr[,c(1,ncol)] == 0))
+> amod[100]
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ 1 + x1 + x2, data = DF)
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 100 
+Step size:  0.1 
+Offset:  0.05114654 
+
+Coefficients: 
+(Intercept)          x1          x2 
+ 0.02278342  3.20585948 -0.24376100 
+attr(,"offset")
+[1] 0.05114654
+
+> 
+> # compare predictions with gamboost
+> mod1 <- glmboost(y ~ -1 + x1 + x2 + x3, data = DF)
+> mod2 <- gamboost(y ~ x1 + x2 + x3, data = DF, baselearner= function(x) bols(x, intercept=FALSE))
+> pr1_2 <- predict(mod2, aggre = "cumsum")
+> pr2_2 <- predict(mod2, aggre = "none")
+> pr3_2 <- predict(mod2, aggre = "sum")
+> 
+> stopifnot(max(abs(predict(mod1) - predict(mod2))) < sqrt(.Machine$double.eps))
+> stopifnot(max(abs(predict(mod1, aggre = "none") - predict(mod2, aggre = "none"))) < sqrt(.Machine$double.eps))
+> stopifnot(max(abs(predict(mod1, aggre = "cumsum") - predict(mod2, aggre = "cumsum"))) < sqrt(.Machine$double.eps))
+> 
+> # check type argument
+> set.seed(1907)
+> x1 <- rnorm(100)
+> p <- 1/(1 + exp(- 3 * x1))
+> y <- as.factor(runif(100) < p)
+> DF <- data.frame(y = y, x1 = x1)
+> 
+> logitBoost <- glmboost(y ~ x1, family = Binomial(),
++                  data = DF,  control=boost_control(mstop=5000))
+> logit <- glm(y ~ x1, data=DF, family=binomial)
+> stopifnot(coef(logitBoost)[2]*2 - coef(logit)[2] < 1e-5) # * 2 as we use y = {-1, 1}
+> 
+> pr <- predict(logitBoost)
+> pr2 <- predict(logit)
+> stopifnot(pr * 2 - pr2 < 1e-5)  # * 2 as we use y = {-1, 1}
+> 
+> pr <- predict(logitBoost, type="class")
+> pr2 <- predict(logit, type="response") > 0.5
+> foo <- table(pr, pr2)
+> stopifnot(foo[1,2] + foo[2,1] == 0)
+> 
+> pr <- predict(logitBoost, type="response")
+> pr2 <- predict(logit, type="response")
+> stopifnot(pr - pr2 < sqrt(.Machine$double.eps))
+> 
+> ### coefficients:
+> set.seed(1907)
+> x1 <- rnorm(100)
+> x2 <- rnorm(100)
+> x3 <- rnorm(100)
+> y <- rnorm(100, mean = 3 * x1, sd = 2)
+> DF <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
+> amod <- glmboost(y ~ x1 + x2 + x3, data = DF)
+> 
+> stopifnot(length(coef(amod)) == 4)
+> amod[10]
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ x1 + x2 + x3, data = DF)
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 10 
+Step size:  0.1 
+Offset:  0.05114654 
+
+Coefficients: 
+      x1 
+2.095157 
+attr(,"offset")
+[1] 0.05114654
+
+> stopifnot(length(coef(amod)) == 1)
+> stopifnot(length(coef(amod, which=1:3)) == 3)
 > 
