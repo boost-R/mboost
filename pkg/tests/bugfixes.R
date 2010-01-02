@@ -250,12 +250,6 @@ dummy <- data.frame(y = y, int = int, x1 = x1)
 
 gbm <- gamboost(y ~ bols(int, intercept=FALSE) +  bols(x1, intercept=FALSE) + bbs(x1, center=TRUE, df=1), data = dummy)
 
-stopifnot(names(coef(gbm, which=1:3)) == c("bols(int,intercept=FALSE)", "bols(x1,intercept=FALSE)", "bbs(x1,center=TRUE,df=1)"))
-stopifnot(names(coef(gbm)) == c("bols(x1,intercept=FALSE)", "bbs(x1,center=TRUE,df=1)"))
-stopifnot(names(coef(gbm, "x1")) == c("bols(x1,intercept=FALSE)", "bbs(x1,center=TRUE,df=1)"))
-stopifnot(names(coef(gbm, "bbs")) ==  "bbs(x1,center=TRUE,df=1)")
-stopifnot(names(coef(gbm, "center=TRUE")) == "bbs(x1,center=TRUE,df=1)")
-
 ### check prediction if intercept=FALSE
 gbm <- gamboost(y ~ bols(x1, intercept=FALSE), data = dummy)
 stopifnot(!is.na(predict(gbm)) & max(abs(predict(gbm) - fitted(gbm))) < sqrt(.Machine$double.eps))
