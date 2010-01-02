@@ -170,35 +170,48 @@ max(abs(coef(f1) - coef(f2)))
 all.equal(get_index(data.frame(x, x)), get_index(X))
 all.equal(get_index(data.frame(x)), get_index(X))
 
-if (FALSE) {
+
+### combinations and tensor products of base-learners
+
+set.seed(29)
+n <- 1000
+x1 <- rnorm(n)
+x2 <- rnorm(n)
+x3 <- rnorm(n)
+f <- gl(4, 25)
+y <- rnorm(n)
+ndf <- data.frame(x1 = x1[1:10], x2 = x2[1:10], f = f[1:10])
 
 ### spatial
-set.seed(29)
-x1 <- runif(n, min = -3, max = 3)
-x2 <- runif(n, min = -3, max = 3)
-y <- dnorm(x1) * dnorm(x2)
-w <- rep(1, n)
+m1 <- gamboost(y ~ bbs(x1) %X% bbs(x2))
+m2 <- gamboost(y ~ bspatial(x1, x2, df = 16))
+max(abs(predict(m1) - predict(m2)))
+max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf)))
 
-f1 <- fit(dpp(bspatial(x1, x2, df = 12), w), y)$fitted
-f2 <- attr(mboost:::bspatial(x1, x2, df = 12), "dpp")(w)$fit(y)$fitted
+### spatio-temporal
+m1 <- gamboost(y ~ bbs(x1, knots = 6) %X% bbs(x2, knots = 6) %X% bbs(x3, knots = 6))
+m2 <- gamboost(y ~ (bbs(x1, knots = 6) + bbs(x2, knots = 6)) %X% bbs(x3, knots = 6))
 
-X1 <- get("X", env = environment(f1))
-X2 <- get("X", env = environment(f2))
-max(abs(X1 - X2))
+### varying numeric
+m1 <- gamboost(y ~ bbs(x1) %X% bols(x2, intercept = FALSE, lambda = 0))
+m2 <- gamboost(y ~ bbs(x1, by = x2, df = 4))
+max(abs(predict(m1) - predict(m2)))
+max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf)))
 
-K1 <- get("K", env = environment(f1))
-K2 <- get("K", env = environment(f2))
-max(abs(K1 - K2))
+### varying factor
+m1 <- gamboost(y ~ bbs(x1) %X% bols(f, intercept = FALSE, df = 5))
+coef(m1)
+predict(m1, newdata = ndf)
 
-l1 <- get("lambda", env = environment(f1))
-l2 <- get("lambda", env = environment(f2))
-l1 - l2
-### because of near-zero eigenvalues.
+### cbind
+m1 <- gamboost(y ~ bols(x1, intercept = FALSE, df = 1) %+% 
+                   bols(x2, intercept = FALSE, df = 1))
+m2 <- gamboost(y ~ bols(x1, x2, intercept = FALSE, df = 2))
+max(abs(predict(m1) - predict(m2)))
+max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf)))
 
-x <- seq(from = 0, to = 2 * pi, length = 100)
-y <- sin(x) + rnorm(length(x), sd = 0.1)
-m1 <- mboost(y ~ mboost3:::bbs(x, df = 1, center = TRUE) + mboost3:::bols(x))
-m2 <- mboost:::gamboost(y ~ mboost:::bbs(x, df = 1, center = TRUE) + mboost:::bols(x))
-stopifnot(max(abs(fitted(m1) - fitted(m2))) < sqrt(.Machine$double.eps))
+### yeah
+m1 <- gamboost(y ~ (bols(x1, intercept = FALSE, df = 1) %+% 
+                    bols(x2, intercept = FALSE, df = 1)) %X% bols(f, df = 4) + 
+                    bbs(x1) + bspatial(x1, x2))
 
-}
