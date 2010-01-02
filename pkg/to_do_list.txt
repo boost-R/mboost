@@ -6,9 +6,6 @@
     o  scale parameter NBinomial, PropOdds, Weibull 
                        (-> Docu + Examples MS)
 
-    o  coef(gamboost(y ~ x1 + x2, baselearner="bbs")) returns a list with names
-       "baselearner(x1)" and "baselearner(x2)" (TH)
-
     o  predict.glmboost via coef.glmboost. 
        Remove special code in bolscw (TH)
 
