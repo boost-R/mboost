@@ -6,18 +6,22 @@
 \alias{btree}
 \alias{bns}
 \alias{bss}
+\alias{\%+\%}
+\alias{\%X\%}
 \title{ Base-learners for Gradient Boosting }
 \description{
   base-learners to be utilized in the formula specification of \code{mboost}.
 }
 \usage{
-bols(..., by = NULL, index = NULL, intercept = TRUE, df = NULL, lambda = NULL,
+bols(..., by = NULL, index = NULL, intercept = TRUE, df = NULL, lambda = 0,
      contrasts.arg = "contr.treatment")
 bbs(..., by = NULL, index = NULL, knots = 20, degree = 3,
     differences = 2, df = 4, lambda = NULL, center = FALSE)
 bspatial(...)
 brandom(..., df = 4)
 btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
+bl1 \%+\% bl2
+bl1 \%X\% bl2
 }
 \arguments{
   \item{...}{ one or more predictor variables or one data frame of
@@ -56,13 +60,18 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners,
                   stumps are fitted by default.}
+  \item{bl1}{a linear base-learner of a list of linear base-learners.}
+  \item{bl2}{a linear base-learner of a list of linear base-learners.}
 }
 \details{
-  \code{bols} refers to linear base-learners (ordinary least squares fit), while
+  \code{bols} refers to linear base-learners (least squares or Ridge estimate), while
   \code{bbs} refer to penalized regression splines. \code{bspatial}
   fits bivariate surfaces and \code{brandom} defines random effects base-learners.
-  In combination with option \code{by}, all base-learners can be turned into varying
-  coefficient terms.
+  In combination with option \code{by}, these base-learners can be turned into varying
+  coefficient terms. The linear base-learners are fitted using Ridge regression
+  where the penalty parameter \code{lambda} is either computed from \code{df}
+  (default for \code{bbs}, \code{bspatial}, and \code{brandom}) or specified directly
+  (\code{lambda = 0} means no penalization as default for \code{bols}).
 
   Linear base-learners can be specified using \code{bols}. The function
   \code{bols(x)} can deal with both numeric and factor variables
@@ -99,7 +108,7 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
   fitted, where the random effects variance is governed by the
   specification of the degrees of freedom \code{df}.
 
-  For all base-learners the amount of smoothing is determined by the
+  For all linear base-learners the amount of smoothing is determined by the
   trace of the hat matrix, as indicated by \code{df}. If \code{df} is
   specified in \code{bols} a ridge penalty with the according degrees of
   freedom is used. For ordinal variables, a ridge penalty for the
@@ -122,7 +131,7 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
   fitted effect is centered around its parametric, unpenalized part. For
   example, with second order difference penalty, a linear effect of \code{x}
   remains unpenalized by \code{bbs} and therefore the degrees of freedom for the base-learner
-  have to be larger than 2. To avoid this restriction, option \code{center=TRUE}
+  have to be larger than two. To avoid this restriction, option \code{center=TRUE}
   substracts the unpenalized linear effect from the fit, allowing to specify any
   positive number as \code{df}. Note that in this case the linear effect
   \code{x} should generally be specified as an additional base-learner
@@ -139,11 +148,15 @@ btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
   listed in \code{levels(x)}. Thus, predictions are possible
   for new observations if they correspond to this category.
 
-  By default, all base-learners include an intercept term (which can
+  By default, all linear base-learners include an intercept term (which can
   be removed using \code{intercept = FALSE} for \code{bols} or
   \code{center = TRUE} for \code{bbs}). In this case, an explicit global
   intercept term should be added to \code{gamboost} via \code{bols} (see
   example below).
+
+  Two or more linear base-learners can be joined using \code{\%+\%}. A tensor product
+  of two or more linear base-learners is returned by \code{\%X\%}.
+  These two features are experimental and for expert use only.
 
   \code{btree} fits a stump to one or two variables. Note that
   \code{\link{blackboost}} is more efficient for boosting stumps.

@@ -82,7 +82,8 @@ plot(model)
 ## hipcirc + anthro3a + kneebreadth are fitted as
 ## bols base-learner with intercept = FALSE
 
-model <- gamboost(DEXfat ~ rep(1,nrow(bodyfat)) +
+int <- rep(1,nrow(bodyfat))
+model <- gamboost(DEXfat ~ int +
                            hipcirc + anthro3a + kneebreadth +
                            bbs(hipcirc, center=TRUE, df=1) +
                            bbs(anthro3a, center=TRUE, df=1) +
