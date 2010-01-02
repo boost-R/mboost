@@ -7,6 +7,9 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion 
         stop("cannot load ", sQuote("party"))
 
     cll <- match.call()
+    cll[[1]] <- as.name("btree")
+    cll <- deparse(cll)
+
     ctrl <- tree_controls
     mf <- list(...)
     if (length(mf) == 1 && is.data.frame(mf[[1]])) {
@@ -18,9 +21,13 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion 
     }
 
     ret <- list(model.frame = function() return(mf),
-                get_call = function() cll,
+                get_call = function() deparse(cll),
                 get_names = function() colnames(mf),
-                set_names = function(value) attr(mf, "names") <<- value)
+                set_names = function(value) {
+                    attr(mf, "names") <<- value
+                    cll <<- paste("btree", "(", paste(colnames(mf),
+                        collapse = ", "), ")", sep = "")
+                })
     class(ret) <- "blg"
 
     

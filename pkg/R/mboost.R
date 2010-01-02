@@ -369,45 +369,42 @@ mboost <- function(formula, data = list(),
     ### instead of evaluating a model.frame, we evaluate
     ### the expressions on the rhs of formula directly
     "+" <- function(a,b) {
+        cl <- match.call()
         ### got baselearner, fine!
         if (inherits(a, "blg")) a <- list(a)
         ### a single variable; compute baselearner
-        if (!is.list(a)) a <- list(baselearner(a))
+        if (!is.list(a)) {
+            a <- list(baselearner(a))
+            a[[1]]$set_name(deparse(cl[[2]]))
+        }
         ### got baselearner, fine!
         if (inherits(b, "blg")) b <- list(b)
         ### a single variable, compute baselearner
-        if (!is.list(b)) b <- list(baselearner(b))
+        if (!is.list(b)) {
+            b <- list(baselearner(b))
+            b[[1]]$set_name(deparse(cl[[3]]))
+        }
         ### join both baselearners in a list
         c(a, b)
     }
     ### set up all baselearners
-    bl <- eval(as.expression(formula[[3]]), envir = c(as.list(data), list("+" = get("+"))),
+    bl <- eval(as.expression(formula[[3]]), 
+               envir = c(as.list(data), list("+" = get("+"))),
                enclos = environment(formula))
     ### rhs was one single baselearner
     if (inherits(bl, "blg")) bl <- list(bl)
     ### rhs was one single variable
-    if (!is.list(bl)) bl <- list(baselearner(bl))
+    if (!is.list(bl)) { 
+        bl <- list(baselearner(bl))
+        bl[[1]]$set_name(as.character(formula[[3]]))
+    }
+
     ### just a check
     stopifnot(all(sapply(bl, inherits, what = "blg")))
-    ### we need identifiers for the baselearners,
-    ### split the formula at `+'
-    nm <- strsplit(paste(deparse(formula[[3]]), collapse = ""), "\\+")[[1]]
-    nm <- gsub(" ", "", nm)
-    names(bl) <- nm
-    ### baselearners constructed indirectly via `baselearner'
-    ### don't know the variable names yet
-    ### check for parts of the lhs of formula
-    ### that didn't specify a baselearner
-    funs <- grep("\\(", nm)
-    missing <- 1:length(nm)
-    if (length(funs) > 0)
-        missing <- missing[-funs]
-    if (length(missing) > 0) {
-        ### assign variable names
-        for (m in missing) bl[[m]]$set_names(nm[m])
-        ### assign names containing `baselearner'
-        names(bl)[missing] <- paste(bname, "(", nm[missing], ")", sep = "")
-    }
+
+    ### assign calls as names of base learners
+    names(bl) <- sapply(bl, function(x) x$get_call())
+
     ### get the response
     response <- eval(as.expression(formula[[2]]), envir = data)
     ret <- mboost_fit(bl, response = response, ...)
