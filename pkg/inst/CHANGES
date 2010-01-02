@@ -29,7 +29,7 @@
   o  changed behavior of subset method (model[mstop]). Object
      is directly altered and not duplicated
 
-  o  included package matrix (reduces memory usage)
+  o  included package Matrix (reduces memory usage)
 
   o  changed interface of base-learners: 
      - argument "center" in bols replaced with "intercept" 
