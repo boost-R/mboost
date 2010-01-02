@@ -14,7 +14,8 @@ export(glmboost,
        GaussReg, Gaussian, GaussClass, Laplace, Binomial, Poisson, QuantReg,
        NBinomial, PropOdds, mboost_fit,
        Huber, AdaExp, CoxPH, FP, IPCweights, cvrisk, cv, bbs,
-       bols, bspatial, brandom, btree, survFit, selected, nuisance)
+       bols, bspatial, brandom, btree, survFit, selected, nuisance, "%+%",
+       "%X%")
        ###, basesel, fitsel)
 exportClasses("boost_family")
 exportMethods("show")
