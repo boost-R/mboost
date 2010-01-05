@@ -33,3 +33,98 @@ coef(mod)
 
 }
 
+
+### Weibull model
+
+if (require("survival")) {
+
+rextrval <- function(x) log( -log(1-x) )
+sigma <- 0.5
+u <- runif(100)
+u.1 <- runif(100)
+w <- rextrval(u)
+w.1 <- rextrval(u.1)
+
+x1 <- rnorm(100,sd=1)
+x2 <- x1 + rnorm(100,sd=1)
+x1.1 <- rnorm(100,sd=1)
+x2.1 <- x1.1 + rnorm(100,sd=1)
+X <- cbind(x1,x2)
+X.1 <- cbind(x1.1,x2.1)
+beta <- c(1,0.5)
+survtime <- exp(X%*%beta + sigma*w)
+censtime <- exp(X.1%*%beta + sigma*w.1)
+event <- survtime < censtime
+stime <- pmin(survtime,censtime)
+
+model1 <- glmboost(Surv(stime,event)~x1+x2, family=Weibull(),
+    control = boost_control(mstop=100))
+coef(model1)
+nuisance(model1)
+model2 <- survreg(Surv(stime,event)~x1+x2)
+coef(model2)
+model2$scale
+
+}
+
+
+### Log logistic model
+
+if (require("survival")) {
+
+sigma <- 0.5
+w <- rlogis(100)
+w.1 <- rlogis(100)
+
+x1 <- rnorm(100,sd=1)
+x2 <- x1 + rnorm(100,sd=1)
+x1.1 <- rnorm(100,sd=1)
+x2.1 <- x1.1 + rnorm(100,sd=1)
+X <- cbind(x1,x2)
+X.1 <- cbind(x1.1,x2.1)
+beta <- c(1,0.5)
+survtime <- exp(X%*%beta + sigma*w)
+censtime <- exp(X.1%*%beta + sigma*w.1)
+event <- survtime < censtime
+stime <- pmin(survtime,censtime)
+
+model1 <- glmboost(Surv(stime,event)~x1+x2, family=Loglog(),
+    control = boost_control(mstop=200))
+coef(model1)
+nuisance(model1)
+model2 <- survreg(Surv(stime,event)~x1+x2, dist="loglogistic")
+coef(model2)
+model2$scale
+
+}
+
+
+### Log normal model
+
+if (require("survival")) {
+
+sigma <- 0.5
+w <- rnorm(100)
+w.1 <- rnorm(100)
+
+x1 <- rnorm(100,sd=1)
+x2 <- x1 + rnorm(100,sd=1)
+x1.1 <- rnorm(100,sd=1)
+x2.1 <- x1.1 + rnorm(100,sd=1)
+X <- cbind(x1,x2)
+X.1 <- cbind(x1.1,x2.1)
+beta <- c(1,0.5)
+survtime <- exp(X%*%beta + sigma*w)
+censtime <- exp(X.1%*%beta + sigma*w.1)
+event <- survtime < censtime
+stime <- pmin(survtime,censtime)
+
+model1 <- glmboost(Surv(stime,event)~x1+x2, family=Lognormal(),
+    control = boost_control(mstop=200))
+coef(model1)
+nuisance(model1)
+model2 <- survreg(Surv(stime,event)~x1+x2, dist="lognormal")
+coef(model2)
+model2$scale
+
+}

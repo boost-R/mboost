@@ -357,3 +357,136 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
                ret
                })
 }
+
+Weibull <- function(nuirange = c(0, 100)) {
+    sigma <- 1
+
+    plloss <- function(sigma, y, f){
+        fw <- function(pred){
+            exp(pred - exp(pred))
+            }
+        Sw <- function(pred){
+            exp(-exp(pred))
+            }
+        lnt <- log(y[,1])
+        Sevent <- y[,2]
+        eta <- (lnt - f) / sigma
+        - Sevent * log(fw(eta) / sigma) - (1 - Sevent) * log(Sw(eta))
+        }
+
+    riskS <- function(sigma, y, fit, w = 1) 
+        sum(w * plloss(y = y, f = fit, sigma = sigma))
+    risk <- function(y, f, w = 1) 
+       sum(w * plloss(y = y, f = f, sigma = sigma))
+
+    ngradient <- function(y, f, w = 1) {
+        sigma <<- optimize(riskS, interval = nuirange, 
+                           y = y, fit = f, w = w)$minimum             
+        lnt <- log(y[,1])
+        event <- y[,2]
+        eta <- (lnt - f) / sigma
+        (event * (exp(eta) - 1) + (1 - event) * exp(eta)) / sigma
+        }
+	
+    Family(ngradient = ngradient, risk = risk,
+           offset = function(y, w) 
+               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)), 
+                        y = y, w = w)$minimum,
+           check_y = function(y) {
+               if (!inherits(y, "Surv"))
+                   stop("response is not an object of class ", sQuote("Surv"),
+                        " but ", sQuote("family = Weibull()"))
+               y
+           },
+           nuisance = function() return(sigma),
+           name = "Negative Weibull Likelihood")
+}
+
+Loglog <- function(nuirange = c(0, 100)) {
+    sigma <- 1
+
+    plloss <- function(sigma, y, f){
+        fw <- function(pred){
+            exp(pred) / (1 + exp(pred))^2
+            }
+        Sw <- function(pred){
+            1 / (1 + exp(pred))
+            }
+        lnt <- log(y[,1])
+        Sevent <- y[,2]
+        eta <- (lnt - f) / sigma
+        - Sevent * log(fw(eta) / sigma) - (1 - Sevent) * log(Sw(eta))
+        }
+
+    riskS <- function(sigma, y, fit, w = 1) 
+        sum(w * plloss(y = y, f = fit, sigma = sigma))
+    risk <- function(y, f, w = 1) 
+       sum(w * plloss(y = y, f = f, sigma = sigma))
+
+    ngradient <- function(y, f, w = 1) {
+        sigma <<- optimize(riskS, interval = nuirange, 
+                           y = y, fit = f, w = w)$minimum   
+        lnt <- log(y[,1])
+        event <- y[,2]
+        eta <- (lnt - f) / sigma
+        nom <- (exp(-eta) + 1)
+        (event * (2/nom - 1) + (1 - event) / nom) / sigma
+        }
+	
+    Family(ngradient = ngradient, risk = risk,
+           offset = function(y, w) 
+               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)), 
+                        y = y, w = w)$minimum,
+           check_y = function(y) {
+               if (!inherits(y, "Surv"))
+                   stop("response is not an object of class ", sQuote("Surv"),
+                        " but ", sQuote("family = Loglog()"))
+               y
+           },
+           nuisance = function() return(sigma),
+           name = "Negative Log Logistic Likelihood")
+}
+
+Lognormal <- function(nuirange = c(0, 100)) {
+    sigma <- 1
+
+    plloss <- function(sigma, y, f){
+        fw <- function(pred){
+            dnorm(pred)
+            }
+        Sw <- function(pred){
+            1 - pnorm(pred)
+            }
+        lnt <- log(y[,1])
+        Sevent <- y[,2]
+        eta <- (lnt - f) / sigma
+        - Sevent * log(fw(eta) / sigma) - (1 - Sevent) * log(Sw(eta))
+        }
+
+    riskS <- function(sigma, y, fit, w = 1) 
+        sum(w * plloss(y = y, f = fit, sigma = sigma))
+    risk <- function(y, f, w = 1) 
+       sum(w * plloss(y = y, f = f, sigma = sigma))
+
+    ngradient <- function(y, f, w = 1) {
+        sigma <<- optimize(riskS, interval = nuirange, 
+                           y = y, fit = f, w = w)$minimum  
+        lnt <- log(y[,1])
+        event <- y[,2]
+        eta <- (lnt - f) / sigma
+        (event * eta + (1 - event) * dnorm(eta) / (1 - pnorm(eta))) / sigma
+        }
+	
+    Family(ngradient = ngradient, risk = risk,
+           offset = function(y, w) 
+               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)), 
+                        y = y, w = w)$minimum,
+           check_y = function(y) {
+               if (!inherits(y, "Surv"))
+                   stop("response is not an object of class ", sQuote("Surv"),
+                        " but ", sQuote("family = Lognormal()"))
+               y
+           },
+           nuisance = function() return(sigma),
+           name = "Negative Lognormal Likelihood")
+}

@@ -12,6 +12,9 @@
 \alias{QuantReg}
 \alias{NBinomial}
 \alias{PropOdds}
+\alias{Weibull}
+\alias{Loglog}
+\alias{Lognormal}
 \title{ Gradient Boosting Families }
 \description{
     \code{boost_family} objects provide a convenient way to specify loss functions
@@ -38,6 +41,9 @@ CoxPH()
 QuantReg(tau = 0.5, qoffset = 0.5)
 NBinomial(nuirange = c(0, 100))
 PropOdds(nuirange = c(-0.5, -1), offrange = c(-5, 5))
+Weibull(nuirange = c(0, 100))
+Loglog(nuirange = c(0, 100))
+Lognormal(nuirange = c(0, 100))
 }
 \arguments{
   \item{ngradient}{ a function with arguments \code{y}, \code{f} and \code{w} implementing the
