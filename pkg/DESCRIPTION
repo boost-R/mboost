@@ -1,8 +1,8 @@
 Package: mboost
 Title: Model-Based Boosting
-Date: 2009-12-22
+Date: 2010-01-05
 Version: 2.0-0
-Author: Torsten Hothorn, Peter Buhlmann, Thomas Kneib, Matthias Schmid and
+Author: Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Matthias Schmid and
   Benjamin Hofner
 Maintainer: Torsten Hothorn <Torsten.Hothorn@R-project.org>
 Description: Functional gradient descent algorithm
@@ -11,10 +11,9 @@ Description: Functional gradient descent algorithm
   smoothing splines, or regression trees as base learners for fitting
   generalized linear, additive and interaction models to potentially 
   high-dimensional data.
-Depends: R (>= 2.4.0), stats
-Imports: Matrix, survival, methods, splines, lattice
+Depends: R (>= 2.9.0), methods, stats
+Imports: Matrix, survival, splines, lattice
 Suggests: multicore, party, ipred, MASS
 LazyLoad: yes
 LazyData: yes
 License: GPL-2
-Packaged: 2009-12-22 14:02:33 UTC; hothorn

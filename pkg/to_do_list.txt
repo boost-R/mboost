@@ -13,6 +13,8 @@
 
     o  add functionality to df2lambda to choose definition of df
 
+    o  Poisson() with some extremely large values in the response
+
 future
 
     o  new base-learners (by example, brad, bmrf)

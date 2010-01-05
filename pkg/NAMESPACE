@@ -1,10 +1,11 @@
 
 import(methods)
-import(Matrix)
-import(splines)
 import(stats)
-import(survival)
-import(lattice)
+
+import(Matrix)
+importFrom(survival, Surv, survfit)
+importFrom(splines, bs)
+importFrom(lattice, levelplot)
 
 export(glmboost,
        gamboost,
