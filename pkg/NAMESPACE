@@ -14,7 +14,7 @@ export(glmboost,
        boost_control, mstop, Family,
        GaussReg, Gaussian, GaussClass, Laplace, Binomial, Poisson, QuantReg,
        NBinomial, PropOdds, Weibull, Loglog, Lognormal, mboost_fit,
-       Huber, AdaExp, CoxPH, FP, IPCweights, cvrisk, cv, bbs,
+       Huber, AdaExp, CoxPH, FP, IPCweights, cvrisk, cv, bbs, stabsel,
        bols, bspatial, brandom, btree, survFit, selected, nuisance, "%+%",
        "%X%")
        ###, basesel, fitsel)
@@ -64,5 +64,7 @@ S3method(coef, bm_cwlin)
 S3method(selected, mboost)
 # S3method(selected, glmboost)
 S3method(update, mboost)
+S3method(print, stabsel)
+S3method(plot, stabsel)
 
 useDynLib(mboost)
