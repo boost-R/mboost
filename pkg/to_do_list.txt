@@ -1,9 +1,6 @@
 
 2.0-0
 
-    o  scale parameter NBinomial, PropOdds, Weibull 
-                       (-> Docu + Examples MS)
-
     o  add functionality to df2lambda to choose definition of df
 
 

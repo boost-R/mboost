@@ -127,11 +127,15 @@ Lognormal(nuirange = c(0, 100))
 
   Families with an additional scale parameter can be used for fitting
   models as well: \code{PropOdds()} leads to proportional odds models
-  for ordinal variables, \code{NBinomial()} to regression models
-  with negative binomial conditional distribution of the response,
-  and \code{Weibull()}, \code{Loglog()}, and \code{Lognormal()}
-  to the corresponding survival models. See Schmid and Hothorn (2008) and
-  Schmid et al. (2010).
+  for ordinal outcome variables. When using this family, an ordered set of
+  threshold parameters is re-estimated in each boosting iteration.
+  \code{NBinomial()} leads to regression models with a negative binomial
+  conditional distribution of the response. \code{Weibull()}, \code{Loglog()},
+  and \code{Lognormal()} implement the negative log-likelihood functions
+  of accelerated failure time models with Weibull, log-logistic, and
+  lognormal distributed outcomes, respectively. Hence, parametric survival
+  models can be boosted using these families. For details see Schmid and
+  Hothorn (2008) and Schmid et al. (2010).
 
 }
 \section{Warning}{
