@@ -44,12 +44,13 @@ stabsel(object, FWER = 0.05, cutoff, q, ...)
 }
 \examples{
 
-    
-    sbody <- stabsel(glmboost(DEXfat ~ ., data = bodyfat), q = 3)
-    sbody
-    opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
-    plot(sbody)
-    par(opar)
+
+  ### (too) low-dimensional example    
+  sbody <- stabsel(glmboost(DEXfat ~ ., data = bodyfat), q = 3)
+  sbody
+  opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
+  plot(sbody)
+  par(opar)
 
 }
 \keyword{nonparametric}

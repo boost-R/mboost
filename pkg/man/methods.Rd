@@ -126,7 +126,7 @@
   The function \code{coef} extracts the
   regression coefficients of a linear model fitted using the \code{\link{glmboost}}
   function or an additive model fitted using the \code{\link{gamboost}}.
-  Per default, only coeffiecients of selected base-learners are
+  Per default, only coefficients of selected base-learners are
   returned. However, any desired coefficient can be extracted using the
   \code{which} argument (see examples for details).
 
@@ -137,10 +137,10 @@
   The \code{[.mstop} function can be used to enhance or restrict a given
   boosting model to the specified boosting iteration \code{i}. Note that
   in both cases the original \code{x} will be changed to reduce the
-  memory footage. If the boosting model is enhanced by specifying an
+  memory footprint. If the boosting model is enhanced by specifying an
   index that is larger than the initial \code{mstop}, only the missing
   \code{i - mstop} steps are fitted. If the model is restricted,
-  the spare steps are not dropped, i.e. if we increase mstop again,
+  the spare steps are not dropped, i.e., if we increase \code{i} again,
   these boosting steps are immediately available.
 
   The ids of base-learners selected during the fitting process
@@ -158,7 +158,7 @@
   (faster but only meaningful for linear models fitted via \code{\link{gamboost}}
   (see Hastie, 2007)).
 
-  In addition, the general Minimum Description Length criterion (Buhlmann and Yu, 2006)
+  In addition, the general Minimum Description Length criterion (Buehlmann and Yu, 2006)
   can be computed using function \code{AIC}.
 
   Note that \code{logLik} and \code{AIC} only make sense when the corresponding
@@ -183,14 +183,14 @@
   \emph{Journal of the Royal Statistical Society, Series B},
   \bold{20}(2), 271--293.
 
-  Peter Buhlmann and Torsten Hothorn (2007),
+  Peter Buehlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 
   Travor Hastie (2007), Discussion of ``Boosting Algorithms: Regularization, Prediction and Model Fitting''
-  by Peter Buhlmann and Torsten Hothorn. \emph{Statistical Science}, \bold{22}(4), 505.
+  by Peter Buehlmann and Torsten Hothorn. \emph{Statistical Science}, \bold{22}(4), 505.
 
-  Peter Buhlmann and Bin Yu (2006),
+  Peter Buehlmann and Bin Yu (2006),
   Sparse Boosting. \emph{Journal of Machine Learning Research}, \bold{7}, 1001--1024.
 
 }
@@ -198,49 +198,54 @@
   \code{\link{blackboost}} for model fitting. See \code{\link{cvrisk}} for
   cross-validated stopping iteration.}
 \examples{
-    ### a simple two-dimensional example: cars data
-    cars.gb <- glmboost(dist ~ speed, data = cars,
-                        control = boost_control(mstop = 2000))
-    cars.gb
 
-    ### initial number of boosting iterations
-    mstop(cars.gb)
+  ### a simple two-dimensional example: cars data
+  cars.gb <- glmboost(dist ~ speed, data = cars,
+                      control = boost_control(mstop = 2000))
+  cars.gb
 
-    ### AIC criterion
-    aic <- AIC(cars.gb, method = "corrected")
-    aic
+  ### initial number of boosting iterations
+  mstop(cars.gb)
 
-    ### enhance or restrict model
-    cars.gb <- gamboost(dist ~ speed, data = cars,
-                        control = boost_control(mstop = 100, trace=TRUE))
-    cars.gb[10]
-    cars.gb[100, return=FALSE] # no refitting required
-    cars.gb[150, return=FALSE] # only iterations 101 to 150 are newly fitted
+  ### AIC criterion
+  aic <- AIC(cars.gb, method = "corrected")
+  aic
 
-    ### coefficients for optimal number of boosting iterations
-    coef(cars.gb[mstop(aic)])
-    plot(cars$dist, predict(cars.gb[mstop(aic)]),
-         ylim = range(cars$dist))
-    abline(a = 0, b = 1)
+  ### enhance or restrict model
+  cars.gb <- gamboost(dist ~ speed, data = cars,
+                      control = boost_control(mstop = 100, trace = TRUE))
+  cars.gb[10]
+  cars.gb[100, return = FALSE] # no refitting required
+  cars.gb[150, return = FALSE] # only iterations 101 to 150 
+                               # are newly fitted
 
-    ### example for extraction of coefficients and predictions
-    set.seed(1907)
-    x1 <- rnorm(100)
-    x2 <- rnorm(100)
-    x3 <- rnorm(100)
-    x4 <- rnorm(100)
-    int <- rep(1, 100)
-    y <- 3 * x1^2 - 0.5 * x2 + rnorm(100, sd=0.1)
-    df <- data.frame(y = y, int = int, x1 = x1, x2 = x2, x3 = x3, x4 = x4)
+  ### coefficients for optimal number of boosting iterations
+  coef(cars.gb[mstop(aic)])
+  plot(cars$dist, predict(cars.gb[mstop(aic)]),
+       ylim = range(cars$dist))
+  abline(a = 0, b = 1)
 
-    model <- gamboost(y ~ bols(int, intercept=FALSE) +  bbs(x1,
-                          center=TRUE, df=1) +
-                          bols(x1, intercept=FALSE) +
-                          bols(x2, intercept=FALSE) + bols(x3, intercept=FALSE) +
-                          bols(x4, intercept=FALSE), data = df,
-                      control=boost_control(mstop=500))
-    coef(model) # standard output (only selected base-learners)
-    coef(model, which=model$which()) # show all base-learners
-    coef(model, which="x1") # shows all base-learners for x1
+  ### example for extraction of coefficients and predictions
+  set.seed(1907)
+  n <- 100
+  x1 <- rnorm(n)
+  x2 <- rnorm(n)
+  x3 <- rnorm(n)
+  x4 <- rnorm(n)
+  int <- rep(1, n)
+  y <- 3 * x1^2 - 0.5 * x2 + rnorm(n, sd = 0.1)
+  df <- data.frame(y = y, int = int, x1 = x1, x2 = x2, x3 = x3, x4 = x4)
+
+  model <- gamboost(y ~ bols(int, intercept = FALSE) + 
+                        bbs(x1, center = TRUE, df = 1) +
+                        bols(x1, intercept = FALSE) +
+                        bols(x2, intercept = FALSE) + 
+                        bols(x3, intercept = FALSE) +
+                        bols(x4, intercept = FALSE), 
+                    data = df, control = boost_control(mstop = 500))
+  coef(model) # standard output (only selected base-learners)
+  coef(model, 
+       which = 1:length(variable.names(model))) # all base-learners
+  coef(model, which = "x1") # shows all base-learners for x1
 }
 \keyword{methods}

@@ -6,7 +6,8 @@
   smoothing procedures are utilized as base learners.
 }
 \usage{
-gamboost(formula, data = list(), baselearner = c("bbs", "bols", "btree", "bss", "bns"),
+gamboost(formula, data = list(), 
+         baselearner = c("bbs", "bols", "btree", "bss", "bns"),
          dfbase = 4, ...)
 }
 \arguments{
@@ -14,13 +15,12 @@ gamboost(formula, data = list(), baselearner = c("bbs", "bols", "btree", "bss", 
   \item{data}{ a data frame containing the variables in the model. }
   \item{baselearner}{ a character specifying the component-wise base
     learner to be used: \code{\link{bbs}} means P-splines with a
-    B-spline basis (see Schmid and Hothorn 2007), \code{\link{bols}}
+    B-spline basis (see Schmid and Hothorn 2008), \code{\link{bols}}
     linear models abd \code{\link{btree}} boosts stumps.
-    \code{bss} and \code{bns} are only used for backward
-    compatibility. You should consider to use \code{\link{bbs}} instead.
-    Component-wise smoothing splines have been considered in Buhlmann
-    and Yu (2003) and Schmid and Hothorn (2007) investigate P-splines
-    with a B-spline basis. Kneib, Hothorn and Tutz (2007) also utilize
+    \code{bss} and \code{bns} are deprecated. 
+    Component-wise smoothing splines have been considered in Buehlmann
+    and Yu (2003) and Schmid and Hothorn (2008) investigate P-splines
+    with a B-spline basis. Kneib, Hothorn and Tutz (2009) also utilize
     P-splines with a B-spline basis, supplement them with their
     bivariate tensor product version to estimate interaction surfaces
     and spatial effects and also consider random effects base
@@ -47,12 +47,12 @@ gamboost(formula, data = list(), baselearner = c("bbs", "bols", "btree", "bss", 
 }
 \references{
 
-  Peter Buhlmann and Bin Yu (2003),
+  Peter Buehlmann and Bin Yu (2003),
   Boosting with the L2 loss: regression and classification.
   \emph{Journal of the American Statistical Association}, \bold{98},
   324--339.
 
-  Peter Buhlmann and Torsten Hothorn (2007),
+  Peter Buehlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 

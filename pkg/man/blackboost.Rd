@@ -6,10 +6,13 @@
   trees are utilized as base learners.
 }
 \usage{
-blackboost(formula, data = list(), tree_controls = ctree_control(teststat = "max",
-           testtype = "Teststatistic",
-           mincriterion = 0,
-           maxdepth = 2), ...)
+blackboost(formula, data = list(), 
+           tree_controls = ctree_control(
+               teststat = "max",
+               testtype = "Teststatistic",
+               mincriterion = 0,
+               maxdepth = 2), 
+           ...)
 }
 \arguments{
   \item{formula}{ a symbolic description of the model to be fit. }
@@ -27,7 +30,7 @@ blackboost(formula, data = list(), tree_controls = ctree_control(teststat = "max
   This function implements the `classical'
   gradient boosting utilizing regression trees as base learners.
   Essentially, the same algorithm is implemented in package
-  \code{\link[gbm]{gbm}}.  The
+  \code{\link[gbm]{gbm}}. The
   main difference is that arbitrary loss functions to be optimized
   can be specified via the \code{family} argument to \code{blackboost} whereas
   \code{\link[gbm]{gbm}} uses hard-coded loss functions.
@@ -44,6 +47,19 @@ blackboost(formula, data = list(), tree_controls = ctree_control(teststat = "max
 }
 \references{
 
+  Peter Buehlmann and Torsten Hothorn (2007),
+  Boosting algorithms: regularization, prediction and model fitting.
+  \emph{Statistical Science}, \bold{22}(4), 477--505.
+
+  Torsten Hothorn, Kurt Hornik and Achim Zeileis (2006). Unbiased Recursive
+  Partitioning: A Conditional Inference Framework. \emph{Journal of
+  Computational and Graphical Statistics}, \bold{15}(3), 651--674.
+
+  Yoav Freund and Robert E. Schapire (1996),
+  Experiments with a new boosting algorithm.
+  In \emph{Machine Learning: Proc. Thirteenth International Conference},
+  148--156.
+
   Jerome H. Friedman (2001),
   Greedy function approximation: A gradient boosting machine.
   \emph{The Annals of Statistics}, \bold{29}, 1189--1232.
@@ -51,14 +67,6 @@ blackboost(formula, data = list(), tree_controls = ctree_control(teststat = "max
   Greg Ridgeway (1999), The state of boosting.
   \emph{Computing Science and Statistics}, \bold{31},
   172--181.
-
-  Peter Buhlmann and Torsten Hothorn (2007),
-  Boosting algorithms: regularization, prediction and model fitting.
-  \emph{Statistical Science}, \bold{22}(4), 477--505.
-
-  Torsten Hothorn, Kurt Hornik and Achim Zeileis (2006). Unbiased Recursive
-  Partitioning: A Conditional Inference Framework. \emph{Journal of
-  Computational and Graphical Statistics}, \bold{15}(3), 651--674.
 
 }
 \seealso{\code{\link{mboost}} for the generic boosting function and

@@ -24,11 +24,13 @@
 \usage{
 Family(ngradient, loss = NULL, risk = NULL,
        offset = function(y, w)
-           optimize(risk, interval = range(y), y = y, w = w)$minimum,
+           optimize(risk, interval = range(y), 
+                    y = y, w = w)$minimum,
        check_y = function(y) y,
        weights = c("any", "none", "zeroone", "case"),
        nuisance = function() return(NULL),
-       name = "user-specified", fW = NULL, response = function(f) NA)
+       name = "user-specified", fW = NULL, 
+       response = function(f) NA)
 AdaExp()
 Binomial()
 GaussClass()
@@ -48,8 +50,8 @@ Lognormal(nuirange = c(0, 100))
 \arguments{
   \item{ngradient}{ a function with arguments \code{y}, \code{f} and \code{w} implementing the
                     \emph{negative} gradient of the \code{loss} function (which is to be minimized). }
-  \item{loss}{ an optional loss function with arguments \code{y} and \code{f} to be minimized (!). }
-  \item{risk}{ an optional risk function with arguments \code{y}, \code{f} and \code{w},
+  \item{loss}{ an optional loss function with arguments \code{y} and \code{f}. }
+  \item{risk}{ an optional risk function with arguments \code{y}, \code{f} and \code{w} to be minimized (!),
                the weighted mean of the loss function by default. }
   \item{offset}{ a function with argument \code{y} and \code{w} (weights)
                  for computing a \emph{scalar} offset. }
@@ -70,15 +72,14 @@ Lognormal(nuirange = c(0, 100))
   \item{offrange}{ interval to search for offset in.}
 }
 \details{
-  The boosting algorithms implemented in \code{\link{glmboost}}, \code{\link{gamboost}} or
-  \code{\link{blackboost}} aim at minimizing the (weighted) empirical risk function
-  \code{risk(y, f, w)} with respect to \code{f}. By default, the risk function is the
-  weighted sum of the loss function \code{loss(y, f)} but can be chosen arbitrarily.
-  The \code{ngradient(y, f)} function is the negative gradient of \code{loss(y, f)} with
-  respect to \code{f}.
+  The boosting algorithm implemented in \code{\link{mboost}} minimizes the 
+  (weighted) empirical risk function \code{risk(y, f, w)} with respect to \code{f}. 
+  By default, the risk function is the weighted sum of the loss function \code{loss(y, f)} 
+  but can be chosen arbitrarily. The \code{ngradient(y, f)} function is the negative 
+  gradient of \code{loss(y, f)} with respect to \code{f}.
 
   Pre-fabricated functions for the most commonly used loss functions are
-  available as well. Buhlmann and Hothorn (2007) give a detailed
+  available as well. Buehlmann and Hothorn (2007) give a detailed
   overview of the available loss functions. The \code{offset} function
   returns the population minimisers evaluated at the response, i.e.,
   \eqn{1/2 \log(p / (1 - p))} for \code{Binomial()} or \code{AdaExp()}
@@ -88,22 +89,25 @@ Lognormal(nuirange = c(0, 100))
 
   \code{AdaExp()} and \code{Binomial()} implement
   families for binary classification. \code{AdaExp()} uses the
-  exponential loss, which essentially leeds to the AdaBoost algorithm
+  exponential loss, which essentially leads to the AdaBoost algorithm
   of Freund and Schapire (1996). \code{Binomial()} implements the
-  negative binomial log-likelihood as loss function. Thus, using
-  \code{Binomial} family closely corresponds to fitting a logit model.
+  negative binomial log-likelihood of a logistic regression model 
+  as loss function. Thus, using \code{Binomial} family closely corresponds 
+  to fitting a logistic model.
   However, the coefficients resulting from boosting with family
   \code{Binomial} are \eqn{1/2} of the coefficients of a logit model
   obtained via \code{\link{glm}}. This is due to the internatal recoding
   of the response to \eqn{-1} and \eqn{+1} (see below).
-  However, Buhlmann and Hothorn (2007) argue that the
+  However, Buehlmann and Hothorn (2007) argue that the
   family \code{Binomial} is the preferred choice for binary
   classification. For binary classification problems the response
   \code{y} has to be a \code{factor}. Internally \code{y} is re-coded
-  to \eqn{-1} and \eqn{+1} (Buhlmann and Hothorn 2007).
+  to \eqn{-1} and \eqn{+1} (Buehlmann and Hothorn 2007).
 
   \code{Gaussian()} is the default family in \code{\link{mboost}}. It
-  implements \eqn{L_2}Boosting for continuous response.
+  implements \eqn{L_2}Boosting for continuous response. Note
+  that families \code{GaussReg()} and \code{GaussClass()} (for regression
+  and classification) are deprecated now.
   \code{Huber()} implements a robust version for boosting with
   continuous response, where the Huber-loss is used. \code{Laplace()}
   implements another strategy for continuous outcomes and uses the
@@ -113,25 +117,34 @@ Lognormal(nuirange = c(0, 100))
   \code{Poisson()} implements a family for fitting count data with
   boosting methods. The implemented loss function is the negative
   Poisson log-likelihood. Note that the natural link function
-  \eqn{log(\mu) = \eta} is assumed.
+  \eqn{\log(\mu) = \eta} is assumed.
 
   \code{CoxPH()} implements the negative partial log-likeliood for Cox
   models. Hence, survival models can be boosted using this family.
 
   \code{QuantReg()} implements boosting for quantile regression, which is
   introduced in Fenske et al. (2009).
+
+  Families with an additional scale parameter can be used for fitting
+  models as well: \code{PropOdds()} leads to proportional odds models
+  for ordinal variables, \code{NBinomial()} to regression models
+  with negative binomial conditional distribution of the response,
+  and \code{Weibull()}, \code{Loglog()}, and \code{Lognormal()}
+  to the corresponding survival models. See Schmid and Hothorn (2008) and
+  Schmid et al. (2010).
+
 }
 \section{Warning}{
   The coefficients resulting from boosting with family
   \code{Binomial} are \eqn{1/2} of the coefficients of a logit model
-  obtained via \code{\link{glm}}. This is due to the internatal recoding
+  obtained via \code{\link{glm}}. This is due to the internal recoding
   of the response to \eqn{-1} and \eqn{+1} (see above).
 }
 \value{
   An object of class \code{boost_family}.
 }
 \references{
-    Peter Buhlmann and Torsten Hothorn (2007),
+    Peter Buehlmann and Torsten Hothorn (2007),
     Boosting algorithms: regularization, prediction and model fitting.
     \emph{Statistical Science}, \bold{22}(4), 477--505.
 
@@ -145,10 +158,20 @@ Lognormal(nuirange = c(0, 100))
     Experiments with a new boosting algorithm.
     In \emph{Machine Learning: Proc. Thirteenth International Conference},
     148--156.
+
+    Matthias Schmid and Torsten Hothorn (2008), 
+    Flexible boosting of accelerated failure time models. 
+    \emph{BMC Bioinformatics}, \bold{9}(269).
+
+    Matthias Schmid, Sergej Potapov, Annette Pfahlberg, 
+    and Torsten Hothorn (2010). Estimation and regularization techniques for 
+    regression models with multidimensional prediction functions. 
+    \emph{Statistics and Computing}, in press.
+
   }
-\seealso{\code{\link{gamboost}}, \code{\link{glmboost}} and
-    \code{\link{blackboost}} for the usage of \code{Family}s. See
+\seealso{\code{\link{mboost}} for the usage of \code{Family}s. See
     \code{\link{boost_family-class}} for objects resulting from a call to \code{Family}. }
+
 \examples{
 
     Laplace()

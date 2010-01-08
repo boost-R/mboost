@@ -3,15 +3,15 @@
 \alias{cv}
 \title{ Cross-Validation }
 \description{
-  Cross-validated estimation of the empirical risk
-  for hyper-parameter selection.
+  Cross-validated estimation of the empirical risk for hyper-parameter selection.
 }
 \usage{
-cvrisk(object, folds = cv(model.weights(object)), grid = 1:mstop(object),
-       papply = if (require("multicore")) mclapply else lapply, fun = NULL, ...)
+cvrisk(object, folds = cv(model.weights(object)), 
+       grid = 1:mstop(object),
+       papply = if (require("multicore")) mclapply else lapply, 
+       fun = NULL, ...)
 cv(weights, type = c("bootstrap", "kfold", "subsampling"),
-   B = ifelse(type == "kfold", 10, 25),
-   prob = 0.5, strata = NULL)
+   B = ifelse(type == "kfold", 10, 25), prob = 0.5, strata = NULL)
 }
 \arguments{
   \item{object}{ an object of class \code{mboost}.}
@@ -31,7 +31,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
               of the cross-validated models. These are returned as is.}
   \item{weights}{ a numeric vector of weights for the model to be cross-validated.}
   \item{type}{ character argument for specifying the cross-validation
-               method. Currently (stratified) bootstrap, k-fold crossvalidation
+               method. Currently (stratified) bootstrap, k-fold cross-validation
                and subsampling are implemented.}
   \item{B}{ number of folds, per default 25 for \code{bootstrap} and
             \code{subsampling} and 10 for \code{kfold}.}
@@ -84,69 +84,69 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   object.}
 \examples{
 
-data("bodyfat", package = "mboost")
+  data("bodyfat", package = "mboost")
 
-### fit linear model to data
-model <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)
+  ### fit linear model to data
+  model <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)
 
-### AIC-based selection of number of boosting iterations
-maic <- AIC(model)
-maic
+  ### AIC-based selection of number of boosting iterations
+  maic <- AIC(model)
+  maic
 
-### inspect coefficient path and AIC-based stopping criterion
-par(mai = par("mai") * c(1, 1, 1, 1.8))
-plot(model)
-abline(v = mstop(maic), col = "lightgray")
+  ### inspect coefficient path and AIC-based stopping criterion
+  par(mai = par("mai") * c(1, 1, 1, 1.8))
+  plot(model)
+  abline(v = mstop(maic), col = "lightgray")
 
-### 10-fold cross-validation
-cv10f <- cv(model.weights(model), type = "kfold")
-cvm <- cvrisk(model, folds = cv10f)
-print(cvm)
-mstop(cvm)
-plot(cvm)
+  ### 10-fold cross-validation
+  cv10f <- cv(model.weights(model), type = "kfold")
+  cvm <- cvrisk(model, folds = cv10f)
+  print(cvm)
+  mstop(cvm)
+  plot(cvm)
 
-### 25 bootstrap iterations (manually)
-set.seed(290875)
-n <- nrow(bodyfat)
-bs25 <- rmultinom(25, n, rep(1, n)/n)
-cvm <- cvrisk(model, folds = bs25)
-print(cvm)
-mstop(cvm)
+  ### 25 bootstrap iterations (manually)
+  set.seed(290875)
+  n <- nrow(bodyfat)
+  bs25 <- rmultinom(25, n, rep(1, n)/n)
+  cvm <- cvrisk(model, folds = bs25)
+  print(cvm)
+  mstop(cvm)
+  plot(cvm)
 
-### same
-cvrisk(model)
+  ### same by default
+  set.seed(290875)
+  cvrisk(model)
 
-### 25 bootstrap iterations (using cv)
-set.seed(290875)
-bs25_2 <- cv(model.weights(model), type="bootstrap")
-all(bs25 == bs25_2)
+  ### 25 bootstrap iterations (using cv)
+  set.seed(290875)
+  bs25_2 <- cv(model.weights(model), type="bootstrap")
+  all(bs25 == bs25_2)
 
-layout(matrix(1:2, ncol = 2))
-plot(cvm)
-
-### trees
-blackbox <- blackboost(DEXfat ~ ., data = bodyfat)
-cvtree <- cvrisk(blackbox)
-plot(cvtree)
+  ### trees
+  blackbox <- blackboost(DEXfat ~ ., data = bodyfat)
+  cvtree <- cvrisk(blackbox)
+  plot(cvtree)
 
 
-### cvrisk in parallel modes:
+  ### cvrisk in parallel modes:
 
-\dontrun{## multicore only runs properly on unix systems
-  library("multicore")
-  cvrisk(model, papply = mcapply)
-}
-\dontrun{## infrastructure needs to be set up in advance
-  library("snow")
-  cl <- makePVMcluster(25) # e.g. to run cvrisk on 25 nodes via PVM
-  myApply <- function(X, FUN, cl, ...){
-     clusterEvalQ(cl, library("mboost")) # load mboost on nodes
-     ## further set up steps as required
-     clusterApplyLB(cl = cl, X, FUN, ...)
+  \dontrun{## multicore only runs properly on unix systems
+    library("multicore")
+    cvrisk(model)
   }
-  cvrisk(model, papply = myApply, cl = cl)
-  stopCluster(cl)
-}
+
+  \dontrun{## infrastructure needs to be set up in advance
+    library("snow")
+    cl <- makePVMcluster(25) # e.g. to run cvrisk on 25 nodes via PVM
+    myApply <- function(X, FUN, cl, ...) {
+      clusterEvalQ(cl, library("mboost")) # load mboost on nodes
+      ## further set up steps as required
+      clusterApplyLB(cl = cl, X, FUN, ...)
+    }
+    cvrisk(model, papply = myApply, cl = cl)
+    stopCluster(cl)
+  }
 
 }
 \keyword{models}

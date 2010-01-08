@@ -19,10 +19,10 @@
 }
 \references{
 
-  Peter Buhlmann (2006), Boosting for high-dimensional linear models.
+  Peter Buehlmann (2006), Boosting for high-dimensional linear models.
   \emph{The Annals of Statistics}, \bold{34}(2), 559--583.
 
-  Peter Buhlmann and Torsten Hothorn (2007),
+  Peter Buehlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 
@@ -38,12 +38,12 @@
 }
 \examples{
 
-    \dontrun{
-        library("Biobase")
-        data("Westbc", package = "mboost")
-        westbc <- new("ExpressionSet", 
-              phenoData = new("AnnotatedDataFrame", data = Westbc$pheno),
-              assayData = assayDataNew(exprs = Westbc$assay))
-    }
+  \dontrun{
+    library("Biobase")
+    data("Westbc", package = "mboost")
+    westbc <- new("ExpressionSet", 
+          phenoData = new("AnnotatedDataFrame", data = Westbc$pheno),
+          assayData = assayDataNew(exprs = Westbc$assay))
+  }
 }
 \keyword{datasets}

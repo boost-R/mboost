@@ -11,8 +11,8 @@
 }
 \usage{
 \method{glmboost}{formula}(formula, data = list(), weights = NULL,
-                           na.action = na.pass, contrasts.arg = NULL,
-                           center = FALSE, control = boost_control(), ...)
+          na.action = na.pass, contrasts.arg = NULL,
+          center = FALSE, control = boost_control(), ...)
 \method{glmboost}{matrix}(x, y, center = FALSE, control = boost_control(), ...)
 \method{glmboost}{default}(x,  ...)
 \method{plot}{glmboost}(x, main = deparse(x$call), col = NULL, ...)
@@ -43,7 +43,7 @@
   A (generalized) linear model is fitted using a boosting algorithm based on component-wise
   univariate linear models. The fit, i.e., the regression coefficients, can be
   interpreted in the usual way. The methodology is described in
-  Buhlmann and Yu (2003), Buhlmann (2006), and Buhlmann and Hothorn (2007).
+  Buehlmann and Yu (2003), Buehlmann (2006), and Buehlmann and Hothorn (2007).
 
 }
 \value{
@@ -55,15 +55,15 @@
 }
 \references{
 
-  Peter Buhlmann and Bin Yu (2003),
+  Peter Buehlmann and Bin Yu (2003),
   Boosting with the L2 loss: regression and classification.
   \emph{Journal of the American Statistical Association}, \bold{98},
   324--339.
 
-  Peter Buhlmann (2006), Boosting for high-dimensional linear models.
+  Peter Buehlmann (2006), Boosting for high-dimensional linear models.
   \emph{The Annals of Statistics}, \bold{34}(2), 559--583.
 
-  Peter Buhlmann and Torsten Hothorn (2007),
+  Peter Buehlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 
@@ -110,6 +110,19 @@
     ### plot coefficient path of glmboost
     par(mai = par("mai") * c(1, 1, 1, 2.5))
     plot(cars.gb)
+
+    ### sparse high-dimensional example
+    library("Matrix")
+    n <- 100
+    p <- 10000
+    ptrue <- 10
+    X <- Matrix(0, nrow = n, ncol = p)
+    X[sample(1:(n * p), floor(n * p / 20))] <- runif(floor(n * p / 20))
+    beta <- numeric(p)
+    beta[sample(1:p, ptrue)] <- 10
+    y <- drop(X %*% beta + rnorm(n, sd = 0.1))
+    mod <- glmboost(y = y, x = X)
+    coef(mod, which = which(beta > 0))
 
 }
 \keyword{models}

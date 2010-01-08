@@ -18,7 +18,7 @@ boost_control(mstop = 100, nu = 0.1,
                risks computed for the learning sample (i.e., all non-zero weights),
                \code{oobag} to risks based on the out-of-bag (all observations with
                zero weights) and \code{none} to no risk computations at all.}
-  \item{center}{ a logical indicating if the numerical covariates should be mean
+  \item{center}{ deprecated. A logical indicating if the numerical covariates should be mean
                  centered before fitting. Only implemented for
 		 \code{\link{glmboost}}. In \code{\link{blackboost}}
 		 centering is not needed. In \code{\link{gamboost}}
@@ -26,7 +26,8 @@ boost_control(mstop = 100, nu = 0.1,
 		 base-learners are specified without intercept. In this
 		 case centering of the covariates is essential and should be done
 		 manually (at the moment). Will be removed in favor of
-                 a corresponding argument in \code{glmboost} in the future (and gives a warning).}
+                 a corresponding argument in \code{glmboost} in the future 
+                 (and gives a warning).}
   \item{trace}{ a logical triggering printout of status information during
                 the fitting process.}
 }
@@ -41,6 +42,5 @@ boost_control(mstop = 100, nu = 0.1,
 \value{
   An object of class \code{boost_control}, a list.
 }
-\seealso{\code{\link{gamboost}}, \code{\link{glmboost}} and
-  \code{\link{blackboost}} for the usage}
+\seealso{\code{\link{mboost}}}
 \keyword{misc}

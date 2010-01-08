@@ -6,7 +6,7 @@
   Environmental variables and bird counts for identifying
   suitable bird habitats
 }
-\usage{data(birds)}
+\usage{data("birds")}
 \format{
   A data frame with 258 observations on the following 10 variables.
   \describe{

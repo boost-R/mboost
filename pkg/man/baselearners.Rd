@@ -10,27 +10,29 @@
 \alias{\%X\%}
 \title{ Base-learners for Gradient Boosting }
 \description{
-  base-learners to be utilized in the formula specification of \code{mboost}.
+  Base-learners for fitting base-models in the generic implementation of 
+  component-wise gradient boosting in function \code{mboost}.
 }
 \usage{
-bols(..., by = NULL, index = NULL, intercept = TRUE, df = NULL, lambda = 0,
-     contrasts.arg = "contr.treatment")
+bols(..., by = NULL, index = NULL, intercept = TRUE, df = NULL, 
+     lambda = 0, contrasts.arg = "contr.treatment")
 bbs(..., by = NULL, index = NULL, knots = 20, degree = 3,
     differences = 2, df = 4, lambda = NULL, center = FALSE)
 bspatial(...)
 brandom(..., df = 4)
-btree(..., tree_controls = ctree_control(stump = TRUE, mincriterion = 0))
+btree(..., tree_controls = ctree_control(stump = TRUE, 
+                                         mincriterion = 0))
 bl1 \%+\% bl2
 bl1 \%X\% bl2
 }
 \arguments{
   \item{...}{ one or more predictor variables or one data frame of
               predictor variables.}
-  \item{by}{ an optional variable defining varying coefficients
-             either binary or numeric.}
+  \item{by}{ an optional variable defining varying coefficients,
+             either a binary or numeric variable.}
   \item{index}{ a vector of integers for expanding the variables in \code{...}.
-                For example, \code{bols(x, index)} is equal to \code{bols(x[index])},
-                where \code{index} is of length greater or equal to \code{length(x)}.}
+                For example, \code{bols(x, index = index)} is equal to \code{bols(x[index])},
+                where \code{index} is an integer of length greater or equal to \code{length(x)}.}
   \item{df}{ trace of the hat matrix for the base-learner defining the base-learner
              complexity. Low values of \code{df} correspond to a large amount of smoothing and
              thus to "weaker" base-learners. Certain restrictions have to be kept for the
@@ -40,14 +42,14 @@ bl1 \%X\% bl2
              the construction of the penalty term. However, when option \code{center=TRUE},
              the effect is centered around its unpenalized part and therefore any positive number
              is admissible for \code{df}.}
-  \item{lambda}{ smoothing penalty, computed from \code{df} when missing.}
+  \item{lambda}{ smoothing penalty, computed from \code{df} when \code{df} is specified.}
   \item{knots}{ either the number of (equidistant) interior knots to be used for
                 the regression spline fit or a vector including the positions of the interior
                 knots. For multiple predictor variables, \code{knots}
 		may be a named list where the names in the list are the
 		variable names.}
   \item{degree}{ degree of the regression spline.}
-  \item{differences}{ natural number between 1 and 3. If \code{differences} =
+  \item{differences}{ 1, 2, or 3. If \code{differences} =
                      \emph{k}, \emph{k}-th-order differences are used as a penalty.}
   \item{intercept}{ if \code{intercept=TRUE} an intercept is added to the design matrix
                     of a linear base-learner.}
@@ -55,17 +57,18 @@ bl1 \%X\% bl2
                  re-parameterized such that the unpenalized part of the fit is substracted and
                  only the deviation effect is fitted. The unpenalized, parametric part has then
 		 to be included in separate base-learners using \code{bols} (see the examples below).}
-  \item{contrasts.arg}{ a character suitable for input to the \code{\link{contrasts}} replacement function.}
+  \item{contrasts.arg}{ a character suitable for input to the \code{\link{contrasts}} replacement function,
+                        see \code{\link{model.matrix}}.}
   \item{tree_controls}{ an object of class \code{"\linkS4class{TreeControl}"}, which can be
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners,
                   stumps are fitted by default.}
-  \item{bl1}{a linear base-learner of a list of linear base-learners.}
-  \item{bl2}{a linear base-learner of a list of linear base-learners.}
+  \item{bl1}{a linear base-learner or a list of linear base-learners.}
+  \item{bl2}{a linear base-learner or a list of linear base-learners.}
 }
 \details{
-  \code{bols} refers to linear base-learners (least squares or Ridge estimate), while
-  \code{bbs} refer to penalized regression splines. \code{bspatial}
+  \code{bols} refers to linear base-learners (potentially estimated with a Ridge penalty), while
+  \code{bbs} provide penalized regression splines. \code{bspatial}
   fits bivariate surfaces and \code{brandom} defines random effects base-learners.
   In combination with option \code{by}, these base-learners can be turned into varying
   coefficient terms. The linear base-learners are fitted using Ridge regression
@@ -73,17 +76,16 @@ bl1 \%X\% bl2
   (default for \code{bbs}, \code{bspatial}, and \code{brandom}) or specified directly
   (\code{lambda = 0} means no penalization as default for \code{bols}).
 
-  Linear base-learners can be specified using \code{bols}. The function
-  \code{bols(x)} can deal with both numeric and factor variables
-  \code{x}. By default, an intercept term is added to the corresponding design matrix
+  In \code{bols(x)}, \code{x} may be a numeric vector or factor. Alternatively,
+  \code{x} can be a data frame containing numeric or factor variables. 
+  In this case, or when multiple predictor variables are specified, e.g.,
+  using \code{bols(x1, x2)}, the model is equivalent to \code{lm(y ~ ., data = x)}
+  or \code{lm(y ~ x1 + x2)}, respectively.
+  By default, an intercept term is added to the corresponding design matrix
   (which can be omitted using \code{intercept = FALSE}). When \code{df} is
-  given, a ridge estimator with \code{df} degrees of freedom (trace of hat matrix)
-  is used as base-learner. If multiple predictor variables are specified, e.g.,
-  \code{bols(x1, x2)}, \emph{one} base-learner with a common design matrix
-  for all specified covariates (\code{x1}, \code{x2}) is used. \code{x1}
-  and \code{x2} are treated as a group, i.e., they enter the model
-  together if the corresponding base-learner is selected and
-  additive linear effects are estimated for \code{x1} and \code{x2}.
+  given, a Ridge estimator with \code{df} degrees of freedom (trace of hat matrix)
+  is used as base-learner. Note that all variables are treated as a group,
+  i.e., they enter the model together if the corresponding base-learner is selected.
 
   With \code{bbs}, the P-spline approach of Eilers and Marx (1996) is
   used. P-splines use a squared \emph{k}-th-order difference penalty
@@ -158,12 +160,12 @@ bl1 \%X\% bl2
   of two or more linear base-learners is returned by \code{\%X\%}.
   These two features are experimental and for expert use only.
 
-  \code{btree} fits a stump to one or two variables. Note that
+  \code{btree} fits a stump to one or more variables. Note that
   \code{\link{blackboost}} is more efficient for boosting stumps.
 }
 \value{
- An object of class \code{bl} with a \code{dpp} function. The call of \code{dpp} returns
- an object of class \code{bm}.
+ An object of class \code{bl} (base-learner) with a \code{dpp} function. The call of \code{dpp} returns
+ an object of class \code{bm} (base-model).
 }
 \references{
 
@@ -182,36 +184,57 @@ bl1 \%X\% bl2
   Predictors, \emph{International Statistical Review}, \bold{77}(3), 345--365.
 
 }
-\seealso{\code{\link{gamboost}}}
+\seealso{\code{\link{mboost}}}
 \examples{
-  x1 <- rnorm(100)
-  x2 <- rnorm(100) + 0.25*x1
+
+  set.seed(290875)
+
+  n <- 100
+  x1 <- rnorm(n)
+  x2 <- rnorm(n) + 0.25 * x1
   x3 <- as.factor(sample(0:1, 100, replace = TRUE))
   x4 <- gl(4, 25)
-  y <- 3*sin(x1) + x2^2 + rnorm(100)
+  y <- 3 * sin(x1) + x2^2 + rnorm(n)
+  weights <- drop(rmultinom(1, n, rep.int(1, n) / n))
 
-  spline1 <- bbs(x1, knots=20, df=4)
+  ### set up base-learners
+  spline1 <- bbs(x1, knots = 20, df = 4)
   attributes(spline1)
 
-  knots.x2 <- quantile(x2, c(0.25,0.5,0.75))
-  spline2 <- bbs(x2, knots=knots.x2, df=5)
+  knots.x2 <- quantile(x2, c(0.25, 0.5, 0.75))
+  spline2 <- bbs(x2, knots = knots.x2, df = 5)
   attributes(spline2)
 
-  olsfit <- bols(x3)
-  attributes(olsfit)
+  attributes(ols3 <- bols(x3))
+  attributes(ols4 <- bols(x4))
 
-  form1 <- y ~ bbs(x1,knots=20,df=4) + bbs(x2,knots=knots.x2,df=5)
+  ### compute base-models
+  drop(ols3$dpp(weights)$fit(y)$model) ## same as:
+  coef(lm(y ~ x3, weights = weights))
 
-# example for factors
-  attributes(bols(x4))
+  drop(ols4$dpp(weights)$fit(y)$model) ## same as:
+  coef(lm(y ~ x4, weights = weights))
 
-# example for grouped linear effects
-  model <- gamboost(y ~ bols(x1, x2, intercept=FALSE) + bols(x1, intercept=FALSE) + bols(x2, intercept=FALSE),
-                    control=boost_control(mstop=400))
+  ### fit model, component-wise
+  mod1 <- mboost_fit(list(spline1, spline2, ols3, ols4), y, weights)
+
+  ### more convenient formula interface
+  mod2 <- mboost(y ~ bbs(x1, knots = 20, df = 4) + 
+                     bbs(x2, knots = knots.x2, df = 5) + 
+                     bols(x3) + bols(x4))
+  all.equal(coef(mod1), coef(mod2))
+
+
+  ### grouped linear effects
+  model <- gamboost(y ~ bols(x1, x2, intercept = FALSE) + 
+                        bols(x1, intercept = FALSE) + 
+                        bols(x2, intercept = FALSE),
+                        control = boost_control(mstop = 400))
   coef(model, which=1)   # one base-learner for x1 and x2
   coef(model, which=2:3) # two separate base-learners for x1 and x2
 
-# example for bspatial
+
+  ### example for bspatial
   x1 <- runif(250,-pi,pi)
   x2 <- runif(250,-pi,pi)
 
@@ -220,38 +243,45 @@ bl1 \%X\% bl2
   spline3 <- bspatial(x1, x2, knots=12)
   attributes(spline3)
 
-# specify number of knots separately
+  ## specify number of knots separately
   form2 <- y ~ bspatial(x1, x2, knots=list(x1=12, x2=12))
 
-# decompose spatial effect into parametric part and deviation with 1 df
+  ## decompose spatial effect into parametric part and 
+  ## deviation with one df
   form2 <- y ~ bols(x1) + bols(x2) + bols(x1*x2) +
-               bspatial(x1, x2, knots=12, center = TRUE, df=1)
+               bspatial(x1, x2, knots = 12, center = TRUE, df = 1)
 
-# random intercept
-  id <- factor(rep(1:10, each=5))
+
+  ### random intercept
+  id <- factor(rep(1:10, each = 5))
   raneff <- brandom(id)
   attributes(raneff)
 
-# random intercept with non-observed category
+  ## random intercept with non-observed category
   set.seed(1907)
-  y <- rnorm(50, mean=rep(rnorm(10), each = 5), sd=0.1)
+  y <- rnorm(50, mean = rep(rnorm(10), each = 5), sd = 0.1)
   plot(y ~ id)
   # category 10 not observed
-  obs <- c(rep(1,45), rep(0,5))
-  model <- gamboost(y ~ brandom(id), weights=obs)
+  obs <- c(rep(1, 45), rep(0, 5))
+  model <- gamboost(y ~ brandom(id), weights = obs)
   coef(model)
-  fitted(model)[46:50] # just the grand mean as usual for random effects models
+  fitted(model)[46:50] # just the grand mean as usual for 
+                       # random effects models
 
-# random slope
+
+  ### random slope
   z <- runif(50)
   raneff <- brandom(id, by=z)
   attributes(raneff)
 
-# remove intercept from base-learner
-# and add explicit intercept to the model
+
+  ### remove intercept from base-learner
+  ### and add explicit intercept to the model
   tmpdata <- data.frame(x = 1:100, y = rnorm(1:100), int = rep(1, 100))
-  mod <- gamboost(y ~ bols(int, intercept = FALSE) + bols(x, intercept = FALSE),
-                  data = tmpdata, control = boost_control(mstop = 2500))
+  mod <- gamboost(y ~ bols(int, intercept = FALSE) + 
+                      bols(x, intercept = FALSE),
+                  data = tmpdata, 
+                  control = boost_control(mstop = 2500))
   cf <- unlist(coef(mod))
   cf[1] <- cf[1] + mod$offset
   cf
