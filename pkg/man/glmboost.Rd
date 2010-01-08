@@ -7,7 +7,7 @@
 \title{ Gradient Boosting with Component-wise Linear Models }
 \description{
   Gradient boosting for optimizing arbitrary loss functions where component-wise
-  linear models are utilized as base learners.
+  linear models are utilized as base-learners.
 }
 \usage{
 \method{glmboost}{formula}(formula, data = list(), weights = NULL,

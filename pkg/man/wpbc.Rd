@@ -85,7 +85,7 @@
   Twelfth International Conference on Machine Learning}, pages
   522--530, San Francisco, Morgan Kaufmann.
 
-  Peter Buhlmann and Torsten Hothorn (2007),
+  Peter Buehlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 

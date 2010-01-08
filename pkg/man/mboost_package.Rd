@@ -8,7 +8,7 @@
   Functional gradient descent algorithms (boosting) for optimizing
   general loss functions utilizing componentwise least squares, either
   of parametric linear form or smoothing splines, or regression trees as
-  base learners for fitting generalized linear, additive and interaction
+  base-learners for fitting generalized linear, additive and interaction
   models to potentially high-dimensional data.
 }
 \details{
@@ -21,10 +21,13 @@ License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes\cr
 }
+
+
+
 }
 \author{
   Torsten Hothorn \email{Torsten.Hothorn@R-project.org},\cr
-  Peter Buhlmann, Thomas Kneib, Matthias Schmid and
+  Peter Buehlmann, Thomas Kneib, Matthias Schmid and
   Benjamin Hofner
 }
 

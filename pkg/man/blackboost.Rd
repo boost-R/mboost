@@ -3,7 +3,7 @@
 \title{ Gradient Boosting with Regression Trees }
 \description{
   Gradient boosting for optimizing arbitrary loss functions where regression
-  trees are utilized as base learners.
+  trees are utilized as base-learners.
 }
 \usage{
 blackboost(formula, data = list(), 
@@ -19,7 +19,7 @@ blackboost(formula, data = list(),
   \item{data}{ a data frame containing the variables in the model. }
   \item{tree_controls}{ an object of class \code{"\linkS4class{TreeControl}"}, which can be
                   obtained using \code{\link[party]{ctree_control}}.
-                  Defines hyper-parameters for the trees which are used as base learners.
+                  Defines hyper-parameters for the trees which are used as base-learners.
                   It is wise
                   to make sure to understand the consequences of altering any of its
                   arguments.}
@@ -28,13 +28,13 @@ blackboost(formula, data = list(),
 \details{
 
   This function implements the `classical'
-  gradient boosting utilizing regression trees as base learners.
+  gradient boosting utilizing regression trees as base-learners.
   Essentially, the same algorithm is implemented in package
   \code{\link[gbm]{gbm}}. The
   main difference is that arbitrary loss functions to be optimized
   can be specified via the \code{family} argument to \code{blackboost} whereas
   \code{\link[gbm]{gbm}} uses hard-coded loss functions.
-  Moreover, the base learners (conditional
+  Moreover, the base-learners (conditional
   inference trees, see \code{\link[party]{ctree}}) are a little bit more flexible.
 
   The regression fit is a black box prediction machine and thus

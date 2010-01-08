@@ -67,11 +67,11 @@ bl1 \%X\% bl2
   \item{bl2}{a linear base-learner or a list of linear base-learners.}
 }
 \details{
-  \code{bols} refers to linear base-learners (potentially estimated with a Ridge penalty), while
+  \code{bols} refers to linear base-learners (potentially estimated with a ridge penalty), while
   \code{bbs} provide penalized regression splines. \code{bspatial}
   fits bivariate surfaces and \code{brandom} defines random effects base-learners.
   In combination with option \code{by}, these base-learners can be turned into varying
-  coefficient terms. The linear base-learners are fitted using Ridge regression
+  coefficient terms. The linear base-learners are fitted using Ridge Regression
   where the penalty parameter \code{lambda} is either computed from \code{df}
   (default for \code{bbs}, \code{bspatial}, and \code{brandom}) or specified directly
   (\code{lambda = 0} means no penalization as default for \code{bols}).
@@ -83,7 +83,7 @@ bl1 \%X\% bl2
   or \code{lm(y ~ x1 + x2)}, respectively.
   By default, an intercept term is added to the corresponding design matrix
   (which can be omitted using \code{intercept = FALSE}). When \code{df} is
-  given, a Ridge estimator with \code{df} degrees of freedom (trace of hat matrix)
+  given, a ridge estimator with \code{df} degrees of freedom (trace of hat matrix)
   is used as base-learner. Note that all variables are treated as a group,
   i.e., they enter the model together if the corresponding base-learner is selected.
 

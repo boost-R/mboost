@@ -3,7 +3,7 @@
 \title{ Gradient Boosting with Smooth Components }
 \description{
   Gradient boosting for optimizing arbitrary loss functions, where component-wise
-  smoothing procedures are utilized as base learners.
+  smoothing procedures are utilized as base-learners.
 }
 \usage{
 gamboost(formula, data = list(), 
@@ -33,9 +33,9 @@ gamboost(formula, data = list(),
 \details{
 
   A (generalized) additive model is fitted using a boosting algorithm based on
-  component-wise univariate base learners. The base-learners can either be
+  component-wise univariate base-learners. The base-learners can either be
   specified via the \code{formula} object or via the \code{baselearner} argument
-  (see \code{\link{bbs}} for an example). If the base learners specified in
+  (see \code{\link{bbs}} for an example). If the base-learners specified in
   \code{formula} differ from \code{baselearner}, the latter argument will be
   ignored. Furthermore, two additional base-learners can be specified in
   \code{formula}: \code{\link{bspatial}} for bivariate tensor product

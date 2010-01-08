@@ -14,7 +14,7 @@
 
   A full description of the data 
   can be found in West et al. (2001) and an application
-  of boosted linear models is given by Buhlmann (2006).
+  of boosted linear models is given by Buehlmann (2006).
 
 }
 \references{
