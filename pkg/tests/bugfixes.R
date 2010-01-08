@@ -273,3 +273,16 @@ fm <- Family(ngradient = G@ngradient, risk = G@risk)
 m1 <- glmboost(y ~ x, family = G)
 m2 <- glmboost(y ~ x, family = fm)
 stopifnot(all.equal(coef(m1), coef(m2)))
+
+### formula evaluation
+f <- function() {
+
+    x <- rnorm(100)
+    y <- rnorm(100)
+    list(mboost(y ~ bbs(x)),
+         gamboost(y ~ x),
+         glmboost(y ~ x),
+         blackboost(y ~ x))
+}
+tmp <- f()
+

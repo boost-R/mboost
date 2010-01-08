@@ -406,7 +406,8 @@ mboost <- function(formula, data = list(),
     names(bl) <- sapply(bl, function(x) x$get_call())
 
     ### get the response
-    response <- eval(as.expression(formula[[2]]), envir = data)
+    response <- eval(as.expression(formula[[2]]), envir = data,
+                     enclos = environment(formula))
     ret <- mboost_fit(bl, response = response, ...)
     if (is.data.frame(data) && nrow(data) == length(response))
         ret$rownames <- rownames(data)
