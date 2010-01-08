@@ -1,5 +1,5 @@
 
-R version 2.10.0 (2009-10-26)
+R version 2.10.1 (2009-12-14)
 Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -17,79 +17,14 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-> ### * <HEADER>
-> ###
-> attach(NULL, name = "CheckExEnv")
-> assign("nameEx",
-+        local({
-+ 	   s <- "__{must remake R-ex/*.R}__"
-+            function(new) {
-+                if(!missing(new)) s <<- new else s
-+            }
-+        }),
-+        pos = "CheckExEnv")
-> ## Add some hooks to label plot pages for base and grid graphics
-> assign("base_plot_hook",
-+        function() {
-+            pp <- par(c("mfg","mfcol","oma","mar"))
-+            if(all(pp$mfg[1:2] == c(1, pp$mfcol[2]))) {
-+                outer <- (oma4 <- pp$oma[4]) > 0; mar4 <- pp$mar[4]
-+                mtext(sprintf("help(\"%s\")", nameEx()), side = 4,
-+                      line = if(outer)max(1, oma4 - 1) else min(1, mar4 - 1),
-+                outer = outer, adj = 1, cex = .8, col = "orchid", las=3)
-+            }
-+        },
-+        pos = "CheckExEnv")
-> assign("grid_plot_hook",
-+        function() {
-+            grid::pushViewport(grid::viewport(width=grid::unit(1, "npc") -
-+                               grid::unit(1, "lines"), x=0, just="left"))
-+            grid::grid.text(sprintf("help(\"%s\")", nameEx()),
-+                            x=grid::unit(1, "npc") + grid::unit(0.5, "lines"),
-+                            y=grid::unit(0.8, "npc"), rot=90,
-+                            gp=grid::gpar(col="orchid"))
-+        },
-+        pos = "CheckExEnv")
-> setHook("plot.new",     get("base_plot_hook", pos = "CheckExEnv"))
-> setHook("persp",        get("base_plot_hook", pos = "CheckExEnv"))
-> setHook("grid.newpage", get("grid_plot_hook", pos = "CheckExEnv"))
-> assign("cleanEx",
-+        function(env = .GlobalEnv) {
-+ 	   rm(list = ls(envir = env, all.names = TRUE), envir = env)
-+            RNGkind("default", "default")
-+ 	   set.seed(1)
-+    	   options(warn = 1)
-+ 	   .CheckExEnv <- as.environment("CheckExEnv")
-+ 	   delayedAssign("T", stop("T used instead of TRUE"),
-+ 		  assign.env = .CheckExEnv)
-+ 	   delayedAssign("F", stop("F used instead of FALSE"),
-+ 		  assign.env = .CheckExEnv)
-+ 	   sch <- search()
-+ 	   newitems <- sch[! sch %in% .oldSearch]
-+ 	   for(item in rev(newitems))
-+                eval(substitute(detach(item), list(item=item)))
-+ 	   missitems <- .oldSearch[! .oldSearch %in% sch]
-+ 	   if(length(missitems))
-+ 	       warning("items ", paste(missitems, collapse=", "),
-+ 		       " have been removed from the search path")
-+        },
-+        pos = "CheckExEnv")
-> assign("ptime", proc.time(), pos = "CheckExEnv")
-> ## at least one package changes these via ps.options(), so do this
-> ## before loading the package.
-> ## Use postscript as incomplete files may be viewable, unlike PDF.
-> ## Choose a size that is close to on-screen devices, fix paper
-> grDevices::ps.options(width = 7, height = 7, paper = "a4", reset = TRUE)
-> grDevices::postscript("mboost-Ex.ps")
-> 
-> assign("par.postscript", graphics::par(no.readonly = TRUE), pos = "CheckExEnv")
-> options(contrasts = c(unordered = "contr.treatment", ordered = "contr.poly"))
+> pkgname <- "mboost"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
 > options(warn = 1)
 > library('mboost')
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
-> assign(".oldNS", loadedNamespaces(), pos = 'CheckExEnv')
-> cleanEx(); nameEx("FP")
+> cleanEx()
+> nameEx("FP")
 > ### * FP
 > 
 > flush(stderr()); flush(stdout())
@@ -182,7 +117,8 @@ FP(kneebreadth, scaling = FALSE)log(kneebreadth)kneebreadth^-1
 > 
 > 
 > 
-> cleanEx(); nameEx("Family")
+> cleanEx()
+> nameEx("Family")
 > ### * Family
 > 
 > flush(stderr()); flush(stdout())
@@ -216,7 +152,8 @@ Loss function: (y - f)^2
 > 
 > 
 > 
-> cleanEx(); nameEx("Westbc")
+> cleanEx()
+> nameEx("Westbc")
 > ### * Westbc
 > 
 > flush(stderr()); flush(stdout())
@@ -240,7 +177,8 @@ Loss function: (y - f)^2
 > 
 > 
 > 
-> cleanEx(); nameEx("baselearners")
+> cleanEx()
+> nameEx("baselearners")
 > ### * baselearners
 > 
 > flush(stderr()); flush(stdout())
@@ -341,10 +279,10 @@ attr(,"offset")
 [1] 1.334042
 >   coef(model, which=2:3) # two separate base-learners for x1 and x2
 $`bols(x1, intercept = FALSE)`
-[1] 6.448915e-09
+[1] 3.136929e-12
 
 $`bols(x2, intercept = FALSE)`
-[1] 1.132458e-10
+[1] 3.307395e-14
 
 attr(,"offset")
 [1] 1.334042
@@ -449,7 +387,7 @@ $class
 >   cf[1] <- cf[1] + mod$offset
 >   cf
 bols(int, intercept = FALSE)   bols(x, intercept = FALSE) 
-                -0.076579752                  0.003043236 
+                -0.076579749                  0.003043236 
 >   coef(lm(y ~ x, data = tmpdata))
  (Intercept)            x 
 -0.076579776  0.003043237 
@@ -468,28 +406,28 @@ bols(int, intercept = FALSE)   bols(x, intercept = FALSE)
 >   ## data pre-processing
 >   system.time(b1 <- bbs(x[xindex])$dpp(w))
    user  system elapsed 
- 15.361   2.084  17.445 
+ 15.329   2.168  17.532 
 >   ## model fitting
 >   system.time(c1 <- b1$fit(y)$model)
    user  system elapsed 
-  0.104   0.000   0.103 
+  0.108   0.004   0.110 
 >   options(op)
 > 
 >   ### automatic search for ties
 >   system.time(b2 <- bbs(x[xindex])$dpp(w))
    user  system elapsed 
-  5.245   0.100   5.342 
+  5.137   0.160   5.295 
 >   system.time(c2 <- b2$fit(y)$model)
    user  system elapsed 
-  0.008   0.012   0.019 
+  0.016   0.000   0.015 
 > 
 >   ### manual specification of ties
 >   system.time(b3 <- bbs(x, index = xindex)$dpp(w))
    user  system elapsed 
-  0.044   0.000   0.047 
+  0.048   0.000   0.049 
 >   system.time(c3 <- b3$fit(y)$model) ### 10% of brute force
    user  system elapsed 
-  0.016   0.000   0.014 
+  0.016   0.000   0.016 
 > 
 >   all.equal(c1, c2)
 [1] TRUE
@@ -499,7 +437,8 @@ bols(int, intercept = FALSE)   bols(x, intercept = FALSE)
 > 
 > 
 > 
-> cleanEx(); nameEx("blackboost")
+> cleanEx()
+> nameEx("blackboost")
 > ### * blackboost
 > 
 > flush(stderr()); flush(stdout())
@@ -555,7 +494,8 @@ Number of baselearners:  1
 > 
 > 
 > 
-> cleanEx(); nameEx("bodyfat")
+> cleanEx()
+> nameEx("bodyfat")
 > ### * bodyfat
 > 
 > flush(stderr()); flush(stdout())
@@ -586,7 +526,8 @@ Number of baselearners:  1
 > 
 > 
 > 
-> cleanEx(); nameEx("boost_family-class")
+> cleanEx()
+> nameEx("boost_family-class")
 > ### * boost_family-class
 > 
 > flush(stderr()); flush(stdout())
@@ -609,7 +550,8 @@ Loss function: abs(y - f)
 > 
 > 
 > 
-> cleanEx(); nameEx("cvrisk")
+> cleanEx()
+> nameEx("cvrisk")
 > ### * cvrisk
 > 
 > flush(stderr()); flush(stdout())
@@ -811,7 +753,8 @@ Loading required package: colorspace
 > 
 > 
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
-> cleanEx(); nameEx("gamboost")
+> cleanEx()
+> nameEx("gamboost")
 > ### * gamboost
 > 
 > flush(stderr()); flush(stdout())
@@ -871,7 +814,8 @@ Degrees of freedom (for mstop = 21): 6.393244
 > 
 > 
 > 
-> cleanEx(); nameEx("glmboost")
+> cleanEx()
+> nameEx("glmboost")
 > ### * glmboost
 > 
 > flush(stderr()); flush(stdout())
@@ -999,7 +943,8 @@ attr(,"offset")
 > 
 > 
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
-> cleanEx(); nameEx("mboost")
+> cleanEx()
+> nameEx("mboost")
 > ### * mboost
 > 
 > flush(stderr()); flush(stdout())
@@ -1044,7 +989,8 @@ Loading required package: colorspace
 > 
 > 
 > 
-> cleanEx(); nameEx("mboost_package")
+> cleanEx()
+> nameEx("mboost_package")
 > ### * mboost_package
 > 
 > flush(stderr()); flush(stdout())
@@ -1115,7 +1061,8 @@ NULL
 > 
 > 
 > 
-> cleanEx(); nameEx("methods")
+> cleanEx()
+> nameEx("methods")
 > ### * methods
 > 
 > flush(stderr()); flush(stdout())
@@ -1277,10 +1224,10 @@ $`bols(int, intercept = FALSE)`
 [1] 6.267132
 
 $`bbs(x1, df = 1, center = TRUE)`
- [1] -0.02478713 -0.01925258  0.07735507  0.24268927  0.39127893  0.49333022
- [7]  0.58205157  0.65523850  0.67973447  0.64955712  0.60211201  0.54410925
-[13]  0.44971268  0.34981915  0.33270626  0.36324093  0.37184592  0.37876609
-[19]  0.39836929  0.42301418  0.36842342  0.22805000
+ [1] -0.02478711 -0.01925254  0.07735510  0.24268927  0.39127892  0.49333021
+ [7]  0.58205157  0.65523850  0.67973447  0.64955713  0.60211202  0.54410925
+[13]  0.44971270  0.34981919  0.33270628  0.36324091  0.37184588  0.37876602
+[19]  0.39836919  0.42301404  0.36842328  0.22804990
 
 $`bols(x1, intercept = FALSE)`
 [1] 3.775258
@@ -1296,10 +1243,10 @@ $`bols(int, intercept = FALSE)`
 [1] 6.267132
 
 $`bbs(x1, df = 1, center = TRUE)`
- [1] -0.02478713 -0.01925258  0.07735507  0.24268927  0.39127893  0.49333022
- [7]  0.58205157  0.65523850  0.67973447  0.64955712  0.60211201  0.54410925
-[13]  0.44971268  0.34981915  0.33270626  0.36324093  0.37184592  0.37876609
-[19]  0.39836929  0.42301418  0.36842342  0.22805000
+ [1] -0.02478711 -0.01925254  0.07735510  0.24268927  0.39127892  0.49333021
+ [7]  0.58205157  0.65523850  0.67973447  0.64955713  0.60211202  0.54410925
+[13]  0.44971270  0.34981919  0.33270628  0.36324091  0.37184588  0.37876602
+[19]  0.39836919  0.42301404  0.36842328  0.22804990
 
 $`bols(x1, intercept = FALSE)`
 [1] 3.775258
@@ -1317,10 +1264,10 @@ attr(,"offset")
 [1] 4.431516
 >   coef(model, which = "x1") # shows all base-learners for x1
 $`bbs(x1, df = 1, center = TRUE)`
- [1] -0.02478713 -0.01925258  0.07735507  0.24268927  0.39127893  0.49333022
- [7]  0.58205157  0.65523850  0.67973447  0.64955712  0.60211201  0.54410925
-[13]  0.44971268  0.34981915  0.33270626  0.36324093  0.37184592  0.37876609
-[19]  0.39836929  0.42301418  0.36842342  0.22805000
+ [1] -0.02478711 -0.01925254  0.07735510  0.24268927  0.39127892  0.49333021
+ [7]  0.58205157  0.65523850  0.67973447  0.64955713  0.60211202  0.54410925
+[13]  0.44971270  0.34981919  0.33270628  0.36324091  0.37184588  0.37876602
+[19]  0.39836919  0.42301404  0.36842328  0.22804990
 
 $`bols(x1, intercept = FALSE)`
 [1] 3.775258
@@ -1330,7 +1277,8 @@ attr(,"offset")
 > 
 > 
 > 
-> cleanEx(); nameEx("stabsel")
+> cleanEx()
+> nameEx("stabsel")
 > ### * stabsel
 > 
 > flush(stderr()); flush(stdout())
@@ -1368,7 +1316,8 @@ Cutoff: 0.9; q:  3
 > 
 > 
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
-> cleanEx(); nameEx("survFit")
+> cleanEx()
+> nameEx("survFit")
 > ### * survFit
 > 
 > flush(stderr()); flush(stdout())
@@ -1448,7 +1397,8 @@ attr(,"class")
 > 
 > 
 > 
-> cleanEx(); nameEx("wpbc")
+> cleanEx()
+> nameEx("wpbc")
 > ### * wpbc
 > 
 > flush(stderr()); flush(stdout())
@@ -1479,7 +1429,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  51.747 2.904 61.15 10.02 10.02 
+Time elapsed:  52.159 3.14 61.804 9.704 9.704 
 > grDevices::dev.off()
 null device 
           1 
