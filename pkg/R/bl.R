@@ -65,10 +65,6 @@ X_ols <- function(mf, vary, args) {
     ### <FIXME> penalize intercepts???
     ### set up penalty matrix
     ANOVA <- (!is.null(contr) && (length(contr) == 1)) && (ncol(mf) == 1)
-#    if (ANOVA) {
-#        diag <- Diagonal
-#        X <- Matrix(X)
-#    }
     K <- diag(ncol(X))
     ### for ordered factors use difference penalty
     if (ANOVA && any(sapply(mf[, names(contr), drop = FALSE], is.ordered))) {
@@ -115,6 +111,7 @@ X_bbs <- function(mf, vary, args) {
     })
     ### options
     MATRIX <- any(sapply(mm, dim) > c(500, 50)) || (length(mm) > 1)
+    MATRIX <- MATRIX && options("mboost_useMatrix")$mboost_useMatrix
     if (MATRIX) {
         diag <- Diagonal
         for (i in 1:length(mm)) mm[[i]] <- Matrix(mm[[i]])
@@ -195,7 +192,8 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
 
     CC <- all(Complete.cases(mf))
     ### option
-    DOINDEX <- is.data.frame(mf) && (nrow(mf) > 10000 || is.factor(mf[[1]]))
+    DOINDEX <- is.data.frame(mf) && 
+        (nrow(mf) > options("mboost_indexmin")[[1]] || is.factor(mf[[1]]))
     if (is.null(index)) {
         ### try to remove duplicated observations or
         ### observations with missings
@@ -263,7 +261,7 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
 
     CC <- all(Complete.cases(mf))
     ### option
-    DOINDEX <- (nrow(mf) > 10000)
+    DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]])
     if (is.null(index)) {
         if (!CC || DOINDEX) {
             index <- get_index(mf)
@@ -316,7 +314,8 @@ bl_lin <- function(blg, Xfun, args) {
 
         weights[!Complete.cases(mf)] <- 0
         w <- weights
-        if (!is.null(index)) w <- as.vector(tapply(weights, index, sum))
+        if (!is.null(index)) 
+            w <- .Call("R_ysum", as.double(weights), as.integer(index), PACKAGE = "mboost")
         XtX <- crossprod(X * w, X)
         lambdadf <- df2lambda(X, df = args$df, lambda = args$lambda, 
                               dmat = K, weights = w)
@@ -335,7 +334,7 @@ bl_lin <- function(blg, Xfun, args) {
 
         fit <- function(y) {
             if (!is.null(index)) {
-                y <- as.vector(tapply(weights * y, index, sum))
+                y <- .Call("R_ysum", as.double(weights * y), as.integer(index), PACKAGE = "mboost")
             } else {
                 y <- y * weights
             }
@@ -370,7 +369,7 @@ bl_lin <- function(blg, Xfun, args) {
                 nm <- names(blg)
                 newdata <- newdata[,nm, drop = FALSE]
                 ### option
-                if (nrow(newdata) > 10000) {
+                if (nrow(newdata) > options("mboost_indexmin")[[1]]) {
                     index <- get_index(newdata)
                     newdata <- newdata[index[[1]],,drop = FALSE]
                     index <- index[[2]]
@@ -475,7 +474,7 @@ fit.bl <- function(object, y)
     
     CC <- all(Complete.cases(mf))
     ### option
-    DOINDEX <- (nrow(mf) > 10000)
+    DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]])
     if (is.null(index)) {
         if (!CC || DOINDEX) {
             index <- get_index(mfindex)
@@ -559,7 +558,7 @@ fit.bl <- function(object, y)
     
     CC <- all(Complete.cases(mf))
     ### option
-    DOINDEX <- (nrow(mf) > 10000)
+    DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]])
     if (is.null(index)) {
         if (!CC || DOINDEX) {
             index <- get_index(mfindex)
@@ -598,14 +597,22 @@ fit.bl <- function(object, y)
         newX2 <- environment(bl2$dpp)$newX
 
         X1 <- newX1(mf[, bl1$get_names(), drop = FALSE])
-        K1 <- Matrix(X1$K)
+        K1 <- X1$K
+        X1 <- X1$X
         if (!is.null(l1)) K1 <- l1 * K1
-        X1 <- Matrix(X1$X)
+        if (options("mboost_useMatrix")$mboost_useMatrix) {
+            X1 <- Matrix(X1)
+            K1 <- Matrix(K1)
+        }
 
         X2 <- newX2(mf[, bl2$get_names(), drop = FALSE])
-        K2 <- Matrix(X2$K)
+        K2 <- X2$K
+        X2 <- X2$X
         if (!is.null(l2)) K2 <- l2 * K2
-        X2 <- Matrix(X2$X)
+        if (options("mboost_useMatrix")$mboost_useMatrix) {
+            X2 <- Matrix(X2)
+            K2 <- Matrix(K2)
+        }
 
         X <- kronecker(X1, matrix(1, nc = ncol(X2))) *
              kronecker(matrix(1, nc = ncol(X1)), X2)

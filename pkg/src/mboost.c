@@ -262,34 +262,49 @@ SEXP copymem (SEXP x) {
     return(duplicate(x));
 }
 
-/**
-    sum up weights and y for tied x-values in smoothbase: DIRTY!
-*/
-SEXP wybar (SEXP ox, SEXP suox, SEXP tmp, SEXP ans) {
 
-    int n, p, j, i, count = 0, *iox, *isuox, tox;
-    double *dtmp, *dans;
+int C_intmax(const int *x, const int n) {
+   int tmp = 0;
+   int i;
+   
+   for (i = 0; i < n; i++) {
+       if (x[i] == NA_INTEGER) continue;
+       if (x[i] > tmp) tmp = x[i];
+   }
+   return(tmp);
+}
+
+
+/**
+    tapply(y, index, sum)
+*/
+SEXP R_ysum (SEXP y, SEXP index) {
+
+    int n, m, i;
+    SEXP ans;
+    double *dans, *dy;
+    int *iindex;
     
-    iox = INTEGER(ox);
-    isuox = INTEGER(suox);
-    dtmp = REAL(tmp);
+    n = LENGTH(y);
+    dy = REAL(y);
+    if (n != LENGTH(index)) error("dimensions don't match");
+    iindex = INTEGER(index);
+    m = C_intmax(iindex, n);
+
+    PROTECT(ans = allocVector(REALSXP, m));
     dans = REAL(ans);
-    n = nrow(tmp);
-    p = nrow(ans);
-    
-    for (i = 0; i < LENGTH(suox); i++) {
-        tox = isuox[i];
-        for (j = 0; j < n; j++) {
-            if (tox == iox[j]) {
-                dans[count] += dtmp[j];
-                dans[count + p] += dtmp[j + n];
-                dans[count + 2 * p] += dtmp[j + 2 * n];
-            }
-        }
-        count++;
+    for (i = 0; i < m; i++) {
+        dans[i] = 0.0;
     }
+
+    for (i = 0; i < n; i++) {
+        if (iindex[i] == NA_INTEGER) continue;
+        dans[iindex[i] - 1] += dy[i];
+    }
+    UNPROTECT(1);
     return(ans);
 }
+
 
 /**
     partial likelihood of a Cox model
