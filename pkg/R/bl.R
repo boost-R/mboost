@@ -3,6 +3,10 @@
 ### or the other way round
 df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
 
+    ### <FIXME> Buja definition of df
+    stopifnot(options("mboost_dftraceS")[[1]])
+    ### </FIXME>
+
     stopifnot(xor(is.null(df), is.null(lambda)))
     if (!is.null(df))
         if (df >= ncol(X)) return(c(df = df, lambda = 0))

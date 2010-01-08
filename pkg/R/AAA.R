@@ -22,3 +22,9 @@
     file.create(sup)
     return(TRUE)
 }
+
+.onLoad <- function(libname, pkgname) {
+    options(mboost_useMatrix = TRUE, 
+            mboost_indexmin = 10000,
+            mboost_dftraceS = TRUE)
+}
