@@ -156,6 +156,17 @@ bl1 \%X\% bl2
   intercept term should be added to \code{gamboost} via \code{bols} (see
   example below).
 
+  Three global options affect the base-learners: \code{option("mboost_useMatrix")}
+  defaulting to \code{TRUE} indicates that the base-learner may use
+  sparse matrix techniques for its computations. This reduces the memory
+  consumption but might (for smaller sample sizes) require more computing
+  time. \code{option("mboost_indexmin")} is an integer for the sample
+  size required to optimize model fitting by taking ties into account.
+  \code{option("mboost_dftraceS")}, which is also \code{TRUE} by default,
+  indicates that the trace of the smoother matrix is used as degrees
+  of freedom. If \code{FALSE}, an alternative is used (see
+  Hofner et al., 2009).
+
   Two or more linear base-learners can be joined using \code{\%+\%}. A tensor product
   of two or more linear base-learners is returned by \code{\%X\%}.
   These two features are experimental and for expert use only.
@@ -176,12 +187,17 @@ bl1 \%X\% bl2
   additive regression for space-time data: a Bayesian perspective.
   \emph{Statistica Sinica}, \bold{14}, 731-761.
 
+  Jan Gertheiss and Gerhard Tutz (2009), Penalized Regression with Ordinal
+  Predictors, \emph{International Statistical Review}, \bold{77}(3), 345--365.
+
+  Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2009), 
+  A Framework for Unbiased Model Selection Based on Boosting. 
+  Technical Report Nr. 72, Institut fuer Statistik, LMU Muenchen.
+  \url{http://epub.ub.uni-muenchen.de/}
+
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable selection and
   model choice in geoadditive regression models, \emph{Biometrics}, \bold{65}(2),
   626--634.
-
-  Jan Gertheiss and Gerhard Tutz (2009), Penalized Regression with Ordinal
-  Predictors, \emph{International Statistical Review}, \bold{77}(3), 345--365.
 
 }
 \seealso{\code{\link{mboost}}}
