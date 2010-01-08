@@ -22,7 +22,56 @@ LazyLoad: \tab yes\cr
 LazyData: \tab yes\cr
 }
 
+  This package is intended for modern regression modelling and stands
+  in-between classical generalized linear and additive models, as for example
+  implemented by \code{\link{lm}}, \code{\link{glm}}, or \code{\link[mgcv]{gam}},
+  and machine-learning approaches for complex interactions models,
+  most prominently represented by \code{\link[gbm]{gbm}} and 
+  \code{\link[randomForest]{randomForest}}.
 
+  The generic implementation of the optimization algorithm all functionality
+  in this package is based on (function \code{\link{mboost_fit}})
+  allows for fitting linear, additive, and interaction models (and mixes of those) 
+  in low and high-dimensions. The response may be numeric, binary, ordered, 
+  censored or count data.
+
+  Both theory and applications are discussed by Buehlmann and Hothorn (2007).
+  UseRs without a basic knowledge of boosting methods are asked
+  to read this introduction before analysing data using this package. 
+  The examples presented in this paper are available as package vignette
+  \code{mboost_illustrations}.
+
+  Note that the model fitting procedures in this package DO NOT automatically
+  determine an appropriate model complexity. This task is the responsibility
+  of the data analyst.
+}
+\section{NEWS in 2.0-0}{
+
+  Version 2.0-0 comes with new features, is faster and more accurate
+  in some aspects. In addition, some changes to the user interface
+  were necessary: Subsetting \code{mboost} objects changes the object.
+  At each time, a model is associated with a number of boosting iterations
+  which can be changed (increased or decreased) using the subset operator.
+
+  The \code{center} argument in \code{\link{bols}} was renamed
+  to \code{intercept}. Argument \code{z} renamed to \code{by}.
+
+  The base-learners \code{bns} and \code{bss} are deprecated
+  and replaced by \code{bbs} (which results in qualitatively the
+  same models but is computationally much more attractive).
+
+  New features include new families (for example for ordinal regression)
+  and the \code{which} argument to the \code{coef} and \code{predict}
+  methods for selecting interesting base-learners. Predict
+  methods are much faster now.
+
+  The memory consumption could be reduced considerably, 
+  thanks for sparse matrix technology in package \code{Matrix}.
+  Resampling procedures run automatically in parallel 
+  if package \code{multicore} is available.
+
+  The most important advancement is a generic implementation
+  of the optimizer in function \code{\link{mboost_fit}}.
 
 }
 \author{
@@ -46,70 +95,48 @@ LazyData: \tab yes\cr
 }
 
 \examples{
-data(bodyfat)
-model <- gamboost(DEXfat ~ .,
-         data = bodyfat, baselearner = "bbs",
-         control=boost_control(trace=TRUE))
 
-## extract coefficients of selected base-learners
-coef(model)
+  
+  data("bodyfat")
+  set.seed(290875)
 
-## extract *all* coefficients
-coef(model, which=1:9)
+  ### model conditional expectation of DEXfat given
+  model <- mboost(DEXfat ~ 
+      bols(age) +                 ### a linear function of age
+      btree(hipcirc, waistcirc) + ### a non-linear interaction of
+                                  ### hip and waist circumference
+      bbs(kneebreadth),           ### a smooth function of kneebreadth
+      data = bodyfat, control = boost_control(mstop = 100))
 
-## plot
-par(mfrow=c(3,3))
-plot(model)
+  ### bootstrap for assessing `optimal' number of boosting iterations
+  cvm <- cvrisk(model)
 
-par(mfrow=c(3,3))
-plot(model, which=1:9) ##???
+  ### restrict model to mstop(cvm)
+  model[mstop(cvm), return = FALSE]
+  mstop(model)
 
-## continue until mstop = 200
-model[200]
-## Note that the original object "model" is altered
+  ### plot age and kneebreadth
+  layout(matrix(1:2, nc = 2))
+  plot(model, which = c("age", "kneebreadth"))
 
-## show numbers of selected base-learners
-selected(model)
+  ### plot interaction of hip and waist circumference
+  attach(bodyfat) 
+  nd <- expand.grid(hipcirc = h <- seq(from = min(hipcirc),
+                                  to = max(hipcirc),
+                                  length = 100),
+                    waistcirc = w <- seq(from = min(waistcirc),
+                                  to = max(waistcirc),
+                                  length = 100))
+  plot(model, which = 2, newdata = nd)
+  detach(bodyfat)
 
-## use cvrisk for 5-fold crossvalidation
-weightMat <- cv(model.weights(model), type = "kfold", B = 5)
-cv5fold <- cvrisk(model, weightMat)
-model[mstop(cv5fold)]
-## Note that the original object "model" is altered again
-par(mfrow=c(2,3))
-plot(model)
+  ### customized
+  pr <- predict(model, which = "hip", newdata = nd)
+  persp(x = h, y = w, z = matrix(pr, nrow = 100, ncol = 100))
 
-
-
-## now fit model with intrinsic model selection
-## hipcirc + anthro3a + kneebreadth are fitted as
-## bols base-learner with intercept = FALSE
-
-int <- rep(1,nrow(bodyfat))
-model <- gamboost(DEXfat ~ int +
-                           hipcirc + anthro3a + kneebreadth +
-                           bbs(hipcirc, center=TRUE, df=1) +
-                           bbs(anthro3a, center=TRUE, df=1) +
-                           bbs(kneebreadth, center=TRUE, df=1),
-         data = bodyfat,
-         baselearner = function(x) bols(x, intercept=FALSE))
-
-## plot
-coef(model)
-
-## anthro3a is selected as linear effect and smooth effect
-## to combine this in one plot we can use fitted or predict
-par(mfrow=c(2,2))
-plot(model, which="anthro3a")
-fitted <- rowSums(predict(model, which="anthro3a"))
-plot(bodyfat$anthro3a, fitted, main="fitted(anthro3a)")
-## or you can use predict to plot on a grid
-grid <- seq(min(bodyfat$anthro3a), max(bodyfat$anthro3a), length= 100)
-DF <- data.frame(anthro3a=grid)
-predict <- rowSums(predict(model, newdata = DF, which="anthro3a"))
-plot(grid, predict, main="predict(anthro3a)")
 }
 
 \keyword{ package }
 \keyword{ smooth }
+\keyword{ nonparametric }
 \keyword{ models }
