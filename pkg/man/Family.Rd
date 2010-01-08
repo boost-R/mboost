@@ -156,7 +156,7 @@ Lognormal(nuirange = c(0, 100))
     Identifying risk factors for severe childhood malnutrition by
     boosting additive quantile regression. Technical Report Nr. 52,
     Institut fuer Statistik, LMU Muenchen.
-    \url{http://epub.ub.uni-muenchen.de/}
+    \url{http://epub.ub.uni-muenchen.de/10510/}
 
     Yoav Freund and Robert E. Schapire (1996),
     Experiments with a new boosting algorithm.

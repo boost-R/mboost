@@ -41,7 +41,8 @@ suitability.
  Joerg Mueller (2005).
  Forest structures as key factor for beetle and bird communities 
  in beech forests. PhD thesis, Munich University of Technology.
- \url{http://mediatum.ub.tum.de}-
+ \url{http://mediatum.ub.tum.de}
+ 
 }
 \references{
 

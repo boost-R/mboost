@@ -193,7 +193,7 @@ bl1 \%X\% bl2
   Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2009), 
   A Framework for Unbiased Model Selection Based on Boosting. 
   Technical Report Nr. 72, Institut fuer Statistik, LMU Muenchen.
-  \url{http://epub.ub.uni-muenchen.de/}
+  \url{http://epub.ub.uni-muenchen.de/11243/}
 
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable selection and
   model choice in geoadditive regression models, \emph{Biometrics}, \bold{65}(2),

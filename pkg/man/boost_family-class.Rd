@@ -3,7 +3,7 @@
 \alias{boost_family-class}
 \alias{show,boost_family-method}
 \title{Class "boost\_family": Gradient Boosting Family}
-\description{Objects of class "boost\_family" define negative gradients of
+\description{Objects of class \code{boost_family} define negative gradients of
              loss functions to be optimized.}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{\link{Family}(...)}

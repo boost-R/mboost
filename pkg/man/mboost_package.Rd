@@ -29,10 +29,11 @@ LazyData: \tab yes\cr
   most prominently represented by \code{\link[gbm]{gbm}} and 
   \code{\link[randomForest]{randomForest}}.
 
-  The generic implementation of the optimization algorithm all functionality
-  in this package is based on (function \code{\link{mboost_fit}})
-  allows for fitting linear, additive, and interaction models (and mixes of those) 
-  in low and high-dimensions. The response may be numeric, binary, ordered, 
+  All functionality in this package is based on the generic
+  implementation of the optimization algorithm  (function
+  \code{\link{mboost_fit}}) that allows for fitting linear, additive,
+  and interaction models (and mixtures of those) in low and
+  high-dimensions. The response may be numeric, binary, ordered,  
   censored or count data.
 
   Both theory and applications are discussed by Buehlmann and Hothorn (2007).
@@ -66,7 +67,7 @@ LazyData: \tab yes\cr
   methods are much faster now.
 
   The memory consumption could be reduced considerably, 
-  thanks for sparse matrix technology in package \code{Matrix}.
+  thanks to sparse matrix technology in package \code{Matrix}.
   Resampling procedures run automatically in parallel 
   if package \code{multicore} is available.
 

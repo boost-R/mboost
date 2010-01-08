@@ -97,6 +97,14 @@ max(abs(cf1 - cf2))
 sum((ty - tX %*% cf1)^2) + la * sum(cf1^2)
 sum((ty - tX %*% cf2)^2) + la * sum(cf2^2)
 
+### now with other df-definition:
+options(mboost_dftraceS=FALSE)
+la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
+H <- tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*% t(tX * tw)
+truedf <- sum(diag(2*H - tcrossprod(H,H)))
+truedf - 2
+options(mboost_dftraceS=TRUE)
+
 # check df with weights
 tw <- rpois(100, 2)
 la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
@@ -136,7 +144,7 @@ ps <- function(d) fitted(fit(dpp(bbs(x, df = d), w), y))
 ss <- function(d) fitted(smooth.spline(x, y, w = w, df = d + 1))
 
 # <FIXME> seems to longer to work in R-2.9.1 due to passing ... down
-#sapply(1:20, function(d) c(mean((ps(d) - f(x))^2, na.rm = TRUE), 
+#sapply(1:20, function(d) c(mean((ps(d) - f(x))^2, na.rm = TRUE),
 #  mean((ss(d) - f(x))^2, na.rm = TRUE),
 #  mean((ss(d) - ps(d))^2, na.rm = TRUE)))
 #
@@ -204,14 +212,14 @@ coef(m1)
 predict(m1, newdata = ndf)
 
 ### cbind
-m1 <- gamboost(y ~ bols(x1, intercept = FALSE, df = 1) %+% 
+m1 <- gamboost(y ~ bols(x1, intercept = FALSE, df = 1) %+%
                    bols(x2, intercept = FALSE, df = 1))
 m2 <- gamboost(y ~ bols(x1, x2, intercept = FALSE, df = 2))
 max(abs(predict(m1) - predict(m2)))
 max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf)))
 
 ### yeah
-m1 <- gamboost(y ~ (bols(x1, intercept = FALSE, df = 1) %+% 
-                    bols(x2, intercept = FALSE, df = 1)) %X% bols(f, df = 4) + 
+m1 <- gamboost(y ~ (bols(x1, intercept = FALSE, df = 1) %+%
+                    bols(x2, intercept = FALSE, df = 1)) %X% bols(f, df = 4) +
                     bbs(x1) + bspatial(x1, x2))
 

@@ -1,9 +1,4 @@
 
-2.0-0
-
-    o  add functionality to df2lambda to choose definition of df
-
-
 future
 
     o  offset via optimize is unstable
