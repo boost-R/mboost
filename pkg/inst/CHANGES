@@ -1,13 +1,16 @@
 
-                CHANGES in `mboost' VERSION 2.0-0 (2010-01-xx)
+                CHANGES in `mboost' VERSION 2.0-0 (2010-01-11)
 
-  o  df2lambda (new definition for df; we need to include this?!?)
+  o  generic implementation of component-wise functional gradient
+     boosting in `mboost_fit', specialized code for linear,
+     additive and interaction models removed
 
-  o  new families added (...)
+  o  new families available for ordinal and censored regression
 
-  o  changed family interface
+  o  computations potentially based on package Matrix 
+     (reduces memory usage)
 
-  o  speed up of predict()
+  o  various speed improvements
 
   o  added interface to extract selected base-learners (selected())
 
@@ -26,24 +29,16 @@
   o  added interface to expand model by increasing mstop in
      model[mstop]
 
-  o  changed behavior of subset method (model[mstop]). Object
-     is directly altered and not duplicated
+  o  alternative definition of degrees of freedom available
 
-  o  included package Matrix (reduces memory usage)
+  o  Interface changes: 
 
-  o  changed interface of base-learners: 
+     - class definition / Family() arguments changed
+     - changed behavior of subset method (model[mstop]). Object
+       is directly altered and not duplicated
      - argument "center" in bols replaced with "intercept" 
      - argument "z" in base-learners replaced with "by"
-
-  o  print and plot methods rewritten
-
-  o  bns and bss deprecated; 
-     use bbs instead
-
-  o  changed engine in the background,
-     changes in returned values
-
-  o  changes to manual and checks
+     - bns and bss deprecated; 
 
 
 		CHANGES in `mboost' VERSION 1.1-4 (2009-11-18)

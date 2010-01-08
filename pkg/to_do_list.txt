@@ -1,16 +1,15 @@
 
 2.0-0
 
-    o  NEWS (BH)
-
     o  scale parameter NBinomial, PropOdds, Weibull 
                        (-> Docu + Examples MS)
 
     o  add functionality to df2lambda to choose definition of df
 
-    o  Poisson() with some extremely large values in the response
 
 future
+
+    o  Poisson() with some extremely large values in the response
 
     o  predict.glmboost via coef.glmboost. 
        Remove special code in bolscw (TH, later)
