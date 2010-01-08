@@ -19,19 +19,11 @@ Type 'q()' to quit R.
 > ### chunk number 1: pkg-attach
 > ###################################################
 > source("setup.R")
-Loading required package: Matrix
-Loading required package: lattice
-Loading required package: splines
-Loading required package: survival
 
 
 	%%%% DON'T EDIT THIS FILE
 
-\setkeys{Gin}{width = 0.95\textwidth}Warning messages:
-1: In namespaceImportFrom(self, asNamespace(ns)) :
-  replacing previous import: cov2cor
-2: In namespaceImportFrom(self, asNamespace(ns)) :
-  replacing previous import: update
+\setkeys{Gin}{width = 0.95\textwidth}Loading required package: splines
 R> 
 R> 
 R> ###################################################

@@ -18,15 +18,6 @@ Type 'q()' to quit R.
 > 
 > require("mboost")
 Loading required package: mboost
-Loading required package: Matrix
-Loading required package: lattice
-Loading required package: splines
-Loading required package: survival
-Warning messages:
-1: In namespaceImportFrom(self, asNamespace(ns)) :
-  replacing previous import: cov2cor
-2: In namespaceImportFrom(self, asNamespace(ns)) :
-  replacing previous import: update
 > 
 > set.seed(290875)
 > 
@@ -196,6 +187,8 @@ attr(,"offset")
 + 
 +     stopifnot(all.equal(cx$loglik[2], logLik(gl)))
 + }
+Loading required package: survival
+Loading required package: splines
 > 
 > 
 > ## Cox model with predictions obtained from survFit function

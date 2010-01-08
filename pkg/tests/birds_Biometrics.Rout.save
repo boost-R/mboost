@@ -17,15 +17,6 @@ Type 'q()' to quit R.
 
 > 
 > library("mboost")
-Loading required package: Matrix
-Loading required package: lattice
-Loading required package: splines
-Loading required package: survival
-Warning messages:
-1: In namespaceImportFrom(self, asNamespace(ns)) :
-  replacing previous import: cov2cor
-2: In namespaceImportFrom(self, asNamespace(ns)) :
-  replacing previous import: update
 > data("birds", package = "mboost")
 > 
 > # define characteristics of the boosting algorithm

@@ -18,15 +18,6 @@ Type 'q()' to quit R.
 > 
 > require("mboost")
 Loading required package: mboost
-Loading required package: Matrix
-Loading required package: lattice
-Loading required package: splines
-Loading required package: survival
-Warning messages:
-1: In namespaceImportFrom(self, asNamespace(ns)) :
-  replacing previous import: cov2cor
-2: In namespaceImportFrom(self, asNamespace(ns)) :
-  replacing previous import: update
 > 
 > set.seed(290875)
 > 
@@ -185,6 +176,8 @@ In gamboost(fm2, data = tmp, base = "bss", dfbase = 3) :
 > fm2 <- y ~ x1 + x2
 > mod1 <- gamboost(fm1, data = tmp)
 Loading required package: party
+Loading required package: survival
+Loading required package: splines
 Loading required package: grid
 Loading required package: modeltools
 Loading required package: stats4

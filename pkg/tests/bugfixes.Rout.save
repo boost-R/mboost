@@ -18,15 +18,6 @@ Type 'q()' to quit R.
 > 
 > require("mboost")
 Loading required package: mboost
-Loading required package: Matrix
-Loading required package: lattice
-Loading required package: splines
-Loading required package: survival
-Warning messages:
-1: In namespaceImportFrom(self, asNamespace(ns)) :
-  replacing previous import: cov2cor
-2: In namespaceImportFrom(self, asNamespace(ns)) :
-  replacing previous import: update
 > 
 > set.seed(290875)
 > 
@@ -35,6 +26,8 @@ Warning messages:
 > pr <- predict(blackboost(y ~ x, data = dummy, family = Binomial()),
 +               newdata = dummy, type = "class")
 Loading required package: party
+Loading required package: survival
+Loading required package: splines
 Loading required package: grid
 Loading required package: modeltools
 Loading required package: stats4
@@ -71,14 +64,6 @@ Loading required package: colorspace
 > x <- seq(from = 10, to = 500, by = 10)
 > cv <- cvrisk(bb, bs, grid = x)
 Loading required package: multicore
-
-Attaching package: 'multicore'
-
-
-	The following object(s) are masked from package:lattice :
-
-	 parallel 
-
 > ctrl$risk <- "oobag"
 > tmp <- blackboost(DEXfat ~ ., data = bodyfat, control = ctrl,
 +                  weights = bs[,3])
@@ -348,12 +333,6 @@ In asMethod(object) :
 > dummy <- data.frame(y = y, int = int, x1 = x1)
 > 
 > gbm <- gamboost(y ~ bols(int, intercept=FALSE) +  bols(x1, intercept=FALSE) + bbs(x1, center=TRUE, df=1), data = dummy)
-> 
-> stopifnot(names(coef(gbm, which=1:3)) == c("bols(int,intercept=FALSE)", "bols(x1,intercept=FALSE)", "bbs(x1,center=TRUE,df=1)"))
-> stopifnot(names(coef(gbm)) == c("bols(x1,intercept=FALSE)", "bbs(x1,center=TRUE,df=1)"))
-> stopifnot(names(coef(gbm, "x1")) == c("bols(x1,intercept=FALSE)", "bbs(x1,center=TRUE,df=1)"))
-> stopifnot(names(coef(gbm, "bbs")) ==  "bbs(x1,center=TRUE,df=1)")
-> stopifnot(names(coef(gbm, "center=TRUE")) == "bbs(x1,center=TRUE,df=1)")
 > 
 > ### check prediction if intercept=FALSE
 > gbm <- gamboost(y ~ bols(x1, intercept=FALSE), data = dummy)
