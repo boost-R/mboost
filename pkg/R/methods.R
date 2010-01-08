@@ -80,7 +80,7 @@ hatvalues.gamboost <- function(model, ...) {
     RET
 }
 
-AIC.gamboost <- function(object, method = c("corrected", "classical", "gMDL"),
+AIC.mboost <- function(object, method = c("corrected", "classical", "gMDL"),
                        df = c("trace", "actset"), ..., k = 2) {
 
     df <- match.arg(df)
@@ -104,10 +104,6 @@ AIC.gamboost <- function(object, method = c("corrected", "classical", "gMDL"),
                         df = df, k = k)
     }
     return(RET)
-}
-
-AIC.glmboost <- function(object, ...){
-    AIC.gamboost(object, ...)
 }
 
 AICboost <- function(object, method = c("corrected", "classical", "gMDL"), df, k = 2) {
@@ -266,7 +262,7 @@ hatvalues.glmboost <- function(model, ...) {
     if (!checkL2(model)) return(hatvalues.gamboost(model))
     Xf <- t(model$basemodel[[1]]$MPinv()) * model$control$nu
     X <- model$baselearner[[1]]$get_data()
-    op <- .Call("R_trace_glmboost", X, Xf,
+    op <- .Call("R_trace_glmboost", as(X, "matrix"), as(Xf, "matrix"),
                 as.integer(model$xselect()),
                 PACKAGE = "mboost")
     RET <- diag(op[[1]])

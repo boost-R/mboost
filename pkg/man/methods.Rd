@@ -9,8 +9,7 @@
 
 \alias{[.mboost}
 
-\alias{AIC.gamboost}
-\alias{AIC.glmboost}
+\alias{AIC.mboost}
 \alias{predict.mboost}
 \alias{predict.glmboost}
 
@@ -49,9 +48,8 @@
 
 \method{[}{mboost}(x, i, return = TRUE, ...)
 
-\method{AIC}{gamboost}(object, method = c("corrected", "classical", "gMDL"),
+\method{AIC}{mboost}(object, method = c("corrected", "classical", "gMDL"),
     df = c("trace", "actset"), ..., k = 2)
-\method{AIC}{glmboost}(object, ...)
 
 \method{mstop}{mboost}(object, ...)
 \method{mstop}{gbAIC}(object, ...)

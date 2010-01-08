@@ -78,7 +78,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   \emph{Journal of Computational and Graphical Statistics}, \bold{14}(3),
   675--699.
 }
-\seealso{\code{\link{AIC.gamboost}} or \code{\link{AIC.glmboost}} for
+\seealso{\code{\link{AIC.mboost}} for
   \code{AIC} based selection of the stopping iteration. Use \code{mstop}
   to extract the optimal stopping iteration from \code{cvrisk}
   object.}

@@ -286,5 +286,34 @@ bl1 \%X\% bl2
   cf[1] <- cf[1] + mod$offset
   cf
   coef(lm(y ~ x, data = tmpdata))
+
+  
+  ### large data set with ties
+  nunique <- 100
+  xindex <- sample(1:nunique, 1000000, replace = TRUE)
+  x <- runif(nunique)
+  y <- rnorm(length(xindex))
+  w <- rep.int(1, length(xindex))
+
+  ### brute force computations
+  op <- options()
+  options(mboost_indexmin = Inf, mboost_useMatrix = FALSE)
+  ## data pre-processing
+  system.time(b1 <- bbs(x[xindex])$dpp(w))
+  ## model fitting
+  system.time(c1 <- b1$fit(y)$model)
+  options(op)
+
+  ### automatic search for ties
+  system.time(b2 <- bbs(x[xindex])$dpp(w))
+  system.time(c2 <- b2$fit(y)$model)
+
+  ### manual specification of ties
+  system.time(b3 <- bbs(x, index = xindex)$dpp(w))
+  system.time(c3 <- b3$fit(y)$model) ### 10% of brute force
+
+  all.equal(c1, c2)
+  all.equal(c1, c3)
+
 }
 \keyword{models}

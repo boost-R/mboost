@@ -120,8 +120,8 @@
     X[sample(1:(n * p), floor(n * p / 20))] <- runif(floor(n * p / 20))
     beta <- numeric(p)
     beta[sample(1:p, ptrue)] <- 10
-    y <- drop(X %*% beta + rnorm(n, sd = 0.1))
-    mod <- glmboost(y = y, x = X)
+    y <- drop(X \%*\% beta + rnorm(n, sd = 0.1))
+    mod <- glmboost(y = y, x = X, center = TRUE) ### mstop needs tuning
     coef(mod, which = which(beta > 0))
 
 }
