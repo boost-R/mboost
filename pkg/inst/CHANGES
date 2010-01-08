@@ -177,7 +177,7 @@
      - new plot.gamboost
 
   o  add the number of selected variables as degrees of freedom
-     (as mentioned in the discussion of Hastie to Buhlmann & Hothorn)
+     (as mentioned in the discussion of Hastie to Buehlmann & Hothorn)
 
   o  status information during fitting is now available via
      boost_control(trace = TRUE) but is switched off by default
