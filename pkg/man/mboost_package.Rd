@@ -6,7 +6,7 @@
 }
 \description{
   Functional gradient descent algorithms (boosting) for optimizing
-  general loss functions utilizing componentwise least squares, either
+  general loss functions utilizing component-wise least squares, either
   of parametric linear form or smoothing splines, or regression trees as
   base-learners for fitting generalized linear, additive and interaction
   models to potentially high-dimensional data.
@@ -81,7 +81,7 @@ LazyData: \tab yes\cr
 }
 
 \references{
-  Peter Buhlmann and Torsten Hothorn (2007),
+  Peter Buehlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 }

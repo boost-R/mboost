@@ -16,7 +16,7 @@ gamboost(formula, data = list(),
   \item{baselearner}{ a character specifying the component-wise base
     learner to be used: \code{\link{bbs}} means P-splines with a
     B-spline basis (see Schmid and Hothorn 2008), \code{\link{bols}}
-    linear models abd \code{\link{btree}} boosts stumps.
+    linear models and \code{\link{btree}} boosts stumps.
     \code{bss} and \code{bns} are deprecated. 
     Component-wise smoothing splines have been considered in Buehlmann
     and Yu (2003) and Schmid and Hothorn (2008) investigate P-splines

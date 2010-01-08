@@ -22,7 +22,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   \item{grid}{ a vector of stopping parameters the empirical risk
                 is to be evaluated for. }
   \item{papply}{ (parallel) apply function. In the absence of package \code{multicore} sequential
-    computaions via \code{\link{lapply}} are performed. Alternatively,
+    computations via \code{\link{lapply}} are performed. Alternatively,
     parallel computing via \code{\link[multicore]{mclapply}} (package \code{multicore}),
     or \code{clusterApplyLB} (package \code{snow}) can be used. In the
     latter case, usually more setup is needed (see example for some details).}

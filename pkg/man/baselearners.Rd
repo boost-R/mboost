@@ -54,7 +54,7 @@ bl1 \%X\% bl2
   \item{intercept}{ if \code{intercept=TRUE} an intercept is added to the design matrix
                     of a linear base-learner.}
   \item{center}{ if \code{center=TRUE} the corresponding effect is
-                 re-parameterized such that the unpenalized part of the fit is substracted and
+                 re-parameterized such that the unpenalized part of the fit is subtracted and
                  only the deviation effect is fitted. The unpenalized, parametric part has then
 		 to be included in separate base-learners using \code{bols} (see the examples below).}
   \item{contrasts.arg}{ a character suitable for input to the \code{\link{contrasts}} replacement function,
@@ -134,13 +134,13 @@ bl1 \%X\% bl2
   example, with second order difference penalty, a linear effect of \code{x}
   remains unpenalized by \code{bbs} and therefore the degrees of freedom for the base-learner
   have to be larger than two. To avoid this restriction, option \code{center=TRUE}
-  substracts the unpenalized linear effect from the fit, allowing to specify any
+  subtracts the unpenalized linear effect from the fit, allowing to specify any
   positive number as \code{df}. Note that in this case the linear effect
   \code{x} should generally be specified as an additional base-learner
   \code{bols(x)}. For \code{bspatial} and, for example, second order
   differences, a linear effect of \code{x} (\code{bols(x)}), a linear effect of
   \code{y} (\code{bols(y)}), and their interaction (\code{bols(x*y)}) are
-  substracted from the effect and have to be added separately to the model
+  subtracted from the effect and have to be added separately to the model
   equation. More details on centering can be found in Kneib, Hothorn and Tutz
   (2009) and Fahrmeir, Kneib and Lang (2004).
 

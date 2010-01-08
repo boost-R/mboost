@@ -18,7 +18,7 @@ mboost_fit(blg, response, weights = NULL, offset = NULL,
   \item{baselearner}{ a character specifying the component-wise base  
     learner to be used: \code{\link{bbs}} means P-splines with a
     B-spline basis (see Schmid and Hothorn 2008), \code{\link{bols}}
-    linear models abd \code{\link{btree}} boosts stumps.
+    linear models and \code{\link{btree}} boosts stumps.
     \code{bss} and \code{bns} are deprecated.
     Component-wise smoothing splines have been considered in Buehlmann
     and Yu (2003) and Schmid and Hothorn (2008) investigate P-splines
@@ -53,9 +53,9 @@ mboost_fit(blg, response, weights = NULL, offset = NULL,
 
   Base-learners can be specified via a formula interface 
   (function \code{mboost}) or as a list of objects of class \code{bl},
-  see \code{\link{baselearners}}.
+  see \code{\link{bols}}.
 
-  Note that the more convenient modeling interfaces \code{\link{gamboost}},
+  Note that the more convenient modelling interfaces \code{\link{gamboost}},
   \code{\link{glmboost}} and \code{\link{blackboost}} all call 
   \code{mboost} directly.
 

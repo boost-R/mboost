@@ -96,7 +96,7 @@ Lognormal(nuirange = c(0, 100))
   to fitting a logistic model.
   However, the coefficients resulting from boosting with family
   \code{Binomial} are \eqn{1/2} of the coefficients of a logit model
-  obtained via \code{\link{glm}}. This is due to the internatal recoding
+  obtained via \code{\link{glm}}. This is due to the internal recoding
   of the response to \eqn{-1} and \eqn{+1} (see below).
   However, Buehlmann and Hothorn (2007) argue that the
   family \code{Binomial} is the preferred choice for binary
@@ -119,7 +119,7 @@ Lognormal(nuirange = c(0, 100))
   Poisson log-likelihood. Note that the natural link function
   \eqn{\log(\mu) = \eta} is assumed.
 
-  \code{CoxPH()} implements the negative partial log-likeliood for Cox
+  \code{CoxPH()} implements the negative partial log-likelihood for Cox
   models. Hence, survival models can be boosted using this family.
 
   \code{QuantReg()} implements boosting for quantile regression, which is
@@ -148,7 +148,7 @@ Lognormal(nuirange = c(0, 100))
     Boosting algorithms: regularization, prediction and model fitting.
     \emph{Statistical Science}, \bold{22}(4), 477--505.
 
-    Nora Fenke, Thomas Kneib, and Torsten Hothorn (2009).
+    Nora Fenske, Thomas Kneib, and Torsten Hothorn (2009).
     Identifying risk factors for severe childhood malnutrition by
     boosting additive quantile regression. Technical Report Nr. 52,
     Institut fuer Statistik, LMU Muenchen.

@@ -25,7 +25,7 @@ boost_control(mstop = 100, nu = 0.1,
 		 centering is only needed if \code{\link{bols}}
 		 base-learners are specified without intercept. In this
 		 case centering of the covariates is essential and should be done
-		 manually (at the moment). Will be removed in favor of
+		 manually (at the moment). Will be removed in favour of
                  a corresponding argument in \code{glmboost} in the future 
                  (and gives a warning).}
   \item{trace}{ a logical triggering printout of status information during
