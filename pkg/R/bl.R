@@ -20,17 +20,21 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
     decomp <- svd(crossprod(Rm, dmat) %*% Rm)
     d <- decomp$d[decomp$d > sqrt(.Machine$double.eps)]
 
-    if (!is.null(lambda))
-        return(c(df = sum(1 / (1 + lambda * d)), lambda = lambda))
-    if (df >= length(d)) return(c(df = df, lambda = 0))
+    if (options("mboost_dftraceS")[[1]]){
+        ## df := trace(S)
+        dfFun <- function(lambda) sum(1 / (1 + lambda * d))
+    } else {
+        ## df := trace(2S - S'S)
+        dfFun <- function(lambda) 2 * sum( 1/(1+lambda*d) ) - sum( 1/(1+lambda*d)^2 )
+    }
 
-    ### <FIXME> Buja definition of df
-    stopifnot(options("mboost_dftraceS")[[1]])
-    ### </FIXME>
+    if (!is.null(lambda))
+        return(c(df = dfFun(lambda), lambda = lambda))
+    if (df >= length(d)) return(c(df = df, lambda = 0))
 
     # search for appropriate lambda using uniroot
     df2l <- function(lambda)
-        sum(1/(1 + lambda * d)) - df
+        dfFun(lambda) - df
 
     ### option
     if (df2l(1e+10) > 0) return(c(df = df, lambda = 1e+10))
@@ -94,7 +98,7 @@ hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4,
         list(knots = knots, boundary.knots = boundary.knots)
     }
     nm <- colnames(mf)[colnames(mf) != vary]
-    if (is.list(knots)) if(!all(names(knots) %in% nm)) 
+    if (is.list(knots)) if(!all(names(knots) %in% nm))
         stop("variable names and knot names must be the same")
     ret <- vector(mode = "list", length = length(nm))
     names(ret) <- nm
@@ -162,13 +166,13 @@ X_bbs <- function(mf, vary, args) {
         }
     }
     if (length(mm) > 2)
-        stop("not possible to specify more than two variables in ", 
+        stop("not possible to specify more than two variables in ",
              sQuote("..."), " argument of smooth base-learners")
     return(list(X = X, K = K))
 }
 
 ### Linear baselearner, potentially Ridge-penalized (but not by default)
-bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL, 
+bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
                  lambda = 0, contrasts.arg = "contr.treatment") {
 
     if (!is.null(df)) lambda <- NULL
@@ -197,7 +201,7 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
 
     CC <- all(Complete.cases(mf))
     ### option
-    DOINDEX <- is.data.frame(mf) && 
+    DOINDEX <- is.data.frame(mf) &&
         (nrow(mf) > options("mboost_indexmin")[[1]] || is.factor(mf[[1]]))
     if (is.null(index)) {
         ### try to remove duplicated observations or
@@ -218,7 +222,7 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
                 get_vary = function() vary,
                 set_names = function(value) {
                     attr(mf, "names") <<- value
-                    cll <<- paste("bols", "(", paste(colnames(mf), 
+                    cll <<- paste("bols", "(", paste(colnames(mf),
                         collapse = ", "), ")", sep = "")
                 })
     class(ret) <- "blg"
@@ -284,7 +288,7 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
                 get_names = function() colnames(mf),
                 set_names = function(value) {
                     attr(mf, "names") <<- value
-                    cll <<- paste("bbs", "(", paste(colnames(mf), 
+                    cll <<- paste("bbs", "(", paste(colnames(mf),
                         collapse = ", "), ")", sep = "")
                 })
     class(ret) <- "blg"
@@ -319,10 +323,10 @@ bl_lin <- function(blg, Xfun, args) {
 
         weights[!Complete.cases(mf)] <- 0
         w <- weights
-        if (!is.null(index)) 
+        if (!is.null(index))
             w <- .Call("R_ysum", as.double(weights), as.integer(index), PACKAGE = "mboost")
         XtX <- crossprod(X * w, X)
-        lambdadf <- df2lambda(X, df = args$df, lambda = args$lambda, 
+        lambdadf <- df2lambda(X, df = args$df, lambda = args$lambda,
                               dmat = K, weights = w)
         lambda <- lambdadf["lambda"]
         XtX <- XtX + lambda * K
@@ -463,7 +467,7 @@ fit.bl <- function(object, y)
     if (is.list(bl2) && !inherits(bl2, "blg"))
         return(lapply(bl2, "%+%", bl1 = bl1))
 
-    cll <- paste(deparse(bl1$get_call()), "%+%", 
+    cll <- paste(deparse(bl1$get_call()), "%+%",
                  deparse(bl2$get_call()), collapse = "")
     stopifnot(inherits(bl1, "blg"))
     stopifnot(inherits(bl2, "blg"))
@@ -476,7 +480,7 @@ fit.bl <- function(object, y)
 
     mfindex <- cbind(index1, index2)
     index <- NULL
-    
+
     CC <- all(Complete.cases(mf))
     ### option
     DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]])
@@ -502,7 +506,7 @@ fit.bl <- function(object, y)
 
     args1 <- environment(bl1$dpp)$args
     args2 <- environment(bl2$dpp)$args
-    l1 <- args1$lambda        
+    l1 <- args1$lambda
     l2 <- args2$lambda
     if (!is.null(l1) && !is.null(l2)) {
         args <- list(lambda = 1, df = NULL)
@@ -547,7 +551,7 @@ fit.bl <- function(object, y)
     if (is.list(bl2) && !inherits(bl2, "blg"))
         return(lapply(bl2, "%X%", bl1 = bl1))
 
-    cll <- paste(deparse(bl1$get_call()), "%X%", 
+    cll <- paste(deparse(bl1$get_call()), "%X%",
                  deparse(bl2$get_call()), collapse = "")
     stopifnot(inherits(bl1, "blg"))
     stopifnot(inherits(bl2, "blg"))
@@ -560,7 +564,7 @@ fit.bl <- function(object, y)
 
     mfindex <- cbind(index1, index2)
     index <- NULL
-    
+
     CC <- all(Complete.cases(mf))
     ### option
     DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]])
@@ -586,13 +590,13 @@ fit.bl <- function(object, y)
 
     args1 <- environment(bl1$dpp)$args
     args2 <- environment(bl2$dpp)$args
-    l1 <- args1$lambda        
+    l1 <- args1$lambda
     l2 <- args2$lambda
     if (!is.null(l1) && !is.null(l2)) {
         args <- list(lambda = 1, df = NULL)
     } else {
         args <- list(lambda = NULL,
-            df = ifelse(is.null(args1$df), 1, args1$df) * 
+            df = ifelse(is.null(args1$df), 1, args1$df) *
                  ifelse(is.null(args2$df), 1, args2$df))
     }
 
