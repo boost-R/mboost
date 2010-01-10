@@ -1,8 +1,6 @@
 
 future
 
-    o  offset via optimize is unstable
-
     o  Poisson() with some extremely large values in the response
 
     o  predict.glmboost via coef.glmboost. 
