@@ -315,18 +315,18 @@ bl1 \%X\% bl2
   op <- options()
   options(mboost_indexmin = Inf, mboost_useMatrix = FALSE)
   ## data pre-processing
-  system.time(b1 <- bbs(x[xindex])$dpp(w))
+  b1 <- bbs(x[xindex])$dpp(w)
   ## model fitting
-  system.time(c1 <- b1$fit(y)$model)
+  c1 <- b1$fit(y)$model
   options(op)
 
-  ### automatic search for ties
-  system.time(b2 <- bbs(x[xindex])$dpp(w))
-  system.time(c2 <- b2$fit(y)$model)
+  ### automatic search for ties, faster
+  b2 <- bbs(x[xindex])$dpp(w)
+  c2 <- b2$fit(y)$model
 
-  ### manual specification of ties
-  system.time(b3 <- bbs(x, index = xindex)$dpp(w))
-  system.time(c3 <- b3$fit(y)$model) ### 10% of brute force
+  ### manual specification of ties, even faster
+  b3 <- bbs(x, index = xindex)$dpp(w)
+  c3 <- b3$fit(y)$model
 
   all.equal(c1, c2)
   all.equal(c1, c3)
