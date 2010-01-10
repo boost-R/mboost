@@ -33,7 +33,7 @@ LazyData: \tab yes\cr
   implementation of the optimization algorithm  (function
   \code{\link{mboost_fit}}) that allows for fitting linear, additive,
   and interaction models (and mixtures of those) in low and
-  high-dimensions. The response may be numeric, binary, ordered,  
+  high dimensions. The response may be numeric, binary, ordered,  
   censored or count data.
 
   Both theory and applications are discussed by Buehlmann and Hothorn (2007).
