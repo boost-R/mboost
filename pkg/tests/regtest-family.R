@@ -1,6 +1,7 @@
 
 library("mboost")
 
+set.seed(290875)
 x <- rnorm(100)
 y <- rnorm(100)
 w <- drop(rmultinom(1, 100, rep(1 / 100, 100)))
