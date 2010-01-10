@@ -5,11 +5,11 @@
   mboost: Model-Based Boosting
 }
 \description{
-  Functional gradient descent algorithms (boosting) for optimizing
-  general loss functions utilizing component-wise least squares, either
-  of parametric linear form or smoothing splines, or regression trees as
-  base-learners for fitting generalized linear, additive and interaction
-  models to potentially high-dimensional data.
+  Functional gradient descent algorithm
+  (boosting) for optimizing general loss functions utilizing
+  component-wise (penalised) least squares estimates or regression 
+  trees as base-learners for fitting generalized linear, additive 
+  and interaction models to potentially high-dimensional data.
 }
 \details{
 \tabular{ll}{
@@ -38,7 +38,7 @@ LazyData: \tab yes\cr
 
   Both theory and applications are discussed by Buehlmann and Hothorn (2007).
   UseRs without a basic knowledge of boosting methods are asked
-  to read this introduction before analysing data using this package. 
+  to read this introduction before analyzing data using this package. 
   The examples presented in this paper are available as package vignette
   \code{mboost_illustrations}.
 
