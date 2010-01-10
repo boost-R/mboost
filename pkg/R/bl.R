@@ -60,9 +60,8 @@ X_ols <- function(mf, vary, args) {
         ### set up model matrix
         fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary],
                     collapse = "+"), sep = "")
+        if (!args$intercept) fm <- paste(fm, "-1")
         X <- model.matrix(as.formula(fm), data = mf, contrasts.arg = args$contrasts.arg)
-        if (!args$intercept)
-            X <- X[ , -1, drop=FALSE]
         contr <- attr(X, "contrasts")
         ### <FIXME>
         if (vary != "") {
