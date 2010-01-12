@@ -7,7 +7,7 @@ export(glmboost, glmboost_fit,
        blackboost, blackboost_fit,
        boost_control, mstop, Family,
        GaussReg, GaussClass, Laplace, Binomial, Poisson, QuantReg,
-       Huber, AdaExp, CoxPH, boost_dpp, FP, IPCweights, cvrisk, bbs,
+       ExpectileReg, Huber, AdaExp, CoxPH, boost_dpp, FP, IPCweights, cvrisk, bbs,
        bss, bns, bols, bspatial, brandom, btree, survFit)
 exportClasses("boost_family")
 exportMethods("show")

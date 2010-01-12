@@ -9,6 +9,7 @@
 \alias{Poisson}
 \alias{CoxPH}
 \alias{QuantReg}
+\alias{ExpectileReg}
 \title{ Gradient Boosting Families }
 \description{
     \code{boost_family} objects provide a convenient way to specify loss functions
@@ -30,6 +31,7 @@ Laplace()
 Poisson()
 CoxPH()
 QuantReg(tau = 0.5, qoffset = 0.5)
+ExpectileReg(tau = 0.5)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -70,7 +72,8 @@ QuantReg(tau = 0.5, qoffset = 0.5)
   for \code{Huber} and \code{Laplace}.
 
   Boosting for quantile regression with the \code{QuantReg} family is
-  introduced in Fenske et al. (2009).
+  introduced in Fenske et al. (2009). \code{ExpectileReg} works in analogy, 
+  only for expectiles, which were introduced to regression by Newey and Powell (1987).
 
 }
 \value{
@@ -83,6 +86,10 @@ QuantReg(tau = 0.5, qoffset = 0.5)
     boosting additive quantile regression. Technical Report Nr. 52,
     Institut fuer Statistik, LMU Muenchen.
     \url{http://epub.ub.uni-muenchen.de/}
+    
+    Whitney K. Newey and James L. Powell (1987),
+    Asymmetric least squares estimation and testing.
+    \emph{Econometrika}, \bold{55}, 819--847.
   }
 \seealso{\code{\link{gamboost}}, \code{\link{glmboost}} and
     \code{\link{blackboost}} for the usage of \code{Family}s. See

@@ -10,6 +10,7 @@
 \alias{Poisson}
 \alias{CoxPH}
 \alias{QuantReg}
+\alias{ExpectileReg}
 \alias{NBinomial}
 \alias{PropOdds}
 \alias{Weibull}
@@ -41,6 +42,7 @@ Laplace()
 Poisson()
 CoxPH()
 QuantReg(tau = 0.5, qoffset = 0.5)
+ExpectileReg(tau = 0.5)
 NBinomial(nuirange = c(0, 100))
 PropOdds(nuirange = c(-0.5, -1), offrange = c(-5, 5))
 Weibull(nuirange = c(0, 100))
@@ -66,7 +68,7 @@ Lognormal(nuirange = c(0, 100))
   \item{weights}{ a character indicating if weights are allowed. }
   \item{name}{ a character giving the name of the loss function for pretty printing. }
   \item{d}{ delta parameter for Huber loss function. If omitted, it is chosen adaptively.}
-  \item{tau}{ the quantile to be estimated, a number strictly between 0 and 1.}
+  \item{tau}{ the quantile or expectile to be estimated, a number strictly between 0 and 1.}
   \item{qoffset}{ quantile of response distribution to be used as offset.}
   \item{nuirange}{ range of starting values for the nuisance parameter.}
   \item{offrange}{ interval to search for offset in.}
@@ -123,7 +125,8 @@ Lognormal(nuirange = c(0, 100))
   models. Hence, survival models can be boosted using this family.
 
   \code{QuantReg()} implements boosting for quantile regression, which is
-  introduced in Fenske et al. (2009).
+  introduced in Fenske et al. (2009). \code{ExpectileReg} works in analogy, 
+  only for expectiles, which were introduced to regression by Newey and Powell (1987).
 
   Families with an additional scale parameter can be used for fitting
   models as well: \code{PropOdds()} leads to proportional odds models
@@ -162,6 +165,10 @@ Lognormal(nuirange = c(0, 100))
     Experiments with a new boosting algorithm.
     In \emph{Machine Learning: Proc. Thirteenth International Conference},
     148--156.
+
+    Whitney K. Newey and James L. Powell (1987),
+    Asymmetric least squares estimation and testing.
+    \emph{Econometrika}, \bold{55}, 819--847.
 
     Matthias Schmid and Torsten Hothorn (2008), 
     Flexible boosting of accelerated failure time models. 

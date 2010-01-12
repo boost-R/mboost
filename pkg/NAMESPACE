@@ -13,7 +13,7 @@ export(glmboost,
        mboost,
        boost_control, mstop, Family,
        GaussReg, Gaussian, GaussClass, Laplace, Binomial, Poisson, QuantReg,
-       NBinomial, PropOdds, Weibull, Loglog, Lognormal, mboost_fit,
+       ExpectileReg, NBinomial, PropOdds, Weibull, Loglog, Lognormal, mboost_fit,
        Huber, AdaExp, CoxPH, FP, IPCweights, cvrisk, cv, bbs, stabsel,
        bols, bspatial, brandom, btree, survFit, selected, nuisance, "%+%",
        "%X%")

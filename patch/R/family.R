@@ -225,3 +225,22 @@ QuantReg <- function(tau = 0.5, qoffset = 0.5) {
         },
         name = "Quantile Regression")
 }
+
+ExpectileReg <- function (tau = 0.5) {
+    stopifnot(tau > 0 && tau < 1)
+    Family(
+        ngradient = function(y, f, w = 1) 
+            2 * tau * (y - f) * ((y - f) > 0) - 2 * (1 - tau) * 
+            (f - y) * ((y - f) < 0) + 0 * ((y - f) == 0), 
+        loss = function(y, f) tau * (y - f)^2 * 
+            ((y - f) >= 0) + (1 - tau) * (y - f)^2 * ((y - f) < 0), 
+        offset = function(y, w = rep(1, length(y))) 
+            mean(y[w == 1]), 
+        check_y = function(y) {
+            if (!is.numeric(y) || !is.null(dim(y))) 
+                stop("response is not a numeric vector but ", 
+                  sQuote("family = ExpectileReg()"))
+            TRUE
+        }, 
+        name = "Expectile Regression")
+}
