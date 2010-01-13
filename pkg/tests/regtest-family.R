@@ -21,6 +21,11 @@ mod[1000]
 coef(mod)
 nuisance(mod)
 
+### QuantReg and ExpectileReg
+gamboost(y ~ x, family = QuantReg())
+gamboost(y ~ x, family = ExpectileReg())
+
+
 if (require("MASS")) {
 
 summary(glm.nb(y ~ x))

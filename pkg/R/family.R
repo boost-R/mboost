@@ -506,7 +506,7 @@ ExpectileReg <- function (tau = 0.5) {
             if (!is.numeric(y) || !is.null(dim(y)))
                 stop("response is not a numeric vector but ",
                   sQuote("family = ExpectileReg()"))
-            TRUE
+            y
         }, 
         name = "Expectile Regression")
 }
