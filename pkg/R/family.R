@@ -492,7 +492,7 @@ Lognormal <- function(nuirange = c(0, 100)) {
            name = "Negative Lognormal Likelihood")
 }
 
-ExpectileReg <- function (tau = 0.5) {
+ExpectReg <- function (tau = 0.5) {
     stopifnot(tau > 0 && tau < 1)
     Family(
         ngradient = function(y, f, w = 1)
@@ -505,7 +505,7 @@ ExpectileReg <- function (tau = 0.5) {
         check_y = function(y) {
             if (!is.numeric(y) || !is.null(dim(y)))
                 stop("response is not a numeric vector but ",
-                  sQuote("family = ExpectileReg()"))
+                  sQuote("family = ExpectReg()"))
             y
         }, 
         name = "Expectile Regression")

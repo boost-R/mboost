@@ -21,9 +21,9 @@ mod[1000]
 coef(mod)
 nuisance(mod)
 
-### QuantReg and ExpectileReg
+### QuantReg and ExpectReg
 gamboost(y ~ x, family = QuantReg())
-gamboost(y ~ x, family = ExpectileReg())
+gamboost(y ~ x, family = ExpectReg())
 
 
 if (require("MASS")) {

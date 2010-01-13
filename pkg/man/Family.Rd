@@ -10,7 +10,7 @@
 \alias{Poisson}
 \alias{CoxPH}
 \alias{QuantReg}
-\alias{ExpectileReg}
+\alias{ExpectReg}
 \alias{NBinomial}
 \alias{PropOdds}
 \alias{Weibull}
@@ -42,7 +42,7 @@ Laplace()
 Poisson()
 CoxPH()
 QuantReg(tau = 0.5, qoffset = 0.5)
-ExpectileReg(tau = 0.5)
+ExpectReg(tau = 0.5)
 NBinomial(nuirange = c(0, 100))
 PropOdds(nuirange = c(-0.5, -1), offrange = c(-5, 5))
 Weibull(nuirange = c(0, 100))
@@ -125,7 +125,7 @@ Lognormal(nuirange = c(0, 100))
   models. Hence, survival models can be boosted using this family.
 
   \code{QuantReg()} implements boosting for quantile regression, which is
-  introduced in Fenske et al. (2009). \code{ExpectileReg} works in analogy, 
+  introduced in Fenske et al. (2009). \code{ExpectReg} works in analogy, 
   only for expectiles, which were introduced to regression by Newey and Powell (1987).
 
   Families with an additional scale parameter can be used for fitting
