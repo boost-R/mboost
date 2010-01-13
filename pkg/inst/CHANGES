@@ -5,7 +5,7 @@
      boosting in `mboost_fit', specialized code for linear,
      additive and interaction models removed
 
-  o  new families available for ordinal and censored regression
+  o  new families available for ordinal, expectile and censored regression
 
   o  computations potentially based on package Matrix 
      (reduces memory usage)
