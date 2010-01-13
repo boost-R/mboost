@@ -33,10 +33,11 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
     if (is.null(loss)) {
         charloss <- ""
         stopifnot(!is.null(risk))
+    } else {
+        charloss <- paste(deparse(body(loss)), "\n")
     }
     if (is.null(risk)) {
         stopifnot(!is.null(loss))
-        charloss <- paste(deparse(body(loss)), "\n")
         risk <- function(y, f, w = 1) sum(w * loss(y, f), na.rm = TRUE)
     }
     weights <- match.arg(weights)
@@ -253,25 +254,6 @@ QuantReg <- function(tau = 0.5, qoffset = 0.5) {
         name = "Quantile Regression")
 }
 
-ExpectileReg <- function (tau = 0.5) {
-    stopifnot(tau > 0 && tau < 1)
-    Family(
-        ngradient = function(y, f, w = 1) 
-            2 * tau * (y - f) * ((y - f) > 0) - 2 * (1 - tau) * 
-            (f - y) * ((y - f) < 0) + 0 * ((y - f) == 0), 
-        loss = function(y, f) tau * (y - f)^2 * 
-            ((y - f) >= 0) + (1 - tau) * (y - f)^2 * ((y - f) < 0), 
-        offset = function(y, w = rep(1, length(y))) 
-            mean(y[w == 1]), 
-        check_y = function(y) {
-            if (!is.numeric(y) || !is.null(dim(y))) 
-                stop("response is not a numeric vector but ", 
-                  sQuote("family = ExpectileReg()"))
-            TRUE
-        }, 
-        name = "Expectile Regression")
-}
-
 NBinomial <- function(nuirange = c(0, 100)) {
     sigma <- 1
 
@@ -290,7 +272,7 @@ NBinomial <- function(nuirange = c(0, 100)) {
                            y = y, fit = f, w = w)$minimum
         y - (y + sigma)/(exp(f) + sigma) * exp(f)
     }
-    
+	
     Family(ngradient = ngradient, risk = risk,
            check_y = function(y) {
                stopifnot(all.equal(unique(y - floor(y)), 0))
@@ -406,7 +388,7 @@ Weibull <- function(nuirange = c(0, 100)) {
         eta <- (lnt - f) / sigma
         (event * (exp(eta) - 1) + (1 - event) * exp(eta)) / sigma
         }
-    
+	
     Family(ngradient = ngradient, risk = risk,
            offset = function(y, w) 
                optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)), 
@@ -451,7 +433,7 @@ Loglog <- function(nuirange = c(0, 100)) {
         nom <- (exp(-eta) + 1)
         (event * (2/nom - 1) + (1 - event) / nom) / sigma
         }
-    
+	
     Family(ngradient = ngradient, risk = risk,
            offset = function(y, w) 
                optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)), 
@@ -495,7 +477,7 @@ Lognormal <- function(nuirange = c(0, 100)) {
         eta <- (lnt - f) / sigma
         (event * eta + (1 - event) * dnorm(eta) / (1 - pnorm(eta))) / sigma
         }
-    
+	
     Family(ngradient = ngradient, risk = risk,
            offset = function(y, w) 
                optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)), 
@@ -508,4 +490,23 @@ Lognormal <- function(nuirange = c(0, 100)) {
            },
            nuisance = function() return(sigma),
            name = "Negative Lognormal Likelihood")
+}
+
+ExpectileReg <- function (tau = 0.5) {
+    stopifnot(tau > 0 && tau < 1)
+    Family(
+        ngradient = function(y, f, w = 1)
+            2 * tau * (y - f) * ((y - f) > 0) - 2 * (1 - tau) *
+            (f - y) * ((y - f) < 0) + 0 * ((y - f) == 0), 
+        loss = function(y, f) tau * (y - f)^2 * 
+            ((y - f) >= 0) + (1 - tau) * (y - f)^2 * ((y - f) < 0),
+        offset = function(y, w = rep(1, length(y))) 
+            mean(y[w == 1]), 
+        check_y = function(y) {
+            if (!is.numeric(y) || !is.null(dim(y)))
+                stop("response is not a numeric vector but ",
+                  sQuote("family = ExpectileReg()"))
+            TRUE
+        }, 
+        name = "Expectile Regression")
 }

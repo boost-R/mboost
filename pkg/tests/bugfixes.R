@@ -286,3 +286,7 @@ f <- function() {
 }
 tmp <- f()
 
+### both loss and risk given, spotted by
+### Fabian Scheipl <fabian.scheipl@stat.uni-muenchen.de>
+stopifnot(extends(class(Family(ngradient = function(y, f) y, loss = function(y, w) sum(y), 
+       risk = function(y, f, w) sum(y))), "boost_family")
