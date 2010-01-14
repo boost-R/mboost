@@ -182,7 +182,9 @@ Lognormal(nuirange = c(0, 100))
   }
 \seealso{\code{\link{mboost}} for the usage of \code{Family}s. See
     \code{\link{boost_family-class}} for objects resulting from a call to \code{Family}. }
-
+\author{
+    \code{ExpectReg()} was donated by Fabian Sobotka.
+}
 \examples{
 
     Laplace()
