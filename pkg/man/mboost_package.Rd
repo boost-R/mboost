@@ -6,7 +6,7 @@
 }
 \description{
   Functional gradient descent algorithm
-  (boosting) for optimizing general loss functions utilizing
+  (boosting) for optimizing general risk functions utilizing
   component-wise (penalised) least squares estimates or regression 
   trees as base-learners for fitting generalized linear, additive 
   and interaction models to potentially high-dimensional data.
