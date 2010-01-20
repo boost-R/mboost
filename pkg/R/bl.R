@@ -257,7 +257,7 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
     }
     ### use bols when appropriate
     if (!is.null(df) & !center) {
-        if (df <= ncol(mf))
+        if (df <= (ncol(mf) + 1))
             return(bols(..., by = by, index = index))
     }
     vary <- ""
