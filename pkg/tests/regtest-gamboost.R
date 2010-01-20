@@ -114,29 +114,29 @@ fm1 <- y ~ bbs(x1, df = 3) + bbs(x2, df = 3)
 fm2 <- y ~ x1 + x2
 mod1 <- gamboost(fm1, data = tmp)
 mod2 <- gamboost(fm2, data = tmp, base = "bss", dfbase = 3)
-stopifnot(max(abs(fitted(mod1) - fitted(mod2))) < .Machine$double.eps)
-stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp))) < .Machine$double.eps)
+stopifnot(max(abs(fitted(mod1) - fitted(mod2))) < sqrt(.Machine$double.eps))
+stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp))) < sqrt(.Machine$double.eps))
 
 fm1 <- y ~ bbs(x1, df = 3) + bbs(x2, df = 3)
 fm2 <- y ~ x1 + x2
 mod1 <- gamboost(fm1, data = tmp)
 mod2 <- gamboost(fm2, data = tmp, base = "bbs", dfbase = 3)
-stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < .Machine$double.eps)
-stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < .Machine$double.eps)
+stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
+stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
 
 fm1 <- y ~ bols(x1) + bols(x2)
 fm2 <- y ~ x1 + x2
 mod1 <- gamboost(fm1, data = tmp)
 mod2 <- gamboost(fm2, data = tmp, base = "bols")
-stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < .Machine$double.eps)
-stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < .Machine$double.eps)
+stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
+stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
 
 fm1 <- y ~ btree(x1) + btree(x2)
 fm2 <- y ~ x1 + x2
 mod1 <- gamboost(fm1, data = tmp)
 mod2 <- gamboost(fm2, data = tmp, base = "btree")
-stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < .Machine$double.eps)
-stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < .Machine$double.eps)
+stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
+stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
 
 ## Cox model
 

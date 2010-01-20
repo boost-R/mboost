@@ -146,8 +146,8 @@ ctrl$risk <- "oobag"
 mod1 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bss", dfbase = 2)
 mod2 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bbs", dfbase = 2)
 mod3 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bols")
-stopifnot(max(abs(predict(mod1) - predict(mod2))) < .Machine$double.eps)
-# stopifnot(max(abs(predict(mod1) - predict(mod3))) < .Machine$double.eps)
+stopifnot(max(abs(predict(mod1) - predict(mod2))) < sqrt(.Machine$double.eps))
+stopifnot(max(abs(predict(mod1) - predict(mod3))) < sqrt(.Machine$double.eps))
 
 ### check predictions of zero-weight observations (via out-of-bag risk)
 mod1 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl, base = "bss")
