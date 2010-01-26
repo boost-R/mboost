@@ -18,7 +18,7 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
     Rm <- solve(chol(A))
 
     decomp <- svd(crossprod(Rm, dmat) %*% Rm)
-    d <- decomp$d[decomp$d > sqrt(.Machine$double.eps)]
+    d <- decomp$d
 
     if (options("mboost_dftraceS")[[1]]){
         ## df := trace(S)

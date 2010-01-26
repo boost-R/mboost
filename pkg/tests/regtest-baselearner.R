@@ -89,7 +89,8 @@ stopifnot(max(abs(cf1 - cf2)) < sqrt(.Machine$double.eps))
 tX <- matrix(runif(1000), ncol = 10)
 ty <- rnorm(100)
 tw <- rep(1, 100)
-# compute & check df
+
+### compute & check df
 la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
 truedf <- sum(diag(tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*% t(tX * tw)))
 stopifnot(abs(truedf - 2) < sqrt(.Machine$double.eps))
@@ -115,6 +116,28 @@ tw <- rpois(100, 2)
 la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
 truedf <- sum(diag(tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*% t(tX * tw)))
 stopifnot(abs(truedf - 2) < sqrt(.Machine$double.eps))
+
+### check df2lambda for P-splines (Bug spotted by B. Hofner)
+set.seed(1907)
+x <- runif(100, min = -1, max = 3)
+### make B-splines and penalty
+knotf <- function(x, knots) {
+    boundary.knots <- range(x, na.rm = TRUE)
+    if (length(knots) == 1) {
+        knots <- seq(from = boundary.knots[1],
+                     to = boundary.knots[2], length = knots + 2)
+        knots <- knots[2:(length(knots) - 1)]
+    }
+    list(knots = knots, boundary.knots = boundary.knots)
+}
+args <- list(knots = knotf(x, 20), degree = 3)
+X <- splines::bs(x, knots = args$knots$knots, degree = args$degree,
+        Boundary.knots = args$knots$boundary.knots, intercept = TRUE)
+K <- diff(diag(ncol(X)), differences = 2)
+K <- crossprod(K)
+lambda <- df2lambda(X, df = 4, lambda = NULL, dmat = K, weights = rep(1, nrow(X)))["lambda"]
+truedf <- sum(diag(X %*%  solve(crossprod(X,X) + lambda * K) %*% t(X)))
+stopifnot(abs(truedf - 4) < sqrt(.Machine$double.eps))
 
 ### componentwise
 cf2 <- coef(fit(dpp(bolscw(cbind(1, xn)), weights = w), y))
