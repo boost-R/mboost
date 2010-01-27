@@ -7,11 +7,11 @@
     file.remove(sup)
     version <- packageDescription(pkg = pkgname)$Version
     txt <- c("\n",
-             paste("	Welcome to ", sQuote("mboost"), 
+             paste("	Welcome to ", sQuote("mboost"),
                    " version ", version, "!", sep = ""),
              "\n",
              "The user-interface changed in some places.",
-             paste("Most important, subsetting an", sQuote("mboost"), 
+             paste("Most important, subsetting an", sQuote("mboost"),
                    "object modifies this object now."),
              "Please read the NEWS file, consult the documentation and have fun!",
              "\n",
@@ -24,7 +24,8 @@
 }
 
 .onLoad <- function(libname, pkgname) {
-    options(mboost_useMatrix = TRUE, ### allow for Matrix package? 
+    options(mboost_useMatrix = TRUE, ### allow for Matrix package?
             mboost_indexmin = 10000, ### handle ties for n > 10000
-            mboost_dftraceS = TRUE)  ### df = trace(S) or df = trace(2 S - StS)
+            mboost_dftraceS = TRUE,  ### df = trace(S) or df = trace(2 S - StS)
+            mboost_lambdaMax = 1e+15)### maximum value for lambda as used in df2lambda
 }

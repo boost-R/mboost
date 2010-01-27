@@ -19,6 +19,7 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
 
     decomp <- svd(crossprod(Rm, dmat) %*% Rm)
     d <- decomp$d
+    d[d < sqrt(.Machine$double.eps)] <- 0 ## set very small values to 0
 
     if (options("mboost_dftraceS")[[1]]){
         ## df := trace(S)
@@ -36,11 +37,19 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
     df2l <- function(lambda)
         dfFun(lambda) - df
 
+    lambdaMax <- options("mboost_lambdaMax")[[1]]
     ### option
-    if (df2l(1e+10) > 0) return(c(df = df, lambda = 1e+10))
-    return(c(df = df,
-             lambda = uniroot(df2l, c(0, 1e+10),
-                              tol = sqrt(.Machine$double.eps))$root))
+    if (df2l(lambdaMax) > 0){
+        if (df2l(lambdaMax) > sqrt(.Machine$double.eps))
+            warning("lambda needs to be larger than ", lambdaMax, " for given ", sQuote("df"),
+                    ";\nsetting lambda = ", lambdaMax, " leeds to an deviation from ", sQuote("df"),
+                    " of ", df2l(lambdaMax), ";\nYou can increase lambda_max via ", sQuote("options(mboost_lambdaMax = value)"))
+        return(c(df = df, lambda = lambdaMax))
+    }
+    lambda <- uniroot(df2l, c(0, lambdaMax), tol = sqrt(.Machine$double.eps))$root
+    if (abs(df2l(lambda)) > sqrt(.Machine$double.eps))
+        warning("estimated degrees of freedom differ from ", sQuote("df"), " by ", df2l(lambda))
+    return(c(df = df, lambda = lambda))
 }
 
 ### hyper parameters for ols baselearner
@@ -252,13 +261,13 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
     }
     stopifnot(is.data.frame(mf))
     if(!(all(sapply(mf, is.numeric)))) {
-        if (ncol(mf) == 1) return(bols(..., by = by, index = index))
+        if (ncol(mf) == 1) return(bols(as.data.frame(...), by = by, index = index))
         stop("cannot compute bbs for non-numeric variables")
     }
     ### use bols when appropriate
     if (!is.null(df) & !center) {
         if (df <= (ncol(mf) + 1))
-            return(bols(..., by = by, index = index))
+            return(bols(as.data.frame(...), by = by, index = index))
     }
     vary <- ""
     if (!is.null(by)){
@@ -418,11 +427,15 @@ bspatial <- function(...) {
 
 ### random-effects (Ridge-penalized ANOVA) baselearner
 brandom <- function(..., df = 4) {
-    cl <- match.call()
+    cl <- cltmp <- match.call()
     if (is.null(cl$df)) cl$df <- df
     cl$intercept <- FALSE
     cl[[1L]] <- as.name("bols")
-    eval(cl, parent.frame())
+    ret <- eval(cl, parent.frame())
+    cltmp[[1]] <- as.name("brandom")
+    cltmp <- deparse(cltmp)
+    assign("cll", cltmp, envir = environment(ret$get_call))
+    ret
 }
 
 ### extract variables names from baselearner

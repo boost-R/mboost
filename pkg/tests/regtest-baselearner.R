@@ -120,24 +120,25 @@ stopifnot(abs(truedf - 2) < sqrt(.Machine$double.eps))
 ### check df2lambda for P-splines (Bug spotted by B. Hofner)
 set.seed(1907)
 x <- runif(100, min = -1, max = 3)
-### make B-splines and penalty
-knotf <- function(x, knots) {
-    boundary.knots <- range(x, na.rm = TRUE)
-    if (length(knots) == 1) {
-        knots <- seq(from = boundary.knots[1],
-                     to = boundary.knots[2], length = knots + 2)
-        knots <- knots[2:(length(knots) - 1)]
-    }
-    list(knots = knots, boundary.knots = boundary.knots)
-}
-args <- list(knots = knotf(x, 20), degree = 3)
-X <- splines::bs(x, knots = args$knots$knots, degree = args$degree,
-        Boundary.knots = args$knots$boundary.knots, intercept = TRUE)
-K <- diff(diag(ncol(X)), differences = 2)
-K <- crossprod(K)
-lambda <- df2lambda(X, df = 4, lambda = NULL, dmat = K, weights = rep(1, nrow(X)))["lambda"]
+## extract lambda from base-learner
+lambda <- bbs(x, df = 4)$dpp(rep(1, length(x)))$df()["lambda"]
+X <- get("X", envir = environment(bbs(x, df = 4)$dpp))
+K <- get("K", envir = environment(bbs(x, df = 4)$dpp))
 truedf <- sum(diag(X %*%  solve(crossprod(X,X) + lambda * K) %*% t(X)))
 stopifnot(abs(truedf - 4) < sqrt(.Machine$double.eps))
+
+### check accuracy of df2lambda
+data("bodyfat", package="mboost")
+diff_df <- matrix(NA, nrow=8, ncol=ncol(bodyfat))
+rownames(diff_df) <- paste("df", 3:10)
+colnames(diff_df) <- names(bodyfat)
+for (i in 3:10){
+    for (j in 1:ncol(bodyfat)){
+        lambda <- bbs(bodyfat[[j]], df = i)$dpp(rep(1, nrow(bodyfat)))$df()["lambda"]
+        diff_df[i-2,j] <- bbs(bodyfat[[j]], lambda = lambda)$dpp(rep(1, nrow(bodyfat)))$df()["df"] - i
+    }
+}
+stopifnot(all(diff_df < sqrt(.Machine$double.eps)))
 
 ### componentwise
 cf2 <- coef(fit(dpp(bolscw(cbind(1, xn)), weights = w), y))
