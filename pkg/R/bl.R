@@ -407,9 +407,13 @@ bl_lin <- function(blg, Xfun, args) {
 
 ### tensor-product spline baselearner
 bspatial <- function(...) {
-    cl <- match.call()
+    cl <- cltmp <- match.call()
     cl[[1L]] <- as.name("bbs")
-    eval(cl, parent.frame())
+    ret <- eval(cl, parent.frame())
+    cltmp[[1]] <- as.name("bspatial")
+    cltmp <- deparse(cltmp)
+    assign("cll", cltmp, envir = environment(ret$get_call))
+    ret
 }
 
 ### random-effects (Ridge-penalized ANOVA) baselearner
