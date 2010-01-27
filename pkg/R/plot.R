@@ -4,7 +4,7 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                         type = "b", rug = TRUE, ylim = NULL,
                         xlab = variable.names(x), ylab = expression(f[partial]), ...) {
 
-    which <- x$which(which, usedonly = TRUE)
+    which <- x$which(which, usedonly = is.null(which))
 
     pr <- predict(x, which = which)
     if (is.null(ylim)) ylim <- range(pr)
