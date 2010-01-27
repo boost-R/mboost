@@ -326,11 +326,11 @@ par(mai = par("mai") * c(1, 1, 0.5, 1))
 cf <- coef(bf_bs[mstop(aic)])  
 varorder <- c("hipcirc", "waistcirc", "kneebreadth", "anthro3b")
 fpartial <- sapply(varorder, function(v) {
-    indx <- grep(v, names(cf))
-    as.matrix(bf_bs$newX(bodyfat)[,indx]) %*% cf[indx]
+    rowSums(predict(bf_bs, which = v))                           
 })
-out <- sapply(varorder, function(i) {   
-    plot(bodyfat[,i], fpartial[,i],  main = "",
+out <- sapply(varorder, function(i) {
+    x <- bodyfat[,i]
+    plot(sort(x), fpartial[order(x),i],  main = "", type = "b",
          xlab = i, ylab = expression(f[partial]), ylim = max(abs(fpartial)) * c(-1, 1))
     abline(h = 0, lty = 2, lwd = 0.5)
     })
