@@ -2,19 +2,19 @@
 \alias{glmboost}
 \alias{glmboost.formula}
 \alias{glmboost.matrix}
-\alias{glmboost_fit}
+\alias{glmboost.default}
 \alias{plot.glmboost}
 \title{ Gradient Boosting with Component-wise Linear Models }
 \description{
   Gradient boosting for optimizing arbitrary loss functions where component-wise
-  linear models are utilized as base learners.
+  linear models are utilized as base-learners.
 }
 \usage{
 \method{glmboost}{formula}(formula, data = list(), weights = NULL,
-             contrasts.arg = NULL, na.action = na.omit, ...)
-\method{glmboost}{matrix}(x, y, weights = NULL, ...)
-glmboost_fit(object, family = GaussReg(),
-             control = boost_control(), weights = NULL)
+          na.action = na.pass, contrasts.arg = NULL,
+          center = FALSE, control = boost_control(), ...)
+\method{glmboost}{matrix}(x, y, center = FALSE, control = boost_control(), ...)
+\method{glmboost}{default}(x,  ...)
 \method{plot}{glmboost}(x, main = deparse(x$call), col = NULL, ...)
 }
 \arguments{
@@ -28,14 +28,11 @@ glmboost_fit(object, family = GaussReg(),
           See \code{\link{model.matrix.default}}.}
   \item{na.action}{a function which indicates what should happen when the data
           contain \code{NA}s.}
-  \item{x}{ design matrix or an object of class \code{glmboost} for plotting. }
+  \item{center}{logical indicating of the predictor variables are centered before fitting.}
+  \item{control}{ a list of parameters controlling the algorithm.}
+  \item{x}{ design matrix or an object of class \code{glmboost} for plotting. 
+            Sparse matrices of class \code{Matrix} can be used as well.}
   \item{y}{ vector of responses. }
-  \item{object}{ an object of class \code{boost_data}, see \code{\link{boost_dpp}}.}
-  \item{family}{ an object of class \code{\link{boost_family-class}},
-                implementing the negative gradient corresponding
-                to the loss function to be minimized. By default, squared error loss
-                for continuous responses is used.}
-  \item{control}{ an object of class \code{\link{boost_control}}.}
   \item{main}{ a title for the plot.}
   \item{col}{ (a vector of) colors for plotting the lines representing
              the coefficient paths.}
@@ -46,10 +43,7 @@ glmboost_fit(object, family = GaussReg(),
   A (generalized) linear model is fitted using a boosting algorithm based on component-wise
   univariate linear models. The fit, i.e., the regression coefficients, can be
   interpreted in the usual way. The methodology is described in
-  Buhlmann and Yu (2003), Buhlmann (2006), and Buhlmann and Hothorn (2007).
-
-  The function \code{glmboost_fit} provides access to the fitting
-  procedure without data pre-processing, e.g. for cross-validation.
+  Buehlmann and Yu (2003), Buehlmann (2006), and Buehlmann and Hothorn (2007).
 
 }
 \value{
@@ -61,22 +55,23 @@ glmboost_fit(object, family = GaussReg(),
 }
 \references{
 
-  Peter Buhlmann and Bin Yu (2003),
+  Peter Buehlmann and Bin Yu (2003),
   Boosting with the L2 loss: regression and classification.
   \emph{Journal of the American Statistical Association}, \bold{98},
   324--339.
 
-  Peter Buhlmann (2006), Boosting for high-dimensional linear models.
+  Peter Buehlmann (2006), Boosting for high-dimensional linear models.
   \emph{The Annals of Statistics}, \bold{34}(2), 559--583.
 
-  Peter Buhlmann and Torsten Hothorn (2007),
+  Peter Buehlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 
 }
-\seealso{\code{\link{gamboost}} for boosted smooth models and
+\seealso{\code{\link{mboost}} for the generic boosting function and
+  \code{\link{gamboost}} for boosted additive models and 
   \code{\link{blackboost}} for boosted trees. See \code{\link{cvrisk}} for
-  cross-validated stoping iteration. Furthermore see
+  cross-validated stopping iteration. Furthermore see
   \code{\link{boost_control}}, \code{\link{Family}} and  \code{\link[mboost]{methods}}}
 \examples{
 
@@ -115,6 +110,19 @@ glmboost_fit(object, family = GaussReg(),
     ### plot coefficient path of glmboost
     par(mai = par("mai") * c(1, 1, 1, 2.5))
     plot(cars.gb)
+
+    ### sparse high-dimensional example
+    library("Matrix")
+    n <- 100
+    p <- 10000
+    ptrue <- 10
+    X <- Matrix(0, nrow = n, ncol = p)
+    X[sample(1:(n * p), floor(n * p / 20))] <- runif(floor(n * p / 20))
+    beta <- numeric(p)
+    beta[sample(1:p, ptrue)] <- 10
+    y <- drop(X \%*\% beta + rnorm(n, sd = 0.1))
+    mod <- glmboost(y = y, x = X, center = TRUE) ### mstop needs tuning
+    coef(mod, which = which(beta > 0))
 
 }
 \keyword{models}

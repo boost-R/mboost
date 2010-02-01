@@ -1,0 +1,297 @@
+
+R version 2.10.1 (2009-12-14)
+Copyright (C) 2009 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> 
+> library("mboost")
+> data("birds", package = "mboost")
+> 
+> # define characteristics of the boosting algorithm
+> bcr <- boost_control(mstop=200, trace=TRUE)
+> 
+> # estimation of a purely linear GLM
+> fm <- SG5 ~ bols(GST) + bols(DBH) + bols(AOT) + bols(AFS) + bols(DWC) +
++             bols(LOG)
+> sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
+[   1] ...................................... -- risk: 513.8498 
+[  41] ...................................... -- risk: 511.9819 
+[  81] ...................................... -- risk: 511.5567 
+[ 121] ...................................... -- risk: 511.4191 
+[ 161] ......................................
+Final risk: 511.371 
+> 
+> # extract and plot AIC curve against iteration index and determine stopping
+> # iteration
+> birdsaic <- AIC(sp, "classical")
+> plot(birdsaic)
+> ms <- mstop(birdsaic)
+> 
+> # selection frequencies of the model terms
+> table(sp$xselect()[1:ms])
+
+ 1  3  4  5  6 
+ 5 37 42 10  6 
+> 
+> # estimated coefficients
+> coef(sp[ms])
+$`bols(GST)`
+[1]  0.109426781 -0.000384797
+
+$`bols(AOT)`
+[1]  0.475943029 -0.003117553
+
+$`bols(AFS)`
+[1] -0.880133716  0.005976505
+
+$`bols(DWC)`
+[1] -0.025194164  0.004709208
+
+$`bols(LOG)`
+[1]  0.070806231 -0.003401209
+
+attr(,"offset")
+[1] 0.9558096
+> 
+> # re-define boosting iterations
+> bcr <- boost_control(mstop=500, trace=TRUE)
+> 
+> # Variable selection in a GLM without spatial component
+> fm <- SG4 ~ bols(GST) + bols(DBH) + bols(AOT) + bols(AFS) + bols(DWC) +
++             bols(LOG)
+> sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
+[   1] ...................................... -- risk: 143.4116 
+[  41] ...................................... -- risk: 137.5460 
+[  81] ...................................... -- risk: 134.0713 
+[ 121] ...................................... -- risk: 132.0492 
+[ 161] ...................................... -- risk: 130.8501 
+[ 201] ...................................... -- risk: 130.0634 
+[ 241] ...................................... -- risk: 129.5066 
+[ 281] ...................................... -- risk: 129.1017 
+[ 321] ...................................... -- risk: 128.7942 
+[ 361] ...................................... -- risk: 128.5561 
+[ 401] ...................................... -- risk: 128.3694 
+[ 441] ...................................... -- risk: 128.2211 
+[ 481] ..................
+Final risk: 128.1585 
+> table(sp$xselect())
+
+  1   2   4   5   6 
+138  50 162  51  99 
+> coef(sp, which=1:6)
+$`bols(GST)`
+[1]  1.072597658 -0.004082068
+
+$`bols(DBH)`
+[1]  0.69775197 -0.01471877
+
+$`bols(AOT)`
+[1] 0 0
+
+$`bols(AFS)`
+[1] -2.18229171  0.01392804
+
+$`bols(DWC)`
+[1]  0.0008540723 -0.0053814590
+
+$`bols(LOG)`
+[1]  0.046716307 -0.005200858
+
+attr(,"offset")
+[1] -1.582668
+> 
+> # Variable selection in a GLM with high df spatial component
+> fm <- SG4 ~ bols(GST) + bols(DBH) + bols(AOT) + bols(AFS) + bols(DWC) +
++             bols(LOG) + bspatial(x_gk, y_gk, df=5, differences=1, knots=c(12,12))
+> sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
+Note: Method with signature "Matrix#diagonalMatrix" chosen for function "kronecker",
+ target signature "dsCMatrix#ddiMatrix".
+ "sparseMatrix#ANY" would also be valid
+Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
+ target signature "dsCMatrix#dtTMatrix".
+ "sparseMatrix#TsparseMatrix" would also be valid
+Note: Method with signature "diagonalMatrix#Matrix" chosen for function "kronecker",
+ target signature "ddiMatrix#dsCMatrix".
+ "ANY#sparseMatrix" would also be valid
+Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
+ target signature "dtTMatrix#dsCMatrix".
+ "TsparseMatrix#sparseMatrix" would also be valid
+[   1] ...................................... -- risk: 137.4561 
+[  41] ...................................... -- risk: 130.8831 
+[  81] ...................................... -- risk: 126.9239 
+[ 121] ...................................... -- risk: 124.3356 
+[ 161] ...................................... -- risk: 122.5312 
+[ 201] ...................................... -- risk: 121.2403 
+[ 241] ...................................... -- risk: 120.2931 
+[ 281] ...................................... -- risk: 119.5685 
+[ 321] ...................................... -- risk: 118.9965 
+[ 361] ...................................... -- risk: 118.5270 
+[ 401] ...................................... -- risk: 118.1326 
+[ 441] ...................................... -- risk: 117.7995 
+[ 481] ..................
+Final risk: 117.6503 
+Warning message:
+In asMethod(object) :
+  as(.,"dsCMatrix") is deprecated; do use as(., "symmetricMatrix")
+> table(sp$xselect())
+
+  1   2   4   7 
+ 58  43 130 269 
+> coef(sp, which=1:6)
+$`bols(GST)`
+[1]  0.501901966 -0.001984263
+
+$`bols(DBH)`
+[1]  0.59785641 -0.01285489
+
+$`bols(AOT)`
+[1] 0 0
+
+$`bols(AFS)`
+[1] -1.86758769  0.01177493
+
+$`bols(DWC)`
+[1] 0 0
+
+$`bols(LOG)`
+[1] 0 0
+
+attr(,"offset")
+[1] -1.582668
+> 
+> # Variable selection in a GLM with small df spatial component
+> fm <- SG4 ~ bols(GST) + bols(DBH) + bols(AOT) + bols(AFS) + bols(DWC) +
++             bols(LOG) + bspatial(x_gk, y_gk, df=1, differences=1, knots=c(12,12), center=TRUE)
+> sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
+[   1] ...................................... -- risk: 143.4116 
+[  41] ...................................... -- risk: 138.0400 
+[  81] ...................................... -- risk: 134.9257 
+[ 121] ...................................... -- risk: 132.3696 
+[ 161] ...................................... -- risk: 130.3049 
+[ 201] ...................................... -- risk: 128.6014 
+[ 241] ...................................... -- risk: 127.2130 
+[ 281] ...................................... -- risk: 126.0338 
+[ 321] ...................................... -- risk: 125.0622 
+[ 361] ...................................... -- risk: 124.2542 
+[ 401] ...................................... -- risk: 123.5542 
+[ 441] ...................................... -- risk: 122.9654 
+[ 481] ..................
+Final risk: 122.7069 
+> table(sp$xselect())
+
+  1   2   4   7 
+ 54  35  90 321 
+> coef(sp, which=1:6)
+$`bols(GST)`
+[1]  0.778022818 -0.002811598
+
+$`bols(DBH)`
+[1]  0.59371219 -0.01241289
+
+$`bols(AOT)`
+[1] 0 0
+
+$`bols(AFS)`
+[1] -1.71264914  0.01108683
+
+$`bols(DWC)`
+[1] 0 0
+
+$`bols(LOG)`
+[1] 0 0
+
+attr(,"offset")
+[1] -1.582668
+> 
+> 
+> # Geoadditive regression model without centering
+> fm <- SG5 ~ bbs(GST) + bbs(DBH) + bbs(AOT) + bbs(AFS) + bbs(DWC) +
++             bbs(LOG) + bspatial(x_gk, y_gk, differences=1, knots=c(12,12))
+> sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
+[   1] ...................................... -- risk: 474.3116 
+[  41] ...................................... -- risk: 466.5857 
+[  81] ...................................... -- risk: 462.8599 
+[ 121] ...................................... -- risk: 460.4985 
+[ 161] ...................................... -- risk: 458.764 
+[ 201] ...................................... -- risk: 457.3589 
+[ 241] ...................................... -- risk: 456.1802 
+[ 281] ...................................... -- risk: 455.1545 
+[ 321] ...................................... -- risk: 454.2507 
+[ 361] ...................................... -- risk: 453.4384 
+[ 401] ...................................... -- risk: 452.7044 
+[ 441] ...................................... -- risk: 452.0401 
+[ 481] ..................
+Final risk: 451.7279 
+> plot(sp)
+> 
+> # Geoadditive regression model with centering
+> 
+> fm <- SG5 ~ bols(GST) + bbs(GST, df=1, center=TRUE) +
++             bols(AOT) + bbs(AOT, df=1, center=TRUE) +
++             bols(AFS) + bbs(AFS, df=1, center=TRUE) +
++             bols(DWC) + bbs(DWC, df=1, center=TRUE) +
++             bols(LOG) + bbs(LOG, df=1, center=TRUE) +
++             bspatial(x_gk, y_gk, df=1, differences=1, knots=c(12,12),
++               center=TRUE)
+> sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
+[   1] ...................................... -- risk: 502.0303 
+[  41] ...................................... -- risk: 494.1493 
+[  81] ...................................... -- risk: 490.0277 
+[ 121] ...................................... -- risk: 487.4495 
+[ 161] ...................................... -- risk: 485.6646 
+[ 201] ...................................... -- risk: 484.3156 
+[ 241] ...................................... -- risk: 483.2211 
+[ 281] ...................................... -- risk: 482.3221 
+[ 321] ...................................... -- risk: 481.5231 
+[ 361] ...................................... -- risk: 480.7767 
+[ 401] ...................................... -- risk: 480.0901 
+[ 441] ...................................... -- risk: 479.5036 
+[ 481] ..................
+Final risk: 479.2248 
+> plot(sp)
+> 
+> 
+> # re-define boosting iterations
+> bcr <- boost_control(mstop=200, trace=TRUE)
+> 
+> # transform covariates to [0,1]
+> birds$GST <- (birds$GST-min(birds$GST))/(max(birds$GST)-min(birds$GST))
+> birds$AOT <- (birds$AOT-min(birds$AOT))/(max(birds$AOT)-min(birds$AOT))
+> birds$AFS <- (birds$AFS-min(birds$AFS))/(max(birds$AFS)-min(birds$AFS))
+> birds$DWC <- (birds$DWC-min(birds$DWC))/(max(birds$DWC)-min(birds$DWC))
+> birds$LOG <- (birds$LOG-min(birds$LOG))/(max(birds$LOG)-min(birds$LOG))
+> 
+> # Space-varying coefficient models (with centered spatial effects)
+> fm <- SG5 ~ bols(GST) + bspatial(x_gk, y_gk, by = GST, df=1, differences=1,
++               knots=c(12, 12), center=TRUE) +
++             bols(AOT) + bspatial(x_gk, y_gk, by = AOT, df=1, differences=1,
++               knots=c(12, 12), center=TRUE) +
++             bols(AFS) + bspatial(x_gk, y_gk, by = AFS, df=1, differences=1,
++               knots=c(12, 12), center=TRUE) +
++             bols(DWC) + bspatial(x_gk, y_gk, by = DWC, df=1, differences=1,
++               knots=c(12, 12), center=TRUE) +
++             bols(LOG) + bspatial(x_gk, y_gk, by = LOG, df=1, differences=1,
++               knots=c(12, 12), center=TRUE) +
++             bspatial(x_gk, y_gk, df=1, differences=1, knots=c(12, 12),
++               center=TRUE)
+> sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
+[   1] ...................................... -- risk: 502.424 
+[  41] ...................................... -- risk: 494.6188 
+[  81] ...................................... -- risk: 490.5895 
+[ 121] ...................................... -- risk: 487.776 
+[ 161] ......................................
+Final risk: 485.706 
+> plot(sp)
+> 

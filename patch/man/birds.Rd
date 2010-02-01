@@ -6,7 +6,7 @@
   Environmental variables and bird counts for identifying
   suitable bird habitats
 }
-\usage{data(birds)}
+\usage{data("birds")}
 \format{
   A data frame with 258 observations on the following 10 variables.
   \describe{
@@ -14,7 +14,7 @@
     \item{\code{DBH}}{Mean diameter of the largest three trees}
     \item{\code{AOT}}{Age of oldest tree}
     \item{\code{AFS}}{Age of forest stand}
-    \item{\code{DWC}}{Amound of dead wood of conifers}
+    \item{\code{DWC}}{Amount of dead wood of conifers}
     \item{\code{LOG}}{Amount of logs per grid}
     \item{\code{x_gk}}{grid location, x coordinate}
     \item{\code{y_gk}}{grid location, y coordinate}
@@ -41,7 +41,8 @@ suitability.
  Joerg Mueller (2005).
  Forest structures as key factor for beetle and bird communities 
  in beech forests. PhD thesis, Munich University of Technology.
- \url{http://mediatum.ub.tum.de}-
+ \url{http://mediatum.ub.tum.de}
+ 
 }
 \references{
 

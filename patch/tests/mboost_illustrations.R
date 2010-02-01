@@ -1,7 +1,39 @@
 ###################################################
 ### chunk number 1: pkg-attach
 ###################################################
-source("setup.R")
+lwd <- 2
+cex <- 1
+sink("tmpfile")
+library("mboost")
+sink()
+file.remove("tmpfile")
+cat("\n\n\t%%%% DON'T EDIT THIS FILE\n\n")
+options(prompt = "R> ", width = 60, continue = "     ", digits = 5)
+if (!file.exists("figures"))
+    dir.create("figures")
+cat("\\setkeys{Gin}{width = 0.95\\textwidth}")
+set.seed(290875)
+
+perfplot <- function(x, grid, alpha = NULL, border = 1, 
+                     xlab = "", ylab = "Performance") {
+  x <- as.matrix(x)
+  nc <- NCOL(x)
+  nr <- NROW(x)
+  nam <- grid
+  if(is.null(alpha)) alpha <- 0.17 - 0.0002 * nr
+
+  plot(rep(1:nc, 2), rep(range(x), nc), type = "n", axes = FALSE,
+       ylab = ylab, xlab = xlab, xlim = c(0.6, nc + 0.4))
+  axis(1, at = 1:nc, labels = nam)
+  axis(2)
+  box()
+  matlines(t(x), col = rgb(0,0,0, alpha), lty = 1)
+  lines(colMeans(x))
+}
+
+data("bodyfat", package = "mboost")
+data("wpbc", package = "mboost")
+library("survival")
 
 
 ###################################################
@@ -64,13 +96,45 @@ nsel <- sum(abs(cf) > 0)
 ###################################################
 ### chunk number 9: bodyfat-pkg-attach
 ###################################################
-source("setup.R")
+lwd <- 2
+cex <- 1
+sink("tmpfile")
+library("mboost")
+sink()
+file.remove("tmpfile")
+cat("\n\n\t%%%% DON'T EDIT THIS FILE\n\n")
+options(prompt = "R> ", width = 60, continue = "     ", digits = 5)
+if (!file.exists("figures"))
+    dir.create("figures")
+cat("\\setkeys{Gin}{width = 0.95\\textwidth}")
+set.seed(290875)
+
+perfplot <- function(x, grid, alpha = NULL, border = 1, 
+                     xlab = "", ylab = "Performance") {
+  x <- as.matrix(x)
+  nc <- NCOL(x)
+  nr <- NROW(x)
+  nam <- grid
+  if(is.null(alpha)) alpha <- 0.17 - 0.0002 * nr
+
+  plot(rep(1:nc, 2), rep(range(x), nc), type = "n", axes = FALSE,
+       ylab = ylab, xlab = xlab, xlim = c(0.6, nc + 0.4))
+  axis(1, at = 1:nc, labels = nam)
+  axis(2)
+  box()
+  matlines(t(x), col = rgb(0,0,0, alpha), lty = 1)
+  lines(colMeans(x))
+}
+
+data("bodyfat", package = "mboost")
+data("wpbc", package = "mboost")
+library("survival")
 
 
 ###################################################
 ### chunk number 10: bodyfat-gamboost-fit
 ###################################################
-bf_gam <- gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss")
+bf_gam <- gamboost(DEXfat ~ ., data = bodyfat)
 
 
 ###################################################
@@ -83,24 +147,17 @@ mstop(aic <- AIC(bf_gam))
 ### chunk number 12: bodyfat-gamboost-plot
 ###################################################
 bf_gam <- bf_gam[mstop(aic)]
-fpartial <- mboost:::gamplot(bf_gam)
+fpartial <- predict(bf_gam, which = 1:length(variable.names(bf_gam)))
 layout(matrix(1:4, ncol = 2, byrow = TRUE))
 par(mai = par("mai") * c(1, 1, 0.5, 1))
-x <- bf_gam$data$input
-varorder <- rev(order(colMeans(abs(fpartial))))[1:4]
-
-out <- sapply(varorder, function(i) {
-    plot(x[,i], fpartial[,i],  main = "",
-         xlab = colnames(x)[i], ylab = expression(f[partial]),
-         ylim = max(abs(fpartial))*c(-1, 1))
-    abline(h = 0, lty = 2, lwd = 0.5)
-    })
+varorder <- rev(order(colMeans(abs(fpartial))))
+plot(bf_gam, which = varorder[1:4])
 
 
 ###################################################
 ### chunk number 13: bodyfat-pkg-attach
 ###################################################
-source("setup.R")
+#source("setup.R")
 library("splines")
 indep <- names(bodyfat)[names(bodyfat) != "DEXfat"]
 bsfm <- as.formula(paste("DEXfat ~ ", paste("bs(", indep, ")", collapse = " + ", sep = ""), sep = ""))
@@ -126,11 +183,10 @@ mstop(aic <- AIC(bf_bs))
 layout(matrix(1:4, ncol = 2, byrow = TRUE))
 par(mai = par("mai") * c(1, 1, 0.5, 1))
 cf <- coef(bf_bs[mstop(aic)])
-x <- bf_bs$data$x
 varorder <- c("hipcirc", "waistcirc", "kneebreadth", "anthro3b")
 fpartial <- sapply(varorder, function(v) {
     indx <- grep(v, names(cf))
-    x[,indx] %*% cf[indx]
+    as.matrix(bf_bs$newX(bodyfat)[,indx]) %*% cf[indx]
 })
 out <- sapply(varorder, function(i) {
     plot(bodyfat[,i], fpartial[,i],  main = "",
@@ -142,7 +198,7 @@ out <- sapply(varorder, function(i) {
 ###################################################
 ### chunk number 17: pkg-attach
 ###################################################
-source("setup.R")
+#source("setup.R")
 n <- sum(complete.cases(wpbc))
 p <- ncol(wpbc) - 2
 
@@ -191,7 +247,7 @@ coef(wpbc_glm)[abs(coef(wpbc_glm)) > 0]
 ###################################################
 ### chunk number 23: wpbc-gamboost-fit
 ###################################################
-wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial(), baselearner = "bss")
+wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial())
 mopt <- mstop(aic <- AIC(wpbc_gam, "classical"))
 aic
 
@@ -199,21 +255,17 @@ aic
 ###################################################
 ### chunk number 24: wpbc-gamboost-plot
 ###################################################
-fpartial <- mboost:::gamplot(wpbc_gam[mopt])
-x <- wpbc_gam$data$input
+mod <- wpbc_gam[mopt]
+fpartial <- predict(wpbc_gam, which = 1:length(variable.names(wpbc_gam)))
 layout(matrix(1:4, nrow = 2, byrow = TRUE))
 par(mai = par("mai") * c(1, 1, 0.5, 1))
-out <- sapply(rev(order(colMeans(abs(fpartial))))[1:4], function(i) {
-    plot(x[,i], fpartial[,i], xlab = colnames(x)[i], main = "",
-         ylab = expression(f[partial]), ylim = c(-0.5, 0.5), type = "p")
-    abline(h = 0, lty = 2, lwd = 0.5)
-        })
+plot(wpbc_gam, which = rev(order(colMeans(abs(fpartial))))[1:4])
 
 
 ###################################################
 ### chunk number 25: pkg-attach
 ###################################################
-source("setup.R")
+#source("setup.R")
 
 
 ###################################################

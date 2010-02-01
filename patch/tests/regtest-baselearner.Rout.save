@@ -1,0 +1,337 @@
+
+R version 2.10.1 (2009-12-14)
+Copyright (C) 2009 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> 
+> library("mboost")
+> attach(asNamespace("mboost"))
+
+	The following object(s) are masked from package:mboost :
+
+	 %+% %X% AdaExp bbs Binomial blackboost bols boost_control brandom bspatial btree CoxPH cv cvrisk ExpectReg Family FP gamboost GaussClass Gaussian GaussReg glmboost Huber IPCweights Laplace Loglog Lognormal mboost mboost_fit mstop NBinomial nuisance Poisson PropOdds QuantReg selected stabsel survFit Weibull 
+
+> library("MASS")
+> library("Matrix")
+Loading required package: lattice
+> 
+> set.seed(290875)
+> 
+> ### dgp
+> n <- 20000
+> xn <- round(runif(n), 3)
+> xn[sample(1:n)[1:(n / 100)]] <- NA
+> xf <- gl(4, n / 4)
+> xf[sample(1:n)[1:(n / 100)]] <- NA
+> z1 <- sample(gl(2, n / 2))
+> z1[sample(1:n)[1:(n / 100)]] <- NA
+> z2 <- round(runif(n), 3)
+> z2[sample(1:n)[1:(n / 100)]] <- NA
+> w <- rpois(n, lambda = 2)
+> y <- 2 * xn + rnorm(n)
+> y[is.na(y)] <- rnorm(sum(is.na(y)))
+> 
+> testfun <- function(m1, m2) {
++     ret <- c(max(abs(coef(m1) - coef(m2))),
++       max(abs(fitted(m1) - fitted(m2)), na.rm = TRUE))
++     if (any(ret > sqrt(.Machine$double.eps)))
++         return(ret)
++ }
+> 
+> ### numeric x with intercept
+> m1 <- lm(y ~ xn, weights = w, na.action = na.exclude)
+> m2 <- fit(dpp(bols(xn), w), y)
+> testfun(m1, m2)
+> 
+> ### numeric x without intercept
+> m1 <- lm(y ~ xn - 1, weights = w, na.action = na.exclude)
+> m2 <- fit(dpp(bols(xn, intercept = FALSE), w), y)
+> testfun(m1, m2)
+> 
+> ### factor x with intercept
+> m1 <- lm(y ~ xf, weights = w, na.action = na.exclude)
+> m2 <- fit(dpp(bols(xf), w), y)
+> testfun(m1, m2)
+> 
+> ### factor x without intercept
+> m1 <- lm(y ~ xf - 1, weights = w, na.action = na.exclude)
+> m2 <- fit(dpp(bols(xf, intercept = FALSE), w), y)
+> testfun(m1, m2)
+> 
+> ### contrasts
+> m1 <- lm(y ~ xf, weights = w, contrasts = list(xf = "contr.sum"), na.action = na.exclude)
+> m2 <- fit(dpp(bols(xf, contrasts.arg = list(xf = "contr.sum")), w), y)
+> testfun(m1, m2)
+> 
+> ### multiple x
+> m1 <- lm(y ~ xn + xf, weights = w, na.action = na.exclude)
+> m2 <- fit(dpp(bols(xn, xf), w), y)
+> testfun(m1, m2)
+> 
+> ### interaction with binary factor
+> xtmp <- (z1 == "2") * xn
+> m1 <- lm(y ~ xtmp - 1, weights = w, na.action = na.exclude)
+> m2 <- fit(dpp(bols(xn, by = z1, intercept = FALSE), w), y)
+> testfun(m1, m2)
+> 
+> ### interaction with numeric variable
+> m1 <- lm(y ~ z2:xn - 1, weights = w, na.action = na.exclude)
+> m2 <- fit(dpp(bols(z2, by = xn, intercept = FALSE), w), y)
+> testfun(m1, m2)
+> 
+> ### ridge
+> one <- rep(1, n)
+> cf1 <- coef(lm.ridge(y ~ one + xn - 1, lambda = 2))
+> cf2 <- coef(fit(dpp(bols(one, xn, lambda = 2, intercept = FALSE), rep(1, n)), y))
+> max(abs(cf1 - cf2))
+[1] 0.001606092
+> cf1 <- coef(lm.ridge(y ~ xf - 1, lambda = 2))
+> cf2 <- coef(fit(dpp(bols(xf, lambda = 2, intercept = FALSE), rep(1, n)), y))
+> max(abs(cf1 - cf2))
+[1] 0.000302863
+> 
+> ### matrix (here with missing values)
+> cf1 <- coef(mod <- lm(y ~ xn + xf * z1 - 1, weights = w, y = TRUE, x = TRUE))
+> tX <- mod$x
+> tw <- mod$weights
+> ty <- mod$y
+> cf2 <- coef(fit(dpp(bols(tX), weights = tw), ty))
+> stopifnot(max(abs(cf1 - cf2)) < sqrt(.Machine$double.eps))
+> 
+> ### ridge again with matrix interface
+> tX <- matrix(runif(1000), ncol = 10)
+> ty <- rnorm(100)
+> tw <- rep(1, 100)
+> 
+> ### compute & check df
+> la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
+> truedf <- sum(diag(tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*% t(tX * tw)))
+> stopifnot(abs(truedf - 2) < sqrt(.Machine$double.eps))
+> 
+> one <- rep(1, ncol(tX))
+> cf1 <- coef(lm.ridge(ty ~ . - 1, data = as.data.frame(tX), lambda = la))
+> cf2 <- coef(fit(dpp(bols(tX, df = 2), weights = tw), ty))
+> max(abs(cf1 - cf2))
+[1] 0.08707475
+> # I think bols is better and thus right
+> sum((ty - tX %*% cf1)^2) + la * sum(cf1^2)
+  lambda 
+80.20144 
+> sum((ty - tX %*% cf2)^2) + la * sum(cf2^2)
+  lambda 
+78.29787 
+> 
+> ### now with other df-definition:
+> op <- options(mboost_dftraceS = FALSE)
+> la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
+> H <- tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*% t(tX * tw)
+> truedf <- sum(diag(2*H - tcrossprod(H,H)))
+> stopifnot(abs(truedf - 2) < sqrt(.Machine$double.eps))
+> options(op)
+> 
+> # check df with weights
+> tw <- rpois(100, 2)
+> la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
+> truedf <- sum(diag(tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*% t(tX * tw)))
+> stopifnot(abs(truedf - 2) < sqrt(.Machine$double.eps))
+> 
+> ### check df2lambda for P-splines (Bug spotted by B. Hofner)
+> set.seed(1907)
+> x <- runif(100, min = -1, max = 3)
+> ## extract lambda from base-learner
+> lambda <- bbs(x, df = 4)$dpp(rep(1, length(x)))$df()["lambda"]
+> X <- get("X", envir = environment(bbs(x, df = 4)$dpp))
+> K <- get("K", envir = environment(bbs(x, df = 4)$dpp))
+> truedf <- sum(diag(X %*%  solve(crossprod(X,X) + lambda * K) %*% t(X)))
+> stopifnot(abs(truedf - 4) < sqrt(.Machine$double.eps))
+> 
+> ### check accuracy of df2lambda
+> data("bodyfat", package="mboost")
+> diff_df <- matrix(NA, nrow=8, ncol=ncol(bodyfat))
+> rownames(diff_df) <- paste("df", 3:10)
+> colnames(diff_df) <- names(bodyfat)
+> for (i in 3:10){
++     for (j in 1:ncol(bodyfat)){
++         lambda <- bbs(bodyfat[[j]], df = i)$dpp(rep(1, nrow(bodyfat)))$df()["lambda"]
++         diff_df[i-2,j] <- bbs(bodyfat[[j]], lambda = lambda)$dpp(rep(1, nrow(bodyfat)))$df()["df"] - i
++     }
++ }
+> stopifnot(all(diff_df < sqrt(.Machine$double.eps)))
+> 
+> ### componentwise
+> cf2 <- coef(fit(dpp(bolscw(cbind(1, xn)), weights = w), y))
+> cf1 <- coef(lm(y ~ xn - 1, weights = w))
+> stopifnot(max(abs(cf1 - max(cf2))) < sqrt(.Machine$double.eps))
+> 
+> cf2 <- coef(fit(dpp(bolscw(matrix(xn, nc = 1)), weights = w), y))
+> cf1 <- coef(lm(y ~ xn - 1, weights = w))
+> stopifnot(max(abs(cf1 - max(cf2))) < sqrt(.Machine$double.eps))
+> 
+> ### componentwise with matrix
+> n <- 200
+> m <- 10000
+> x <- rnorm(n * m)
+> x[abs(x) < 2] <- 0
+> X <- Matrix(data = x, ncol = m, nrow = n)
+> beta <- rpois(ncol(X), lambda = 1)
+> y <- X %*% beta + rnorm(nrow(X))
+> w <- rep(1, nrow(X)) ###rpois(nrow(X), lambda = 1)
+> f1 <- dpp(bolscw(X), weights = w)$fit
+> f1(y)$model
+       coef     xselect           p 
+   39.20852  3630.00000 10000.00000 
+> 
+> ### varying coefficients
+> x1 <- runif(n, max = 2)
+> x2 <- sort(runif(n, max = 2 * pi))
+> y <- sin(x2) * x1 + rnorm(n)
+> w <- rep(1, n)
+> 
+> d <- dpp(bbs(x2, by = x1, df = 4), w)
+> f <- fit(d, y)
+> f2 <- d$predict(list(f), newdata = data.frame(x1 = 1, x2 = x2))
+> 
+> max(abs(sin(x2) - f2))
+[1] 0.5399721
+> 
+> ### bols and bbs; matrix interfaces
+> n <- 10000
+> x <- runif(n, min = 0, max = 2*pi)
+> y <- sin(x) + rnorm(n, sd = 0.1)
+> w <- rpois(n, lambda = 1)
+> x[sample(1:n)[1:(n / 100)]] <- NA
+> h <- hyper_bbs(data.frame(x = x), vary = "")
+> X <- X_bbs(data.frame(x = x), vary = "", h)$X
+> f1 <- fit(dpp(bbs(x, df = ncol(X)), w), y)
+> f2 <- fit(dpp(bols(X, df = ncol(X)), w), y)
+> stopifnot(max(abs(coef(f1) - coef(f2))) < sqrt(.Machine$double.eps))
+> 
+> stopifnot(all.equal(get_index(data.frame(x, x)), get_index(X)))
+> stopifnot(all.equal(get_index(data.frame(x)), get_index(X)))
+> 
+> 
+> ### combinations and tensor products of base-learners
+> 
+> set.seed(29)
+> n <- 1000
+> x1 <- rnorm(n)
+> x2 <- rnorm(n)
+> x3 <- rnorm(n)
+> f <- gl(4, 25)
+> y <- rnorm(n)
+> ndf <- data.frame(x1 = x1[1:10], x2 = x2[1:10], f = f[1:10])
+> 
+> ### spatial
+> m1 <- gamboost(y ~ bbs(x1) %X% bbs(x2))
+Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
+ target signature "dgCMatrix#dgTMatrix".
+ "sparseMatrix#TsparseMatrix" would also be valid
+Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
+ target signature "dgTMatrix#dgCMatrix".
+ "TsparseMatrix#sparseMatrix" would also be valid
+Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
+ target signature "dsCMatrix#dgTMatrix".
+ "sparseMatrix#TsparseMatrix" would also be valid
+Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
+ target signature "dgTMatrix#dsCMatrix".
+ "TsparseMatrix#sparseMatrix" would also be valid
+Warning message:
+In asMethod(object) :
+  as(.,"dsCMatrix") is deprecated; do use as(., "symmetricMatrix")
+> m2 <- gamboost(y ~ bspatial(x1, x2, df = 16))
+Note: Method with signature "Matrix#diagonalMatrix" chosen for function "kronecker",
+ target signature "dsCMatrix#ddiMatrix".
+ "sparseMatrix#ANY" would also be valid
+Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
+ target signature "dsCMatrix#dtTMatrix".
+ "sparseMatrix#TsparseMatrix" would also be valid
+Note: Method with signature "diagonalMatrix#Matrix" chosen for function "kronecker",
+ target signature "ddiMatrix#dsCMatrix".
+ "ANY#sparseMatrix" would also be valid
+Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
+ target signature "dtTMatrix#dsCMatrix".
+ "TsparseMatrix#sparseMatrix" would also be valid
+> stopifnot(max(abs(predict(m1) - predict(m2))) < sqrt(.Machine$double.eps))
+> stopifnot(max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < sqrt(.Machine$double.eps))
+> 
+> ### spatio-temporal
+> m1 <- gamboost(y ~ bbs(x1, knots = 6) %X% bbs(x2, knots = 6) %X% bbs(x3, knots = 6))
+> m2 <- gamboost(y ~ (bbs(x1, knots = 6) + bbs(x2, knots = 6)) %X% bbs(x3, knots = 6))
+> 
+> ### varying numeric
+> m1 <- gamboost(y ~ bbs(x1) %X% bols(x2, intercept = FALSE, lambda = 0))
+> m2 <- gamboost(y ~ bbs(x1, by = x2, df = 4))
+> stopifnot(max(abs(predict(m1) - predict(m2))) < sqrt(.Machine$double.eps))
+> stopifnot(max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < sqrt(.Machine$double.eps))
+> 
+> ### varying factor
+> m1 <- gamboost(y ~ bbs(x1) %X% bols(f, intercept = FALSE, df = 5))
+Warning message:
+In data.frame(..., check.names = FALSE) :
+  row names were found from a short variable and have been discarded
+> coef(m1)
+$`"bbs(x1)" %X% "bols(f, intercept = FALSE, df = 5)"`
+ [1]  0.730895171  0.038870922 -0.005399569 -0.148991281 -0.329031840
+ [6] -0.220643444  0.154919020 -0.300950311 -0.873054991 -0.519028732
+[11]  0.320637179 -0.303918059 -0.610811537 -0.686367706  0.342235456
+[16]  0.015554696 -0.135101120 -0.315273962 -0.092935904  0.357645322
+[21]  0.403799615  0.601384744 -0.296924404  0.084490869  0.416705690
+[26]  0.448347137  0.462026108 -0.277978035 -0.008355033 -0.223355153
+[31]  0.100481865 -0.072720712 -0.172365196 -0.347188904 -0.542295914
+[36] -0.091497556 -0.110402447 -0.062103717 -0.042659116 -0.315372175
+[41] -0.037990696  0.207814428  0.200650463  0.012818782  0.038118949
+[46]  0.093509262  0.113732497  0.280359393 -0.037694530 -0.148325380
+[51] -0.026317909 -0.006505122  0.063325194 -0.152492547  0.051858835
+[56]  0.052133940  0.023312796  0.310295070 -0.133932734  0.119637727
+[61] -0.371533883  0.042400169  0.125771268 -0.689991471 -0.022849336
+[66] -0.109987692  0.071981650 -0.054482987  0.019664720  0.458025083
+[71]  0.347018048  0.154893844 -0.104385886  0.829366071  0.433741504
+[76]  0.219947980 -0.012472865  0.378273519  0.385671821  0.105267425
+[81] -0.332167839 -0.332316112  0.664484861 -0.063076836 -0.368592581
+[86] -0.935470908  0.587630225 -0.036879027 -0.193482916 -1.010237013
+[91]  0.429416563 -0.011876975 -0.009186625 -0.599968165  0.438317733
+[96]  0.006562539
+
+attr(,"offset")
+[1] 0.03826691
+> predict(m1, newdata = ndf)
+              [,1]
+ [1,] -0.005303688
+ [2,] -0.019047316
+ [3,]  0.040104417
+ [4,] -0.180068706
+ [5,] -0.067037647
+ [6,] -0.023484754
+ [7,] -0.010560163
+ [8,] -0.098703524
+ [9,]  0.077330699
+[10,] -0.190650493
+> 
+> ### cbind
+> m1 <- gamboost(y ~ bols(x1, intercept = FALSE, df = 1) %+%
++                    bols(x2, intercept = FALSE, df = 1))
+> m2 <- gamboost(y ~ bols(x1, x2, intercept = FALSE, df = 2))
+> stopifnot(max(abs(predict(m1) - predict(m2))) < sqrt(.Machine$double.eps))
+> stopifnot(max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < sqrt(.Machine$double.eps))
+> 
+> ### yeah
+> m1 <- gamboost(y ~ (bols(x1, intercept = FALSE, df = 1) %+%
++                     bols(x2, intercept = FALSE, df = 1)) %X% bols(f, df = 4) +
++                     bbs(x1) + bspatial(x1, x2))
+Warning message:
+In data.frame(..., check.names = FALSE) :
+  row names were found from a short variable and have been discarded
+> 
+> 

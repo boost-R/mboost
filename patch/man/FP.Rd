@@ -5,11 +5,12 @@
   Fractional polynomials transformation for continuous covariates.
 }
 \usage{
-FP(x, p = c(-2, -1, -0.5, 0.5, 1, 2, 3))
+FP(x, p = c(-2, -1, -0.5, 0.5, 1, 2, 3), scaling = TRUE)
 }
 \arguments{
   \item{x}{ a numeric vector. }
   \item{p}{ all powers of \code{x} to be included. }
+  \item{scaling}{ a logical indicating if the measurements are scaled prior to model fitting.}
 }
 \details{
 
@@ -19,9 +20,6 @@ FP(x, p = c(-2, -1, -0.5, 0.5, 1, 2, 3))
     where the degree of the fractional polynomial is the number of non-zero regression coefficients
     \eqn{\beta} and \eqn{\gamma}. See \code{\link[mfp]{mfp}} for the
     reference implementation.
-
-    Currently, no scaling of \code{x} is implemented. However, one may wish to standardize
-    the inputs prior to fitting the model.
 
 }
 \value{
@@ -50,8 +48,8 @@ FP(x, p = c(-2, -1, -0.5, 0.5, 1, 2, 3))
     })
 
     ### generate formula
-    fpfm <- as.formula(paste("DEXfat ~ ", paste("FP(", indep, ")",
-                             collapse = "+")))
+    fpfm <- as.formula(paste("DEXfat ~ ", 
+        paste("FP(", indep, ", scaling = FALSE)", collapse = "+")))
     fpfm
 
     ### fit linear model

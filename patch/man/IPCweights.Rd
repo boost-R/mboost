@@ -30,11 +30,11 @@ IPCweights(x, maxweight = 5)
     \emph{Unified Methods for Censored Longitudinal Data and Causality}, 
     Springer, New York.
 
-    Torsten Hothorn, Peter Buhlmann, Sandrine Dudoit,
+    Torsten Hothorn, Peter Buehlmann, Sandrine Dudoit,
     Annette Molinaro and Mark J. van der Laan (2006), Survival ensembles.
     \emph{Biostatistics} \bold{7}(3), 355--373.
 
-    Peter Buhlmann and Torsten Hothorn (2007),
+    Peter Buehlmann and Torsten Hothorn (2007),
     Boosting algorithms: regularization, prediction and model fitting.
     \emph{Statistical Science}, \bold{22}(4), 477--505.
 

@@ -4,7 +4,7 @@ require("mboost")
 set.seed(290875)
 
 ### for boosting hat matrix checks
-fm <- GaussReg()
+fm <- Gaussian()
 fm@offset <- function(y, w) 0
 
 ### a simple two-dimensional example from `gamboost.Rd'
@@ -20,12 +20,12 @@ ht <- hatvalues(cars.gb)
 ### plot fit
 plot(dist ~ speed, data = cars)
 lines(cars$speed, predict(cars.gb[mstop(AIC(cars.gb))]), col = "red")
-lines(cars$speed, predict(smooth.spline(cars$speed, cars$dist), cars$speed)$y, 
+lines(cars$speed, predict(smooth.spline(cars$speed, cars$dist), cars$speed)$y,
       col = "green")
 
 #### check boosting hat matrix and subsetting / predict
 stopifnot(isTRUE(all.equal(drop(attr(ht, "hatmatrix") %*% cars$dist),
-                           as.vector(predict(cars.gb)))))
+                           as.vector(predict(cars.gb[50])))))
 ht25 <- hatvalues(cars.gb[25])
 stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% cars$dist),
                            as.vector(predict(cars.gb[25])))))
@@ -36,10 +36,10 @@ stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% cars$dist),
 ### and weights
 data("bodyfat", package = "mboost")
 bffm <- DEXfat ~ age + waistcirc + hipcirc + elbowbreadth + kneebreadth +
-      anthro3a + anthro3b + anthro3c + anthro4 - 1
+      anthro3a + anthro3b + anthro3c + anthro4
 indep <- names(bodyfat)[names(bodyfat) != "DEXfat"]
 bodyfat[indep] <- lapply(bodyfat[indep], function(x) x - mean(x))
-bf_gam <- gamboost(bffm, data = bodyfat, control = boost_control(mstop = 10), 
+bf_gam <- gamboost(bffm, data = bodyfat, control = boost_control(mstop = 10),
                    weights = runif(nrow(bodyfat)) * 10)
 ### aic <- AIC(bf_gam)
 ht <- hatvalues(bf_gam)
@@ -64,41 +64,40 @@ stopin <- function(x, y) stopifnot(max(abs(x - y)) < 0.1)
 
 ### univariate linear model
 df <- data.frame(y = 3*x[,2], x = x)
-ga <- gamboost(y ~ x.2 - 1, data = df,
+ga <- gamboost(y ~ x.2, data = df,
                control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ x.2 - 1, data = df)), fitted(ga))
 
 ### univariate model involving sin transformation
 df <- data.frame(y = sin(x[,1]), x = x)
-ga <- gamboost(y ~ x.1 - 1, data = df, 
+ga <- gamboost(y ~ x.1, data = df,
                control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ sin(x.1) - 1, data = df)), fitted(ga))
 
 ### bivariate model: linear and sin
 df <- data.frame(y = sin(x[,1]) + 3*x[,2], x = x)
-ga <- gamboost(y ~ x.1 + x.2 - 1, data = df, 
+ga <- gamboost(y ~ x.1 + x.2, data = df,
                control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ sin(x.1) + x.2 - 1, data = df)), fitted(ga))
-ga <- gamboost(y ~ x.1 + x.2 - 1, data = df, dfbase = c(4, 1), 
+ga <- gamboost(y ~ x.1 + bols(x.2), data = df,
                control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ sin(x.1) + x.2 - 1, data = df)), fitted(ga))
 
 ### ANCOVA model
 df <- data.frame(y = 3 * x[,2] + (1:4)[xf], x = x)
-ga <- gamboost(y ~ xf + x.2 - 1, data = df, 
+ga <- gamboost(y ~ xf + x.2, data = df,
                control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ xf + x.2 - 1, data = df)), fitted(ga))
-ga <- gamboost(y ~ xf + sin(x.1) + x.2, data = df, 
-               dfbase = c(1, 1, 4, 1),
+ga <- gamboost(y ~ xf + sin(x.1) + x.2, data = df,
+               dfbase = 1,
                control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ xf + sin(x.1) + x.2, data = df)), fitted(ga))
 
-
 ### check centering
-y <- rnorm(20)
-xn <- rnorm(20)
+y <- rnorm(200)
+xn <- rnorm(200)
 xnm <- xn - mean(xn)
-xf <- gl(2, 10)
+xf <- gl(2, 100)
 gc <- gamboost(y ~ xn + xf)
 g <- gamboost(y ~ xnm + xf)
 stopifnot(max(abs(fitted(gc) - fitted(g))) < 1 / 10000)
@@ -111,38 +110,38 @@ stopifnot(max(abs(pc2 - pc3)) < 1 / 10000)
 
 ### formula interfaces
 tmp <- data.frame(x1 = runif(100), x2 = runif(100), y = rnorm(100))
-fm1 <- y ~ bss(x1, df = 3) + bss(x2, df = 3)
+fm1 <- y ~ bbs(x1, df = 3) + bbs(x2, df = 3)
 fm2 <- y ~ x1 + x2
 mod1 <- gamboost(fm1, data = tmp)
 mod2 <- gamboost(fm2, data = tmp, base = "bss", dfbase = 3)
-stopifnot(max(abs(fitted(mod1) - fitted(mod2))) < .Machine$double.eps)
-stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp))) < .Machine$double.eps)
+stopifnot(max(abs(fitted(mod1) - fitted(mod2))) < sqrt(.Machine$double.eps))
+stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp))) < sqrt(.Machine$double.eps))
 
 fm1 <- y ~ bbs(x1, df = 3) + bbs(x2, df = 3)
 fm2 <- y ~ x1 + x2
 mod1 <- gamboost(fm1, data = tmp)
 mod2 <- gamboost(fm2, data = tmp, base = "bbs", dfbase = 3)
-stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < .Machine$double.eps)
-stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < .Machine$double.eps)
+stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
+stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
 
 fm1 <- y ~ bols(x1) + bols(x2)
 fm2 <- y ~ x1 + x2
 mod1 <- gamboost(fm1, data = tmp)
 mod2 <- gamboost(fm2, data = tmp, base = "bols")
-stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < .Machine$double.eps)
-stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < .Machine$double.eps)
+stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
+stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
 
 fm1 <- y ~ btree(x1) + btree(x2)
 fm2 <- y ~ x1 + x2
 mod1 <- gamboost(fm1, data = tmp)
 mod2 <- gamboost(fm2, data = tmp, base = "btree")
-stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < .Machine$double.eps)
-stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < .Machine$double.eps)
+stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
+stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
 
 ## Cox model
 
-fit2 <- gamboost(Surv(futime, fustat) ~ bbs(age, knots = 40) +
-    bols(resid.ds) + bols(rx) + bols(ecog.ps), data = ovarian, 
+fit2 <- gamboost(Surv(futime, fustat) ~ bbs(age) +
+    bols(resid.ds) + bols(rx) + bols(ecog.ps), data = ovarian,
     family = CoxPH(), control = boost_control(mstop = 1000))
 
 A2 <- survFit(fit2)
@@ -154,7 +153,7 @@ A2
 
 ### gamboost with explicit intercept
 df <- data.frame(x = 1:100, y = rnorm(1:100), int = rep(1, 100))
-mod <- gamboost(y ~ bols(int, center = TRUE) + bols(x, center = TRUE), data = df, 
+mod <- gamboost(y ~ bols(int, intercept = FALSE) + bols(x, intercept = FALSE), data = df,
                 control = boost_control(mstop = 2500))
 cf <- unlist(coef(mod))
 cf[1] <- cf[1] + mod$offset
@@ -162,3 +161,98 @@ tmp <- max(abs(cf - coef(lm(y ~ x, data = df))))
 stopifnot(tmp < 1e-5)
 tmp <- max(abs(fitted(mod) - fitted(lm(y ~ x, data = df))))
 stopifnot(tmp < 1e-5)
+
+### predictions:
+data("bodyfat", package = "mboost")
+amod <- gamboost(DEXfat ~ hipcirc + anthro3a, data = bodyfat, baselearner = "bbs")
+
+agg <- c("none", "sum", "cumsum")
+whi <- list(NULL, 1, 2, c(1,2))
+for (i in 1:4){
+    pred <- vector("list", length=3)
+    for (j in 1:3){
+        pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
+    }
+    if (i == 1){
+        stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
+        if ((pred[[2]] - rowSums(pred[[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
+            warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
+        stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
+    } else {
+        stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
+        stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
+    }
+}
+
+# use names in which instead of numbers
+agg <- c("none", "sum", "cumsum")
+whi <- list(NULL, "hipcirc", "anthro3a", c("hipcirc", "anthro3a"))
+for (i in 1:4){
+    pred <- vector("list", length=3)
+    for (j in 1:3){
+        pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
+    }
+    if (i == 1){
+        stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
+        if ((pred[[2]] - rowSums(pred[[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
+            warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
+        stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
+    } else {
+        stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
+        stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
+    }
+}
+
+# use which to extract all effects for one covariate e.g. for plotting purposes
+amod <- gamboost(DEXfat ~ bols(hipcirc, intercept=FALSE) + bbs(hipcirc, df = 1, center=TRUE), data = bodyfat)
+stopifnot(ncol(predict(amod, which="hip")) == 2 && all(rowSums(predict(amod, which="hip")) + attr(coef(amod), "offset") - predict(amod) < sqrt(.Machine$double.eps)))
+
+amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth,
+                 data = bodyfat, baselearner = "bbs")
+pr1 <- predict(amod, aggre = "sum", which= 1:2)
+foo <- bodyfat[,names(bodyfat) %in% c("hipcirc", "anthro3a", "kneebreadth")]
+foo$kneebreadth <- mean(bodyfat$kneebreadth)
+pr2 <- predict(amod, aggre = "sum", newdata=foo)
+stopifnot(length(unique(rowSums(pr1) - pr2)) == 1) # changes in level are ok
+newData <- as.data.frame(rbind(mean(bodyfat)[-2], mean(bodyfat)[-2]+1*sd(bodyfat)[-2]))
+if (!is.list(pr <- predict(amod, newdata=newData, which=1:2)))
+    warning("predict(amod, newdata=newData, which=1:2) does not return a list") # no list but a matrix is returned!
+stopifnot(is.list(pr <- predict(amod, newdata=newData, aggregate="cumsum", which=1:2)))
+amod[10]
+pr <- predict(amod, which=1:3)
+stopifnot(ncol(pr) == 3 || all(pr[,ncol] == 0))
+amod[100]
+
+# check type argument
+set.seed(1907)
+x1 <- rnorm(100)
+p <- 1/(1 + exp(- 3 * x1))
+y <- as.factor(runif(100) < p)
+DF <- data.frame(y = y, x1 = x1)
+
+logitBoost <- gamboost(y ~ x1, family = Binomial(),
+                 data = DF, baselearner = "bols", control=boost_control(mstop=5000))
+logit <- glm(y ~ x1, data=DF, family=binomial)
+stopifnot(coef(logitBoost)[[1]][2]*2 - coef(logit)[2]  < sqrt(.Machine$double.eps)) # * 2 as we use y = {-1, 1}
+
+pr <- predict(logitBoost)
+pr2 <- predict(logit)
+stopifnot(pr * 2 - pr2 < 1e-5)  # * 2 as we use y = {-1, 1}
+
+pr <- predict(logitBoost, type="class")
+pr2 <- predict(logit, type="response") > 0.5
+foo <- table(pr, pr2)
+stopifnot(foo[1,2] + foo[2,1] == 0)
+
+pr <- predict(logitBoost, type="response")
+pr2 <- predict(logit, type="response")
+stopifnot(pr - pr2  < sqrt(.Machine$double.eps))
+
+### coefficients:
+data("bodyfat", package = "mboost")
+amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth,
+                 data = bodyfat, baselearner = "bbs")
+stopifnot(length(coef(amod)) == 3)
+amod[10]
+stopifnot(length(coef(amod)) == 2)
+stopifnot(length(coef(amod, which=1:3)) == 3)

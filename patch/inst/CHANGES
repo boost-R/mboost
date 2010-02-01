@@ -1,5 +1,51 @@
                 CHANGES in `mboost' VERSION 1.1-4 (2009-11-18)
 
+                CHANGES in `mboost' VERSION 2.0-0 (2010-02-01)
+
+  o  generic implementation of component-wise functional gradient
+     boosting in `mboost_fit', specialized code for linear,
+     additive and interaction models removed
+
+  o  new families available for ordinal, expectile and censored regression
+
+  o  computations potentially based on package Matrix 
+     (reduces memory usage)
+
+  o  various speed improvements
+
+  o  added interface to extract selected base-learners (selected())
+
+  o  added interface for parallel computations in cvrisk with 
+     arbitrary packages (e.g. multicore, snow)
+
+  o  added "which" argument in predict and coef functions and improved
+     usability of "which" in plot-function. Users can specify "which" as
+     numeric value or as a character string
+
+  o  added function cv() to generate matrices for k-fold cross-validation, 
+     subsampling and bootstrap
+
+  o  new function stabsel() for stability selection with error control
+
+  o  added function model.weights() to extract the weights
+
+  o  added interface to expand model by increasing mstop in
+     model[mstop]
+
+  o  alternative definition of degrees of freedom available
+
+  o  Interface changes: 
+
+     - class definition / Family() arguments changed
+     - changed behavior of subset method (model[mstop]). Object
+       is directly altered and not duplicated
+     - argument "center" in bols replaced with "intercept" 
+     - argument "z" in base-learners replaced with "by"
+     - bns and bss deprecated; 
+
+
+		CHANGES in `mboost' VERSION 1.1-4 (2009-11-18)
+
   o  fixed bug in prediction with varying coefficients for binary
      effect modifiers
 
@@ -7,7 +53,7 @@
 
   o  better x-axes in plot.cvrisk and possibility to change xlab
 
-  o  parallel cvrisk on unix systems only (`multicore' isn't safe on windows)
+  o  parallel cvrisk on Unix systems only (`multicore' isn't safe on windows)
 
   o  included new penalty for ordinal predictors (in bols())
 
@@ -134,7 +180,7 @@
      - new plot.gamboost
 
   o  add the number of selected variables as degrees of freedom
-     (as mentioned in the discussion of Hastie to Buhlmann & Hothorn)
+     (as mentioned in the discussion of Hastie to Buehlmann & Hothorn)
 
   o  status information during fitting is now available via
      boost_control(trace = TRUE) but is switched off by default

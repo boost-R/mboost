@@ -17,7 +17,7 @@ plot(birdsaic)
 ms <- mstop(birdsaic)
 
 # selection frequencies of the model terms
-table(sp$ensemble[1:ms])
+table(sp$xselect()[1:ms])
 
 # estimated coefficients
 coef(sp[ms])
@@ -29,30 +29,27 @@ bcr <- boost_control(mstop=500, trace=TRUE)
 fm <- SG4 ~ bols(GST) + bols(DBH) + bols(AOT) + bols(AFS) + bols(DWC) +
             bols(LOG)
 sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
-table(sp$ensemble)
-coef(sp)[1:6]
+table(sp$xselect())
+coef(sp, which=1:6)
 
 # Variable selection in a GLM with high df spatial component
 fm <- SG4 ~ bols(GST) + bols(DBH) + bols(AOT) + bols(AFS) + bols(DWC) +
-            bols(LOG) + bspatial(x_gk, y_gk, df=5, differences=1, xknots=12,
-              yknots=12)
+            bols(LOG) + bspatial(x_gk, y_gk, df=5, differences=1, knots=c(12,12))
 sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
-table(sp$ensemble)
-coef(sp)[1:6]
+table(sp$xselect())
+coef(sp, which=1:6)
 
 # Variable selection in a GLM with small df spatial component
 fm <- SG4 ~ bols(GST) + bols(DBH) + bols(AOT) + bols(AFS) + bols(DWC) +
-            bols(LOG) + bspatial(x_gk, y_gk, df=1, differences=1, xknots=12,
-              yknots=12, center=TRUE)
+            bols(LOG) + bspatial(x_gk, y_gk, df=1, differences=1, knots=c(12,12), center=TRUE)
 sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
-table(sp$ensemble)
-coef(sp)[1:6]
+table(sp$xselect())
+coef(sp, which=1:6)
 
 
 # Geoadditive regression model without centering
 fm <- SG5 ~ bbs(GST) + bbs(DBH) + bbs(AOT) + bbs(AFS) + bbs(DWC) +
-            bbs(LOG) + bspatial(x_gk, y_gk, differences=1, xknots=12,
-              yknots=12)
+            bbs(LOG) + bspatial(x_gk, y_gk, differences=1, knots=c(12,12))
 sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
 plot(sp)
 
@@ -63,7 +60,7 @@ fm <- SG5 ~ bols(GST) + bbs(GST, df=1, center=TRUE) +
             bols(AFS) + bbs(AFS, df=1, center=TRUE) +
             bols(DWC) + bbs(DWC, df=1, center=TRUE) +
             bols(LOG) + bbs(LOG, df=1, center=TRUE) +
-            bspatial(x_gk, y_gk, df=1, differences=1, xknots=12, yknots=12,
+            bspatial(x_gk, y_gk, df=1, differences=1, knots=c(12,12),
               center=TRUE)
 sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
 plot(sp)
@@ -80,17 +77,17 @@ birds$DWC <- (birds$DWC-min(birds$DWC))/(max(birds$DWC)-min(birds$DWC))
 birds$LOG <- (birds$LOG-min(birds$LOG))/(max(birds$LOG)-min(birds$LOG))
 
 # Space-varying coefficient models (with centered spatial effects)
-fm <- SG5 ~ bols(GST) + bspatial(x_gk, y_gk, GST, df=1, differences=1,
-              xknots=12, yknots=12, center=TRUE) +
-            bols(AOT) + bspatial(x_gk, y_gk, AOT, df=1, differences=1,
-              xknots=12, yknots=12, center=TRUE) +
-            bols(AFS) + bspatial(x_gk, y_gk, AFS, df=1, differences=1,
-              xknots=12, yknots=12, center=TRUE) +
-            bols(DWC) + bspatial(x_gk, y_gk, DWC, df=1, differences=1,
-              xknots=12, yknots=12, center=TRUE) +
-            bols(LOG) + bspatial(x_gk, y_gk, LOG, df=1, differences=1,
-              xknots=12, yknots=12, center=TRUE) +
-            bspatial(x_gk, y_gk, df=1, differences=1, xknots=12, yknots=12,
+fm <- SG5 ~ bols(GST) + bspatial(x_gk, y_gk, by = GST, df=1, differences=1,
+              knots=c(12, 12), center=TRUE) +
+            bols(AOT) + bspatial(x_gk, y_gk, by = AOT, df=1, differences=1,
+              knots=c(12, 12), center=TRUE) +
+            bols(AFS) + bspatial(x_gk, y_gk, by = AFS, df=1, differences=1,
+              knots=c(12, 12), center=TRUE) +
+            bols(DWC) + bspatial(x_gk, y_gk, by = DWC, df=1, differences=1,
+              knots=c(12, 12), center=TRUE) +
+            bols(LOG) + bspatial(x_gk, y_gk, by = LOG, df=1, differences=1,
+              knots=c(12, 12), center=TRUE) +
+            bspatial(x_gk, y_gk, df=1, differences=1, knots=c(12, 12),
               center=TRUE)
 sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
 plot(sp)

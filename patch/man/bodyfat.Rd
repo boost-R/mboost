@@ -50,7 +50,7 @@
     thickness, circumferences, and bone breadths. \emph{Obesity Research},
     \bold{13}(3), 626--634.
 
-    Peter Buhlmann and Torsten Hothorn (2007),
+    Peter Buehlmann and Torsten Hothorn (2007),
     Boosting algorithms: regularization, prediction and model fitting.
     \emph{Statistical Science}, \bold{22}(4), 477--505.
 

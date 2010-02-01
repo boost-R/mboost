@@ -1,20 +1,17 @@
 \name{survFit}
 \alias{survFit}
-\alias{survFit.gb}
-\alias{survFit.blackboost}
+\alias{survFit.mboost}
 \alias{plot.survFit}
 \title{ Survival Curves for a Cox Proportional Hazards Model }
 \description{
   Computes the predicted survivor function for a Cox proportional hazards model.
 }
 \usage{
-\method{survFit}{gb}(object, newdata = NULL, ...)
-\method{survFit}{blackboost}(object, newdata = NULL, \dots)
+\method{survFit}{mboost}(object, newdata = NULL, ...)
 \method{plot}{survFit}(x, xlab = "Time", ylab = "Probability", \dots)
 }
 \arguments{
-  \item{object}{ an object of class \code{blackboost}, \code{gamboost}, or
-                 \code{glmboost} which is assumed to have a \code{\link{CoxPH}}
+  \item{object}{ an object of class \code{mboost} which is assumed to have a \code{\link{CoxPH}}
                  family component. }
   \item{newdata}{ an optional data frame in which to look for variables with
                   which to predict the survivor function. }
@@ -46,6 +43,10 @@
 \seealso{ \code{\link{gamboost}}, \code{\link{glmboost}} and
   \code{\link{blackboost}} for model fitting.}
 \examples{
+
+library("survival")
+data("ovarian", package = "survival")
+
 fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps
 fit <- glmboost(fm, data = ovarian, family = CoxPH(),
     control=boost_control(mstop = 500))

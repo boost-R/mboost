@@ -1,5 +1,5 @@
 
-R version 2.10.0 (2009-10-26)
+R version 2.10.1 (2009-12-14)
 Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -18,33 +18,11 @@ Type 'q()' to quit R.
 > 
 > require("mboost")
 Loading required package: mboost
-Loading required package: modeltools
-Loading required package: stats4
-Loading required package: party
-Loading required package: survival
-Loading required package: splines
-Loading required package: grid
-Loading required package: coin
-Loading required package: mvtnorm
-Loading required package: zoo
-
-Attaching package: 'zoo'
-
-
-	The following object(s) are masked from package:base :
-
-	 as.Date.numeric 
-
-Loading required package: sandwich
-Loading required package: strucchange
-Loading required package: vcd
-Loading required package: MASS
-Loading required package: colorspace
 > 
 > set.seed(290875)
 > 
 > ### for boosting hat matrix checks
-> fm <- GaussReg()
+> fm <- Gaussian()
 > fm@offset <- function(y, w) 0
 > 
 > ### a simple two-dimensional example from `gamboost.Rd'
@@ -53,10 +31,10 @@ Loading required package: colorspace
 +                     control = boost_control(mstop = 50))
 > cars.gb
 
-	 Generalized Additive Models Fitted via Gradient Boosting
+	 Model-based Boosting
 
 Call:
-gamboost.formula(formula = dist ~ speed, data = cars, df = 4,     family = fm, control = boost_control(mstop = 50))
+gamboost(formula = dist ~ speed, data = cars, dfbase = 4, family = fm,     control = boost_control(mstop = 50))
 
 
 	 Squared Error (Regression) 
@@ -67,24 +45,25 @@ Loss function: (y - f)^2
 Number of boosting iterations: mstop = 50 
 Step size:  0.1 
 Offset:  0 
+Number of baselearners:  1 
 
 > aic <- AIC(cars.gb, method = "corrected")
 > aic
 [1] 6.625437
 Optimal number of boosting iterations: 34 
-Degrees of freedom (for mstop = 34): 5.056182 
+Degrees of freedom (for mstop = 34): 5.05618 
 > 
 > ht <- hatvalues(cars.gb)
 > 
 > ### plot fit
 > plot(dist ~ speed, data = cars)
 > lines(cars$speed, predict(cars.gb[mstop(AIC(cars.gb))]), col = "red")
-> lines(cars$speed, predict(smooth.spline(cars$speed, cars$dist), cars$speed)$y, 
+> lines(cars$speed, predict(smooth.spline(cars$speed, cars$dist), cars$speed)$y,
 +       col = "green")
 > 
 > #### check boosting hat matrix and subsetting / predict
 > stopifnot(isTRUE(all.equal(drop(attr(ht, "hatmatrix") %*% cars$dist),
-+                            as.vector(predict(cars.gb)))))
++                            as.vector(predict(cars.gb[50])))))
 > ht25 <- hatvalues(cars.gb[25])
 > stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% cars$dist),
 +                            as.vector(predict(cars.gb[25])))))
@@ -95,10 +74,10 @@ Degrees of freedom (for mstop = 34): 5.056182
 > ### and weights
 > data("bodyfat", package = "mboost")
 > bffm <- DEXfat ~ age + waistcirc + hipcirc + elbowbreadth + kneebreadth +
-+       anthro3a + anthro3b + anthro3c + anthro4 - 1
++       anthro3a + anthro3b + anthro3c + anthro4
 > indep <- names(bodyfat)[names(bodyfat) != "DEXfat"]
 > bodyfat[indep] <- lapply(bodyfat[indep], function(x) x - mean(x))
-> bf_gam <- gamboost(bffm, data = bodyfat, control = boost_control(mstop = 10), 
+> bf_gam <- gamboost(bffm, data = bodyfat, control = boost_control(mstop = 10),
 +                    weights = runif(nrow(bodyfat)) * 10)
 > ### aic <- AIC(bf_gam)
 > ht <- hatvalues(bf_gam)
@@ -123,41 +102,40 @@ Degrees of freedom (for mstop = 34): 5.056182
 > 
 > ### univariate linear model
 > df <- data.frame(y = 3*x[,2], x = x)
-> ga <- gamboost(y ~ x.2 - 1, data = df,
+> ga <- gamboost(y ~ x.2, data = df,
 +                control = boost_control(mstop = 500, nu = 1))
 > stopin(fitted(lm(y ~ x.2 - 1, data = df)), fitted(ga))
 > 
 > ### univariate model involving sin transformation
 > df <- data.frame(y = sin(x[,1]), x = x)
-> ga <- gamboost(y ~ x.1 - 1, data = df, 
+> ga <- gamboost(y ~ x.1, data = df,
 +                control = boost_control(mstop = 500, nu = 1))
 > stopin(fitted(lm(y ~ sin(x.1) - 1, data = df)), fitted(ga))
 > 
 > ### bivariate model: linear and sin
 > df <- data.frame(y = sin(x[,1]) + 3*x[,2], x = x)
-> ga <- gamboost(y ~ x.1 + x.2 - 1, data = df, 
+> ga <- gamboost(y ~ x.1 + x.2, data = df,
 +                control = boost_control(mstop = 500, nu = 1))
 > stopin(fitted(lm(y ~ sin(x.1) + x.2 - 1, data = df)), fitted(ga))
-> ga <- gamboost(y ~ x.1 + x.2 - 1, data = df, dfbase = c(4, 1), 
+> ga <- gamboost(y ~ x.1 + bols(x.2), data = df,
 +                control = boost_control(mstop = 500, nu = 1))
 > stopin(fitted(lm(y ~ sin(x.1) + x.2 - 1, data = df)), fitted(ga))
 > 
 > ### ANCOVA model
 > df <- data.frame(y = 3 * x[,2] + (1:4)[xf], x = x)
-> ga <- gamboost(y ~ xf + x.2 - 1, data = df, 
+> ga <- gamboost(y ~ xf + x.2, data = df,
 +                control = boost_control(mstop = 500, nu = 1))
 > stopin(fitted(lm(y ~ xf + x.2 - 1, data = df)), fitted(ga))
-> ga <- gamboost(y ~ xf + sin(x.1) + x.2, data = df, 
-+                dfbase = c(1, 1, 4, 1),
+> ga <- gamboost(y ~ xf + sin(x.1) + x.2, data = df,
++                dfbase = 1,
 +                control = boost_control(mstop = 500, nu = 1))
 > stopin(fitted(lm(y ~ xf + sin(x.1) + x.2, data = df)), fitted(ga))
 > 
-> 
 > ### check centering
-> y <- rnorm(20)
-> xn <- rnorm(20)
+> y <- rnorm(200)
+> xn <- rnorm(200)
 > xnm <- xn - mean(xn)
-> xf <- gl(2, 10)
+> xf <- gl(2, 100)
 > gc <- gamboost(y ~ xn + xf)
 > g <- gamboost(y ~ xnm + xf)
 > stopifnot(max(abs(fitted(gc) - fitted(g))) < 1 / 10000)
@@ -170,56 +148,76 @@ Degrees of freedom (for mstop = 34): 5.056182
 > 
 > ### formula interfaces
 > tmp <- data.frame(x1 = runif(100), x2 = runif(100), y = rnorm(100))
-> fm1 <- y ~ bss(x1, df = 3) + bss(x2, df = 3)
+> fm1 <- y ~ bbs(x1, df = 3) + bbs(x2, df = 3)
 > fm2 <- y ~ x1 + x2
 > mod1 <- gamboost(fm1, data = tmp)
 > mod2 <- gamboost(fm2, data = tmp, base = "bss", dfbase = 3)
-> stopifnot(max(abs(fitted(mod1) - fitted(mod2))) < .Machine$double.eps)
-> stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp))) < .Machine$double.eps)
+Warning message:
+In gamboost(fm2, data = tmp, base = "bss", dfbase = 3) :
+  bss and bns are deprecated, bbs is used instead
+> stopifnot(max(abs(fitted(mod1) - fitted(mod2))) < sqrt(.Machine$double.eps))
+> stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp))) < sqrt(.Machine$double.eps))
 > 
 > fm1 <- y ~ bbs(x1, df = 3) + bbs(x2, df = 3)
 > fm2 <- y ~ x1 + x2
 > mod1 <- gamboost(fm1, data = tmp)
 > mod2 <- gamboost(fm2, data = tmp, base = "bbs", dfbase = 3)
-> stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < .Machine$double.eps)
-> stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < .Machine$double.eps)
+> stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
+> stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
 > 
 > fm1 <- y ~ bols(x1) + bols(x2)
 > fm2 <- y ~ x1 + x2
 > mod1 <- gamboost(fm1, data = tmp)
 > mod2 <- gamboost(fm2, data = tmp, base = "bols")
-> stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < .Machine$double.eps)
-> stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < .Machine$double.eps)
+> stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
+> stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
 > 
 > fm1 <- y ~ btree(x1) + btree(x2)
 > fm2 <- y ~ x1 + x2
 > mod1 <- gamboost(fm1, data = tmp)
+Loading required package: party
+Loading required package: survival
+Loading required package: splines
+Loading required package: grid
+Loading required package: modeltools
+Loading required package: stats4
+Loading required package: coin
+Loading required package: mvtnorm
+Loading required package: zoo
+Loading required package: sandwich
+Loading required package: strucchange
+Loading required package: vcd
+Loading required package: MASS
+Loading required package: colorspace
 > mod2 <- gamboost(fm2, data = tmp, base = "btree")
-> stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < .Machine$double.eps)
-> stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < .Machine$double.eps)
+> stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
+> stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
 > 
 > ## Cox model
 > 
-> fit2 <- gamboost(Surv(futime, fustat) ~ bbs(age, knots = 40) +
-+     bols(resid.ds) + bols(rx) + bols(ecog.ps), data = ovarian, 
+> fit2 <- gamboost(Surv(futime, fustat) ~ bbs(age) +
++     bols(resid.ds) + bols(rx) + bols(ecog.ps), data = ovarian,
 +     family = CoxPH(), control = boost_control(mstop = 1000))
+Warning message:
+In optimize(risk, interval = c(0, max(y[, 1], na.rm = TRUE)), y = y,  :
+  NA/Inf replaced by maximum positive value
 > 
 > A2 <- survFit(fit2)
 > A2
 $surv
            [,1]
- [1,] 0.9980873
- [2,] 0.9929781
- [3,] 0.9867334
- [4,] 0.9768941
- [5,] 0.9154316
- [6,] 0.8567420
- [7,] 0.7968431
- [8,] 0.7206421
- [9,] 0.6401860
-[10,] 0.5591371
-[11,] 0.4453696
-[12,] 0.3387993
+ [1,] 0.9983186
+ [2,] 0.9930606
+ [3,] 0.9867088
+ [4,] 0.9766845
+ [5,] 0.9158358
+ [6,] 0.8576859
+ [7,] 0.7982222
+ [8,] 0.7225968
+ [9,] 0.6427971
+[10,] 0.5623798
+[11,] 0.4490300
+[12,] 0.3426994
 
 $time
  [1]  59 115 156 268 329 353 365 431 464 475 563 638
@@ -235,18 +233,18 @@ attr(,"class")
 > A2
 $surv
                   1            3        12
- [1,]  5.342158e-01 8.936563e-01 0.9991571
- [2,]  9.949982e-02 6.611135e-01 0.9969011
- [3,]  1.260646e-02 4.564287e-01 0.9941348
- [4,]  4.734828e-04 2.533792e-01 0.9897562
- [5,]  2.712914e-13 5.576930e-03 0.9618288
- [6,]  1.023472e-22 1.138864e-04 0.9341641
- [7,]  5.035562e-33 1.613980e-06 0.9048128
- [8,]  2.551037e-47 4.408263e-09 0.8656279
- [9,]  3.716160e-64 4.215980e-12 0.8216478
-[10,]  2.082241e-83 1.487476e-15 0.7740910
-[11,] 9.220061e-116 2.346028e-21 0.7002863
-[12,] 1.169240e-154 2.482172e-28 0.6208101
+ [1,]  5.059376e-01 9.071417e-01 0.9992658
+ [2,]  5.963568e-02 6.681175e-01 0.9969654
+ [3,]  4.438033e-03 4.607472e-01 0.9941774
+ [4,]  7.105781e-05 2.550526e-01 0.9897566
+ [5,]  3.469913e-16 6.147572e-03 0.9623562
+ [6,]  1.012174e-27 1.376481e-04 0.9351947
+ [7,]  2.348924e-40 2.145822e-06 0.9063236
+ [8,]  7.385337e-58 6.731320e-09 0.8677950
+ [9,]  1.954228e-78 7.669813e-12 0.8245871
+[10,] 6.158153e-102 3.335896e-15 0.7778646
+[11,] 1.620423e-141 7.275439e-21 0.7050833
+[12,] 4.907853e-189 1.161322e-27 0.6266419
 
 $time
  [1]  59 115 156 268 329 353 365 431 464 475 563 638
@@ -259,7 +257,7 @@ attr(,"class")
 > 
 > ### gamboost with explicit intercept
 > df <- data.frame(x = 1:100, y = rnorm(1:100), int = rep(1, 100))
-> mod <- gamboost(y ~ bols(int, center = TRUE) + bols(x, center = TRUE), data = df, 
+> mod <- gamboost(y ~ bols(int, intercept = FALSE) + bols(x, intercept = FALSE), data = df,
 +                 control = boost_control(mstop = 2500))
 > cf <- unlist(coef(mod))
 > cf[1] <- cf[1] + mod$offset
@@ -267,4 +265,156 @@ attr(,"class")
 > stopifnot(tmp < 1e-5)
 > tmp <- max(abs(fitted(mod) - fitted(lm(y ~ x, data = df))))
 > stopifnot(tmp < 1e-5)
+> 
+> ### predictions:
+> data("bodyfat", package = "mboost")
+> amod <- gamboost(DEXfat ~ hipcirc + anthro3a, data = bodyfat, baselearner = "bbs")
+> 
+> agg <- c("none", "sum", "cumsum")
+> whi <- list(NULL, 1, 2, c(1,2))
+> for (i in 1:4){
++     pred <- vector("list", length=3)
++     for (j in 1:3){
++         pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
++     }
++     if (i == 1){
++         stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
++         if ((pred[[2]] - rowSums(pred[[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
++             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
++         stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
++     } else {
++         stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
++         stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
++     }
++ }
+Warning message:
+'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
+> 
+> # use names in which instead of numbers
+> agg <- c("none", "sum", "cumsum")
+> whi <- list(NULL, "hipcirc", "anthro3a", c("hipcirc", "anthro3a"))
+> for (i in 1:4){
++     pred <- vector("list", length=3)
++     for (j in 1:3){
++         pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
++     }
++     if (i == 1){
++         stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
++         if ((pred[[2]] - rowSums(pred[[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
++             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
++         stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
++     } else {
++         stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
++         stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
++     }
++ }
+Warning message:
+'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
+> 
+> # use which to extract all effects for one covariate e.g. for plotting purposes
+> amod <- gamboost(DEXfat ~ bols(hipcirc, intercept=FALSE) + bbs(hipcirc, df = 1, center=TRUE), data = bodyfat)
+> stopifnot(ncol(predict(amod, which="hip")) == 2 && all(rowSums(predict(amod, which="hip")) + attr(coef(amod), "offset") - predict(amod) < sqrt(.Machine$double.eps)))
+> 
+> amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth,
++                  data = bodyfat, baselearner = "bbs")
+> pr1 <- predict(amod, aggre = "sum", which= 1:2)
+> foo <- bodyfat[,names(bodyfat) %in% c("hipcirc", "anthro3a", "kneebreadth")]
+> foo$kneebreadth <- mean(bodyfat$kneebreadth)
+> pr2 <- predict(amod, aggre = "sum", newdata=foo)
+> stopifnot(length(unique(rowSums(pr1) - pr2)) == 1) # changes in level are ok
+> newData <- as.data.frame(rbind(mean(bodyfat)[-2], mean(bodyfat)[-2]+1*sd(bodyfat)[-2]))
+> if (!is.list(pr <- predict(amod, newdata=newData, which=1:2)))
++     warning("predict(amod, newdata=newData, which=1:2) does not return a list") # no list but a matrix is returned!
+Warning message:
+predict(amod, newdata=newData, which=1:2) does not return a list 
+> stopifnot(is.list(pr <- predict(amod, newdata=newData, aggregate="cumsum", which=1:2)))
+> amod[10]
+
+	 Model-based Boosting
+
+Call:
+gamboost(formula = DEXfat ~ hipcirc + anthro3a + kneebreadth,     data = bodyfat, baselearner = "bbs")
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 10 
+Step size:  0.1 
+Offset:  30.78282 
+Number of baselearners:  3 
+
+> pr <- predict(amod, which=1:3)
+> stopifnot(ncol(pr) == 3 || all(pr[,ncol] == 0))
+> amod[100]
+
+	 Model-based Boosting
+
+Call:
+gamboost(formula = DEXfat ~ hipcirc + anthro3a + kneebreadth,     data = bodyfat, baselearner = "bbs")
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 100 
+Step size:  0.1 
+Offset:  30.78282 
+Number of baselearners:  3 
+
+> 
+> # check type argument
+> set.seed(1907)
+> x1 <- rnorm(100)
+> p <- 1/(1 + exp(- 3 * x1))
+> y <- as.factor(runif(100) < p)
+> DF <- data.frame(y = y, x1 = x1)
+> 
+> logitBoost <- gamboost(y ~ x1, family = Binomial(),
++                  data = DF, baselearner = "bols", control=boost_control(mstop=5000))
+> logit <- glm(y ~ x1, data=DF, family=binomial)
+> stopifnot(coef(logitBoost)[[1]][2]*2 - coef(logit)[2]  < sqrt(.Machine$double.eps)) # * 2 as we use y = {-1, 1}
+> 
+> pr <- predict(logitBoost)
+> pr2 <- predict(logit)
+> stopifnot(pr * 2 - pr2 < 1e-5)  # * 2 as we use y = {-1, 1}
+> 
+> pr <- predict(logitBoost, type="class")
+> pr2 <- predict(logit, type="response") > 0.5
+> foo <- table(pr, pr2)
+> stopifnot(foo[1,2] + foo[2,1] == 0)
+> 
+> pr <- predict(logitBoost, type="response")
+> pr2 <- predict(logit, type="response")
+> stopifnot(pr - pr2  < sqrt(.Machine$double.eps))
+> 
+> ### coefficients:
+> data("bodyfat", package = "mboost")
+> amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth,
++                  data = bodyfat, baselearner = "bbs")
+> stopifnot(length(coef(amod)) == 3)
+> amod[10]
+
+	 Model-based Boosting
+
+Call:
+gamboost(formula = DEXfat ~ hipcirc + anthro3a + kneebreadth,     data = bodyfat, baselearner = "bbs")
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 10 
+Step size:  0.1 
+Offset:  30.78282 
+Number of baselearners:  3 
+
+> stopifnot(length(coef(amod)) == 2)
+> stopifnot(length(coef(amod, which=1:3)) == 3)
 > 
