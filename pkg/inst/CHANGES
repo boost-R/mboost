@@ -1,5 +1,5 @@
 
-                CHANGES in `mboost' VERSION 2.0-0 (2010-01-11)
+                CHANGES in `mboost' VERSION 2.0-0 (2010-02-01)
 
   o  generic implementation of component-wise functional gradient
      boosting in `mboost_fit', specialized code for linear,
@@ -15,14 +15,16 @@
   o  added interface to extract selected base-learners (selected())
 
   o  added interface for parallel computations in cvrisk with 
-     arbitrary packages (e.g. snow)
+     arbitrary packages (e.g. multicore, snow)
 
   o  added "which" argmuent in predict and coef functions and improved
      usability of "which" in plot-function. Users can specify "which" as
      numeric value or as a character string
 
   o  added function cv() to generate matrices for k-fold crossvalidation, 
-     subsampling and bootsrap
+     subsampling and bootstrap
+
+  o  new function stabsel() for stability selection with error control
 
   o  added function model.weights() to extract the weights
 

@@ -187,11 +187,11 @@ bl1 \%X\% bl2
   additive regression for space-time data: a Bayesian perspective.
   \emph{Statistica Sinica}, \bold{14}, 731-761.
 
-  Jan Gertheiss and Gerhard Tutz (2009), Penalized Regression with Ordinal
-  Predictors, \emph{International Statistical Review}, \bold{77}(3), 345--365.
+  Jan Gertheiss and Gerhard Tutz (2009), Penalized regression with ordinal
+  predictors, \emph{International Statistical Review}, \bold{77}(3), 345--365.
 
   Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2009), 
-  A Framework for Unbiased Model Selection Based on Boosting. 
+  A framework for unbiased model selection based on boosting. 
   Technical Report Nr. 72, Institut fuer Statistik, LMU Muenchen.
   \url{http://epub.ub.uni-muenchen.de/11243/}
 

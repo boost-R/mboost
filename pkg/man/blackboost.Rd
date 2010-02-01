@@ -51,8 +51,8 @@ blackboost(formula, data = list(),
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 
-  Torsten Hothorn, Kurt Hornik and Achim Zeileis (2006). Unbiased Recursive
-  Partitioning: A Conditional Inference Framework. \emph{Journal of
+  Torsten Hothorn, Kurt Hornik and Achim Zeileis (2006). Unbiased recursive
+  partitioning: A conditional inference framework. \emph{Journal of
   Computational and Graphical Statistics}, \bold{15}(3), 651--674.
 
   Yoav Freund and Robert E. Schapire (1996),

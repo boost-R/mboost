@@ -10,8 +10,6 @@ future
 
     o  check status == "N" in wpbc
 
-    o  na.action defaults checken
-
     o  use better colours
 
     o  use col = rgb(0, 0, 0, 0.1) for lines in plot.cvrisk

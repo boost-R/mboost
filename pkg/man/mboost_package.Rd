@@ -16,7 +16,7 @@
 Package: \tab mboost\cr
 Type: \tab Package\cr
 Version: \tab 2.0-0\cr
-Date: \tab 2010-01-11\cr
+Date: \tab 2010-02-01\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes\cr

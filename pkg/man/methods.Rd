@@ -185,11 +185,11 @@
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 
-  Travor Hastie (2007), Discussion of ``Boosting Algorithms: Regularization, Prediction and Model Fitting''
+  Travor Hastie (2007), Discussion of ``Boosting algorithms: Regularization, prediction and model fitting''
   by Peter Buehlmann and Torsten Hothorn. \emph{Statistical Science}, \bold{22}(4), 505.
 
   Peter Buehlmann and Bin Yu (2006),
-  Sparse Boosting. \emph{Journal of Machine Learning Research}, \bold{7}, 1001--1024.
+  Sparse boosting. \emph{Journal of Machine Learning Research}, \bold{7}, 1001--1024.
 
 }
 \seealso{ \code{\link{gamboost}}, \code{\link{glmboost}} and

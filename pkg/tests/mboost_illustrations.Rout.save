@@ -192,7 +192,7 @@ R> ###################################################
 R> ### chunk number 11: bodyfat-gamboost-prune
 R> ###################################################
 R> mstop(aic <- AIC(bf_gam))
-[1] 46
+[1] 50
 R> 
 R> 
 R> ###################################################
@@ -326,9 +326,9 @@ R> ###################################################
 R> wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial())
 R> mopt <- mstop(aic <- AIC(wpbc_gam, "classical"))
 R> aic
-[1] 197.88
-Optimal number of boosting iterations: 76 
-Degrees of freedom (for mstop = 76): 20.2 
+[1] 196.39
+Optimal number of boosting iterations: 98 
+Degrees of freedom (for mstop = 98): 15.025 
 R> 
 R> 
 R> ###################################################

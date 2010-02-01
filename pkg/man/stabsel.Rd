@@ -37,7 +37,7 @@ stabsel(object, FWER = 0.05, cutoff, q, ...)
 }
 \references{
 
-  N. Meinshausen and P. Buehlmann (2010), Stability Selection.
+  N. Meinshausen and P. Buehlmann (2010), Stability selection.
   \emph{Journal of the Royal Statistical Society, Series B},
   \bold{72}(4).
 
