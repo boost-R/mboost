@@ -17,11 +17,11 @@
   o  added interface for parallel computations in cvrisk with 
      arbitrary packages (e.g. multicore, snow)
 
-  o  added "which" argmuent in predict and coef functions and improved
+  o  added "which" argument in predict and coef functions and improved
      usability of "which" in plot-function. Users can specify "which" as
      numeric value or as a character string
 
-  o  added function cv() to generate matrices for k-fold crossvalidation, 
+  o  added function cv() to generate matrices for k-fold cross-validation, 
      subsampling and bootstrap
 
   o  new function stabsel() for stability selection with error control
@@ -52,7 +52,7 @@
 
   o  better x-axes in plot.cvrisk and possibility to change xlab
 
-  o  parallel cvrisk on unix systems only (`multicore' isn't safe on windows)
+  o  parallel cvrisk on Unix systems only (`multicore' isn't safe on windows)
 
   o  included new penalty for ordinal predictors (in bols())
 
