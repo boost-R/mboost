@@ -510,3 +510,98 @@ ExpectReg <- function (tau = 0.5) {
         }, 
         name = "Expectile Regression")
 }
+
+## (1 - AUC)-Loss
+AUC <- function() {
+	approxGrad <- function(x) {
+		ifelse(abs(x) >= 1, 0, ifelse(x >= 0, (1 - x), (x + 1)))
+	}
+	approxLoss <- function(x) {
+		ret <- ifelse(x >= 0, 1 - (1 - x)^2/2, (x + 1)^2/2)
+		ifelse(x < -1, 0, ifelse(x > 1, 1, ret))
+	}
+	Family(ngradient = function(y, f, w = 1) {
+				# if there are weights!=1, observations have to be
+				# repeated/omitted accordingly
+				if (any(w != 1)) {
+					ind1 <- which(rep(y, w) == 1)
+					ind0 <- which(rep(y, w) == -1)
+					n1 <- length(ind1)
+					n0 <- length(ind0)
+				}
+				#need this for first iteration
+				if (length(f) == 1) {
+					f <- rep(f, n1 + n0)
+				} else {
+					# scale scores s.t. a gradient of zero makes sense for 
+					# differences in f that are bigger than +/-1
+					f <- f/sd(f)
+				}
+				
+				M0 <<- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) - 
+							f[ind0])
+				M1 <- approxGrad(M0)
+				ng <- vector(n1 + n0, mode = "numeric")
+				ng[ind1] <- colSums(M1)
+				ng[ind0] <- rowSums(-M1)
+				return(ng)
+			}, loss = function(y, f, w = 1) {
+				# if there are weights!=1, observations have to be
+				# repeated/omitted accordingly and M0 must be recomputed
+				if (any(w != 1)) {
+					ind1 <- which(rep(y, w) == 1)
+					ind0 <- which(rep(y, w) == -1)
+					n1 <- length(ind1)
+					n0 <- length(ind0)
+					if (length(f) == 1) {
+						f <- rep(f, n1 + n0)
+					} else f <- f/sd(f)
+					M0 <- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) - 
+								f[ind0])
+				}
+				# 1 - approxAUC
+				1 - (sum(approxLoss(M0)))/(n1 * n0)
+			}, risk = function(y, f, w = 1) {
+				# if there are weights!=1, observations have to be
+				# repeated/omitted accordingly and M0 must be recomputed
+				if (any(w != 1)) {
+					ind1 <- which(rep(y, w) == 1)
+					ind0 <- which(rep(y, w) == -1)
+					n1 <- length(ind1)
+					n0 <- length(ind0)
+					if (any(c(n0, n1) == 0)) {
+						warning("response is constant - AUC is 1.")
+						return(0)
+					}
+					if (length(f) == 1) 
+						f <- rep(f, n1 + n0)
+					M0 <- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) - 
+								f[ind0])
+				}
+				# 1 - AUC
+				return(1 - (sum(as.numeric(M0 > 0)))/(n1 * n0))
+			}, weights = "case",
+			offset = function(y, w) {
+				0
+			}, check_y = function(y) {
+				if (!is.factor(y)) 
+					stop("response is not a factor but ", sQuote("family = AUC()"))
+				if (nlevels(y) != 2) 
+					stop("response is not a factor at two levels but ", 
+							sQuote("family = AUC()"))
+				if (length(unique(y)) != 2) 
+					stop("only one class is present in response.")
+				# precompute to speed up ngradient (and warn about conflicting assignments)
+				dirtyAssigns <- c("ind1", "ind0", "n1", "n0")
+				if (any(previous <- sapply(dirtyAssigns, exists))) {
+					warning("overwriting ", sQuote(dirtyAssigns[previous]), 
+							" in .GlobalEnv")
+				}
+				ind1 <<- which(y == levels(y)[2])
+				ind0 <<- which(y == levels(y)[1])
+				n1 <<- length(ind1)
+				n0 <<- length(ind0)
+				c(-1, 1)[as.integer(y)]
+			}, name = paste("(1 - AUC)-Loss"))
+} 
+
