@@ -134,3 +134,13 @@ coef(model2)
 model2$scale
 
 }
+
+
+### AUC
+data("wpbc", package = "mboost")
+wpbc[,colnames(wpbc) != "status"] <- scale(wpbc[,colnames(wpbc) != "status"])
+wpbc <- wpbc[complete.cases(wpbc), colnames(wpbc) != "time"]
+try(rm(ind1, ind0, n1, n0), sil=T) #avoid warning from AUC's check_y()
+mAUC <- gamboost(status ~ ., data = wpbc, family = AUC())
+1 - mAUC$risk()
+
