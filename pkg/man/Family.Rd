@@ -33,6 +33,7 @@ Family(ngradient, loss = NULL, risk = NULL,
        name = "user-specified", fW = NULL, 
        response = function(f) NA)
 AdaExp()
+AUC()
 Binomial()
 GaussClass()
 GaussReg()
@@ -88,23 +89,33 @@ Lognormal(nuirange = c(0, 100))
   and \eqn{(\sum w_i)^{-1} \sum w_i y_i} for \code{Gaussian()} and the
   median for \code{Huber()} and \code{Laplace()}. A short summary of the
   available families is given in the following paragraphs:
+  
+\code{AdaExp()}, \code{Binomial()} and \code{AUC()} implement
+families for binary classification. \code{AdaExp()} uses the
+exponential loss, which essentially leads to the AdaBoost algorithm
+of Freund and Schapire (1996). \code{Binomial()} implements the
+negative binomial log-likelihood of a logistic regression model 
+as loss function. Thus, using \code{Binomial} family closely corresponds 
+to fitting a logistic model.
+However, the coefficients resulting from boosting with family
+\code{Binomial} are \eqn{1/2} of the coefficients of a logit model
+obtained via \code{\link{glm}}. This is due to the internal recoding
+of the response to \eqn{-1} and \eqn{+1} (see below).
+Buehlmann and Hothorn (2007) argue that the
+family \code{Binomial} is the preferred choice for binary
+classification. For binary classification problems the response
+\code{y} has to be a \code{factor}. Internally \code{y} is re-coded
+to \eqn{-1} and \eqn{+1} (Buehlmann and Hothorn 2007).
+\code{AUC()} uses \eqn{1-AUC(y, f)} as the loss function. 
+The area under the ROC curve (AUC) is defined as 
+\eqn{AUC = (n_{-1} n_1)^{-1} \sum_{i: y_i = 1} sum{j: y_j = -1} I(f_i - f_j > 0)}
+(basically: compare each "-1" to each "1" and count how often the score \eqn{f_i} for a "1"
+ is larger than the score \eqn{f_j} for a "-1" and vice versa).
+Since this is not differentiable in \code{f}, we approximate the jump function \eqn{I()}
+by the distribution function of the triangular distribution on \eqn{[-1, 1]} with mean 0,
+similar to the logistic distribution approximation used in Ma and Huang (2005). 
 
-  \code{AdaExp()} and \code{Binomial()} implement
-  families for binary classification. \code{AdaExp()} uses the
-  exponential loss, which essentially leads to the AdaBoost algorithm
-  of Freund and Schapire (1996). \code{Binomial()} implements the
-  negative binomial log-likelihood of a logistic regression model 
-  as loss function. Thus, using \code{Binomial} family closely corresponds 
-  to fitting a logistic model.
-  However, the coefficients resulting from boosting with family
-  \code{Binomial} are \eqn{1/2} of the coefficients of a logit model
-  obtained via \code{\link{glm}}. This is due to the internal recoding
-  of the response to \eqn{-1} and \eqn{+1} (see below).
-  However, Buehlmann and Hothorn (2007) argue that the
-  family \code{Binomial} is the preferred choice for binary
-  classification. For binary classification problems the response
-  \code{y} has to be a \code{factor}. Internally \code{y} is re-coded
-  to \eqn{-1} and \eqn{+1} (Buehlmann and Hothorn 2007).
+
 
   \code{Gaussian()} is the default family in \code{\link{mboost}}. It
   implements \eqn{L_2}Boosting for continuous response. Note
@@ -145,7 +156,10 @@ Lognormal(nuirange = c(0, 100))
   The coefficients resulting from boosting with family
   \code{Binomial} are \eqn{1/2} of the coefficients of a logit model
   obtained via \code{\link{glm}}. This is due to the internal recoding
-  of the response to \eqn{-1} and \eqn{+1} (see above).
+  of the response to \eqn{-1} and \eqn{+1} (see above). 
+  
+  For AUC(), variables should be centered and scaled and observations with weight > 0 must not contain missing values. 
+  The estimated coefficients for \code{AUC()} have no probabilistic interpretation.      
 }
 \value{
   An object of class \code{boost_family}.
@@ -166,6 +180,11 @@ Lognormal(nuirange = c(0, 100))
     In \emph{Machine Learning: Proc. Thirteenth International Conference},
     148--156.
 
+	Shuangge Ma and Jian Huang (2005),
+	Regularized ROC method for disease classification and biomarker
+	selection with microarray data. 
+	\emph{Bioinformatics}, \bold{21}(24), 4356--4362.
+
     Whitney K. Newey and James L. Powell (1987),
     Asymmetric least squares estimation and testing.
     \emph{Econometrika}, \bold{55}, 819--847.
@@ -184,6 +203,7 @@ Lognormal(nuirange = c(0, 100))
     \code{\link{boost_family-class}} for objects resulting from a call to \code{Family}. }
 \author{
     \code{ExpectReg()} was donated by Fabian Sobotka.
+    \code{AUC()} was donated by Fabian Scheipl.
 }
 \examples{
 
