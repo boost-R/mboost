@@ -108,14 +108,11 @@ classification. For binary classification problems the response
 to \eqn{-1} and \eqn{+1} (Buehlmann and Hothorn 2007).
 \code{AUC()} uses \eqn{1-AUC(y, f)} as the loss function. 
 The area under the ROC curve (AUC) is defined as 
-\eqn{AUC = (n_{-1} n_1)^{-1} \sum_{i: y_i = 1} sum{j: y_j = -1} I(f_i - f_j > 0)}
-(basically: compare each "-1" to each "1" and count how often the score \eqn{f_i} for a "1"
- is larger than the score \eqn{f_j} for a "-1" and vice versa).
-Since this is not differentiable in \code{f}, we approximate the jump function \eqn{I()}
-by the distribution function of the triangular distribution on \eqn{[-1, 1]} with mean 0,
-similar to the logistic distribution approximation used in Ma and Huang (2005). 
-
-
+\eqn{AUC = (n_{-1} n_1)^{-1} \sum_{i: y_i = 1} \sum_{j: y_j = -1} I(f_i > f_j)}.
+Since this is not differentiable in \code{f}, we approximate the jump function
+\eqn{I((f_i - f_j) > 0)} by the distribution function of the triangular 
+distribution on \eqn{[-1, 1]} with mean \eqn{0}, similar to the logistic 
+distribution approximation used in Ma and Huang (2005). 
 
   \code{Gaussian()} is the default family in \code{\link{mboost}}. It
   implements \eqn{L_2}Boosting for continuous response. Note
