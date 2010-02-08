@@ -56,7 +56,7 @@ brad <- function(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NUL
                 get_names = function() colnames(mf),
                 set_names = function(value){
                     attr(mf, "names") <<- value
-                    cll <<- paste("bmono", "(", paste(colnames(mf),
+                    cll <<- paste("brad", "(", paste(colnames(mf),
                         collapse = ", "), ")", sep = "")
                 })
     class(ret) <- "blg"
@@ -84,10 +84,14 @@ X_brad <- function(mf, vary, args) {
     PEN_sqrt_INV <- solve(e$vectors %*% diag(sqrt(e$values)) %*% t(e$vectors))
     X <- X %*% PEN_sqrt_INV
 
-    if (any(dim(X) > c(500, 50))) {
-        diag <- Diagonal
-        X <- Matrix(X)
-    }
+    ## <FIXME> Problems using Matrix (when using Cholesky in bl_lin())
+    ## --> Do we need Matrix-functionality here?
+    #if (any(dim(X) > c(500, 50))) {
+    #    diag <- Diagonal
+    #    X <- Matrix(X)
+    #}
+    ## </FIXME>
+
     K <- diag(ncol(X))
     ### <FIXME>
     if (vary != "") {
@@ -135,5 +139,7 @@ effective_range <- function(x, eps = 0.001, interval = c(0.1, 100), cov.function
         return(c(do.call(cov.function, args) - eps)) # make a call to cov.function with the corresponding arguments
     }
     cval <- uniroot(rho, interval = interval, eps=eps)$root
-    return(maxX/cval)
+    RET <- maxX/cval
+    attr(RET, "c_value") <- cval
+    return(RET)
 }
