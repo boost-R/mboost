@@ -1,4 +1,7 @@
-                CHANGES in `mboost' VERSION 2.1-0 (2010-02-02)
+                CHANGES in `mboost' VERSION 2.1-0 (2010-02-08)
+
+  o  added base-learners for radial basis functions (brad())
+     and smooth monotonic (or convex/concave) functions (bmono())
 
   o  added family for AUC loss function
 

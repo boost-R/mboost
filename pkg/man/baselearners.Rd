@@ -2,26 +2,35 @@
 \alias{bols}
 \alias{bbs}
 \alias{bspatial}
+\alias{brad}
 \alias{brandom}
 \alias{btree}
+\alias{bmono}
 \alias{bns}
 \alias{bss}
 \alias{\%+\%}
 \alias{\%X\%}
 \title{ Base-learners for Gradient Boosting }
 \description{
-  Base-learners for fitting base-models in the generic implementation of 
+  Base-learners for fitting base-models in the generic implementation of
   component-wise gradient boosting in function \code{mboost}.
 }
 \usage{
-bols(..., by = NULL, index = NULL, intercept = TRUE, df = NULL, 
+bols(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
      lambda = 0, contrasts.arg = "contr.treatment")
 bbs(..., by = NULL, index = NULL, knots = 20, degree = 3,
     differences = 2, df = 4, lambda = NULL, center = FALSE)
 bspatial(...)
+brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
+     cov.function = stationary.cov,
+     args = list(Covariance="Matern", smoothness = 1.5, theta=NULL))
 brandom(..., df = 4)
-btree(..., tree_controls = ctree_control(stump = TRUE, 
+btree(..., tree_controls = ctree_control(stump = TRUE,
                                          mincriterion = 0))
+bmono(..., constraint = c("increasing", "decreasing", "convex", "concave"),
+      by = NULL, index = NULL, knots = 20, degree = 3, differences = 2,
+      df = 4, lambda = NULL, lambda2 = 1e6, niter=10)
+
 bl1 \%+\% bl2
 bl1 \%X\% bl2
 }
@@ -57,12 +66,25 @@ bl1 \%X\% bl2
                  re-parameterized such that the unpenalized part of the fit is subtracted and
                  only the deviation effect is fitted. The unpenalized, parametric part has then
 		 to be included in separate base-learners using \code{bols} (see the examples below).}
+  \item{cov.function}{ the covariance function (i.e. radial basis)
+                       needed to compute the basis functions. Per
+		       default the \code{\link[fields]{stationary.cov}} function
+		       (package \code{fields}) is used. }
+  \item{args}{ a named list of arguments to be passed to
+               \code{cov.function}. Thus strongly dependend on the
+	       specified \code{cov.function}. }
   \item{contrasts.arg}{ a character suitable for input to the \code{\link{contrasts}} replacement function,
                         see \code{\link{model.matrix}}.}
   \item{tree_controls}{ an object of class \code{"\linkS4class{TreeControl}"}, which can be
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners,
                   stumps are fitted by default.}
+  \item{constraint}{ type of constraint to be used. The constraint can
+    be either monotonic "increasing" (default), "decreasing" or "convex"
+    or "concave". }
+  \item{lambda2}{ penalty parameter for the (monotonicity) constraint. }
+  \item{niter}{ maximum number of iterations used to compute constraint
+    estimates. Increase this number if a warning is displayed. }
   \item{bl1}{a linear base-learner or a list of linear base-learners.}
   \item{bl2}{a linear base-learner or a list of linear base-learners.}
 }
@@ -77,7 +99,7 @@ bl1 \%X\% bl2
   (\code{lambda = 0} means no penalization as default for \code{bols}).
 
   In \code{bols(x)}, \code{x} may be a numeric vector or factor. Alternatively,
-  \code{x} can be a data frame containing numeric or factor variables. 
+  \code{x} can be a data frame containing numeric or factor variables.
   In this case, or when multiple predictor variables are specified, e.g.,
   using \code{bols(x1, x2)}, the model is equivalent to \code{lm(y ~ ., data = x)}
   or \code{lm(y ~ x1 + x2)}, respectively.
@@ -144,6 +166,23 @@ bl1 \%X\% bl2
   equation. More details on centering can be found in Kneib, Hothorn and Tutz
   (2009) and Fahrmeir, Kneib and Lang (2004).
 
+  \code{brad(x)} specifies penalized radial basis functions as used in
+  Kriging. If \code{knots} is used to specify the number of knots, the
+  function \code{\link[fields]{cover.design}} is used to specify the
+  location of the knots such that they minimize a geometric
+  space-filling criterion. Furthermore, knots can be specified directly
+  via a matrix. The \code{cov.function} allows to specify the
+  radial basis functions. Per default, the flexible Matern correlation
+  function is used. This is specified using \code{cov.function =
+  stationary.cov} with \code{Covariance = "Matern"} specified via
+  \code{args}. If an effective range \code{theta} is applicable for the
+  correlation function (e.g., the Matern family) the user can specify
+  this value. Per default (if \code{theta = NULL}) the effective range is
+  chosen as \eqn{\theta = max(||x_i - x_j||)/c}{theta =
+  max(||x_i - x_j||)/c} such that the correlation function
+  \deqn{\rho(c; \theta = 1) = \varepsilon,}{rho(c; theta = 1) = epsilon,}
+  where \eqn{\varepsilon = 0.001}{epsilon = 0.001}.
+
   For a categorical covariate with non-observed categories
   \code{bols(x)} and \code{brandom(x)} both assign a zero effect
   these categories. However, the non-observed categories must be
@@ -167,6 +206,11 @@ bl1 \%X\% bl2
   of freedom. If \code{FALSE}, an alternative is used (see
   Hofner et al., 2009).
 
+  Smooth estimates with constraints can be computed using the base-learner
+  \code{bmono()} which specifies P-spline base-learners with an
+  additional asymmetric penalty enforcing monotonicity or
+  convexity/concavity (see Eilers, 2005).
+
   Two or more linear base-learners can be joined using \code{\%+\%}. A tensor product
   of two or more linear base-learners is returned by \code{\%X\%}.
   These two features are experimental and for expert use only.
@@ -179,6 +223,8 @@ bl1 \%X\% bl2
  an object of class \code{bm} (base-model).
 }
 \references{
+  Paul H. C. Eilers (2005), Unimodal smoothing. \emph{Journal of
+  Chemometrics}, \bold{19}, 317--328.
 
   Paul H. C. Eilers and Brian D. Marx (1996), Flexible smoothing with B-splines
   and penalties. \emph{Statistical Science}, \bold{11}(2), 89-121.
@@ -190,8 +236,8 @@ bl1 \%X\% bl2
   Jan Gertheiss and Gerhard Tutz (2009), Penalized regression with ordinal
   predictors, \emph{International Statistical Review}, \bold{77}(3), 345--365.
 
-  Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2009), 
-  A framework for unbiased model selection based on boosting. 
+  Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2009),
+  A framework for unbiased model selection based on boosting.
   Technical Report Nr. 72, Institut fuer Statistik, LMU Muenchen.
   \url{http://epub.ub.uni-muenchen.de/11243/}
 
@@ -235,15 +281,15 @@ bl1 \%X\% bl2
   mod1 <- mboost_fit(list(spline1, spline2, ols3, ols4), y, weights)
 
   ### more convenient formula interface
-  mod2 <- mboost(y ~ bbs(x1, knots = 20, df = 4) + 
-                     bbs(x2, knots = knots.x2, df = 5) + 
+  mod2 <- mboost(y ~ bbs(x1, knots = 20, df = 4) +
+                     bbs(x2, knots = knots.x2, df = 5) +
                      bols(x3) + bols(x4))
   all.equal(coef(mod1), coef(mod2))
 
 
   ### grouped linear effects
-  model <- gamboost(y ~ bols(x1, x2, intercept = FALSE) + 
-                        bols(x1, intercept = FALSE) + 
+  model <- gamboost(y ~ bols(x1, x2, intercept = FALSE) +
+                        bols(x1, intercept = FALSE) +
                         bols(x2, intercept = FALSE),
                         control = boost_control(mstop = 400))
   coef(model, which=1)   # one base-learner for x1 and x2
@@ -262,7 +308,7 @@ bl1 \%X\% bl2
   ## specify number of knots separately
   form2 <- y ~ bspatial(x1, x2, knots=list(x1=12, x2=12))
 
-  ## decompose spatial effect into parametric part and 
+  ## decompose spatial effect into parametric part and
   ## deviation with one df
   form2 <- y ~ bols(x1) + bols(x2) + bols(x1*x2) +
                bspatial(x1, x2, knots = 12, center = TRUE, df = 1)
@@ -281,7 +327,7 @@ bl1 \%X\% bl2
   obs <- c(rep(1, 45), rep(0, 5))
   model <- gamboost(y ~ brandom(id), weights = obs)
   coef(model)
-  fitted(model)[46:50] # just the grand mean as usual for 
+  fitted(model)[46:50] # just the grand mean as usual for
                        # random effects models
 
 
@@ -294,16 +340,16 @@ bl1 \%X\% bl2
   ### remove intercept from base-learner
   ### and add explicit intercept to the model
   tmpdata <- data.frame(x = 1:100, y = rnorm(1:100), int = rep(1, 100))
-  mod <- gamboost(y ~ bols(int, intercept = FALSE) + 
+  mod <- gamboost(y ~ bols(int, intercept = FALSE) +
                       bols(x, intercept = FALSE),
-                  data = tmpdata, 
+                  data = tmpdata,
                   control = boost_control(mstop = 2500))
   cf <- unlist(coef(mod))
   cf[1] <- cf[1] + mod$offset
   cf
   coef(lm(y ~ x, data = tmpdata))
 
-  
+
   ### large data set with ties
   nunique <- 100
   xindex <- sample(1:nunique, 1000000, replace = TRUE)

@@ -6,7 +6,7 @@ future
     o  predict.glmboost via coef.glmboost. 
        Remove special code in bolscw (TH, later)
 
-    o  new base-learners (by example, brad, bmrf)
+    o  new base-learners (e.g., bmrf)
 
     o  check status == "N" in wpbc
 
