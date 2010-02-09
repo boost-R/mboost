@@ -7,7 +7,10 @@ stabsel <- function(object, FWER = 0.05, cutoff, q, ...) {
     stopifnot(FWER > 0 && FWER < 0.5)
     stopifnot(xor(missing(cutoff), missing(q)))
     if (missing(cutoff)) cutoff <- min(0.9, (q^2 / (FWER * p) + 1) / 2)
-    if (missing(q)) q <- ceiling(sqrt(FWER * (2 * cutoff - 1) * p))
+    if (missing(q)){
+		stopifnot(cutoff >= 0.5)
+		q <- ceiling(sqrt(FWER * (2 * cutoff - 1) * p))
+	} 
 
     fun <- function(model) {
         xs <- selected(model)
