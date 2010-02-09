@@ -1,6 +1,6 @@
 brad <- function(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
-                 cov.function = stationary.cov,
-                 args = list(Covariance="Matern", smoothness = 1.5, theta=NULL)) {
+                 covFun = stationary.cov,
+                 args = list(Covariance = "Matern", smoothness = 1.5, theta = NULL)) {
 
     if (!require("fields"))
         stop("cannot load ", sQuote("fields"))
@@ -63,7 +63,7 @@ brad <- function(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NUL
 
     ret$dpp <- bl_lin(ret, Xfun = X_brad,
                       args = hyper_brad(mf, vary, knots = knots,
-                      df = df, lambda = lambda, cov.function = cov.function, args = args))
+                      df = df, lambda = lambda, covFun = covFun, args = args))
     return(ret)
 }
 
@@ -77,20 +77,12 @@ X_brad <- function(mf, vary, args) {
     #    stop("only bivariate kriging implemented atm.")
     args$args$x1 <- mf[INDX]
     args$args$x2 <- args$knots
-    X <- do.call(args$cov.function, args$args)
+    X <- do.call(args$covFun, args$args)
     args$args$x1 <- args$knots
-    PEN <- do.call(args$cov.function, args$args)
+    PEN <- do.call(args$covFun, args$args)
     e <- eigen(PEN)
     PEN_sqrt_INV <- solve(e$vectors %*% diag(sqrt(e$values)) %*% t(e$vectors))
     X <- X %*% PEN_sqrt_INV
-
-    ## <FIXME> Problems using Matrix (when using Cholesky in bl_lin())
-    ## --> Do we need Matrix-functionality here?
-    #if (any(dim(X) > c(500, 50))) {
-    #    diag <- Diagonal
-    #    X <- Matrix(X)
-    #}
-    ## </FIXME>
 
     K <- diag(ncol(X))
     ### <FIXME>
@@ -103,31 +95,42 @@ X_brad <- function(mf, vary, args) {
 }
 
 ### hyper parameters for kriging base-learners
-hyper_brad <- function(mf, vary, knots = 100, df = 4, lambda = NULL, cov.function = cov.function, args = args) {
+hyper_brad <- function(mf, vary, knots = 100, df = 4, lambda = NULL,
+                       covFun = covFun, args = args) {
 
     ## first we need to build a correct matrix of mf
     x <- as.matrix(mf[which(colnames(mf) != vary)])
     if (length(knots) == 1) {
         knots <- cover.design(R = x, nd = knots)$design
     }
+    browser()
     if (is.null(args$theta)){
         ## (try to) compute effective range
-        args$theta <- effective_range(x, eps=0.001, interval = c(0.1, 100), cov.function=cov.function, args = args)
+        args$theta <- effective_range(x, eps = 0.001, interval = c(0.1, 100),
+                                      covFun = covFun, args = args)
     }
-    if (is.list(knots)) stop(sQuote("knots"), " must be an integer defining the number of knots or a matrix specifiying the location of the knots")
-    list(knots = knots, pen = TRUE, df = df, lambda = lambda, cov.function = cov.function, args = args)
+    if (is.list(knots))
+        stop(sQuote("knots"), " must be an integer defining the number of knots",
+             " or a matrix specifiying the location of the knots")
+    list(knots = knots, pen = TRUE, df = df, lambda = lambda, covFun = covFun,
+         args = args)
 }
 
 ######
-#    theta: effective range (per default theta such that
-#                      rho( max(x_(i) - x_(j)), smoothness, theta = max(x_(i) - x_(j))/c ) = 0.001
-#                 <==> rho(c, smoothness, theta = 1) = 0.001
-effective_range <- function(x, eps = 0.001, interval = c(0.1, 100), cov.function=stationary.cov, args = list()){
+# theta: effective range (per default theta such that
+#       rho( max(x_(i) - x_(j)), smoothness, theta = max(x_(i) - x_(j))/c ) = 0.001
+#  <==> rho(c, smoothness, theta = 1) = 0.001
+effective_range <- function(x, eps = 0.001, interval = c(0.1, 100),
+                            covFun = stationary.cov, args = list()){
 
-    if ( !( length(deparse(cov.function)) == length(deparse(stationary.cov)) && all(deparse(cov.function) == deparse(stationary.cov)) ) &&
-         !( length(deparse(cov.function)) == length(deparse(Exp.cov)) && all(deparse(cov.function) == deparse(Exp.cov)) ) ){
+    if ( !( length(deparse(covFun)) == length(deparse(stationary.cov))
+           && all(deparse(covFun) == deparse(stationary.cov)) ) &&
+         !( length(deparse(covFun)) == length(deparse(Exp.cov))
+           && all(deparse(covFun) == deparse(Exp.cov)) ) ){
         ## if cov.funcion is not one of stationary.cov and Exp.cov
-        warning(sQuote("effective_range()"), " is only implemented for ", sQuote("stationary.cov"), " and ", sQuote("Exp.cov"), " from package:fields.")
+        warning(sQuote("effective_range()"), " is only implemented for ",
+                sQuote("stationary.cov"), " and ", sQuote("Exp.cov"),
+                " from package:fields.")
         return(NULL)
     }
 
@@ -136,9 +139,10 @@ effective_range <- function(x, eps = 0.001, interval = c(0.1, 100), cov.function
     maxX <- max(dist(x))
     rho <- function(cval, eps){
         args$x2 <- cval
-        return(c(do.call(cov.function, args) - eps)) # make a call to cov.function with the corresponding arguments
+        # make a call to covFun with the corresponding arguments
+        return(c(do.call(covFun, args) - eps))
     }
-    cval <- uniroot(rho, interval = interval, eps=eps)$root
+    cval <- uniroot(rho, interval = interval, eps = eps)$root
     RET <- maxX/cval
     attr(RET, "c_value") <- cval
     return(RET)
