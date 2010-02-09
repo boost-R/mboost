@@ -156,7 +156,7 @@ distribution approximation used in Ma and Huang (2005).
   obtained via \code{\link{glm}}. This is due to the internal recoding
   of the response to \eqn{-1} and \eqn{+1} (see above). 
   
-  For AUC(), variables should be centered and scaled and observations with weight > 0 must not contain missing values. 
+  For \code{AUC()}, variables should be centered and scaled and observations with weight > 0 must not contain missing values. 
   The estimated coefficients for \code{AUC()} have no probabilistic interpretation.      
 }
 \value{
