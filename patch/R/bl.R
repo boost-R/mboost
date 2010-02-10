@@ -240,12 +240,9 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
                     if(length(value) != length(colnames(mf)))
                         stop(sQuote("value"), " must have same length as ",
                              sQuote("colnames(mf)"))
-                    cmf <- colnames(mf)
-                    cltmp <- cll ## needed to make it possible to swap arguments
                     for (i in 1:length(value)){
-                        cltmp[[which(sapply(cll, function(x) x == as.name(cmf[i])))]] <- as.name(value[i])
+                        cll[[i+1]] <<- as.name(value[i])
                     }
-                    cll <<- cltmp
                     attr(mf, "names") <<- value
                 })
     class(ret) <- "blg"
@@ -317,12 +314,9 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
                     if(length(value) != length(colnames(mf)))
                         stop(sQuote("value"), " must have same length as ",
                              sQuote("colnames(mf)"))
-                    cmf <- colnames(mf)
-                    cltmp <- cll ## needed to make it possible to swap arguments
                     for (i in 1:length(value)){
-                        cltmp[[which(sapply(cll, function(x) x == as.name(cmf[i])))]] <- as.name(value[i])
+                        cll[[i+1]] <<- as.name(value[i])
                     }
-                    cll <<- cltmp
                     attr(mf, "names") <<- value
                 })
     class(ret) <- "blg"
