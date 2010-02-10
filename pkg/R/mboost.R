@@ -375,14 +375,14 @@ mboost <- function(formula, data = list(),
         ### a single variable; compute baselearner
         if (!is.list(a)) {
             a <- list(baselearner(a))
-            a[[1]]$set_name(deparse(cl[[2]]))
+            a[[1]]$set_names(deparse(cl[[2]]))
         }
         ### got baselearner, fine!
         if (inherits(b, "blg")) b <- list(b)
         ### a single variable, compute baselearner
         if (!is.list(b)) {
             b <- list(baselearner(b))
-            b[[1]]$set_name(deparse(cl[[3]]))
+            b[[1]]$set_names(deparse(cl[[3]]))
         }
         ### join both baselearners in a list
         c(a, b)
@@ -396,7 +396,7 @@ mboost <- function(formula, data = list(),
     ### rhs was one single variable
     if (!is.list(bl)) { 
         bl <- list(baselearner(bl))
-        bl[[1]]$set_name(as.character(formula[[3]]))
+        bl[[1]]$set_names(as.character(formula[[3]]))
     }
 
     ### just a check
