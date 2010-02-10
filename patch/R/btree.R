@@ -26,9 +26,16 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion 
                 get_call = function() cll,
                 get_names = function() colnames(mf),
                 set_names = function(value) {
+                    if(length(value) != length(colnames(mf)))
+                        stop(sQuote("value"), " must have same length as ",
+                             sQuote("colnames(mf)"))
+                    cmf <- colnames(mf)
+                    cltmp <- cll ## needed to make it possible to swap arguments
+                    for (i in 1:length(value)){
+                        cltmp[[which(sapply(cll, function(x) x == as.name(cmf[i])))]] <- as.name(value[i])
+                    }
+                    cll <<- cltmp
                     attr(mf, "names") <<- value
-                    cll <<- paste("btree", "(", paste(colnames(mf),
-                        collapse = ", "), ")", sep = "")
                 })
     class(ret) <- "blg"
 
