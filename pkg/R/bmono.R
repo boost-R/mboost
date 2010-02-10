@@ -1,15 +1,17 @@
 
-bmono <- function(..., constraint = c("increasing", "decreasing", 
-                                      "convex", "concave"), 
+bmono <- function(..., constraint = c("increasing", "decreasing",
+                                      "convex", "concave"),
                   by = NULL, index = NULL, knots = 20, degree = 3,
-                  differences = 2, df = 4, lambda = NULL, lambda2 = 1e6, 
+                  differences = 2, df = 4, lambda = NULL, lambda2 = 1e6,
                   niter = 10) {
 
     if (!is.null(lambda)) df <- NULL
 
     cll <- match.call()
     cll[[1]] <- as.name("bmono")
-    cll <- deparse(cll)
+    cll <- deparse(cll, width.cutoff=500L)
+    if (length(cll) > 1)
+        cll <- paste(cll, collapse="")
 
     mf <- list(...)
     constraint <- match.arg(constraint)
@@ -49,7 +51,7 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
     }
 
     ret <- list(model.frame = function()
-                    if (is.null(index)) return(mf) else 
+                    if (is.null(index)) return(mf) else
                         return(mf[index,,drop = FALSE]),
                 get_call = function() cll,
                 get_data = function() mf,
@@ -66,7 +68,7 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
                       args = c(hyper_bbs(mf, vary, knots = knots,
                                degree = degree, differences = differences,
                                df = df, lambda = lambda, center = FALSE),
-                               constraint = constraint, lambda2 = lambda2, 
+                               constraint = constraint, lambda2 = lambda2,
                                niter = niter))
     return(ret)
 }
@@ -102,7 +104,7 @@ bl_mono <- function(blg, Xfun, args) {
         weights[!Complete.cases(mf)] <- 0
         w <- weights
         if (!is.null(index))
-            w <- .Call("R_ysum", as.double(weights), as.integer(index), 
+            w <- .Call("R_ysum", as.double(weights), as.integer(index),
                        PACKAGE = "mboost")
         lambdadf <- df2lambda(X, df = args$df, lambda = args$lambda,
                               dmat = K, weights = w)
@@ -113,18 +115,18 @@ bl_mono <- function(blg, Xfun, args) {
         if (is(X, "Matrix")) {
             ## use chol
             mysolve <- function(y, V) {
-                XtXC <- Cholesky(forceSymmetric(XtX + 
+                XtXC <- Cholesky(forceSymmetric(XtX +
                                  lambda2 * crossprod(D, V %*% D)))
                 solve(XtXC, crossprod(X, y))
             }
         } else {
             mysolve <- function(y, V)
-                .Call("La_dgesv", XtX + lambda2 * crossprod(D, V %*% D), 
+                .Call("La_dgesv", XtX + lambda2 * crossprod(D, V %*% D),
                        crossprod(X, y), .Machine$double.eps, PACKAGE = "base")
         }
         fit <- function(y) {
             if (!is.null(index)) {
-                y <- .Call("R_ysum", as.double(weights * y), as.integer(index), 
+                y <- .Call("R_ysum", as.double(weights * y), as.integer(index),
                            PACKAGE = "mboost")
             } else {
                 y <- y * weights
@@ -133,8 +135,8 @@ bl_mono <- function(blg, Xfun, args) {
             for (i in 1:args$niter){
                 coef <- mysolve(y, V)
                 # compare old and new V
-                if (all( V == (V <- do.call(args$constraint, 
-                                            args=list(as.vector(coef)))) )) 
+                if (all( V == (V <- do.call(args$constraint,
+                                            args=list(as.vector(coef)))) ))
                     break    # if both are equal: done!
                 if (i == args$niter) warning("no convergence of coef in bmono")
             }
@@ -158,7 +160,7 @@ bl_mono <- function(blg, Xfun, args) {
         df <- function() lambdadf
 
         ### prepare for computing predictions
-        predict <- function(bm, newdata = NULL, 
+        predict <- function(bm, newdata = NULL,
                             aggregate = c("sum", "cumsum", "none")) {
             cf <- sapply(bm, coef)
             if (!is.matrix(cf)) cf <- matrix(cf, nrow = 1)

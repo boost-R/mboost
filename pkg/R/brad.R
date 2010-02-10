@@ -7,7 +7,10 @@ brad <- function(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NUL
 
     cll <- match.call()
     cll[[1]] <- as.name("brad")
-    cll <- deparse(cll)
+    cll <- deparse(cll, width.cutoff=500L)
+    if (length(cll) > 1)
+        cll <- paste(cll, collapse="")
+
     mf <- list(...)
 
     if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
@@ -103,8 +106,7 @@ hyper_brad <- function(mf, vary, knots = 100, df = 4, lambda = NULL,
     if (length(knots) == 1) {
         knots <- cover.design(R = x, nd = knots)$design
     }
-    browser()
-    if (is.null(args$theta)){
+    if ("theta" %in% names(args) && is.null(args$theta)){
         ## (try to) compute effective range
         args$theta <- effective_range(x, eps = 0.001, interval = c(0.1, 100),
                                       covFun = covFun, args = args)

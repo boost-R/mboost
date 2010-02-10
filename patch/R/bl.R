@@ -187,7 +187,10 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
 
     cll <- match.call()
     cll[[1]] <- as.name("bols")
-    cll <- deparse(cll)
+    cll <- deparse(cll, width.cutoff=500L)
+    if (length(cll) > 1)
+        cll <- paste(cll, collapse="")
+
     mf <- list(...)
     if (length(mf) == 1 && (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]))) {
         mf <- mf[[1]]
@@ -249,7 +252,9 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
 
     cll <- match.call()
     cll[[1]] <- as.name("bbs")
-    cll <- deparse(cll)
+    cll <- deparse(cll, width.cutoff=500L)
+    if (length(cll) > 1)
+        cll <- paste(cll, collapse="")
 
     mf <- list(...)
     if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
@@ -420,7 +425,9 @@ bspatial <- function(...) {
     cl[[1L]] <- as.name("bbs")
     ret <- eval(cl, parent.frame())
     cltmp[[1]] <- as.name("bspatial")
-    cltmp <- deparse(cltmp)
+    cltmp <- deparse(cltmp, width.cutoff=500L)
+    if (length(cltmp) > 1)
+        cltmp <- paste(cltmp, collapse="")
     assign("cll", cltmp, envir = environment(ret$get_call))
     ret
 }
@@ -433,7 +440,9 @@ brandom <- function(..., df = 4) {
     cl[[1L]] <- as.name("bols")
     ret <- eval(cl, parent.frame())
     cltmp[[1]] <- as.name("brandom")
-    cltmp <- deparse(cltmp)
+    cltmp <- deparse(cltmp, width.cutoff=500L)
+    if (length(cltmp) > 1)
+        cltmp <- paste(cltmp, collapse="")
     assign("cll", cltmp, envir = environment(ret$get_call))
     ret
 }
@@ -483,8 +492,10 @@ fit.bl <- function(object, y)
     if (is.list(bl2) && !inherits(bl2, "blg"))
         return(lapply(bl2, "%+%", bl1 = bl1))
 
+    ## <FIXME> Why do you deparse again? get_call() returns a sting!?!
     cll <- paste(deparse(bl1$get_call()), "%+%",
                  deparse(bl2$get_call()), collapse = "")
+    ## </FIXME>
     stopifnot(inherits(bl1, "blg"))
     stopifnot(inherits(bl2, "blg"))
 
@@ -567,8 +578,10 @@ fit.bl <- function(object, y)
     if (is.list(bl2) && !inherits(bl2, "blg"))
         return(lapply(bl2, "%X%", bl1 = bl1))
 
+    ## <FIXME> Why do you deparse again? get_call() returns a sting!?!
     cll <- paste(deparse(bl1$get_call()), "%X%",
                  deparse(bl2$get_call()), collapse = "")
+    ## </FIXME>
     stopifnot(inherits(bl1, "blg"))
     stopifnot(inherits(bl2, "blg"))
 

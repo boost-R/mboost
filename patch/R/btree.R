@@ -8,7 +8,9 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion 
 
     cll <- match.call()
     cll[[1]] <- as.name("btree")
-    cll <- deparse(cll)
+    cll <- deparse(cll, width.cutoff=500L)
+    if (length(cll) > 1)
+        cll <- paste(cll, collapse="")
 
     ctrl <- tree_controls
     mf <- list(...)
@@ -21,7 +23,7 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion 
     }
 
     ret <- list(model.frame = function() return(mf),
-                get_call = function() deparse(cll),
+                get_call = function() cll,
                 get_names = function() colnames(mf),
                 set_names = function(value) {
                     attr(mf, "names") <<- value
@@ -30,7 +32,7 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion 
                 })
     class(ret) <- "blg"
 
-    
+
     ret$dpp <- function(weights) {
 
         ### construct design matrix etc.
@@ -66,7 +68,7 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion 
 
         predict <- function(bm, newdata = NULL, aggregate = c("sum", "cumsum", "none")) {
             aggregate <- match.arg(aggregate)
-            
+
             if (is.null(newdata)) {
                 newinp <- object@inputs
             } else {
