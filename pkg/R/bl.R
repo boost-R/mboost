@@ -41,14 +41,17 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
     ### option
     if (df2l(lambdaMax) > 0){
         if (df2l(lambdaMax) > sqrt(.Machine$double.eps))
-            warning("lambda needs to be larger than ", lambdaMax, " for given ", sQuote("df"),
-                    ";\nsetting lambda = ", lambdaMax, " leeds to an deviation from ", sQuote("df"),
-                    " of ", df2l(lambdaMax), ";\nYou can increase lambda_max via ", sQuote("options(mboost_lambdaMax = value)"))
+            warning("lambda needs to be larger than ", lambdaMax, " for given ",
+                    sQuote("df"), ";\nsetting lambda = ", lambdaMax,
+                    " leeds to an deviation from ", sQuote("df"), " of ",
+                    df2l(lambdaMax), ";\nYou can increase lambda_max via ",
+                    sQuote("options(mboost_lambdaMax = value)"))
         return(c(df = df, lambda = lambdaMax))
     }
     lambda <- uniroot(df2l, c(0, lambdaMax), tol = sqrt(.Machine$double.eps))$root
     if (abs(df2l(lambda)) > sqrt(.Machine$double.eps))
-        warning("estimated degrees of freedom differ from ", sQuote("df"), " by ", df2l(lambda))
+        warning("estimated degrees of freedom differ from ", sQuote("df"),
+                " by ", df2l(lambda))
     return(c(df = df, lambda = lambda))
 }
 
@@ -187,7 +190,7 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
 
     cll <- match.call()
     cll[[1]] <- as.name("bols")
-    cll <- deparse(cll)
+
     mf <- list(...)
     if (length(mf) == 1 && (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]))) {
         mf <- mf[[1]]
@@ -223,15 +226,24 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
 
     ret <- list(model.frame = function()
                     if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
-                get_call = function() cll,
+                get_call = function(){
+                    cll <- deparse(cll, width.cutoff=500L)
+                    if (length(cll) > 1)
+                        cll <- paste(cll, collapse="")
+                    cll
+                },
                 get_data = function() mf,
                 get_index = function() index,
                 get_names = function() colnames(mf),
                 get_vary = function() vary,
                 set_names = function(value) {
+                    if(length(value) != length(colnames(mf)))
+                        stop(sQuote("value"), " must have same length as ",
+                             sQuote("colnames(mf)"))
+                    for (i in 1:length(value)){
+                        cll[[i+1]] <<- as.name(value[i])
+                    }
                     attr(mf, "names") <<- value
-                    cll <<- paste("bols", "(", paste(colnames(mf),
-                        collapse = ", "), ")", sep = "")
                 })
     class(ret) <- "blg"
 
@@ -249,7 +261,6 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
 
     cll <- match.call()
     cll[[1]] <- as.name("bbs")
-    cll <- deparse(cll)
 
     mf <- list(...)
     if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
@@ -289,15 +300,24 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
 
     ret <- list(model.frame = function()
                     if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
-                get_call = function() cll,
+                get_call = function(){
+                    cll <- deparse(cll, width.cutoff=500L)
+                    if (length(cll) > 1)
+                        cll <- paste(cll, collapse="")
+                    cll
+                },
                 get_data = function() mf,
                 get_index = function() index,
                 get_vary = function() vary,
                 get_names = function() colnames(mf),
                 set_names = function(value) {
+                    if(length(value) != length(colnames(mf)))
+                        stop(sQuote("value"), " must have same length as ",
+                             sQuote("colnames(mf)"))
+                    for (i in 1:length(value)){
+                        cll[[i+1]] <<- as.name(value[i])
+                    }
                     attr(mf, "names") <<- value
-                    cll <<- paste("bbs", "(", paste(colnames(mf),
-                        collapse = ", "), ")", sep = "")
                 })
     class(ret) <- "blg"
 
@@ -351,7 +371,8 @@ bl_lin <- function(blg, Xfun, args) {
 
         fit <- function(y) {
             if (!is.null(index)) {
-                y <- .Call("R_ysum", as.double(weights * y), as.integer(index), PACKAGE = "mboost")
+                y <- .Call("R_ysum", as.double(weights * y), as.integer(index),
+                           PACKAGE = "mboost")
             } else {
                 y <- y * weights
             }
@@ -420,7 +441,6 @@ bspatial <- function(...) {
     cl[[1L]] <- as.name("bbs")
     ret <- eval(cl, parent.frame())
     cltmp[[1]] <- as.name("bspatial")
-    cltmp <- deparse(cltmp)
     assign("cll", cltmp, envir = environment(ret$get_call))
     ret
 }
@@ -433,7 +453,6 @@ brandom <- function(..., df = 4) {
     cl[[1L]] <- as.name("bols")
     ret <- eval(cl, parent.frame())
     cltmp[[1]] <- as.name("brandom")
-    cltmp <- deparse(cltmp)
     assign("cll", cltmp, envir = environment(ret$get_call))
     ret
 }
@@ -483,8 +502,8 @@ fit.bl <- function(object, y)
     if (is.list(bl2) && !inherits(bl2, "blg"))
         return(lapply(bl2, "%+%", bl1 = bl1))
 
-    cll <- paste(deparse(bl1$get_call()), "%+%",
-                 deparse(bl2$get_call()), collapse = "")
+    cll <- paste(bl1$get_call(), "%+%",
+                 bl2$get_call(), collapse = "")
     stopifnot(inherits(bl1, "blg"))
     stopifnot(inherits(bl2, "blg"))
 
@@ -512,12 +531,19 @@ fit.bl <- function(object, y)
 
     ret <- list(model.frame = function()
                     if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
-                get_call = function() cll,
+                get_call = function(){
+                    cll <- deparse(cll, width.cutoff=500L)
+                    if (length(cll) > 1)
+                        cll <- paste(cll, collapse="")
+                    cll
+                },
                 get_data = function() mf,
                 get_index = function() index,
                 get_vary = function() vary,
                 get_names = function() colnames(mf),
+                ## <FIXME> Is this all we want to change if we set names here?
                 set_names = function(value) attr(mf, "names") <<- value)
+                ## </FIXME>
     class(ret) <- "blg"
 
     args1 <- environment(bl1$dpp)$args
@@ -567,8 +593,8 @@ fit.bl <- function(object, y)
     if (is.list(bl2) && !inherits(bl2, "blg"))
         return(lapply(bl2, "%X%", bl1 = bl1))
 
-    cll <- paste(deparse(bl1$get_call()), "%X%",
-                 deparse(bl2$get_call()), collapse = "")
+    cll <- paste(bl1$get_call(), "%X%",
+                 bl2$get_call(), collapse = "")
     stopifnot(inherits(bl1, "blg"))
     stopifnot(inherits(bl2, "blg"))
 
@@ -596,12 +622,19 @@ fit.bl <- function(object, y)
 
     ret <- list(model.frame = function()
                     if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
-                get_call = function() cll,
+                get_call = function(){
+                    cll <- deparse(cll, width.cutoff=500L)
+                    if (length(cll) > 1)
+                        cll <- paste(cll, collapse="")
+                    cll
+                },
                 get_data = function() mf,
                 get_index = function() index,
                 get_vary = function() vary,
                 get_names = function() colnames(mf),
+                ## <FIXME> Is this all we want to change if we set names here?
                 set_names = function(value) attr(mf, "names") <<- value)
+                ## </FIXME>
     class(ret) <- "blg"
 
     args1 <- environment(bl1$dpp)$args
