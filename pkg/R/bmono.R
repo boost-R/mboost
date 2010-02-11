@@ -9,9 +9,6 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
 
     cll <- match.call()
     cll[[1]] <- as.name("bmono")
-    cll <- deparse(cll, width.cutoff=500L)
-    if (length(cll) > 1)
-        cll <- paste(cll, collapse="")
 
     mf <- list(...)
     constraint <- match.arg(constraint)
@@ -53,15 +50,24 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
     ret <- list(model.frame = function()
                     if (is.null(index)) return(mf) else
                         return(mf[index,,drop = FALSE]),
-                get_call = function() cll,
+                get_call = function(){
+                    cll <- deparse(cll, width.cutoff=500L)
+                    if (length(cll) > 1)
+                        cll <- paste(cll, collapse="")
+                    cll
+                },
                 get_data = function() mf,
                 get_index = function() index,
                 get_vary = function() vary,
                 get_names = function() colnames(mf),
                 set_names = function(value) {
+                    if(length(value) != length(colnames(mf)))
+                        stop(sQuote("value"), " must have same length as ",
+                             sQuote("colnames(mf)"))
+                    for (i in 1:length(value)){
+                        cll[[i+1]] <<- as.name(value[i])
+                    }
                     attr(mf, "names") <<- value
-                    cll <<- paste("bmono", "(", paste(colnames(mf),
-                        collapse = ", "), ")", sep = "")
                 })
     class(ret) <- "blg"
     ret$dpp <- bl_mono(ret, Xfun = X_bbs,

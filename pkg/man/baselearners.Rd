@@ -22,7 +22,7 @@ bbs(..., by = NULL, index = NULL, knots = 20, degree = 3,
     differences = 2, df = 4, lambda = NULL, center = FALSE)
 bspatial(...)
 brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
-     cov.function = stationary.cov,
+     covFun = stationary.cov,
      args = list(Covariance="Matern", smoothness = 1.5, theta=NULL))
 brandom(..., df = 4)
 btree(..., tree_controls = ctree_control(stump = TRUE,
@@ -66,10 +66,10 @@ bl1 \%X\% bl2
                  re-parameterized such that the unpenalized part of the fit is subtracted and
                  only the deviation effect is fitted. The unpenalized, parametric part has then
 		 to be included in separate base-learners using \code{bols} (see the examples below).}
-  \item{cov.function}{ the covariance function (i.e. radial basis)
-                       needed to compute the basis functions. Per
-		       default the \code{\link[fields]{stationary.cov}} function
-		       (package \code{fields}) is used. }
+  \item{covFun}{ the covariance function (i.e. radial basis)
+                 needed to compute the basis functions. Per
+                 default the \code{\link[fields]{stationary.cov}} function
+                 (package \code{fields}) is used. }
   \item{args}{ a named list of arguments to be passed to
                \code{cov.function}. Thus strongly dependend on the
 	       specified \code{cov.function}. }
