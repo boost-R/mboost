@@ -3,6 +3,8 @@
   o  added base-learners for radial basis functions (brad())
      and smooth monotonic (or convex/concave) functions (bmono())
 
+  o  added base-learners for markov random fields (bmrf())
+
   o  added family for AUC loss function
 
 
@@ -50,7 +52,7 @@
      - bns and bss deprecated; 
 
 
-		CHANGES in `mboost' VERSION 1.1-4 (2009-11-18)
+        CHANGES in `mboost' VERSION 1.1-4 (2009-11-18)
 
   o  fixed bug in prediction with varying coefficients for binary
      effect modifiers
@@ -73,7 +75,7 @@
      in glmboost
 
 
-		CHANGES in `mboost' VERSION 1.1-2 (2009-07-21)
+        CHANGES in `mboost' VERSION 1.1-2 (2009-07-21)
 
   o  better weights and boundary knots handling in bspatial
 
@@ -88,14 +90,14 @@
      (causes slight changes in wpbc3 example)
 
 
-		CHANGES in `mboost' VERSION 1.1-1 (2009-04-21)
+        CHANGES in `mboost' VERSION 1.1-1 (2009-04-21)
 
   o  new quantile regression facilities.
 
   o  fix problem with bbs baselearner and cvrisk
 
 
-		CHANGES in `mboost' VERSION 1.1-0 (2009-03-27)
+        CHANGES in `mboost' VERSION 1.1-0 (2009-03-27)
 
   o  bbs instead of bss is the default baselearner in gamboost
 
@@ -109,28 +111,28 @@
   o  make survival package happy again
 
 
-		CHANGES in `mboost' VERSION 1.0-6 (2009-01-09)
+        CHANGES in `mboost' VERSION 1.0-6 (2009-01-09)
 
   o  bols allows to specify non-default contrasts.
 
 
-		CHANGES in `mboost' VERSION 1.0-5 (2008-12-02)
+        CHANGES in `mboost' VERSION 1.0-5 (2008-12-02)
 
   o  remove experimental memory optimization steps
 
 
-		CHANGES in `mboost' VERSION 1.0-4 (2008-11-12)
+        CHANGES in `mboost' VERSION 1.0-4 (2008-11-12)
 
   o  negative gradient of GaussClass() was wrong, spotted by
      Kao Lin <linkao@picb.ac.cn>
 
 
-		CHANGES in `mboost' VERSION 1.0-3 (2008-11-07)
+        CHANGES in `mboost' VERSION 1.0-3 (2008-11-07)
 
   o  Date was malformed in DESCRIPTION
 
 
-		CHANGES in `mboost' VERSION 1.0-2 (2008-11-05)
+        CHANGES in `mboost' VERSION 1.0-2 (2008-11-05)
 
   o  improved memory footprint in gamboost() and cvrisk()
 
@@ -158,17 +160,17 @@
   o  cosmetics for trace = TRUE
 
 
-		CHANGES in `mboost' VERSION 1.0-1 (2007-12-09)
+        CHANGES in `mboost' VERSION 1.0-1 (2007-12-09)
 
   o  inst/mboost_Bioinf.R was missing from mboost 1.0-0
 
 
-		CHANGES in `mboost' VERSION 1.0-0 (2007-11-13)
+        CHANGES in `mboost' VERSION 1.0-0 (2007-11-13)
 
   o  documentation updates
 
 
-		CHANGES in `mboost' VERSION 0.9-0 (internal)
+        CHANGES in `mboost' VERSION 0.9-0 (internal)
 
   o  tests update and release the new version on CRAN
 
@@ -176,7 +178,7 @@
      of predictors for all boosting iterations
 
 
-		CHANGES in `mboost' VERSION 0.6-2 (internal)
+        CHANGES in `mboost' VERSION 0.6-2 (internal)
 
   o  move `mboost' to R-forge
 
@@ -195,7 +197,7 @@
      in DESCRIPTION
 
 
-		CHANGES in `mboost' VERSION 0.6-1 (internal)
+        CHANGES in `mboost' VERSION 0.6-1 (internal)
 
   o  gamboost() now allows for user-specified base learners
      via the formula interface
@@ -206,12 +208,12 @@
   o  na.action = na.omit fix for g{al}mboost()
 
 
-		CHANGES in `mboost' VERSION 0.5-8 (2007-05-31)
+        CHANGES in `mboost' VERSION 0.5-8 (2007-05-31)
 
   o  gamboost(..., weights = w) was broken
 
 
-		CHANGES in `mboost' VERSION 0.5-7 (2007-05-30)
+        CHANGES in `mboost' VERSION 0.5-7 (2007-05-30)
 
   o  extract response correctly in fitted.blackboost
 
@@ -221,19 +223,19 @@
   o  add paper examples to tests
 
 
-		CHANGES in `mboost' VERSION 0.5-6 (2007-05-07)
+        CHANGES in `mboost' VERSION 0.5-6 (2007-05-07)
 
   o  fix Rd problems
 
 
-		CHANGES in `mboost' VERSION 0.5-5 (2007-04-25)
+        CHANGES in `mboost' VERSION 0.5-5 (2007-04-25)
 
   o  `westbc' regenerated
 
   o  LazyLoad: yes (no SaveImage: yes)
 
 
-		CHANGES in `mboost' VERSION 0.5-4 (2007-04-18)
+        CHANGES in `mboost' VERSION 0.5-4 (2007-04-18)
 
   o  plot() method for `glmboost' objects visualizing the
      coefficient path (feature request by Axel Benner <benner@dkfz.de>).
@@ -242,14 +244,14 @@
      thanks to Max Kuhn <Max.Kuhn@pfizer.com> for spotting this.
 
 
-		CHANGES in `mboost' VERSION 0.5-3 (2007-03-23)
+        CHANGES in `mboost' VERSION 0.5-3 (2007-03-23)
 
   o  predict() for gamboost(..., dfbase = 1) was not working correctly
 
   o  small performance and memory improvements for glmboost()
 
 
-		CHANGES in `mboost' VERSION 0.5-2 (2007-02-28)
+        CHANGES in `mboost' VERSION 0.5-2 (2007-02-28)
 
   o  some performance improvements for `glmboost()'
 
@@ -259,12 +261,12 @@
      specification without troubles
 
 
-		CHANGES in `mboost' VERSION 0.5-1 (2007-02-02)
+        CHANGES in `mboost' VERSION 0.5-1 (2007-02-02)
 
   o  depends party 0.9-9
 
 
-		CHANGES in `mboost' VERSION 0.5-0 (2007-01-30)
+        CHANGES in `mboost' VERSION 0.5-0 (2007-01-30)
 
   o  new `baselearner' argument to `gamboost' allowing to
      specify difference component-wise base-learners to
@@ -290,18 +292,18 @@
   o  update vignette `mboost_illustrations'
 
 
-		CHANGES in `mboost' VERSION 0.4-17 (2007-01-15)
+        CHANGES in `mboost' VERSION 0.4-17 (2007-01-15)
 
   o  fix problem with `dfbase' in `gamboost', spotted by
      Karin Eckel <Karin.Eckel@imbe.imed.uni-erlangen.de>
 
 
-		CHANGES in `mboost' VERSION 0.4-16 (2007-01-12)
+        CHANGES in `mboost' VERSION 0.4-16 (2007-01-12)
 
   o  work around stats4:::AIC
 
 
-		CHANGES in `mboost' VERSION 0.4-15 (2006-12-06)
+        CHANGES in `mboost' VERSION 0.4-15 (2006-12-06)
 
   o  fix plot problems in plot.cvrisk
 
@@ -309,17 +311,17 @@
      gamboost
 
 
-		CHANGES in `mboost' VERSION 0.4-14 (2006-10-27)
+        CHANGES in `mboost' VERSION 0.4-14 (2006-10-27)
 
   o  AIC(..., "classical") is now faster for non-gaussian families
 
 
-		CHANGES in `mboost' VERSION 0.4-13 (2006-10-04)
+        CHANGES in `mboost' VERSION 0.4-13 (2006-10-04)
 
   o  predict(..., newdata) can take a matrix now
 
 
-		CHANGES in `mboost' VERSION 0.4-12 (2006-09-13)
+        CHANGES in `mboost' VERSION 0.4-12 (2006-09-13)
 
   o  predict(<blackboost-object>, type = "response") did not return
      factors when the response was actually a factor
@@ -329,7 +331,7 @@
   o  add offset attribute to coef.glmboost
 
 
-		CHANGES in `mboost' VERSION 0.4-11 (2006-09-07)
+        CHANGES in `mboost' VERSION 0.4-11 (2006-09-07)
 
   o  add `contrasts.arg' argument to `glmboost.formula'
 
@@ -338,7 +340,7 @@
   o  R-2.4.0 fixes
 
 
-		CHANGES in `mboost' VERSION 0.4-10 (2006-08-30)
+        CHANGES in `mboost' VERSION 0.4-10 (2006-08-30)
 
   o  add checks for CoxPH (against coefficients and logLik of coxph)
 
@@ -350,7 +352,7 @@
   o  check for meaningful class of the response for some families
 
 
-		CHANGES in `mboost' VERSION 0.4-9 (2006-07-17)
+        CHANGES in `mboost' VERSION 0.4-9 (2006-07-17)
 
   o  some small speed improvements in `gamboost'
 
@@ -363,7 +365,7 @@
   o  documentation updates
 
 
-		CHANGES in `mboost' VERSION 0.4-8 (2006-07-05)
+        CHANGES in `mboost' VERSION 0.4-8 (2006-07-05)
 
   o  Huber() is `Huber Error', not `Huber Absolute Error'
 
@@ -392,7 +394,7 @@
      (lymph node status)
 
 
-		CHANGES in `mboost' VERSION 0.4-7 (2006-06-19)
+        CHANGES in `mboost' VERSION 0.4-7 (2006-06-19)
 
   o  add src/Makevars (required for Windows builds)
 
@@ -400,7 +402,7 @@
      `blackboost'
 
 
-		CHANGES in `mboost' VERSION 0.4-6 (2006-06-14)
+        CHANGES in `mboost' VERSION 0.4-6 (2006-06-14)
 
   o  some minor `codetools' fixes: removed unused variables
      and an out-dated function
@@ -411,4 +413,4 @@
 
 ______________________________________________________________________________
 
-	`mboost' version 0.4-5 published on CRAN 2006-06-13
+    `mboost' version 0.4-5 published on CRAN 2006-06-13

@@ -6,6 +6,7 @@
 \alias{brandom}
 \alias{btree}
 \alias{bmono}
+\alias{bmrf}
 \alias{bns}
 \alias{bss}
 \alias{\%+\%}
@@ -30,6 +31,8 @@ btree(..., tree_controls = ctree_control(stump = TRUE,
 bmono(..., constraint = c("increasing", "decreasing", "convex", "concave"),
       by = NULL, index = NULL, knots = 20, degree = 3, differences = 2,
       df = 4, lambda = NULL, lambda2 = 1e6, niter=10)
+bmrf(..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL, 
+    center = FALSE)
 
 bl1 \%+\% bl2
 bl1 \%X\% bl2
@@ -55,8 +58,8 @@ bl1 \%X\% bl2
   \item{knots}{ either the number of (equidistant) interior knots to be used for
                 the regression spline fit or a vector including the positions of the interior
                 knots. For multiple predictor variables, \code{knots}
-		may be a named list where the names in the list are the
-		variable names.}
+        may be a named list where the names in the list are the
+        variable names.}
   \item{degree}{ degree of the regression spline.}
   \item{differences}{ 1, 2, or 3. If \code{differences} =
                      \emph{k}, \emph{k}-th-order differences are used as a penalty.}
@@ -65,14 +68,14 @@ bl1 \%X\% bl2
   \item{center}{ if \code{center=TRUE} the corresponding effect is
                  re-parameterized such that the unpenalized part of the fit is subtracted and
                  only the deviation effect is fitted. The unpenalized, parametric part has then
-		 to be included in separate base-learners using \code{bols} (see the examples below).}
+         to be included in separate base-learners using \code{bols} (see the examples below).}
   \item{covFun}{ the covariance function (i.e. radial basis)
                  needed to compute the basis functions. Per
                  default the \code{\link[fields]{stationary.cov}} function
                  (package \code{fields}) is used. }
   \item{args}{ a named list of arguments to be passed to
                \code{cov.function}. Thus strongly dependend on the
-	       specified \code{cov.function}. }
+           specified \code{cov.function}. }
   \item{contrasts.arg}{ a character suitable for input to the \code{\link{contrasts}} replacement function,
                         see \code{\link{model.matrix}}.}
   \item{tree_controls}{ an object of class \code{"\linkS4class{TreeControl}"}, which can be
@@ -85,6 +88,10 @@ bl1 \%X\% bl2
   \item{lambda2}{ penalty parameter for the (monotonicity) constraint. }
   \item{niter}{ maximum number of iterations used to compute constraint
     estimates. Increase this number if a warning is displayed. }
+  \item{bnd}{
+    Object of class \code{bnd}, in which the boundaries of a map are defined and from which neighbourhood
+    relations can be construed. See \code{\link[BayesX]{read.bnd}}. If a boundary object is not available,
+    the neighbourhood matrix can also be given directly. }
   \item{bl1}{a linear base-learner or a list of linear base-learners.}
   \item{bl2}{a linear base-learner or a list of linear base-learners.}
 }
@@ -182,6 +189,15 @@ bl1 \%X\% bl2
   max(||x_i - x_j||)/c} such that the correlation function
   \deqn{\rho(c; \theta = 1) = \varepsilon,}{rho(c; theta = 1) = epsilon,}
   where \eqn{\varepsilon = 0.001}{epsilon = 0.001}.
+
+  \code{bmrf} builds a base of a markov random field consisting of several regions
+  with a neighbourhood structure. The input variable is the observed region.
+  The penalty matrix is either construed from a boundary object or must be 
+  given directly via the option \code{bnd}. In that case the \code{dimnames} of
+  the matrix have to be the region names, on the diagonal the number of neighbours
+  have to be given for each region, and for each neighbourhood relation the value
+  in the matrix has to be -1, else 0. With a boundary object at hand, the fitted
+  or predicted values can be directly plotted into the map using \code{\link[BayesX]{drawmap}}.
 
   For a categorical covariate with non-observed categories
   \code{bols(x)} and \code{brandom(x)} both assign a zero effect
