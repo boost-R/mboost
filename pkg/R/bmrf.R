@@ -88,8 +88,8 @@ function (mf, vary, args)
         e <- eigen(K)
         L <- e$vectors[, -dim(e$vectors)[2]] * sqrt(e$values[-length(e$values)])
         Zspathelp <- L %*% solve(t(L) %*% L)
-        X <- X %*% Zspathelp
-        K <- diag(ncol(X))
+        X <- as(X%*%Zspathelp, "matrix")
+        K <- as(diag(ncol(X)), "matrix")
     }
     return(list(X = X, K = K))
 }
