@@ -53,13 +53,16 @@ function (mf, vary, bnd = NULL, df = 4, lambda = NULL, center = FALSE)
 {
     if (is.null(bnd)) 
         stop("Neighbourhood must be defined")
-    else if (class(bnd) == "bnd") 
+    else if (inherits(bnd, "bnd")) 
         K <- bnd2gra(bnd)
-    else if (is.matrix(bnd) && dim(bnd)[1] == dim(bnd)[2] && 
-        sum(bnd) == 0 && !is.null(dimnames(bnd)[[1]])) 
+    else if (isMATRIX(bnd) && 
+             nrow(bnd) == ncol(bnd) && 
+             nlevels(mf[[1]]) == nrow(bnd) &&
+             sum(bnd) == 0 && 
+             all(levels(mf[[1]]) %in% rownames(bnd))) 
         K <- bnd
     else stop("No proper neighbourhood definition given")
-    class(K) <- "matrix"
+    K <- as.matrix(K)
     nm <- colnames(mf)[colnames(mf) != vary]
     list(K = K, bnd = bnd, pen = TRUE, df = df, lambda = lambda, 
         center = center)
@@ -68,14 +71,13 @@ function (mf, vary, bnd = NULL, df = 4, lambda = NULL, center = FALSE)
 X_bmrf <-
 function (mf, vary, args) 
 {
-    stopifnot(is.data.frame(mf))
-    K = args$K
-    districts = dimnames(K)[[1]]
-    X = matrix(0, nrow = dim(mf)[1], ncol = dim(K)[2])
-    for (i in 1:dim(mf)[1]) X[i, which(districts == mf[i, 1])] = 1
+    K <- args$K
+    districts <- rownames(K)
+    X <- matrix(0, nrow = nrow(mf), ncol = ncol(K))
+    for (i in 1:nrow(mf)) X[i, which(districts == mf[i, 1])] <- 1
     MATRIX <- any(dim(X) > c(500, 50))
     MATRIX <- MATRIX && options("mboost_useMatrix")$mboost_useMatrix
-    if (MATRIX && require(Matrix)) {
+    if (MATRIX) {
         diag <- Diagonal
         X <- Matrix(X)
     }
