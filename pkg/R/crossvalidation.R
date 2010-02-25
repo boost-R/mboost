@@ -4,47 +4,46 @@
 ## for boosting algorithms
 ##
 
-cvrisk <- function(object, folds = cv(model.weights(object)), grid = 1:mstop(object),
-                   papply = if (require("multicore")) mclapply else lapply, fun = NULL, ...) {
-
+cvrisk <- function (object, folds = cv(model.weights(object)), grid = 1:mstop(object),
+                     papply = if (require("multicore")) mclapply else lapply,
+                     fun = NULL, ...){
     weights <- model.weights(object)
-    if (any(weights == 0)) warning("zero weights")
+    if (any(weights == 0))
+        warning("zero weights")
     if (is.null(folds)) {
-        ### bootstrap by default
-        folds <- rmultinom(25, length(weights), weights / sum(weights))
+        folds <- rmultinom(25, length(weights), weights/sum(weights))
     } else {
-        stopifnot(is.matrix(folds) &&
-                  nrow(folds) == length(weights))
+        stopifnot(is.matrix(folds) && nrow(folds) == length(weights))
     }
-
     fitfct <- object$update
     oobrisk <- matrix(0, nrow = ncol(folds), ncol = length(grid))
-    if (!is.null(fun)) stopifnot(is.function(fun))
-
+    if (!is.null(fun))
+        stopifnot(is.function(fun))
     fam_name <- object$family@name
     call <- deparse(object$call)
-
     if (is.null(fun)) {
-        dummyfct <- function(weights) {
-            mod <- fitfct(weights = weights)
+        dummyfct <- function(weights, oobweights) {
+            mod <- fitfct(weights = weights, oobweights = oobweights)
             mod[max(grid)]
             mod$risk()[grid]
         }
-    } else {
-        dummyfct <- function(weights) {
-            mod <- fitfct(weights = weights)
+    }
+    else {
+        dummyfct <- function(weights, oobweights) {
+            mod <- fitfct(weights = weights, oobweights = oobweights)
             mod[max(grid)]
-            ### make sure dispatch works correctly
             class(mod) <- class(object)
             fun(mod)
         }
     }
-
-    oobrisk <- papply(1:ncol(folds), function(i) dummyfct(folds[,i]), ...)
-
-    if (!is.null(fun)) return(oobrisk)
+    OOBweights <- matrix(rep(weights, ncol(folds)), ncol=ncol(folds))
+    OOBweights[folds>0] <- 0
+    oobrisk <- papply(1:ncol(folds), function(i) dummyfct(weights = folds[, i],
+                      oobweights = OOBweights[,i]))
+    if (!is.null(fun))
+        return(oobrisk)
     oobrisk <- t(as.data.frame(oobrisk))
-    oobrisk <- oobrisk/colSums(folds == 0)
+    oobrisk <- oobrisk / colSums(OOBweights)
     colnames(oobrisk) <- grid
     rownames(oobrisk) <- 1:nrow(oobrisk)
     attr(oobrisk, "risk") <- fam_name

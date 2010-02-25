@@ -1,6 +1,7 @@
 
-mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
-                       family = Gaussian(), control = boost_control()) {
+mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
+                       offset = NULL, family = Gaussian(), control =
+                       boost_control(), oobweights = as.numeric(weights == 0)) {
 
     ### hyper parameters
     mstop <- 0
@@ -30,6 +31,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     ### rescale weights (because of the AIC criterion)
     ### <FIXME> is this correct with zero weights??? </FIXME>
     weights <- rescale_weights(weights)
+    if (is.null(oobweights))
     oobweights <- as.numeric(weights == 0)
     if (control$risk == "oobag") {
         triskfct <- function(y, f) riskfct(y, f, oobweights)
@@ -146,13 +148,14 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     )
 
     ### update to new weights; just a fresh start
-    RET$update <- function(weights = NULL, risk = "oobag") {
+    RET$update <- function(weights = NULL, oobweights = NULL, risk = "oobag") {
         control$mstop <- mstop
         control$risk <- risk
         ### use user specified offset only (since it depends on weights otherwise)
         if (!is.null(offsetarg)) offsetarg <- offset
         mboost_fit(blg = blg, response = response, weights = weights,
-                   offset = offsetarg, family = family, control = control)
+                   offset = offsetarg, family = family, control = control,
+                   oobweights = oobweights)
     }
 
     ### number of iterations performed so far

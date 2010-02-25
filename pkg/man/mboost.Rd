@@ -9,8 +9,9 @@
 \usage{
 mboost(formula, data = list(), 
        baselearner = c("bbs", "bols", "btree", "bss", "bns"), ...) 
-mboost_fit(blg, response, weights = NULL, offset = NULL,
-           family = Gaussian(), control = boost_control())
+mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
+           family = Gaussian(), control = boost_control(), oobweights =
+           as.numeric(weights == 0))
 }
 \arguments{
   \item{formula}{ a symbolic description of the model to be fit. }
@@ -33,6 +34,8 @@ mboost_fit(blg, response, weights = NULL, offset = NULL,
   \item{offset}{ an optionally numeric vector to be used as offset.}
   \item{family}{a \code{Family} object.}
   \item{control}{ a list of parameters controlling the algorithm.}
+  \item{oobweights}{ an additional vector of out-of-bag weights (used internally
+    by \code{cvrisk}.}
   \item{\dots}{ additional arguments passed to \code{mboost}.}
 }
 \details{
