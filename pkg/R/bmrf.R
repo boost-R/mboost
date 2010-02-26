@@ -19,7 +19,7 @@ function (..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
     }
     stopifnot(is.data.frame(mf))
     if (!(all(sapply(mf, is.factor)))) {
-        stop("cannot compute bmrf for numeric variables")
+        stop("cannot compute bmrf for numeric variables, region variable must be given as factor.")
     }
     vary <- ""
     if (!is.null(by)) {
@@ -52,7 +52,7 @@ hyper_bmrf <-
 function (mf, vary, bnd = NULL, df = 4, lambda = NULL, center = FALSE) 
 {
     if (is.null(bnd)) 
-        stop("Neighbourhood must be defined")
+        stop("Neighbourhood relations must be given in matrix or boundary format.")
     else if (inherits(bnd, "bnd")) 
         K <- bnd2gra(bnd)
     else if (isMATRIX(bnd) && 
@@ -61,7 +61,7 @@ function (mf, vary, bnd = NULL, df = 4, lambda = NULL, center = FALSE)
              sum(bnd) == 0 && 
              all(levels(mf[[1]]) %in% rownames(bnd))) 
         K <- bnd
-    else stop("No proper neighbourhood definition given")
+    else stop("Neighbourhood matrix not defined as stated in manual page.")
     K <- as.matrix(K)
     nm <- colnames(mf)[colnames(mf) != vary]
     list(K = K, bnd = bnd, pen = TRUE, df = df, lambda = lambda, 
