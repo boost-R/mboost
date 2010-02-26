@@ -20,7 +20,7 @@
         if (nlevels(y) == 2) {
             ret <- factor(levels(y)[(pr > 0) + 1], levels = levels(y))
         } else {
-            ret <- factor(levels(y)[apply(family@response(pr), 1, which.max)], 
+            ret <- factor(levels(y)[apply(family@response(pr), 1, which.max)],
                           levels = levels(y))
         }
     }
@@ -40,11 +40,16 @@ predict.mboost <- function(object, newdata = NULL,
                          which = which, aggregate = aggregate)
     nm <- rownames(newdata)
     if (is.null(newdata)) nm <- object$rownames
-    if (is.list(pr))
-        return(lapply(pr, .predictmboost, y = object$response,
-                      type = type, nm = nm, family = object$family))
-    .predictmboost(object$response, pr, type = type, nm = nm, 
-                   family = object$family)
+    if (is.list(pr)){
+        RET <- lapply(pr, .predictmboost, y = object$response,
+                      type = type, nm = nm, family = object$family)
+        if (type == "link") attr(RET, "offset") <- attr(pr, "offset")
+        return(RET)
+    }
+    RET <- .predictmboost(object$response, pr, type = type, nm = nm,
+                          family = object$family)
+    if (type != "link") attr(RET, "offset") <- NULL
+    return(RET)
 }
 
 ### extract coefficients
@@ -57,7 +62,7 @@ coef.gamboost <- function(object, which = NULL,
 hatvalues.gamboost <- function(model, ...) {
     H <- model$hatvalues(...)
     n <- length(model$response)
-    
+
     ### <FIXME> better checks
     L2 <- FALSE
     if (!extends(class(model$family), "boost_family_glm")) {

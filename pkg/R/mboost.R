@@ -124,7 +124,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             ### print status information
             ### print xselect???
             if (trace)
-                do_trace(m, mstop = mstop, risk = mrisk, 
+                do_trace(m, mstop = mstop, risk = mrisk,
                          step = tracestep, width = niter)
         }
         mstop <<- mstop + niter
@@ -143,7 +143,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
                 response = response,        ### the response variable
                 rownames = bnames,          ### rownames of learning data
                 "(weights)" = weights,      ### weights used for fitting
-                nuisance = 
+                nuisance =
                     function() nuisance     ### list of nuisance parameters
     )
 
@@ -229,16 +229,22 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
 
         pr <- switch(aggregate, "sum" = {
             pr <- sapply(which, pfun, agg = "sum")
-            if (!nw) return(pr)
-            ### only if no selection of baselearners
-            ### was made via the `which' argument
-            if (!is.matrix(pr)) pr <- matrix(pr, nrow = 1)
-            return(offset + matrix(rowSums(pr), ncol = 1))
+            if (!nw){
+                colnames(pr) <- bnames[which]
+                attr(pr, "offset") <- offset
+                return(pr)
+            } else {
+                ## only if no selection of baselearners
+                ## was made via the `which' argument
+                if (!is.matrix(pr)) pr <- matrix(pr, nrow = 1)
+                return(offset + matrix(rowSums(pr), ncol = 1))
+            }
         }, "cumsum" = {
             if (!nw) {
                 pr <- lapply(which, pfun, agg = "none")
                 pr <- lapply(pr, function(x) .Call("R_mcumsum", as(x, "matrix")))
                 names(pr) <- bnames[which]
+                attr(pr, "offset") <- offset
                 return(pr)
             } else {
                 ret <- Matrix(0, nrow = n, ncol = sum(indx))
@@ -250,11 +256,14 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
                 pr <- lapply(which, pfun, agg = "none")
                 for (i in 1:length(pr)) pr[[i]] <- as(pr[[i]], "matrix")
                 names(pr) <- bnames[which]
+                attr(pr, "offset") <- offset
                 return(pr)
             } else {
                 ret <- Matrix(0, nrow = n, ncol = sum(indx))
                 for (i in 1:max(xselect)) ret <- ret + pfun(i, agg = "none")
-                return(as(ret, "matrix"))
+                ret <- as(ret, "matrix")
+                attr(ret, "offset") <- offset
+                return(ret)
             }
          })
          return(pr)
@@ -391,13 +400,13 @@ mboost <- function(formula, data = list(),
         c(a, b)
     }
     ### set up all baselearners
-    bl <- eval(as.expression(formula[[3]]), 
+    bl <- eval(as.expression(formula[[3]]),
                envir = c(as.list(data), list("+" = get("+"))),
                enclos = environment(formula))
     ### rhs was one single baselearner
     if (inherits(bl, "blg")) bl <- list(bl)
     ### rhs was one single variable
-    if (!is.list(bl)) { 
+    if (!is.list(bl)) {
         bl <- list(baselearner(bl))
         bl[[1]]$set_names(as.character(formula[[3]]))
     }
