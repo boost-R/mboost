@@ -202,8 +202,11 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
         cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
         colnames(mf) <- sapply(cl, function(x) as.character(x))
     }
-    if(!intercept && !any(sapply(mf, is.factor))){
+    if(!intercept && !any(sapply(mf, is.factor)) &&
+       !any(sapply(mf, function(x){uni <- unique(x);
+                                   length(uni[!is.na(uni)])}) == 1)){
         ## if no intercept is used and no covariate is a factor
+        ## and if no intercept is specified (i.e. mf[[i]] is constant)
         if (any(sapply(mf, function(x) abs(mean(x, na.rm=TRUE) / sd(x,na.rm=TRUE))) > 0.1))
             ## if covariate mean is not near zero
             warning("covariates should be (mean-) centered if ",
