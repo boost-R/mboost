@@ -83,7 +83,7 @@
   \item{which}{ a subset of base-learners to take into account for computing
                 predictions or coefficients. If \code{which} is given
                 (as an integer vector or characters corresponding
-                 to base-learners) a list is returned.}
+                 to base-learners) a list or matrix is returned.}
   \item{type}{ the type of prediction required.  The default is on the scale
           of the predictors; the alternative \code{"response"} is on
           the scale of the response variable.  Thus for a
@@ -92,9 +92,10 @@
           the predicted probabilities.  The \code{"class"} option returns
           predicted classes.}
   \item{aggregate}{ a character specifying how to aggregate predictions
-                    of single base-learners. The default returns the prediction
-                    for the final number of boosting iterations. \code{"cumsum"}
-                    returns a matrix with the predictions for all iterations
+                    or coefficients of single base-learners. The default
+                    returns the prediction or coefficient for the final number of
+                    boosting iterations. \code{"cumsum"} returns a
+                    matrix with the predictions for all iterations
                     simultaneously (in columns). \code{"none"} returns
                     a matrix where the jth columns contains the predictions
                     of the base-learner of the jth boosting iteration.}
@@ -214,7 +215,7 @@
                       control = boost_control(mstop = 100, trace = TRUE))
   cars.gb[10]
   cars.gb[100, return = FALSE] # no refitting required
-  cars.gb[150, return = FALSE] # only iterations 101 to 150 
+  cars.gb[150, return = FALSE] # only iterations 101 to 150
                                # are newly fitted
 
   ### coefficients for optimal number of boosting iterations
@@ -232,18 +233,25 @@
   x4 <- rnorm(n)
   int <- rep(1, n)
   y <- 3 * x1^2 - 0.5 * x2 + rnorm(n, sd = 0.1)
-  df <- data.frame(y = y, int = int, x1 = x1, x2 = x2, x3 = x3, x4 = x4)
+  data <- data.frame(y = y, int = int, x1 = x1, x2 = x2, x3 = x3, x4 = x4)
 
-  model <- gamboost(y ~ bols(int, intercept = FALSE) + 
+  model <- gamboost(y ~ bols(int, intercept = FALSE) +
                         bbs(x1, center = TRUE, df = 1) +
                         bols(x1, intercept = FALSE) +
-                        bols(x2, intercept = FALSE) + 
+                        bols(x2, intercept = FALSE) +
                         bols(x3, intercept = FALSE) +
-                        bols(x4, intercept = FALSE), 
-                    data = df, control = boost_control(mstop = 500))
+                        bols(x4, intercept = FALSE),
+                    data = data, control = boost_control(mstop = 500))
   coef(model) # standard output (only selected base-learners)
-  coef(model, 
+  coef(model,
        which = 1:length(variable.names(model))) # all base-learners
   coef(model, which = "x1") # shows all base-learners for x1
+  cf1 <- coef(model, which=c(1,3,4), aggregate="cumsum")
+  tmp <- sapply(cf1, function(x) x)
+  matplot(tmp, type="l", main="Coefficient Paths")
+
+  yhat <- predict(model) # standard prediction; here same as fitted(model)
+  p1 <- predict(model, which="x1") # marginal effects of x1
+  plot(data$x1, rowSums(p1)) # rowSums needed as we get a matrix
 }
 \keyword{methods}

@@ -320,7 +320,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             ret <- switch(aggregate,
                 "sum" = rowSums(cf) * nu,
                 "cumsum" = {
-                    .Call("R_mcumsum", as(cf, "matrix"))
+                    .Call("R_mcumsum", as(cf, "matrix") * nu)
                 },
                 "none" = nu * cf
             )

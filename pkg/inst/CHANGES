@@ -16,6 +16,8 @@
   o  improved predict.mboost(): added names where missing and the 
      offset as attribute where applicable.
 
+  o  Bug fixed in coef( , aggregate="cumsum"): fraction "nu" was missing
+
 
                 CHANGES in `mboost' VERSION 2.0-0 (2010-02-01)
 
