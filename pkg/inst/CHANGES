@@ -3,7 +3,13 @@
   o  added base-learners for radial basis functions (brad())
      and smooth monotonic (or convex/concave) functions (bmono())
 
-  o  added base-learners for markov random fields (bmrf())
+  o  added base-learners for Markov random fields (bmrf())
+
+  o  changed behavior of cvrisk() if weights are used: 
+     out-of-bag-risk now weighted according to "weights" as
+     specified in call to mboost
+
+  o  bols(x, intercept = FALSE) only reasonable if x is centered
 
   o  added family for AUC loss function
 

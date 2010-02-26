@@ -31,7 +31,7 @@ btree(..., tree_controls = ctree_control(stump = TRUE,
 bmono(..., constraint = c("increasing", "decreasing", "convex", "concave"),
       by = NULL, index = NULL, knots = 20, degree = 3, differences = 2,
       df = 4, lambda = NULL, lambda2 = 1e6, niter=10)
-bmrf(..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL, 
+bmrf(..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
     center = FALSE)
 
 bl1 \%+\% bl2
@@ -63,9 +63,10 @@ bl1 \%X\% bl2
   \item{degree}{ degree of the regression spline.}
   \item{differences}{ 1, 2, or 3. If \code{differences} =
                      \emph{k}, \emph{k}-th-order differences are used as a penalty.}
-  \item{intercept}{ if \code{intercept=TRUE} an intercept is added to the design matrix
-                    of a linear base-learner.}
-  \item{center}{ if \code{center=TRUE} the corresponding effect is
+  \item{intercept}{ if \code{intercept = TRUE} an intercept is added to the design matrix
+                    of a linear base-learner. If \code{intercept =
+		      FALSE}, continuous covariates should be (mean-) centered.}
+  \item{center}{ if \code{center = TRUE} the corresponding effect is
                  re-parameterized such that the unpenalized part of the fit is subtracted and
                  only the deviation effect is fitted. The unpenalized, parametric part has then
          to be included in separate base-learners using \code{bols} (see the examples below).}
@@ -105,16 +106,20 @@ bl1 \%X\% bl2
   (default for \code{bbs}, \code{bspatial}, and \code{brandom}) or specified directly
   (\code{lambda = 0} means no penalization as default for \code{bols}).
 
-  In \code{bols(x)}, \code{x} may be a numeric vector or factor. Alternatively,
-  \code{x} can be a data frame containing numeric or factor variables.
-  In this case, or when multiple predictor variables are specified, e.g.,
-  using \code{bols(x1, x2)}, the model is equivalent to \code{lm(y ~ ., data = x)}
-  or \code{lm(y ~ x1 + x2)}, respectively.
-  By default, an intercept term is added to the corresponding design matrix
-  (which can be omitted using \code{intercept = FALSE}). When \code{df} is
-  given, a ridge estimator with \code{df} degrees of freedom (trace of hat matrix)
-  is used as base-learner. Note that all variables are treated as a group,
-  i.e., they enter the model together if the corresponding base-learner is selected.
+  In \code{bols(x)}, \code{x} may be a numeric vector or factor.
+  Alternatively, \code{x} can be a data frame containing numeric or
+  factor variables. In this case, or when multiple predictor variables
+  are specified, e.g., using \code{bols(x1, x2)}, the model is
+  equivalent to \code{lm(y ~ ., data = x)} or \code{lm(y ~ x1 + x2)},
+  respectively. By default, an intercept term is added to the
+  corresponding design matrix (which can be omitted using
+  \code{intercept = FALSE}). It is \emph{strongly} adviced to (mean-)
+  center continuous covariates, if no intercept is used in \code{bols} (see Hofner
+  et al., 2009). When \code{df} is given, a ridge estimator with
+  \code{df} degrees of freedom (trace of hat matrix) is used as
+  base-learner. Note that all variables are treated as a group, i.e.,
+  they enter the model together if the corresponding base-learner is
+  selected.
 
   With \code{bbs}, the P-spline approach of Eilers and Marx (1996) is
   used. P-splines use a squared \emph{k}-th-order difference penalty
@@ -192,7 +197,7 @@ bl1 \%X\% bl2
 
   \code{bmrf} builds a base of a markov random field consisting of several regions
   with a neighbourhood structure. The input variable is the observed region.
-  The penalty matrix is either construed from a boundary object or must be 
+  The penalty matrix is either construed from a boundary object or must be
   given directly via the option \code{bnd}. In that case the \code{dimnames} of
   the matrix have to be the region names, on the diagonal the number of neighbours
   have to be given for each region, and for each neighbourhood relation the value
