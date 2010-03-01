@@ -1,4 +1,7 @@
-                CHANGES in `mboost' VERSION 1.1-4 (2009-11-18)
+                CHANGES in `mboost' VERSION 2.0-1 (2010-03-01)
+
+  o  fixed bug in coef( , aggregate="cumsum"): fraction "nu" was missing
+
 
                 CHANGES in `mboost' VERSION 2.0-0 (2010-02-01)
 

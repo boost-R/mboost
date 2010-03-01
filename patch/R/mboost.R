@@ -122,7 +122,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             ### print status information
             ### print xselect???
             if (trace)
-                do_trace(m, mstop = mstop, risk = mrisk, 
+                do_trace(m, mstop = mstop, risk = mrisk,
                          step = tracestep, width = niter)
         }
         mstop <<- mstop + niter
@@ -141,7 +141,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 response = response,        ### the response variable
                 rownames = bnames,          ### rownames of learning data
                 "(weights)" = weights,      ### weights used for fitting
-                nuisance = 
+                nuisance =
                     function() nuisance     ### list of nuisance parameters
     )
 
@@ -308,7 +308,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             ret <- switch(aggregate,
                 "sum" = rowSums(cf) * nu,
                 "cumsum" = {
-                    .Call("R_mcumsum", as(cf, "matrix"))
+                    .Call("R_mcumsum", as(cf, "matrix") * nu)
                 },
                 "none" = nu * cf
             )
@@ -388,13 +388,13 @@ mboost <- function(formula, data = list(),
         c(a, b)
     }
     ### set up all baselearners
-    bl <- eval(as.expression(formula[[3]]), 
+    bl <- eval(as.expression(formula[[3]]),
                envir = c(as.list(data), list("+" = get("+"))),
                enclos = environment(formula))
     ### rhs was one single baselearner
     if (inherits(bl, "blg")) bl <- list(bl)
     ### rhs was one single variable
-    if (!is.list(bl)) { 
+    if (!is.list(bl)) {
         bl <- list(baselearner(bl))
         bl[[1]]$set_name(as.character(formula[[3]]))
     }
