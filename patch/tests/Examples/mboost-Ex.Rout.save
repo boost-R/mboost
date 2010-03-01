@@ -991,12 +991,12 @@ Loading required package: colorspace
 > ### ** Examples
 > 
 > 
->   
+> 
 >   data("bodyfat")
 >   set.seed(290875)
 > 
 >   ### model conditional expectation of DEXfat given
->   model <- mboost(DEXfat ~ 
+>   model <- mboost(DEXfat ~
 +       bols(age) +                 ### a linear function of age
 +       btree(hipcirc, waistcirc) + ### a non-linear interaction of
 +                                   ### hip and waist circumference
@@ -1032,7 +1032,7 @@ NULL
 >   plot(model, which = c("age", "kneebreadth"))
 > 
 >   ### plot interaction of hip and waist circumference
->   attach(bodyfat) 
+>   attach(bodyfat)
 >   nd <- expand.grid(hipcirc = h <- seq(from = min(hipcirc),
 +                                   to = max(hipcirc),
 +                                   length = 100),
@@ -1177,7 +1177,7 @@ NULL
 [1'471] ...................................... -- risk: 8308.446 
 [1'511] .....................................
 Final risk: 8289.302 
-$`bbs(speed)`
+$`bbs(speed, df = dfbase)`
  [1] -36.995016 -35.596203 -34.085118 -32.349487 -30.277039 -27.732665
  [7] -24.322707 -20.863456 -21.899775 -19.121759  -6.090496   2.438362
 [13]  -4.941562  -7.667407   2.660116  16.107860  12.731676   6.129820
@@ -1417,7 +1417,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  51.307 3.196 61.583 10 10 
+Time elapsed:  51.767 3.08 61.074 9.956 9.956 
 > grDevices::dev.off()
 null device 
           1 

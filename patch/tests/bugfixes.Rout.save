@@ -332,11 +332,13 @@ In asMethod(object) :
 > y <- 3 * x1 + rnorm(100, sd=0.1)
 > dummy <- data.frame(y = y, int = int, x1 = x1)
 > 
-> gbm <- gamboost(y ~ bols(int, intercept=FALSE) +  bols(x1, intercept=FALSE) + bbs(x1, center=TRUE, df=1), data = dummy)
+> gbm <- gamboost(y ~ bols(int, intercept=FALSE) +  bols(x1, intercept=FALSE) +
++                 bbs(x1, center=TRUE, df=1), data = dummy)
 > 
 > ### check prediction if intercept=FALSE
 > gbm <- gamboost(y ~ bols(x1, intercept=FALSE), data = dummy)
-> stopifnot(!is.na(predict(gbm)) & max(abs(predict(gbm) - fitted(gbm))) < sqrt(.Machine$double.eps))
+> stopifnot(!is.na(predict(gbm)) &
++           max(abs(predict(gbm) - fitted(gbm))) < sqrt(.Machine$double.eps))
 > 
 > ### check coef.glmboost
 > set.seed(1907)
@@ -372,6 +374,14 @@ In asMethod(object) :
 > 
 > ### both loss and risk given, spotted by
 > ### Fabian Scheipl <fabian.scheipl@stat.uni-muenchen.de>
-> stopifnot(extends(class(Family(ngradient = function(y, f) y, loss = function(y, w) sum(y), 
-+        risk = function(y, f, w) sum(y))), "boost_family")
-+ 
+> stopifnot(extends(class(Family(ngradient = function(y, f) y,
++                                loss = function(y, w) sum(y),
++                                risk = function(y, f, w) sum(y))),
++                   "boost_family"))
+> 
+> ### check coef with aggregate = "cumsum"
+> mod <- glmboost(DEXfat ~ ., data = bodyfat)
+> 
+> stopifnot(max(abs(sapply(coef(mod, aggregate="cumsum"), function(x) x[,100])
++                   - coef(mod))) < sqrt(.Machine$double.eps))
+> 
