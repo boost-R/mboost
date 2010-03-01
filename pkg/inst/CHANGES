@@ -1,4 +1,4 @@
-                CHANGES in `mboost' VERSION 2.1-0 (2010-02-08)
+                CHANGES in `mboost' VERSION 2.1-0 (2010-03-01)
 
   o  added base-learners for radial basis functions (brad())
      and smooth monotonic (or convex/concave) functions (bmono())
@@ -16,7 +16,10 @@
   o  improved predict.mboost(): added names where missing and the 
      offset as attribute where applicable.
 
-  o  Bug fixed in coef( , aggregate="cumsum"): fraction "nu" was missing
+
+                 CHANGES in `mboost' VERSION 2.0-1 (2010-03-01)
+
+  o  fixed bug in coef( , aggregate="cumsum"): fraction "nu" was missing
 
 
                 CHANGES in `mboost' VERSION 2.0-0 (2010-02-01)

@@ -96,9 +96,12 @@
                     returns the prediction or coefficient for the final number of
                     boosting iterations. \code{"cumsum"} returns a
                     matrix with the predictions for all iterations
-                    simultaneously (in columns). \code{"none"} returns
-                    a matrix where the jth columns contains the predictions
-                    of the base-learner of the jth boosting iteration.}
+                    simultaneously (in columns). \code{"none"} returns a
+                    list with matrices where the \eqn{j}th columns of the
+                    respective matrix contains the predictions
+                    of the base-learner of the \eqn{j}th boosting
+                    iteration (and zero if the base-learner is not
+                    selected in this iteration).}
   \item{i}{ integer. Index specifying the model to extract. If \code{i}
             is smaller than the initial \code{mstop}, a subset is used.
             If \code{i} is larger than the initial \code{mstop},
@@ -113,55 +116,81 @@
              boosting hat matrix and \code{actset} uses the number of
              non-zero coefficients for each boosting iteration.}
   \item{k}{  numeric, the \emph{penalty} per parameter to be used; the default
-             \code{k = 2} is the classical AIC. Only used when \code{method = "classical"}.}
+             \code{k = 2} is the classical AIC. Only used when
+             \code{method = "classical"}.} 
   \item{\dots}{ additional arguments passed to callies. }
 }
 \details{
 
-  These functions can be used to extract details from fitted models. \code{print}
-  shows a dense representation of the model fit and \code{summary} gives
-  a more detailed representation.
+  These functions can be used to extract details from fitted models.
+  \code{print} shows a dense representation of the model fit and
+  \code{summary} gives a more detailed representation.
 
-  The function \code{coef} extracts the
-  regression coefficients of a linear model fitted using the \code{\link{glmboost}}
-  function or an additive model fitted using the \code{\link{gamboost}}.
-  Per default, only coefficients of selected base-learners are
-  returned. However, any desired coefficient can be extracted using the
-  \code{which} argument (see examples for details).
+  The function \code{coef} extracts the regression coefficients of a
+  linear model fitted using the \code{\link{glmboost}} function or an
+  additive model fitted using the \code{\link{gamboost}}. Per default,
+  only coefficients of selected base-learners are returned. However, any
+  desired coefficient can be extracted using the \code{which} argument
+  (see examples for details). Per default, the coefficient of the final
+  iteration is returned (\code{aggregate = "sum"}) but it is also
+  possible to return the coefficients from all iterations simultaniously
+  (\code{aggregate = "cumsum"}). If \code{aggregate = "none"} is
+  specified, the coefficients of the \emph{selected} base-learners are
+  returned (see examples below).
 
-  The \code{predict} function can be used to predict the status of the response variable
-  for new observations whereas \code{fitted} extracts the regression fit for the observations
-  in the learning sample.
+  The \code{predict} function can be used to predict the status of the
+  response variable for new observations whereas \code{fitted} extracts
+  the regression fit for the observations in the learning sample. For
+  \code{predict} \code{newdata} can be specified, otherwise the fitted
+  values are returned. If \code{which} is specified, marginal effects of
+  the corresponding base-learner(s) are returned. The argument
+  \code{type} can be used to make predictions on the scale of the
+  \code{link} (i.e., the linear predictor \eqn{X\beta}{X * beta}),
+  the \code{response} (i.e. \eqn{h(X\beta)}{h(X * beta)}, where h is the
+  response function) or the \code{class} (in case of
+  classification). Furthermore, the predictions can be aggregated
+  analogously to \code{coef} by setting \code{aggregate} to either
+  \code{sum} (default; predictions of the final iteration are given),
+  \code{cumsum} (predictions of all iterations are returned
+  simultaniously) or \code{none} (change of prediction in each
+  iteration). If applicable the \code{offset} is added to the predictions.
+  If marginal predictions are requested the \code{offset} is attached
+  to the object via \code{attr(..., "offset")} as adding the offset to
+  one of the marginal predictions doesn't make much sense. 
 
   The \code{[.mstop} function can be used to enhance or restrict a given
   boosting model to the specified boosting iteration \code{i}. Note that
   in both cases the original \code{x} will be changed to reduce the
   memory footprint. If the boosting model is enhanced by specifying an
   index that is larger than the initial \code{mstop}, only the missing
-  \code{i - mstop} steps are fitted. If the model is restricted,
-  the spare steps are not dropped, i.e., if we increase \code{i} again,
+  \code{i - mstop} steps are fitted. If the model is restricted, the
+  spare steps are not dropped, i.e., if we increase \code{i} again,
   these boosting steps are immediately available.
 
-  The ids of base-learners selected during the fitting process
-  can be extracted using \code{selected()}. The \code{nuisance()} method
+  The ids of base-learners selected during the fitting process can be
+  extracted using \code{selected()}. The \code{nuisance()} method
   extracts nuisance parameters from the fit that are handled internally
-  by the corresponding family object, see \code{"\linkS4class{boost_family}"}.
+  by the corresponding family object, see
+  \code{"\linkS4class{boost_family}"}.
 
-  For (generalized) linear and additive models, the \code{AIC} function can be used
-  to compute both the classical and corrected AIC (Hurvich et al., 1998, only available
-  when \code{family = GaussReg()} was used), which is useful for the determination
-  of the optimal number of boosting iterations to be applied (which can be extracted via
-  \code{mstop}). The degrees of freedom are either computed via the trace of the
-  boosting hat matrix (which is rather slow even for moderate sample sizes)
-  or the number of variables (non-zero coefficients) that entered the model so far
-  (faster but only meaningful for linear models fitted via \code{\link{gamboost}}
-  (see Hastie, 2007)).
+  For (generalized) linear and additive models, the \code{AIC} function
+  can be used to compute both the classical and corrected AIC (Hurvich
+  et al., 1998, only available when \code{family = GaussReg()} was
+  used), which is useful for the determination of the optimal number of
+  boosting iterations to be applied (which can be extracted via
+  \code{mstop}). The degrees of freedom are either computed via the
+  trace of the boosting hat matrix (which is rather slow even for
+  moderate sample sizes) or the number of variables (non-zero
+  coefficients) that entered the model so far (faster but only
+  meaningful for linear models fitted via \code{\link{gamboost}} (see
+  Hastie, 2007)).
 
-  In addition, the general Minimum Description Length criterion (Buehlmann and Yu, 2006)
-  can be computed using function \code{AIC}.
+  In addition, the general Minimum Description Length criterion
+  (Buehlmann and Yu, 2006) can be computed using function \code{AIC}.
 
-  Note that \code{logLik} and \code{AIC} only make sense when the corresponding
-  \code{\link{Family}} implements the appropriate loss function.
+  Note that \code{logLik} and \code{AIC} only make sense when the
+  corresponding \code{\link{Family}} implements the appropriate loss
+  function.
 
 }
 \note{
@@ -170,9 +199,10 @@
 }
 \section{Warning}{
   The coefficients resulting from boosting with family
-  \code{\link{Binomial}} are \eqn{1/2} of the coefficients of a logit model
-  obtained via \code{\link{glm}}. This is due to the internal recoding
-  of the response to \eqn{-1} and \eqn{+1} (see \code{\link{Binomial}}).
+  \code{\link{Binomial}} are \eqn{1/2} of the coefficients of a logit
+  model obtained via \code{\link{glm}}. This is due to the internal
+  recoding of the response to \eqn{-1} and \eqn{+1} (see
+  \code{\link{Binomial}}).
 }
 \references{
 
@@ -186,11 +216,12 @@
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 
-  Travor Hastie (2007), Discussion of ``Boosting algorithms: Regularization, prediction and model fitting''
-  by Peter Buehlmann and Torsten Hothorn. \emph{Statistical Science}, \bold{22}(4), 505.
+  Travor Hastie (2007), Discussion of ``Boosting algorithms:
+  Regularization, prediction and model fitting'' by Peter Buehlmann and
+  Torsten Hothorn. \emph{Statistical Science}, \bold{22}(4), 505.
 
-  Peter Buehlmann and Bin Yu (2006),
-  Sparse boosting. \emph{Journal of Machine Learning Research}, \bold{7}, 1001--1024.
+  Peter Buehlmann and Bin Yu (2006), Sparse boosting. \emph{Journal of
+  Machine Learning Research}, \bold{7}, 1001--1024.
 
 }
 \seealso{ \code{\link{gamboost}}, \code{\link{glmboost}} and
@@ -224,7 +255,7 @@
        ylim = range(cars$dist))
   abline(a = 0, b = 1)
 
-  ### example for extraction of coefficients and predictions
+  ### example for extraction of coefficients
   set.seed(1907)
   n <- 100
   x1 <- rnorm(n)
@@ -246,12 +277,29 @@
   coef(model,
        which = 1:length(variable.names(model))) # all base-learners
   coef(model, which = "x1") # shows all base-learners for x1
-  cf1 <- coef(model, which=c(1,3,4), aggregate="cumsum")
+
+  cf1 <- coef(model, which = c(1,3,4), aggregate = "cumsum")
   tmp <- sapply(cf1, function(x) x)
-  matplot(tmp, type="l", main="Coefficient Paths")
+  matplot(tmp, type = "l", main = "Coefficient Paths")
+
+  cf1_all <- coef(model, aggregate = "cumsum")
+  cf1_all <- lapply(cf1_all, function(x) x[, ncol(x)]) # last element
+  ## same as coef(model)
+  
+  cf2 <- coef(model, aggregate = "none")
+  cf2 <- lapply(cf2, rowSums) # same as coef(model)
+
+  ### example continued for extraction of predictions
 
   yhat <- predict(model) # standard prediction; here same as fitted(model)
-  p1 <- predict(model, which="x1") # marginal effects of x1
-  plot(data$x1, rowSums(p1)) # rowSums needed as we get a matrix
+  p1 <- predict(model, which = "x1") # marginal effects of x1
+  orderX <- order(data$x1)
+  ## rowSums needed as p1 is a matrix
+  plot(data$x1[orderX], rowSums(p1)[orderX], type = "b")
+
+  ## better: predictions on a equidistant grid
+  new_data <- data.frame(x1 = seq(min(data$x1), max(data$x1), length = 100))
+  p2 <- predict(model, newdata = new_data, which = "x1")  
+  lines(new_data$x1, rowSums(p2), col = "red")
 }
 \keyword{methods}
