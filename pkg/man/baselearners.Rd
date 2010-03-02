@@ -309,9 +309,9 @@ bl1 \%X\% bl2
 
 
   ### grouped linear effects
-  model <- gamboost(y ~ bols(x1, x2, intercept = FALSE) +
-                        bols(x1, intercept = FALSE) +
-                        bols(x2, intercept = FALSE),
+  model <- gamboost(y ~ bols(x1, x2) +
+                        bols(x1) +
+                        bols(x2),
                         control = boost_control(mstop = 400))
   coef(model, which=1)   # one base-learner for x1 and x2
   coef(model, which=2:3) # two separate base-learners for x1 and x2
@@ -365,11 +365,24 @@ bl1 \%X\% bl2
                       bols(x, intercept = FALSE),
                   data = tmpdata,
                   control = boost_control(mstop = 2500))
-  cf <- unlist(coef(mod))
+  cf <- unlist(coef(mod, which=1:2))
   cf[1] <- cf[1] + mod$offset
   cf
   coef(lm(y ~ x, data = tmpdata))
 
+  ### quicker and better with (mean-) centering
+  tmpdata$x_center <- tmpdata$x - mean(tmpdata$x)
+  mod_center <- gamboost(y ~ bols(int, intercept = FALSE) +
+                             bols(x_center, intercept = FALSE),
+                         data = tmpdata,
+                         control = boost_control(mstop = 500))
+  cf_center <- unlist(coef(mod_center, which=1:2))
+  ## due to the shift in x direction we need to subtract
+  ## beta_1 * mean(x) to get the correct intercept
+  cf_center[1] <- cf_center[1] + mod_center$offset -
+                  cf_center[2] * mean(tmpdata$x) 
+  cf_center
+  coef(lm(y ~ x, data = tmpdata))
 
   ### large data set with ties
   nunique <- 100
