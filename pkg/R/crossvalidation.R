@@ -5,8 +5,8 @@
 ##
 
 cvrisk <- function (object, folds = cv(model.weights(object)), grid = 1:mstop(object),
-                     papply = if (require("multicore")) mclapply else lapply,
-                     fun = NULL, ...){
+                    papply = if (require("multicore")) mclapply else lapply,
+                    fun = NULL, ...){
     weights <- model.weights(object)
     if (any(weights == 0))
         warning("zero weights")
@@ -36,10 +36,11 @@ cvrisk <- function (object, folds = cv(model.weights(object)), grid = 1:mstop(ob
             fun(mod)
         }
     }
-    OOBweights <- matrix(rep(weights, ncol(folds)), ncol=ncol(folds))
-    OOBweights[folds>0] <- 0
-    oobrisk <- papply(1:ncol(folds), function(i) dummyfct(weights = folds[, i],
-                      oobweights = OOBweights[,i]))
+    OOBweights <- matrix(rep(weights, ncol(folds)), ncol = ncol(folds))
+    OOBweights[folds > 0] <- 0
+    oobrisk <- papply(1:ncol(folds), 
+        function(i) dummyfct(weights = folds[, i],
+                             oobweights = OOBweights[, i]))
     if (!is.null(fun))
         return(oobrisk)
     oobrisk <- t(as.data.frame(oobrisk))
@@ -74,7 +75,8 @@ plot.cvrisk <- function(x, ylab = attr(x, "risk"),
     out <- apply(x, 1, function(y) lines(1:ncol(x),y, col = "lightgrey"))
     rm(out)
     ms <- which.min(cm)
-    lines(c(ms, ms), c(min(c(0, ylim[1] * ifelse(ylim[1] < 0, 2, 0.5))), cm[ms]), lty = 2)
+    lines(c(ms, ms), c(min(c(0, ylim[1] * ifelse(ylim[1] < 0, 2, 0.5))), cm[ms]), 
+          lty = 2)
     lines(1:ncol(x), cm, type = "l")
     axis(1, at = 1:ncol(x), label = attr(x, "mstop"))
     axis(2)
