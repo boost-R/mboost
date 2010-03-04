@@ -1,8 +1,11 @@
+
                 CHANGES in `mboost' VERSION 2.0-2 (2010-03-04)
 
   o  fixed bug in helper function get_index, which caused (in some circumstances)
      wrong handling of factors in gamboost() (spotted by
      Juliane Schaefer <JSchaefer _at_ uhbs.ch>)
+
+  o  reduce memory footprint in blackboost (requires party 0.9-9993)
 
 
                 CHANGES in `mboost' VERSION 2.0-1 (2010-03-01)

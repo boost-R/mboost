@@ -60,7 +60,7 @@ btree <- function(..., tree_controls = ctree_control(stump = TRUE, mincriterion 
                  PACKAGE = "party")
             tree <- .Call("R_TreeGrow", object, weights, fitmem, ctrl,
                           where, PACKAGE = "party")
-            .Call("R_remove_weights", tree, package = "party")
+            .Call("R_remove_weights", tree, TRUE, package = "party")
 
             fitted <- function() {
                 wh <- .Call("R_get_nodeID", tree, object@inputs, 0.0, PACKAGE = "party")
