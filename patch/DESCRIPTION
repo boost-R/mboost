@@ -1,7 +1,7 @@
 Package: mboost
 Title: Model-Based Boosting
-Date: 2010-03-01
-Version: 2.0-1
+Date: 2010-03-04
+Version: 2.0-2
 Author: Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Matthias Schmid and
   Benjamin Hofner
 Maintainer: Torsten Hothorn <Torsten.Hothorn@R-project.org>

@@ -300,3 +300,24 @@ mod <- glmboost(DEXfat ~ ., data = bodyfat)
 
 stopifnot(max(abs(sapply(coef(mod, aggregate="cumsum"), function(x) x[,100])
                   - coef(mod))) < sqrt(.Machine$double.eps))
+
+### get_index() was broken for factors
+### (spotted by Juliane Schaefer <JSchaefer _at_ uhbs.ch>)
+y <- factor(c(2, 1, 1, 2, 2, 2, 1, 1, 2, 2), levels = 1:2, labels = c("N", "S"))
+x <- factor(c(2, 1, 2, 2, 2, 1, 1, 1, 2, 2), levels = 1:2,
+            labels = c("No", "Yes"))
+data <- data.frame(y,x)
+m1 <- glm(y ~ x, data = data, family = binomial())
+m2 <- glmboost(y ~ x, data = data, family = Binomial(),
+               control = boost_control(mstop = 2000))
+m3 <- gamboost(y ~ bols(x), data = data, family = Binomial(),
+               control = boost_control(mstop = 1000))
+cf1 <- coef(m1)
+a <- coef(m2); a[1] <- a[1] + m2$offset;
+cf2 <- as.vector(a) * 2
+b <- coef(m3); b[[1]][1] <- b[[1]][1] + m3$offset;
+cf3 <- b[[1]] * 2
+
+stopifnot(max(abs(cf1 - cf2)) < sqrt(.Machine$double.eps))
+stopifnot(max(abs(cf1 - cf3)) < sqrt(.Machine$double.eps))
+stopifnot(max(abs(predict(m2) - predict(m3))) < sqrt(.Machine$double.eps))

@@ -14,11 +14,7 @@ get_index <- function(x) {
             x <- x[[1]]
             nd <- which(!duplicated(x))
             nd <- nd[complete.cases(x[nd])]
-            if (is.factor(x)) {
-                index <- as.integer(x)
-            } else {
-                index <- match(x, x[nd])
-            }
+            index <- match(x, x[nd])
         ### go for data.frames with >= 2 variables
         } else {
             tmp <- do.call("paste", x)

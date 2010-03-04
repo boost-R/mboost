@@ -1,3 +1,9 @@
+                CHANGES in `mboost' VERSION 2.0-2 (2010-03-04)
+
+  o  fixed bug in helper function get_index, which caused (in some circumstances)
+     wrong handling of factors in gamboost() (spotted by
+     Juliane Schaefer <JSchaefer _at_ uhbs.ch>)
+
 
                 CHANGES in `mboost' VERSION 2.0-1 (2010-03-01)
 
@@ -12,21 +18,21 @@
 
   o  new families available for ordinal, expectile and censored regression
 
-  o  computations potentially based on package Matrix 
+  o  computations potentially based on package Matrix
      (reduces memory usage)
 
   o  various speed improvements
 
   o  added interface to extract selected base-learners (selected())
 
-  o  added interface for parallel computations in cvrisk with 
+  o  added interface for parallel computations in cvrisk with
      arbitrary packages (e.g. multicore, snow)
 
   o  added "which" argument in predict and coef functions and improved
      usability of "which" in plot-function. Users can specify "which" as
      numeric value or as a character string
 
-  o  added function cv() to generate matrices for k-fold cross-validation, 
+  o  added function cv() to generate matrices for k-fold cross-validation,
      subsampling and bootstrap
 
   o  new function stabsel() for stability selection with error control
@@ -38,14 +44,14 @@
 
   o  alternative definition of degrees of freedom available
 
-  o  Interface changes: 
+  o  Interface changes:
 
      - class definition / Family() arguments changed
      - changed behavior of subset method (model[mstop]). Object
        is directly altered and not duplicated
-     - argument "center" in bols replaced with "intercept" 
+     - argument "center" in bols replaced with "intercept"
      - argument "z" in base-learners replaced with "by"
-     - bns and bss deprecated; 
+     - bns and bss deprecated;
 
 
 		CHANGES in `mboost' VERSION 1.1-4 (2009-11-18)
