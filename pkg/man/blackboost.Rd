@@ -11,7 +11,7 @@ blackboost(formula, data = list(),
                teststat = "max",
                testtype = "Teststatistic",
                mincriterion = 0,
-               maxdepth = 2), 
+               maxdepth = 2, savesplitstats = FALSE), 
            ...)
 }
 \arguments{

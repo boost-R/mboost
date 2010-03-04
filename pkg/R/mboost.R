@@ -457,7 +457,7 @@ blackboost <- function(formula, data = list(),
     tree_controls = ctree_control(teststat = "max",
                                testtype = "Teststatistic",
                                mincriterion = 0,
-                               maxdepth = 2),
+                               maxdepth = 2, savesplitstats = FALSE),
     ...) {
 
     ### get the model frame first
