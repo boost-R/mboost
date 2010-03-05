@@ -27,7 +27,8 @@ brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
      args = list(Covariance="Matern", smoothness = 1.5, theta=NULL))
 brandom(..., df = 4)
 btree(..., tree_controls = ctree_control(stump = TRUE,
-                                         mincriterion = 0))
+                                         mincriterion = 0,
+                                         savesplitstats = FALSE))
 bmono(..., constraint = c("increasing", "decreasing", "convex", "concave"),
       by = NULL, index = NULL, knots = 20, degree = 3, differences = 2,
       df = 4, lambda = NULL, lambda2 = 1e6, niter=10)
