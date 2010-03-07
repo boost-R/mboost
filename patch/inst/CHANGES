@@ -1,4 +1,16 @@
 
+                CHANGES in `mboost' VERSION 2.0-3 (2010-03-xx)
+
+  o  glmboost(..., center = TRUE) now also centers columns of the
+     design matrix corresponding to contrasts of factors
+     when an intercept term is present leading to faster risk
+     minimization in these cases.
+
+  o  coef.glmboost: New argument `intplusoff' adds the
+     offset to the intercept. In addition, the intercept
+     term is now adjusted for centered covariates.
+
+
                 CHANGES in `mboost' VERSION 2.0-2 (2010-03-04)
 
   o  fixed bug in helper function get_index, which caused (in some circumstances)
@@ -10,7 +22,7 @@
 
                 CHANGES in `mboost' VERSION 2.0-1 (2010-03-01)
 
-  o  fixed bug in coef( , aggregate="cumsum"): fraction "nu" was missing
+  o  fixed bug in coef( , aggregate = "cumsum"): fraction "nu" was missing
 
 
                 CHANGES in `mboost' VERSION 2.0-0 (2010-02-01)

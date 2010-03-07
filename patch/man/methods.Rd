@@ -42,7 +42,7 @@
 \method{summary}{mboost}(object, ...)
 
 \method{coef}{glmboost}(object, which = NULL,
-    aggregate = c("sum", "cumsum", "none"), ...)
+    aggregate = c("sum", "cumsum", "none"), intplusoff = FALSE, ...)
 \method{coef}{gamboost}(object, which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...)
 
@@ -98,6 +98,10 @@
                     simultaneously (in columns). \code{"none"} returns
                     a matrix where the jth columns contains the predictions
                     of the base-learner of the jth boosting iteration.}
+  \item{intplusoff}{ logical indicating whether the offset should be
+                     added to the intercept (if there is any)   
+                     or of the offset is returned as attribute of
+                     the coefficient (default).}
   \item{i}{ integer. Index specifying the model to extract. If \code{i}
             is smaller than the initial \code{mstop}, a subset is used.
             If \code{i} is larger than the initial \code{mstop},

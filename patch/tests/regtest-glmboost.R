@@ -71,8 +71,7 @@ attributes(llg) <- NULL
 stopifnot(all.equal(logLik(bmod), llg))
 stopifnot(max(abs(predict(gmod, type = "link")/2 - fitted(bmod))) <
                   sqrt(.Machine$double.eps))
-cfb <- (coef(bmod) + c(bmod$offset, 0, 0)) * 2
-attr(cfb, "offset") <- NULL
+cfb <- coef(bmod, intplusoff = TRUE) * 2
 stopifnot(all.equal(cfb, coef(gmod)))
 aic <- AIC(bmod, "classical")
 stopifnot(abs(AIC(gmod) - attr(aic, "AIC")[mstop(bmod)]) < 1e-5)
@@ -162,27 +161,6 @@ A3 <- survFit(fit3, newdata = newdata)
 
 max(A1$surv-A2$surv)
 max(A1$surv-A3$surv)
-
-
-### check centering
-y <- rnorm(20)
-xn <- rnorm(20)
-xnm <- xn - mean(xn)
-xf <- gl(2, 10)
-gc <- glmboost(y ~ xn + xf, control = boost_control(center = TRUE))
-g <- glmboost(y ~ xnm + xf)
-cgc <- coef(gc)
-cg <- coef(g)
-names(cgc) <- NULL
-names(cg) <- NULL
-stopifnot(all.equal(cgc, cg))
-stopifnot(all.equal(mstop(AIC(gc, "corrected")), mstop(AIC(g, "corrected"))))
-
-pc1 <- predict(gc)
-pc2 <- predict(gc, newdata = data.frame(xn = xn, xf = xf))
-pc3 <- predict(g)
-stopifnot(all.equal(pc1, pc2))
-stopifnot(all.equal(pc2, pc3))
 
 ### Poisson models
 
