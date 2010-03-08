@@ -62,7 +62,7 @@ function (mf, vary, bnd = NULL, df = 4, lambda = NULL, center = FALSE)
              all(levels(mf[[1]]) %in% rownames(bnd))) 
         K <- bnd
     else stop("Neighbourhood matrix not defined as stated in manual page.")
-    class(K) <- "matrix"
+    K <- as(K, "matrix")
     nm <- colnames(mf)[colnames(mf) != vary]
     list(K = K, bnd = bnd, pen = TRUE, df = df, lambda = lambda, 
         center = center)
