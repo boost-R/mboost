@@ -542,7 +542,7 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
 }
 
 glmboost.matrix <- function(x, y, center = FALSE,
-                            control = boost_control(), ...) {q
+                            control = boost_control(), ...) {
 
     X <- x
     if (is.null(colnames(X))) colnames(X) <- paste("V", 1:ncol(X), sep = "")
