@@ -253,7 +253,7 @@ predict.glmboost <- function(object, newdata = NULL,
 }
 
 coef.glmboost <- function(object, which = NULL,
-    aggregate = c("sum", "cumsum", "none"), intplusoff = FALSE, ...) {
+    aggregate = c("sum", "cumsum", "none"), off2int = FALSE, ...) {
 
     args <- list(...)
     if (length(args) > 0)
@@ -268,9 +268,9 @@ coef.glmboost <- function(object, which = NULL,
     assign <- object$assign
     cm <- object$center
     INTERCEPT <- sum(assign == 0) == 1
-    if (!INTERCEPT && intplusoff)
-        warning(sQuote("object"), " doesn't contain an intercept, ",
-                sQuote("intplusoff = TRUE"), " ignored.")
+    if (!INTERCEPT && off2int)
+        warning(sQuote("object"), " does not contain an intercept, ",
+                sQuote("off2int = TRUE"), " ignored.")
     if (INTERCEPT && any(cm != 0)) {
         intercept <- which(assign == 0)
         if (is.null(which)) {
@@ -300,11 +300,11 @@ coef.glmboost <- function(object, which = NULL,
     if (aggregate == "sum") cf <- unlist(cf)
     if (aggregate == "none") {
         attr(cf, "offset") <- offset
-        if (intplusoff) 
-            warning(sQuote("intplusoff = TRUE"), " ignored for ",
+        if (off2int) 
+            warning(sQuote("off2int = TRUE"), " ignored for ",
                     sQuote("aggregate = \"none\""))
     } else {
-        if (intplusoff & length(offset) == 1) {
+        if (off2int & length(offset) == 1) {
             cf[[1]] <- cf[[1]] + offset
         } else {
             attr(cf, "offset") <- offset
