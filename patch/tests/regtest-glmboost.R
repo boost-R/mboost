@@ -71,7 +71,7 @@ attributes(llg) <- NULL
 stopifnot(all.equal(logLik(bmod), llg))
 stopifnot(max(abs(predict(gmod, type = "link")/2 - fitted(bmod))) <
                   sqrt(.Machine$double.eps))
-cfb <- coef(bmod, intplusoff = TRUE) * 2
+cfb <- coef(bmod, off2int = TRUE) * 2
 stopifnot(all.equal(cfb, coef(gmod)))
 aic <- AIC(bmod, "classical")
 stopifnot(abs(AIC(gmod) - attr(aic, "AIC")[mstop(bmod)]) < 1e-5)

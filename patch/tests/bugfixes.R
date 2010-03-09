@@ -87,8 +87,8 @@ xnm <- xn - mean(xn)
 gc <- glmboost(y ~ xn, center = TRUE,
                family = Binomial())
 g <- glmboost(y ~ xnm, family = Binomial())
-cgc <- coef(gc, intplusoff = TRUE)
-cg <- coef(g, intplusoff = TRUE) - c(mean(xn) * coef(g)[2], 0)
+cgc <- coef(gc, off2int = TRUE)
+cg <- coef(g, off2int = TRUE) - c(mean(xn) * coef(g)[2], 0)
 names(cgc) <- NULL
 names(cg) <- NULL
 stopifnot(all.equal(cgc, cg))
@@ -114,7 +114,7 @@ for (cc in ctr) {
     modlm <- lm(fm, contrasts = cc)
     modT <- glmboost(fm, contrasts.arg = cc, 
                      center = TRUE)[mstop]
-    stopifnot(max(abs(coef(modlm) - coef(modT, intplusoff = TRUE))) 
+    stopifnot(max(abs(coef(modlm) - coef(modT, off2int = TRUE))) 
                       < .Machine$double.eps^(1/3))
     stopifnot(max(abs(hatvalues(modlm) - hatvalues(modT))) < 0.01)
     stopifnot(max(abs(predict(modlm) - predict(modT))) 
@@ -128,7 +128,7 @@ for (cc in ctr) {
                  family = binomial())
     modT <- glmboost(fm, contrasts.arg = cc,
         center = TRUE, family = Binomial())[mstop]
-    stopifnot(max(abs(coef(modlm) - coef(modT, intplusoff = TRUE) * 2)) 
+    stopifnot(max(abs(coef(modlm) - coef(modT, off2int = TRUE) * 2)) 
                       < .Machine$double.eps^(1/3))
     stopifnot(max(abs(predict(modlm) - predict(modT) * 2)) 
                       < .Machine$double.eps^(1/3))
