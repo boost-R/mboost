@@ -20,7 +20,7 @@
         if (nlevels(y) == 2) {
             ret <- factor(levels(y)[(pr > 0) + 1], levels = levels(y))
         } else {
-            ret <- factor(levels(y)[apply(family@response(pr), 1, which.max)], 
+            ret <- factor(levels(y)[apply(family@response(pr), 1, which.max)],
                           levels = levels(y))
         }
     }
@@ -43,7 +43,7 @@ predict.mboost <- function(object, newdata = NULL,
     if (is.list(pr))
         return(lapply(pr, .predictmboost, y = object$response,
                       type = type, nm = nm, family = object$family))
-    .predictmboost(object$response, pr, type = type, nm = nm, 
+    .predictmboost(object$response, pr, type = type, nm = nm,
                    family = object$family)
 }
 
@@ -61,7 +61,7 @@ coef.gamboost <- function(object, which = NULL,
 hatvalues.gamboost <- function(model, ...) {
     H <- model$hatvalues(...)
     n <- length(model$response)
-    
+
     ### <FIXME> better checks
     L2 <- FALSE
     if (!extends(class(model$family), "boost_family_glm")) {
@@ -280,6 +280,7 @@ coef.glmboost <- function(object, which = NULL,
                 cf <- object$coef(which = which, aggregate = aggregate)
             }
         }
+        which <- object$which(which)
         if (intercept %in% which) {
             if (all(which %in% object$which(usedonly = TRUE))) {
                 cm <- cm[which]
@@ -300,7 +301,7 @@ coef.glmboost <- function(object, which = NULL,
     if (aggregate == "sum") cf <- unlist(cf)
     if (aggregate == "none") {
         attr(cf, "offset") <- offset
-        if (off2int) 
+        if (off2int)
             warning(sQuote("off2int = TRUE"), " ignored for ",
                     sQuote("aggregate = \"none\""))
     } else {

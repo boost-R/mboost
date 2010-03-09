@@ -14,6 +14,13 @@
      for family = Poisson(), something like boost_control(nu = 0.01)
      fixes this problem.
 
+  o  "by" (in bols and bbs) can now handle factors with more than 
+     two levels
+
+  o  improved plot.mboost for varying coefficients
+
+  o  minor improvements in documentation
+
 
                 CHANGES in `mboost' VERSION 2.0-2 (2010-03-04)
 

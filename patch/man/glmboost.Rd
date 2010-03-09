@@ -30,7 +30,7 @@
           contain \code{NA}s.}
   \item{center}{logical indicating of the predictor variables are centered before fitting.}
   \item{control}{ a list of parameters controlling the algorithm.}
-  \item{x}{ design matrix or an object of class \code{glmboost} for plotting. 
+  \item{x}{ design matrix or an object of class \code{glmboost} for plotting.
             Sparse matrices of class \code{Matrix} can be used as well.}
   \item{y}{ vector of responses. }
   \item{main}{ a title for the plot.}
@@ -69,7 +69,7 @@
 
 }
 \seealso{\code{\link{mboost}} for the generic boosting function and
-  \code{\link{gamboost}} for boosted additive models and 
+  \code{\link{gamboost}} for boosted additive models and
   \code{\link{blackboost}} for boosted trees. See \code{\link{cvrisk}} for
   cross-validated stopping iteration. Furthermore see
   \code{\link{boost_control}}, \code{\link{Family}} and  \code{\link[mboost]{methods}}}
@@ -77,7 +77,8 @@
 
     ### a simple two-dimensional example: cars data
     cars.gb <- glmboost(dist ~ speed, data = cars,
-                        control = boost_control(mstop = 5000))
+                        control = boost_control(mstop = 5000),
+                        center = FALSE)
     cars.gb
 
     ### coefficients should coincide
@@ -88,6 +89,15 @@
     layout(matrix(1:2, ncol = 2))
     plot(dist ~ speed, data = cars)
     lines(cars$speed, predict(cars.gb), col = "red")
+
+    ### now we center the design matrix for
+    ### much quicker "convergence"
+    cars.gb_centered <- glmboost(dist ~ speed, data = cars,
+                                 control = boost_control(mstop = 2000),
+                                 center = TRUE)
+    par(mfrow=c(1,2))
+    plot(cars.gb, main="without centering")
+    plot(cars.gb_centered, main="with centering")
 
     ### alternative loss function: absolute loss
     cars.gbl <- glmboost(dist ~ speed, data = cars,

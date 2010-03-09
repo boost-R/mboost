@@ -99,8 +99,8 @@
                     a matrix where the jth columns contains the predictions
                     of the base-learner of the jth boosting iteration.}
   \item{off2int}{ logical indicating whether the offset should be
-                     added to the intercept (if there is any)   
-                     or of the offset is returned as attribute of
+                     added to the intercept (if there is any)
+                     or if the offset is returned as attribute of
                      the coefficient (default).}
   \item{i}{ integer. Index specifying the model to extract. If \code{i}
             is smaller than the initial \code{mstop}, a subset is used.
@@ -131,6 +131,11 @@
   Per default, only coefficients of selected base-learners are
   returned. However, any desired coefficient can be extracted using the
   \code{which} argument (see examples for details).
+  For models fitted via \code{\link{glmboost}} with option \code{center
+  = TRUE} the intercept is rarely selected. However, it is implicitly
+  estimated through the centering of the design matrix. In this case the
+  intercept is always returned except \code{which} is specified such
+  that the intercept is not selected. See examples below.
 
   The \code{predict} function can be used to predict the status of the response variable
   for new observations whereas \code{fitted} extracts the regression fit for the observations
@@ -203,7 +208,8 @@
 
   ### a simple two-dimensional example: cars data
   cars.gb <- glmboost(dist ~ speed, data = cars,
-                      control = boost_control(mstop = 2000))
+                      control = boost_control(mstop = 2000),
+                      center = FALSE)
   cars.gb
 
   ### initial number of boosting iterations
@@ -213,12 +219,29 @@
   aic <- AIC(cars.gb, method = "corrected")
   aic
 
+  ### extract coefficients for glmboost
+  coef(cars.gb)
+  coef(cars.gb, off2int = TRUE)        # offset added to intercept
+  coef(lm(dist ~ speed, data = cars))  # directly comparable
+
+  cars.gb_centered <- glmboost(dist ~ speed, data = cars,
+                               center = TRUE)
+  selected(cars.gb_centered)           # intercept never selected
+  coef(cars.gb_centered)               # intercept implicitly estimated
+                                       # and thus returned
+  ## intercept is internally corrected for mean-centering
+  - mean(cars$speed) * coef(cars.gb_centered, which="speed")
+  # not asked for intercept thus not returned
+  coef(cars.gb_centered, which="speed")
+  # explicitly asked for intercept
+  coef(cars.gb_centered, which=c("Intercept", "speed"))
+
   ### enhance or restrict model
   cars.gb <- gamboost(dist ~ speed, data = cars,
                       control = boost_control(mstop = 100, trace = TRUE))
   cars.gb[10]
   cars.gb[100, return = FALSE] # no refitting required
-  cars.gb[150, return = FALSE] # only iterations 101 to 150 
+  cars.gb[150, return = FALSE] # only iterations 101 to 150
                                # are newly fitted
 
   ### coefficients for optimal number of boosting iterations
@@ -238,15 +261,15 @@
   y <- 3 * x1^2 - 0.5 * x2 + rnorm(n, sd = 0.1)
   df <- data.frame(y = y, int = int, x1 = x1, x2 = x2, x3 = x3, x4 = x4)
 
-  model <- gamboost(y ~ bols(int, intercept = FALSE) + 
+  model <- gamboost(y ~ bols(int, intercept = FALSE) +
                         bbs(x1, center = TRUE, df = 1) +
                         bols(x1, intercept = FALSE) +
-                        bols(x2, intercept = FALSE) + 
+                        bols(x2, intercept = FALSE) +
                         bols(x3, intercept = FALSE) +
-                        bols(x4, intercept = FALSE), 
+                        bols(x4, intercept = FALSE),
                     data = df, control = boost_control(mstop = 500))
   coef(model) # standard output (only selected base-learners)
-  coef(model, 
+  coef(model,
        which = 1:length(variable.names(model))) # all base-learners
   coef(model, which = "x1") # shows all base-learners for x1
 }
