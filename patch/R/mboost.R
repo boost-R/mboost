@@ -111,6 +111,11 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             ### negative gradient vector, the new `residuals'
             u <<- ngradient(y, fit, weights)
 
+            ### happened for family = Poisson() with nu = 0.1
+            if (any(!is.finite(u[!is.na(u)])))
+                stop("Infinite residuals: please decrease step-size nu in ", 
+                     sQuote(boost_control))
+
             ### evaluate risk, either for the learning sample (inbag)
             ### or the test sample (oobag)
             mrisk[m] <<- triskfct(y, fit)
@@ -495,7 +500,7 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     cm <- numeric(ncol(X))
     if (center) {
         if (!attr(attr(mf, "terms"), "intercept") == 1)
-            warning("model with centered covariates doesn't contain intercept")
+            warning("model with centered covariates does not contain intercept")
         cm <- colMeans(X, na.rm = TRUE)
         cm[assign == 0] <- 0
         X <- scale(X, center = cm, scale = FALSE)
@@ -558,7 +563,7 @@ glmboost.matrix <- function(x, y, center = FALSE,
     }
     if (center) {
         if (!INTERCEPT)
-            warning("model with centered covariates doesn't contains intercept")
+            warning("model with centered covariates does not contain intercept")
         cm[assign == 0] <- 0
         X <- scale(X, center = cm, scale = FALSE)
     } else {
