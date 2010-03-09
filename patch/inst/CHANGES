@@ -6,9 +6,13 @@
      when an intercept term is present leading to faster risk
      minimization in these cases.
 
-  o  coef.glmboost: New argument `intplusoff' adds the
+  o  coef.glmboost: New argument `off2int = TRUE' adds the
      offset to the intercept. In addition, the intercept
      term is now adjusted for centered covariates.
+
+  o  check for infinite residuals in mboost_fit(). Especially
+     for family = Poisson(), something like boost_control(nu = 0.01)
+     fixes this problem.
 
 
                 CHANGES in `mboost' VERSION 2.0-2 (2010-03-04)
