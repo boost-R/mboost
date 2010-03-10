@@ -78,13 +78,16 @@ X_ols <- function(mf, vary, args) {
         if (vary != "") {
             by <- model.matrix(as.formula(paste("~", vary, collapse = "")),
                                data = mf)[ , -1, drop = FALSE] # drop intercept
-            DM <- X * by[,1]
-            if (ncol(by) > 1){
-                for (i in 2:ncol(by))
-                    DM <- cbind(DM, (X * by[,i]))
+            DM <- lapply(1:ncol(by), function(i) {
+                ret <- X * by[, i]
+                colnames(ret) <- paste(colnames(ret), colnames(by)[i], sep = ":")
+                ret
+            })
+            if (is(X, "Matrix")) {
+                X <- do.call("cBind", DM)
+            } else {
+                X <- do.call("cbind", DM)
             }
-            X <- DM
-            ### <FIXME> Names of X if by is given
         }
     }
     ### <FIXME> penalize intercepts???
@@ -150,13 +153,16 @@ X_bbs <- function(mf, vary, args) {
         if (vary != "") {
             by <- model.matrix(as.formula(paste("~", vary, collapse = "")),
                                data = mf)[ , -1, drop = FALSE] # drop intercept
-            DM <- X * by[,1]
-            if (ncol(by) > 1){
-                for (i in 2:ncol(by))
-                    DM <- cbind(DM, (X * by[,i]))
+            DM <- lapply(1:ncol(by), function(i) {
+                ret <- X * by[, i]
+                colnames(ret) <- paste(colnames(ret), colnames(by)[i], sep = ":")
+                ret
+            })
+            if (is(X, "Matrix")) {
+                X <- do.call("cBind", DM)
+            } else {
+                X <- do.call("cbind", DM)
             }
-            X <- DM
-            ### <FIXME> Names of X if by is given
         }
         K <- diff(diag(ncol(mm[[1]])), differences = args$differences)
         if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
