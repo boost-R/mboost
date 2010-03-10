@@ -1,5 +1,5 @@
 
-                CHANGES in `mboost' VERSION 2.0-3 (2010-03-xx)
+                CHANGES in `mboost' VERSION 2.0-3 (2010-03-10)
 
   o  glmboost(..., center = TRUE) now also centers columns of the
      design matrix corresponding to contrasts of factors
@@ -14,10 +14,10 @@
      for family = Poisson(), something like boost_control(nu = 0.01)
      fixes this problem.
 
-  o  "by" (in bols and bbs) can now handle factors with more than 
+  o  "by" (in bols() and bbs()) can now handle factors with more than 
      two levels
 
-  o  improved plot.mboost for varying coefficients
+  o  improved plot.mboost() for varying coefficients
 
   o  minor improvements in documentation
 

@@ -81,10 +81,12 @@ R> ###################################################
 R> ### chunk number 4: bodyfat-glmboost-coef
 R> ###################################################
 R> coef(bf_glm)
-         age    waistcirc      hipcirc elbowbreadth 
-    0.013602     0.189716     0.351626    -0.384140 
- kneebreadth     anthro3a     anthro3b     anthro3c 
-    1.736589     3.326860     3.656524     0.595363 
+ (Intercept)          age    waistcirc      hipcirc 
+  -98.816608     0.013602     0.189716     0.351626 
+elbowbreadth  kneebreadth     anthro3a     anthro3b 
+   -0.384140     1.736589     3.326860     3.656524 
+    anthro3c 
+    0.595363 
 attr(,"offset")
 [1] 30.783
 R> 
@@ -124,10 +126,10 @@ R> ###################################################
 R> ### chunk number 7: bodyfat-glmboost-coef
 R> ###################################################
 R> coef(bf_glm[mstop(aic)])
-        age   waistcirc     hipcirc kneebreadth    anthro3a 
-  0.0023271   0.1893046   0.3488781   1.5217686   3.3268603 
-   anthro3b    anthro3c 
-  3.6051548   0.5043133 
+(Intercept)         age   waistcirc     hipcirc kneebreadth 
+-97.8458288   0.0023271   0.1893046   0.3488781   1.5217686 
+   anthro3a    anthro3b    anthro3c 
+  3.3268603   3.6051548   0.5043133 
 attr(,"offset")
 [1] 30.783
 R> 
@@ -307,7 +309,7 @@ R> ### fit with new mstop
 R> wpbc_glm <- wpbc_glm[mstop(aic)]
 R> coef(wpbc_glm)[abs(coef(wpbc_glm)) > 0]
      (Intercept)     mean_texture    mean_symmetry 
-     -3.0110e-02      -2.4215e-02      -3.3878e+00 
+      2.3013e-01      -2.4215e-02      -3.3878e+00 
  mean_fractaldim       SE_texture     SE_perimeter 
      -2.0321e+01      -2.6603e-02       4.0908e-02 
   SE_compactness     SE_concavity SE_concavepoints 
@@ -374,11 +376,12 @@ R> ###################################################
 R> ### chunk number 28: wpbc-glmboost-coef
 R> ###################################################
 R> names(coef(wpbc_surv)[abs(coef(wpbc_surv)) > 0])
- [1] "mean_radius"         "mean_texture"       
- [3] "mean_smoothness"     "mean_symmetry"      
- [5] "SE_texture"          "SE_smoothness"      
- [7] "SE_concavepoints"    "SE_symmetry"        
- [9] "worst_concavepoints" "pnodes"             
+ [1] "(Intercept)"         "mean_radius"        
+ [3] "mean_texture"        "mean_smoothness"    
+ [5] "mean_symmetry"       "SE_texture"         
+ [7] "SE_smoothness"       "SE_concavepoints"   
+ [9] "SE_symmetry"         "worst_concavepoints"
+[11] "pnodes"             
 R> 
 R> 
 R> ###################################################
