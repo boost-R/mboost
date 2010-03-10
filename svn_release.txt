@@ -30,12 +30,20 @@
 
     Commit changes to patch/
 
+    Add latest svn LATEST version to NEWS
+
     Ftp source package to CRAN.
 
     Merge changes to R code or documentation to pkg/
         cd pkg/R
-        svn merge (--dry-run) svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/patch/R
+        svn merge -r(LATEST letzte Version) 
+            svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/patch/R
+        cd man/R
+        svn merge -r(LATEST letzte Version) 
+           svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/patch/man
+        probabily only *R files in tests
     Make sure not to modify version numbers etc. in pkg
+    and to add recents NEWS to pkg/NEWS
 
 
   Making a minor release
