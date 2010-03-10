@@ -113,6 +113,11 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             ### negative gradient vector, the new `residuals'
             u <<- ngradient(y, fit, weights)
 
+            ### happened for family = Poisson() with nu = 0.1
+            if (any(!is.finite(u[!is.na(u)])))
+                stop("Infinite residuals: please decrease step-size nu in ", 
+                     sQuote(boost_control))
+
             ### evaluate risk, either for the learning sample (inbag)
             ### or the test sample (oobag)
             mrisk[m] <<- triskfct(y, fit)
@@ -503,12 +508,13 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     ### set up the model.matrix and center (if requested)
     X <- model.matrix(attr(mf, "terms"), data = mf,
                       contrasts.arg = contrasts.arg)
-    cm <- rep(0, ncol(X))
+    assign <- attr(X, "assign")
+    cm <- numeric(ncol(X))
     if (center) {
+        if (!attr(attr(mf, "terms"), "intercept") == 1)
+            warning("model with centered covariates does not contain intercept")
         cm <- colMeans(X, na.rm = TRUE)
-        ### center numeric variables only
-        center <- attr(X, "assign") %in% which(sapply(mf, is.numeric)[-1])
-        cm[!center] <- 0
+        cm[assign == 0] <- 0
         X <- scale(X, center = cm, scale = FALSE)
     }
     ### this function will be used for predictions later
@@ -527,6 +533,8 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     ret <- mboost_fit(bl, response = response, weights = weights,
                       control = control, ...)
     ret$newX <- newX
+    ret$assign <- assign
+    ret$center <- cm
     ret$call <- cl
     ### need specialized method (hatvalues etc. anyway)
     ret$hatvalues <- function() {
@@ -545,15 +553,33 @@ glmboost.matrix <- function(x, y, center = FALSE,
                             control = boost_control(), ...) {
 
     X <- x
-    if (is.null(colnames(X))) colnames(X) <- paste("V", 1:ncol(X), sep = "")
+    if (is.null(colnames(X))) 
+        colnames(X) <- paste("V", 1:ncol(X), sep = "")
     if (control$center) {
         center <- TRUE
         warning("boost_control center deprecated")
     }
+        assign <- numeric(ncol(X))
+    cm <- colMeans(X, na.rm = TRUE)
+    ### guess intercept
+    intercept <- which(colSums(abs(scale(X, center = cm, scale = FALSE))) 
+                                   < .Machine$double.eps)
+    if (length(intercept) > 0)
+        intercept <- intercept[colSums(abs(X[, intercept, drop = FALSE])) 
+                               > .Machine$double.eps]
+    INTERCEPT <- length(intercept) == 1
+    if (INTERCEPT) {
+        assign[-intercept] <- 1:(ncol(X) - 1)
+    } else {
+        assign <- 1:ncol(X)
+    }
     if (center) {
-        cm <- colMeans(X, na.rm = TRUE)
-        cm[!center] <- 0
+        if (!INTERCEPT)
+            warning("model with centered covariates does not contain intercept")
+        cm[assign == 0] <- 0
         X <- scale(X, center = cm, scale = FALSE)
+    } else {
+        cm <- numeric(ncol(X))
     }
     newX <- function(newdata) {
         if (isMATRIX(newdata)) {
@@ -567,6 +593,8 @@ glmboost.matrix <- function(x, y, center = FALSE,
     bl <- list(bolscw(X))
     ret <- mboost_fit(bl, response = y, control = control, ...)
     ret$newX <- newX
+    ret$assign <- assign
+    ret$center <- cm
     ret$call <- match.call()
     ### need specialized method (hatvalues etc. anyway)
     ret$hatvalues <- function() {

@@ -17,6 +17,29 @@
      offset as attribute where applicable.
 
 
+                CHANGES in `mboost' VERSION 2.0-3 (2010-03-10)
+
+  o  glmboost(..., center = TRUE) now also centers columns of the
+     design matrix corresponding to contrasts of factors
+     when an intercept term is present leading to faster risk
+     minimization in these cases.
+
+  o  coef.glmboost: New argument `off2int = TRUE' adds the
+     offset to the intercept. In addition, the intercept
+     term is now adjusted for centered covariates.
+
+  o  check for infinite residuals in mboost_fit(). Especially
+     for family = Poisson(), something like boost_control(nu = 0.01)
+     fixes this problem.
+
+  o  "by" (in bols() and bbs()) can now handle factors with more than
+     two levels
+
+  o  improved plot.mboost() for varying coefficients
+
+  o  minor improvements in documentation
+
+
                 CHANGES in `mboost' VERSION 2.0-2 (2010-03-04)
 
   o  fixed bug in helper function get_index, which caused (in some circumstances)

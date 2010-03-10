@@ -54,9 +54,13 @@ predict.mboost <- function(object, newdata = NULL,
 
 ### extract coefficients
 coef.gamboost <- function(object, which = NULL,
-    aggregate = c("sum", "cumsum", "none"), ...)
+    aggregate = c("sum", "cumsum", "none"), ...) {
 
+    args <- list(...)
+    if (length(args) > 0)
+        warning("Arguments ", paste(names(args), sep = ", "), " unknown")
     object$coef(which = which, aggregate = aggregate)
+}
 
 ### compute boosting hat matrix and its trace
 hatvalues.gamboost <- function(model, ...) {
@@ -227,6 +231,9 @@ predict.glmboost <- function(object, newdata = NULL,
     type = c("link", "response", "class"), which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...) {
 
+    args <- list(...)
+    if (length(args) > 0)
+        warning("Arguments ", paste(names(args), sep = ", "), " unknown")
 
     aggregate <- match.arg(aggregate)
 
@@ -252,18 +259,72 @@ predict.glmboost <- function(object, newdata = NULL,
 }
 
 coef.glmboost <- function(object, which = NULL,
-    aggregate = c("sum", "cumsum", "none"), ...) {
+    aggregate = c("sum", "cumsum", "none"), off2int = FALSE, ...) {
+
+    args <- list(...)
+    if (length(args) > 0)
+        warning("Arguments ", paste(names(args), sep = ", "), " unknown")
+
 
     aggregate <- match.arg(aggregate)
     cf <- object$coef(which = which, aggregate = aggregate)
     offset <- attr(cf, "offset")
+
+    ### intercept = hat(beta[1]) - bar(x) %*% hat(beta[-1])
+    assign <- object$assign
+    cm <- object$center
+    INTERCEPT <- sum(assign == 0) == 1
+    if (!INTERCEPT && off2int)
+        warning(sQuote("object"), " does not contain an intercept, ",
+                sQuote("off2int = TRUE"), " ignored.")
+    if (INTERCEPT && any(cm != 0)) {
+        intercept <- which(assign == 0)
+        if (is.null(which)) {
+            which <- object$which(usedonly = TRUE)
+            if (!intercept %in% which) {
+                which <- c(intercept, which)
+                cf <- object$coef(which = which, aggregate = aggregate)
+            }
+        }
+        which <- object$which(which)
+        if (intercept %in% which) {
+            if (all(which %in% object$which(usedonly = TRUE))) {
+                cm <- cm[which]
+                scf <- sapply(1:length(cf), function(i) cf[[i]] * cm[i])
+                if (!is.matrix(scf)) scf <- matrix(scf, nrow = 1)
+                cf[[intercept]] <- cf[[intercept]] - rowSums(scf)
+            } else {
+                cm <- cm[object$which(usedonly = TRUE)]
+                tmp <- object$coef(which = object$which(usedonly = TRUE),
+                                   aggregate = aggregate)
+                scf <- sapply(1:length(tmp), function(i) tmp[[i]] * cm[i])
+                if (!is.matrix(scf)) scf <- matrix(scf, nrow = 1)
+                cf[[intercept]] <- cf[[intercept]] - rowSums(scf)
+            }
+        }
+    }
+
     if (aggregate == "sum") cf <- unlist(cf)
-    attr(cf, "offset") <- offset
+    if (aggregate == "none") {
+        attr(cf, "offset") <- offset
+        if (off2int)
+            warning(sQuote("off2int = TRUE"), " ignored for ",
+                    sQuote("aggregate = \"none\""))
+    } else {
+        if (off2int & length(offset) == 1) {
+            cf[[1]] <- cf[[1]] + offset
+        } else {
+            attr(cf, "offset") <- offset
+        }
+    }
     cf
 }
 
-
 hatvalues.glmboost <- function(model, ...) {
+
+    args <- list(...)
+    if (length(args) > 0)
+        warning("Arguments ", paste(names(args), sep = ", "), " unknown")
 
     if (!checkL2(model)) return(hatvalues.gamboost(model))
     Xf <- t(model$basemodel[[1]]$MPinv()) * model$control$nu
@@ -318,6 +379,11 @@ print.glmboost <- function(x, ...) {
 }
 
 variable.names.mboost <- function(object, ...) {
+
+    args <- list(...)
+    if (length(args) > 0)
+        warning("Arguments ", paste(names(args), sep = ", "), " unknown")
+
     ### <FIXME> is pasting what we want?
     ret <- sapply(object$baselearner, function(x)
                   paste(x$get_names(), collapse = ", "))
@@ -327,6 +393,11 @@ variable.names.mboost <- function(object, ...) {
 }
 
 variable.names.glmboost <- function(object, ...) {
+
+    args <- list(...)
+    if (length(args) > 0)
+        warning("Arguments ", paste(names(args), sep = ", "), " unknown")
+
     ret <- object$baselearner[[1]]$get_names()
     names(ret) <- ret
     ret

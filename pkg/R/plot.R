@@ -2,7 +2,7 @@
 ### just a try
 plot.mboost <- function(x, which = NULL, newdata = NULL,
                         type = "b", rug = TRUE, ylim = NULL,
-                        xlab = variable.names(x), ylab = expression(f[partial]), ...) {
+                        xlab = NULL, ylab = expression(f[partial]), ...) {
 
     which <- x$which(which, usedonly = is.null(which))
 
@@ -10,11 +10,17 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
     if (is.null(ylim)) ylim <- range(pr)
 
     ## FIXED?
-    if (length(which) == length(xlab) & length(which) != length(variable.names(x))){
-        ## if labels are user specified but not all base-learners are selected
-        foo <- rep(NA, length(variable.names(x)))
-        foo[which] <- xlab ## xlab is supposed to be in the same ordering as which
-        xlab <- foo
+    if (is.null(xlab)){
+        userspec <- FALSE
+        xlab <- variable.names(x)
+    } else {
+        userspec <- TRUE
+        if (length(which) == length(xlab) & length(which) != length(variable.names(x))){
+            ## if labels are user specified but not all base-learners are selected
+            foo <- rep(NA, length(variable.names(x)))
+            foo[which] <- xlab ## xlab is supposed to be in the same ordering as which
+            xlab <- foo
+        }
     }
     if (length(which) == length(ylab) & length(which) != length(variable.names(x))){
         ## if labels are user specified but not all base-learners are selected
@@ -23,6 +29,7 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
         ylab <- foo
     }
 
+    ## labs must have either length 1 or length(variable.names(x))
     stopifnot(length(xlab) %in% c(1, length(variable.names(x))))
     stopifnot(length(ylab) %in% c(1, length(variable.names(x))))
     ## FIXED?
@@ -36,36 +43,49 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
         if (!is.null(newdata)) data <- newdata[, colnames(data), drop = FALSE]
         if (vary != "") {
             v <- data[[vary]]
-            if (is.factor(v)) v <- factor(rep(levels(v)[2], 1), levels = levels(v))
+            if (is.factor(v)) v <- factor(levels(v)[-1], levels = levels(v))
             if (is.numeric(v)) v <- 1
-            data[[vary]] <- v[rep(1, nrow(data))]
         }
-        pr <- predict(x, newdata = data, which = w)
-        if (!is.null(vary)) data <- data[, colnames(data) != vary, drop = FALSE]
 
-        ## FIXED?
+        plot_helper <- function(xl, yl){
+            pr <- predict(x, newdata = data, which = w)
+            if (!is.null(vary)) data <- data[, colnames(data) != vary, drop = FALSE]
+
+            if (ncol(data) == 1) {
+                plot(sort(data[[1]]), pr[order(data[[1]])], type = type,
+                     xlab = xl, ylab = yl, ylim = ylim, ...)
+                if (rug) rug(data[[1]])
+            }
+            if (ncol(data) == 2) {
+                fm <- as.formula(paste("pr ~ ", paste(colnames(data), collapse = "*"), sep = ""))
+                print(levelplot(fm, data = data, ...))
+            }
+            if (ncol(data) > 2) {
+                for (v in colnames(data)) {
+                    tmp <- data
+                    pardep <- sapply(data[[v]], function(vv) {
+                        tmp[[v]] <- vv
+                        mean(predict(x, newdata = tmp, which = w))
+                    })
+                    plot(sort(data[[v]]), pardep[order(data[[v]])], type = type,
+                         xlab = v, ylab = "Partial Dependency", ylim = ylim, ...)
+                }
+            }
+        } # END plot_helper()
+
         xl <- ifelse(length(xlab) > 1, xlab[w], xlab[1])
         yl <- ifelse(length(ylab) > 1, ylab[w], ylab[1])
-        ## FIXED?
 
-        if (ncol(data) == 1) {
-            plot(sort(data[[1]]), pr[order(data[[1]])], type = type,
-                 xlab = xl, ylab = yl, ylim = ylim, ...)
-            if (rug) rug(data[[1]])
-        }
-        if (ncol(data) == 2) {
-            fm <- as.formula(paste("pr ~ ", paste(colnames(data), collapse = "*"), sep = ""))
-            print(levelplot(fm, data = data, ...))
-        }
-        if (ncol(data) > 2) {
-            for (v in colnames(data)) {
-                tmp <- data
-                pardep <- sapply(data[[v]], function(vv) {
-                    tmp[[v]] <- vv
-                    mean(predict(x, newdata = tmp, which = w))
-                })
-                plot(sort(data[[v]]), pardep[order(data[[v]])], type = type,
-                     xlab = v, ylab = "Partial Dependency", ylim = ylim, ...)
+        if (vary == "") plot_helper(xl, yl)
+        if (vary != ""){
+            for (i in 1:length(v)){
+                data[[vary]] <- v[rep(i, nrow(data))]
+                if (!userspec){
+                    ## xlab not user specified
+                    plot_helper(paste(xl, "=", v[i]), yl)
+                } else {
+                    plot_helper(paste(xl, "(", vary, "=", v[i], ")"), yl)
+                }
             }
         }
     }

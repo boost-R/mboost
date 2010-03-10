@@ -128,7 +128,9 @@ distribution approximation used in Ma and Huang (2005).
   \code{Poisson()} implements a family for fitting count data with
   boosting methods. The implemented loss function is the negative
   Poisson log-likelihood. Note that the natural link function
-  \eqn{\log(\mu) = \eta} is assumed.
+  \eqn{\log(\mu) = \eta} is assumed. The default step-site \code{nu = 0.1}
+  is probably too large for this family (leading to 
+  infinite residuals) and smaller values are more appropriate.
 
   \code{CoxPH()} implements the negative partial log-likelihood for Cox
   models. Hence, survival models can be boosted using this family.

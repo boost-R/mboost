@@ -12,7 +12,9 @@ boost_control(mstop = 100, nu = 0.1,
 }
 \arguments{
   \item{mstop}{ an integer giving the number of initial boosting iterations. }
-  \item{nu}{ a double (between 0 and 1) defining the step size or shrinkage parameter. }
+  \item{nu}{ a double (between 0 and 1) defining the step size or shrinkage parameter. 
+             The default is probably too large for many applications 
+             with \code{family = Poisson()} and a smaller value is better.}
   \item{risk}{ a character indicating how the empirical risk should be
                computed for each boosting iteration. \code{inbag} leads to
                risks computed for the learning sample (i.e., all non-zero weights),

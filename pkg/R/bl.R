@@ -75,12 +75,20 @@ X_ols <- function(mf, vary, args) {
         if (!args$intercept) fm <- paste(fm, "-1")
         X <- model.matrix(as.formula(fm), data = mf, contrasts.arg = args$contrasts.arg)
         contr <- attr(X, "contrasts")
-        ### <FIXME>
         if (vary != "") {
-            by <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
-            X <- X * by
+            by <- model.matrix(as.formula(paste("~", vary, collapse = "")),
+                               data = mf)[ , -1, drop = FALSE] # drop intercept
+            DM <- lapply(1:ncol(by), function(i) {
+                ret <- X * by[, i]
+                colnames(ret) <- paste(colnames(ret), colnames(by)[i], sep = ":")
+                ret
+            })
+            if (is(X, "Matrix")) {
+                X <- do.call("cBind", DM)
+            } else {
+                X <- do.call("cbind", DM)
+            }
         }
-        ### </FIXME>
     }
     ### <FIXME> penalize intercepts???
     ### set up penalty matrix
@@ -89,6 +97,9 @@ X_ols <- function(mf, vary, args) {
     ### for ordered factors use difference penalty
     if (ANOVA && any(sapply(mf[, names(contr), drop = FALSE], is.ordered))) {
         K <- diff(diag(ncol(X) + 1), differences = 1)[, -1, drop = FALSE]
+        if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
+            K <- kronecker(diag(ncol(by)), K)
+        }
         K <- crossprod(K)
     }
     ### </FIXME>
@@ -134,17 +145,29 @@ X_bbs <- function(mf, vary, args) {
     MATRIX <- MATRIX && options("mboost_useMatrix")$mboost_useMatrix
     if (MATRIX) {
         diag <- Diagonal
+        cbind <- cBind
         for (i in 1:length(mm)) mm[[i]] <- Matrix(mm[[i]])
     }
     if (length(mm) == 1) {
         X <- mm[[1]]
-        ### <FIXME>
         if (vary != "") {
-            by <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
-            X <- X * by
+            by <- model.matrix(as.formula(paste("~", vary, collapse = "")),
+                               data = mf)[ , -1, drop = FALSE] # drop intercept
+            DM <- lapply(1:ncol(by), function(i) {
+                ret <- X * by[, i]
+                colnames(ret) <- paste(colnames(ret), colnames(by)[i], sep = ":")
+                ret
+            })
+            if (is(X, "Matrix")) {
+                X <- do.call("cBind", DM)
+            } else {
+                X <- do.call("cbind", DM)
+            }
         }
-        ### </FIXME>
-        K <- diff(diag(ncol(X)), differences = args$differences)
+        K <- diff(diag(ncol(mm[[1]])), differences = args$differences)
+        if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
+            K <- kronecker(diag(ncol(by)), K)
+        }
         if (args$center) {
             X <- tcrossprod(X, K) %*% solve(tcrossprod(K))
             K <- diag(ncol(X))
@@ -155,18 +178,26 @@ X_bbs <- function(mf, vary, args) {
     if (length(mm) == 2) {
         X <- kronecker(mm[[1]], matrix(1, nc = ncol(mm[[2]]))) *
              kronecker(matrix(1, nc = ncol(mm[[1]])), mm[[2]])
+        if (vary != "") {
+            by <- model.matrix(as.formula(paste("~", vary, collapse = "")),
+                               data = mf)[ , -1, drop = FALSE] # drop intercept
+            DM <- X * by[,1]
+            if (ncol(by) > 1){
+                for (i in 2:ncol(by))
+                    DM <- cbind(DM, (X * by[,i]))
+            }
+            X <- DM
+            ### <FIXME> Names of X if by is given
+        }
         Kx <- diff(diag(ncol(mm[[1]])), differences = args$differences)
         Kx <- crossprod(Kx)
         Ky <- diff(diag(ncol(mm[[2]])), differences = args$differences)
         Ky <- crossprod(Ky)
         K <- kronecker(Kx, diag(ncol(mm[[2]]))) +
              kronecker(diag(ncol(mm[[1]])), Ky)
-        ### <FIXME>
-        if (vary != "") {
-            by <- model.matrix(as.formula(paste("~", vary, collapse = "")), data = mf)[,2]
-            X <- X * by
+        if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
+            K <- kronecker(diag(ncol(by)), K)
         }
-        ### </FIXME>
         if (args$center) {
             L <- eigen(K, symmetric = TRUE, EISPACK = TRUE)
             L$vectors <- L$vectors[,1:(ncol(X) - args$differences^2)]
@@ -214,8 +245,7 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
     }
     vary <- ""
     if (!is.null(by)){
-        stopifnot(is.data.frame(mf))
-        stopifnot(is.numeric(by) || (is.factor(by) && nlevels(by) == 2))
+        stopifnot(is.data.frame(mf))        
         mf <- cbind(mf, by)
         colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(by))
     }
@@ -291,8 +321,7 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
             return(bols(as.data.frame(...), by = by, index = index))
     }
     vary <- ""
-    if (!is.null(by)){
-        stopifnot(is.numeric(by) || (is.factor(by) && nlevels(by) == 2))
+    if (!is.null(by)){        
         mf <- cbind(mf, by)
         colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(by))
     }

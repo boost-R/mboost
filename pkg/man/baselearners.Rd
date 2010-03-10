@@ -34,7 +34,6 @@ bmono(..., constraint = c("increasing", "decreasing", "convex", "concave"),
       df = 4, lambda = NULL, lambda2 = 1e6, niter=10)
 bmrf(..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
     center = FALSE)
-
 bl1 \%+\% bl2
 bl1 \%X\% bl2
 }
@@ -42,7 +41,12 @@ bl1 \%X\% bl2
   \item{...}{ one or more predictor variables or one data frame of
               predictor variables.}
   \item{by}{ an optional variable defining varying coefficients,
-             either a binary or numeric variable.}
+             either a factor or numeric variable.
+	     If \code{by} is a factor, the coding is determined by
+	     the global \code{options("contrasts")} or as specified
+	     "locally" for the factor (see \code{\link{contrasts}}). Per
+	     default treatment coding is used. Note that the main
+	     effect needs to be specified in a separate base-learner.}
   \item{index}{ a vector of integers for expanding the variables in \code{...}.
                 For example, \code{bols(x, index = index)} is equal to \code{bols(x[index])},
                 where \code{index} is an integer of length greater or equal to \code{length(x)}.}
@@ -59,8 +63,8 @@ bl1 \%X\% bl2
   \item{knots}{ either the number of (equidistant) interior knots to be used for
                 the regression spline fit or a vector including the positions of the interior
                 knots. For multiple predictor variables, \code{knots}
-        may be a named list where the names in the list are the
-        variable names.}
+		may be a named list where the names in the list are the
+		variable names.}
   \item{degree}{ degree of the regression spline.}
   \item{differences}{ 1, 2, or 3. If \code{differences} =
                      \emph{k}, \emph{k}-th-order differences are used as a penalty.}
@@ -168,7 +172,7 @@ bl1 \%X\% bl2
   fitted effect is centered around its parametric, unpenalized part. For
   example, with second order difference penalty, a linear effect of \code{x}
   remains unpenalized by \code{bbs} and therefore the degrees of freedom for the base-learner
-  have to be larger than two. To avoid this restriction, option \code{center=TRUE}
+  have to be larger than two. To avoid this restriction, option \code{center = TRUE}
   subtracts the unpenalized linear effect from the fit, allowing to specify any
   positive number as \code{df}. Note that in this case the linear effect
   \code{x} should generally be specified as an additional base-learner
@@ -215,7 +219,9 @@ bl1 \%X\% bl2
   be removed using \code{intercept = FALSE} for \code{bols} or
   \code{center = TRUE} for \code{bbs}). In this case, an explicit global
   intercept term should be added to \code{gamboost} via \code{bols} (see
-  example below).
+  example below). With \code{bols(x, intercept = FALSE)} with categorical
+  covariate \code{x} a separate effect for each group (mean effect) is
+  estimated (see examples for resulting design matrizes).
 
   Three global options affect the base-learners: \code{option("mboost_useMatrix")}
   defaulting to \code{TRUE} indicates that the base-learner may use
@@ -310,13 +316,12 @@ bl1 \%X\% bl2
 
 
   ### grouped linear effects
-  model <- gamboost(y ~ bols(x1, x2) +
-                        bols(x1) +
-                        bols(x2),
+  model <- gamboost(y ~ bols(x1, x2, intercept = FALSE) +
+                        bols(x1, intercept = FALSE) +
+                        bols(x2, intercept = FALSE),
                         control = boost_control(mstop = 400))
-  coef(model, which=1)   # one base-learner for x1 and x2
-  coef(model, which=2:3) # two separate base-learners for x1 and x2
-
+  coef(model, which = 1)   # one base-learner for x1 and x2
+  coef(model, which = 2:3) # two separate base-learners for x1 and x2
 
   ### example for bspatial
   x1 <- runif(250,-pi,pi)
@@ -324,11 +329,11 @@ bl1 \%X\% bl2
 
   y <- sin(x1) * sin(x2) + rnorm(250, sd = 0.4)
 
-  spline3 <- bspatial(x1, x2, knots=12)
+  spline3 <- bspatial(x1, x2, knots = 12)
   attributes(spline3)
 
   ## specify number of knots separately
-  form2 <- y ~ bspatial(x1, x2, knots=list(x1=12, x2=12))
+  form2 <- y ~ bspatial(x1, x2, knots = list(x1 = 12, x2 = 12))
 
   ## decompose spatial effect into parametric part and
   ## deviation with one df
@@ -355,8 +360,36 @@ bl1 \%X\% bl2
 
   ### random slope
   z <- runif(50)
-  raneff <- brandom(id, by=z)
+  raneff <- brandom(id, by = z)
   attributes(raneff)
+
+  ### specify simple interaction model (with main effect)
+  n <- 210
+  x <- rnorm(n)
+  X <- model.matrix(~ x)
+  z <- gl(3, n/3)
+  Z <- model.matrix(~z)
+  beta <- list(c(0,1), c(-3,4), c(2, -4))
+  y <- rnorm(length(x), mean = (X * Z[,1]) \%*\% beta[[1]] +
+                               (X * Z[,2]) \%*\% beta[[2]] +
+                               (X * Z[,3]) \%*\% beta[[3]])
+  plot(y ~ x, col = z)
+  ## specify main effect and interaction
+  mod_glm <- gamboost(y ~ bols(x) + bols(x, by = z),
+                  control = boost_control(mstop = 1000))
+  nd <- data.frame(x, z)
+  nd <- nd[order(x),]
+  nd$pred_glm <- predict(mod_glm, newdata = nd)
+  for (i in seq(along = levels(z)))
+      with(nd[nd$z == i,], lines(x, pred_glm, col = z))
+  mod_gam <- gamboost(y ~ bbs(x) + bbs(x, by = z),
+                      control = boost_control(mstop = 1000))
+  nd$pred_gam <- predict(mod_gam, newdata = nd)
+  for (i in seq(along = levels(z)))
+      with(nd[nd$z == i,], lines(x, pred_gam, col = z, lty = "dashed"))
+  ### convinience function for plotting
+  par(mfrow = c(1,3))
+  plot(mod_gam)
 
 
   ### remove intercept from base-learner
@@ -366,7 +399,7 @@ bl1 \%X\% bl2
                       bols(x, intercept = FALSE),
                   data = tmpdata,
                   control = boost_control(mstop = 2500))
-  cf <- unlist(coef(mod, which=1:2))
+  cf <- unlist(coef(mod))
   cf[1] <- cf[1] + mod$offset
   cf
   coef(lm(y ~ x, data = tmpdata))

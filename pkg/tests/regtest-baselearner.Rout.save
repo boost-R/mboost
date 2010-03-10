@@ -282,7 +282,7 @@ Warning message:
 In data.frame(..., check.names = FALSE) :
   row names were found from a short variable and have been discarded
 > coef(m1)
-$`"bbs(x1)" %X% "bols(f, intercept = FALSE, df = 5)"`
+$`"bbs(x1) %X% bols(f, intercept = FALSE, df = 5)"`
  [1]  0.730895171  0.038870922 -0.005399569 -0.148991281 -0.329031840
  [6] -0.220643444  0.154919020 -0.300950311 -0.873054991 -0.519028732
 [11]  0.320637179 -0.303918059 -0.610811537 -0.686367706  0.342235456

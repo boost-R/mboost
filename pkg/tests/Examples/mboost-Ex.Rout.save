@@ -259,25 +259,25 @@ $class
 >   mod1 <- mboost_fit(list(spline1, spline2, ols3, ols4), y, weights)
 > 
 >   ### more convenient formula interface
->   mod2 <- mboost(y ~ bbs(x1, knots = 20, df = 4) + 
-+                      bbs(x2, knots = knots.x2, df = 5) + 
+>   mod2 <- mboost(y ~ bbs(x1, knots = 20, df = 4) +
++                      bbs(x2, knots = knots.x2, df = 5) +
 +                      bols(x3) + bols(x4))
 >   all.equal(coef(mod1), coef(mod2))
 [1] TRUE
 > 
 > 
 >   ### grouped linear effects
->   model <- gamboost(y ~ bols(x1, x2, intercept = FALSE) + 
-+                         bols(x1, intercept = FALSE) + 
+>   model <- gamboost(y ~ bols(x1, x2, intercept = FALSE) +
++                         bols(x1, intercept = FALSE) +
 +                         bols(x2, intercept = FALSE),
 +                         control = boost_control(mstop = 400))
->   coef(model, which=1)   # one base-learner for x1 and x2
+>   coef(model, which = 1)   # one base-learner for x1 and x2
 $`bols(x1, x2, intercept = FALSE)`
 [1]  1.79313591 -0.03333542
 
 attr(,"offset")
 [1] 1.334042
->   coef(model, which=2:3) # two separate base-learners for x1 and x2
+>   coef(model, which = 2:3) # two separate base-learners for x1 and x2
 $`bols(x1, intercept = FALSE)`
 [1] 3.136929e-12
 
@@ -294,7 +294,7 @@ attr(,"offset")
 > 
 >   y <- sin(x1) * sin(x2) + rnorm(250, sd = 0.4)
 > 
->   spline3 <- bspatial(x1, x2, knots=12)
+>   spline3 <- bspatial(x1, x2, knots = 12)
 Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
  target signature "dgCMatrix#dgTMatrix".
  "sparseMatrix#TsparseMatrix" would also be valid
@@ -323,9 +323,9 @@ $class
 
 > 
 >   ## specify number of knots separately
->   form2 <- y ~ bspatial(x1, x2, knots=list(x1=12, x2=12))
+>   form2 <- y ~ bspatial(x1, x2, knots = list(x1 = 12, x2 = 12))
 > 
->   ## decompose spatial effect into parametric part and 
+>   ## decompose spatial effect into parametric part and
 >   ## deviation with one df
 >   form2 <- y ~ bols(x1) + bols(x2) + bols(x1*x2) +
 +                bspatial(x1, x2, knots = 12, center = TRUE, df = 1)
@@ -357,15 +357,14 @@ $`brandom(id)`
 
 attr(,"offset")
 [1] -0.6983303
->   fitted(model)[46:50] # just the grand mean as usual for 
+>   fitted(model)[46:50] # just the grand mean as usual for
         46         47         48         49         50 
 -0.6983303 -0.6983303 -0.6983303 -0.6983303 -0.6983303 
 >                        # random effects models
 > 
-> 
 >   ### random slope
 >   z <- runif(50)
->   raneff <- brandom(id, by=z)
+>   raneff <- brandom(id, by = z)
 >   attributes(raneff)
 $names
 [1] "model.frame" "get_call"    "get_data"    "get_index"   "get_names"  
@@ -375,24 +374,101 @@ $class
 [1] "blg"
 
 > 
+>   ### specify simple interaction model (with main effect)
+>   n <- 210
+>   x <- rnorm(n)
+>   X <- model.matrix(~ x)
+>   z <- gl(3, n/3)
+>   Z <- model.matrix(~z)
+>   beta <- list(c(0,1), c(-3,4), c(2, -4))
+>   y <- rnorm(length(x), mean = (X * Z[,1]) %*% beta[[1]] +
++                                (X * Z[,2]) %*% beta[[2]] +
++                                (X * Z[,3]) %*% beta[[3]])
+>   plot(y ~ x, col = z)
+>   ## specify main effect and interaction
+>   mod_glm <- gamboost(y ~ bols(x) + bols(x, by = z),
++                   control = boost_control(mstop = 1000))
+>   nd <- data.frame(x, z)
+>   nd <- nd[order(x),]
+>   nd$pred_glm <- predict(mod_glm, newdata = nd)
+>   for (i in seq(along = levels(z)))
++       with(nd[nd$z == i,], lines(x, pred_glm, col = z))
+>   mod_gam <- gamboost(y ~ bbs(x) + bbs(x, by = z),
++                       control = boost_control(mstop = 1000))
+>   nd$pred_gam <- predict(mod_gam, newdata = nd)
+>   for (i in seq(along = levels(z)))
++       with(nd[nd$z == i,], lines(x, pred_gam, col = z, lty = "dashed"))
+>   ### convinience function for plotting
+>   par(mfrow = c(1,3))
+>   plot(mod_gam)
+> 
 > 
 >   ### remove intercept from base-learner
 >   ### and add explicit intercept to the model
 >   tmpdata <- data.frame(x = 1:100, y = rnorm(1:100), int = rep(1, 100))
->   mod <- gamboost(y ~ bols(int, intercept = FALSE) + 
+>   mod <- gamboost(y ~ bols(int, intercept = FALSE) +
 +                       bols(x, intercept = FALSE),
-+                   data = tmpdata, 
++                   data = tmpdata,
 +                   control = boost_control(mstop = 2500))
 >   cf <- unlist(coef(mod))
 >   cf[1] <- cf[1] + mod$offset
 >   cf
 bols(int, intercept = FALSE)   bols(x, intercept = FALSE) 
-                -0.076579749                  0.003043236 
+               -0.1298897810                 0.0003555854 
 >   coef(lm(y ~ x, data = tmpdata))
- (Intercept)            x 
--0.076579776  0.003043237 
+  (Intercept)             x 
+-0.1298898174  0.0003555861 
 > 
->   
+>   ### bols(, intercept = FALSE) for categorical covariates
+>   ### estimates seperate (mean-) effect for each group
+>   x <- gl(3, 5)
+>   model.matrix(~ x)       # design matrix used in bols(x)
+   (Intercept) x2 x3
+1            1  0  0
+2            1  0  0
+3            1  0  0
+4            1  0  0
+5            1  0  0
+6            1  1  0
+7            1  1  0
+8            1  1  0
+9            1  1  0
+10           1  1  0
+11           1  0  1
+12           1  0  1
+13           1  0  1
+14           1  0  1
+15           1  0  1
+attr(,"assign")
+[1] 0 1 1
+attr(,"contrasts")
+attr(,"contrasts")$x
+[1] "contr.treatment"
+
+>   model.matrix(~ x - 1)   # design matrix used in bols(x, intercept = FALSE)
+   x1 x2 x3
+1   1  0  0
+2   1  0  0
+3   1  0  0
+4   1  0  0
+5   1  0  0
+6   0  1  0
+7   0  1  0
+8   0  1  0
+9   0  1  0
+10  0  1  0
+11  0  0  1
+12  0  0  1
+13  0  0  1
+14  0  0  1
+15  0  0  1
+attr(,"assign")
+[1] 1 1 1
+attr(,"contrasts")
+attr(,"contrasts")$x
+[1] "contr.treatment"
+
+> 
 >   ### large data set with ties
 >   nunique <- 100
 >   xindex <- sample(1:nunique, 1000000, replace = TRUE)
@@ -425,6 +501,7 @@ bols(int, intercept = FALSE)   bols(x, intercept = FALSE)
 > 
 > 
 > 
+> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("blackboost")
 > ### * blackboost
@@ -819,13 +896,14 @@ Degrees of freedom (for mstop = 24): 4.481721
 > 
 >     ### a simple two-dimensional example: cars data
 >     cars.gb <- glmboost(dist ~ speed, data = cars,
-+                         control = boost_control(mstop = 5000))
++                         control = boost_control(mstop = 5000),
++                         center = FALSE)
 >     cars.gb
 
 	 Generalized Linear Models Fitted via Gradient Boosting
 
 Call:
-glmboost.formula(formula = dist ~ speed, data = cars, control = boost_control(mstop = 5000))
+glmboost.formula(formula = dist ~ speed, data = cars, center = FALSE,     control = boost_control(mstop = 5000))
 
 
 	 Squared Error (Regression) 
@@ -858,6 +936,15 @@ attr(,"offset")
 >     layout(matrix(1:2, ncol = 2))
 >     plot(dist ~ speed, data = cars)
 >     lines(cars$speed, predict(cars.gb), col = "red")
+> 
+>     ### now we center the design matrix for
+>     ### much quicker "convergence"
+>     cars.gb_centered <- glmboost(dist ~ speed, data = cars,
++                                  control = boost_control(mstop = 2000),
++                                  center = TRUE)
+>     par(mfrow=c(1,2))
+>     plot(cars.gb, main="without centering")
+>     plot(cars.gb_centered, main="with centering")
 > 
 >     ### alternative loss function: absolute loss
 >     cars.gbl <- glmboost(dist ~ speed, data = cars,
@@ -919,6 +1006,8 @@ Loading required package: lattice
 >     beta[sample(1:p, ptrue)] <- 10
 >     y <- drop(X %*% beta + rnorm(n, sd = 0.1))
 >     mod <- glmboost(y = y, x = X, center = TRUE) ### mstop needs tuning
+Warning in glmboost.matrix(x = x, ...) :
+  model with centered covariates does not contain intercept
 >     coef(mod, which = which(beta > 0))
    V3129    V3353    V5522    V6808    V7006    V7017    V7467    V8722 
 4.658353 0.000000 6.079353 4.964764 4.028804 0.000000 1.992971 3.424468 
@@ -991,12 +1080,12 @@ Loading required package: colorspace
 > ### ** Examples
 > 
 > 
->   
+> 
 >   data("bodyfat")
 >   set.seed(290875)
 > 
 >   ### model conditional expectation of DEXfat given
->   model <- mboost(DEXfat ~ 
+>   model <- mboost(DEXfat ~
 +       bols(age) +                 ### a linear function of age
 +       btree(hipcirc, waistcirc) + ### a non-linear interaction of
 +                                   ### hip and waist circumference
@@ -1032,7 +1121,7 @@ NULL
 >   plot(model, which = c("age", "kneebreadth"))
 > 
 >   ### plot interaction of hip and waist circumference
->   attach(bodyfat) 
+>   attach(bodyfat)
 >   nd <- expand.grid(hipcirc = h <- seq(from = min(hipcirc),
 +                                   to = max(hipcirc),
 +                                   length = 100),
@@ -1069,13 +1158,14 @@ NULL
 > 
 >   ### a simple two-dimensional example: cars data
 >   cars.gb <- glmboost(dist ~ speed, data = cars,
-+                       control = boost_control(mstop = 2000))
++                       control = boost_control(mstop = 2000),
++                       center = FALSE)
 >   cars.gb
 
 	 Generalized Linear Models Fitted via Gradient Boosting
 
 Call:
-glmboost.formula(formula = dist ~ speed, data = cars, control = boost_control(mstop = 2000))
+glmboost.formula(formula = dist ~ speed, data = cars, center = FALSE,     control = boost_control(mstop = 2000))
 
 
 	 Squared Error (Regression) 
@@ -1105,6 +1195,50 @@ attr(,"offset")
 Optimal number of boosting iterations: 1549 
 Degrees of freedom (for mstop = 1549): 1.986856 
 > 
+>   ### extract coefficients for glmboost
+>   coef(cars.gb)
+(Intercept)       speed 
+ -60.331204    3.918359 
+attr(,"offset")
+[1] 42.98
+>   coef(cars.gb, off2int = TRUE)        # offset added to intercept
+(Intercept)       speed 
+ -17.351204    3.918359 
+>   coef(lm(dist ~ speed, data = cars))  # directly comparable
+(Intercept)       speed 
+ -17.579095    3.932409 
+> 
+>   cars.gb_centered <- glmboost(dist ~ speed, data = cars,
++                                center = TRUE)
+>   selected(cars.gb_centered)           # intercept never selected
+  [1] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+ [38] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+ [75] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+>   coef(cars.gb_centered)               # intercept implicitly estimated
+(Intercept)       speed 
+ -60.557486    3.932304 
+attr(,"offset")
+[1] 42.98
+>                                        # and thus returned
+>   ## intercept is internally corrected for mean-centering
+>   - mean(cars$speed) * coef(cars.gb_centered, which="speed")
+    speed 
+-60.55749 
+attr(,"offset")
+[1] 42.98
+>   # not asked for intercept thus not returned
+>   coef(cars.gb_centered, which="speed")
+   speed 
+3.932304 
+attr(,"offset")
+[1] 42.98
+>   # explicitly asked for intercept
+>   coef(cars.gb_centered, which=c("Intercept", "speed"))
+(Intercept)       speed 
+ -60.557486    3.932304 
+attr(,"offset")
+[1] 42.98
+> 
 >   ### enhance or restrict model
 >   cars.gb <- gamboost(dist ~ speed, data = cars,
 +                       control = boost_control(mstop = 100, trace = TRUE))
@@ -1132,7 +1266,7 @@ Number of baselearners:  1
 
 >   cars.gb[100, return = FALSE] # no refitting required
 NULL
->   cars.gb[150, return = FALSE] # only iterations 101 to 150 
+>   cars.gb[150, return = FALSE] # only iterations 101 to 150
 [101] ...................................... -- risk: 9976.168 
 [141] ........
 Final risk: 9948.547 
@@ -1177,7 +1311,7 @@ NULL
 [1'471] ...................................... -- risk: 8308.446 
 [1'511] .....................................
 Final risk: 8289.302 
-$`bbs(speed)`
+$`bbs(speed, df = dfbase)`
  [1] -36.995016 -35.596203 -34.085118 -32.349487 -30.277039 -27.732665
  [7] -24.322707 -20.863456 -21.899775 -19.121759  -6.090496   2.438362
 [13]  -4.941562  -7.667407   2.660116  16.107860  12.731676   6.129820
@@ -1200,12 +1334,12 @@ attr(,"offset")
 >   y <- 3 * x1^2 - 0.5 * x2 + rnorm(n, sd = 0.1)
 >   df <- data.frame(y = y, int = int, x1 = x1, x2 = x2, x3 = x3, x4 = x4)
 > 
->   model <- gamboost(y ~ bols(int, intercept = FALSE) + 
+>   model <- gamboost(y ~ bols(int, intercept = FALSE) +
 +                         bbs(x1, center = TRUE, df = 1) +
 +                         bols(x1, intercept = FALSE) +
-+                         bols(x2, intercept = FALSE) + 
++                         bols(x2, intercept = FALSE) +
 +                         bols(x3, intercept = FALSE) +
-+                         bols(x4, intercept = FALSE), 
++                         bols(x4, intercept = FALSE),
 +                     data = df, control = boost_control(mstop = 500))
 >   coef(model) # standard output (only selected base-learners)
 $`bols(int, intercept = FALSE)`
@@ -1225,7 +1359,7 @@ $`bols(x2, intercept = FALSE)`
 
 attr(,"offset")
 [1] 4.431516
->   coef(model, 
+>   coef(model,
 +        which = 1:length(variable.names(model))) # all base-learners
 $`bols(int, intercept = FALSE)`
 [1] 6.267132
@@ -1417,7 +1551,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  51.307 3.196 61.583 10 10 
+Time elapsed:  54.651 3.148 64.331 10.608 10.608 
 > grDevices::dev.off()
 null device 
           1 

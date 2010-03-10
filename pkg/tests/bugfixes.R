@@ -84,26 +84,56 @@ a <- predict(fit, newdata = x[1:10,])
 y <- gl(2, 10)
 xn <- rnorm(20)
 xnm <- xn - mean(xn)
-xf <- gl(2, 10)
-gc <- glmboost(y ~ xn + xf, control = boost_control(center = TRUE),
+gc <- glmboost(y ~ xn, center = TRUE,
                family = Binomial())
-g <- glmboost(y ~ xnm + xf, family = Binomial())
-cgc <- coef(gc)
-cg <- coef(g)
+g <- glmboost(y ~ xnm, family = Binomial())
+cgc <- coef(gc, off2int = TRUE)
+cg <- coef(g, off2int = TRUE) - c(mean(xn) * coef(g)[2], 0)
 names(cgc) <- NULL
 names(cg) <- NULL
 stopifnot(all.equal(cgc, cg))
-stopifnot(all.equal(mstop(AIC(gc, "classical")), mstop(AIC(g, "classical"))))
+stopifnot(all.equal(mstop(AIC(gc, "classical")), 
+                    mstop(AIC(g, "classical"))))
 
-gc <- gamboost(y ~ xn + bols(xf), control = boost_control(center = TRUE),
-               family = Binomial())
-g <- gamboost(y ~ xnm + bols(xf), family = Binomial())
-stopifnot(all.equal(mstop(AIC(gc, "classical")), mstop(AIC(g, "classical"))))
+### fit ANCOVA models with centering
+n <- 50
+set.seed(290875)
+x <- gl(3, n)
+x1 <- sample(ordered(gl(3, n)))
+z <- rnorm(length(x))
+X <- model.matrix(~ x + z + x1)
+eff <- X %*% (1:ncol(X))
+y <- rnorm(length(x), mean = eff)
 
-y <- rnorm(20)
-gc <- gamboost(y ~ xn + bols(xf), control = boost_control(center = TRUE))
-g <- gamboost(y ~ xnm + bols(xf))
-stopifnot(all.equal(mstop(AIC(gc, "corrected")), mstop(AIC(g, "corrected"))))
+ctr <- list(list(x = "contr.treatment"), list(x = "contr.sum"),
+            list(x = "contr.helmert"), list(x = "contr.SAS"))
+mstop <- 2000
+fm <- y ~ z:x + x + z:x1
+
+for (cc in ctr) {
+    modlm <- lm(fm, contrasts = cc)
+    modT <- glmboost(fm, contrasts.arg = cc, 
+                     center = TRUE)[mstop]
+    stopifnot(max(abs(coef(modlm) - coef(modT, off2int = TRUE))) 
+                      < .Machine$double.eps^(1/3))
+    stopifnot(max(abs(hatvalues(modlm) - hatvalues(modT))) < 0.01)
+    stopifnot(max(abs(predict(modlm) - predict(modT))) 
+                      < .Machine$double.eps^(1/3))
+}
+
+y <- factor(rbinom(length(x), size = 1, 
+                    prob = plogis(eff / max(abs(eff)) * 3)))
+for (cc in ctr) {
+    modlm <- glm(fm, contrasts = cc, 
+                 family = binomial())
+    modT <- glmboost(fm, contrasts.arg = cc,
+        center = TRUE, family = Binomial())[mstop]
+    stopifnot(max(abs(coef(modlm) - coef(modT, off2int = TRUE) * 2)) 
+                      < .Machine$double.eps^(1/3))
+    stopifnot(max(abs(predict(modlm) - predict(modT) * 2)) 
+                      < .Machine$double.eps^(1/3))
+}
+
 
 ### check gamboost with weights (use weighted some of residuals
 ### for variable selection)
