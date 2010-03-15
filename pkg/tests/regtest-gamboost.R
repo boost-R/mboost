@@ -256,3 +256,9 @@ stopifnot(length(coef(amod)) == 3)
 amod[10]
 stopifnot(length(coef(amod)) == 2)
 stopifnot(length(coef(amod, which=1:3)) == 3)
+
+### cyclic covariates
+x <- seq(from = 0, to = 2*pi, length = 100)
+y <- sin(x) + rnorm(length(x), sd = 0.5)
+mod <- gamboost(y ~ bbs(x, cyclic = TRUE))
+stopifnot(diff(fitted(mod)[c(1, 100)]) == 0)

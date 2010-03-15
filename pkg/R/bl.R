@@ -108,7 +108,7 @@ X_ols <- function(mf, vary, args) {
 
 ### hyper parameters for P-splines baselearner (including tensor product P-splines)
 hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4,
-                      lambda = NULL, center = FALSE) {
+                      lambda = NULL, center = FALSE, cyclic = FALSE) {
 
     knotf <- function(x, knots) {
         boundary.knots <- range(x, na.rm = TRUE)
@@ -122,12 +122,14 @@ hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4,
     nm <- colnames(mf)[colnames(mf) != vary]
     if (is.list(knots)) if(!all(names(knots) %in% nm))
         stop("variable names and knot names must be the same")
+    if (center && cyclic)
+        stop("centering of cyclic covariates not yet implemented")
     ret <- vector(mode = "list", length = length(nm))
     names(ret) <- nm
     for (n in nm)
         ret[[n]] <- knotf(mf[[n]], if (is.list(knots)) knots[[n]] else knots)
     list(knots = ret, degree = degree, differences = differences,
-         df = df, lambda = lambda, center = center)
+         df = df, lambda = lambda, center = center, cyclic = cyclic)
 }
 
 ### model.matrix for P-splines baselearner (including tensor product P-splines)
@@ -137,6 +139,14 @@ X_bbs <- function(mf, vary, args) {
     mm <- lapply(which(colnames(mf) != vary), function(i) {
         X <- bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,
            Boundary.knots = args$knots[[i]]$boundary.knots, intercept = TRUE)
+        if (args$cyclic) {
+            if (!require("mgcv"))
+                stop("cannot load ", sQuote("mgcv"))
+            X <- cSplineDes(mf[[i]], 
+                knots = sort(c(args$knots[[i]]$boundary.knots, 
+                               args$knots[[i]]$knots)), 
+                ord = args$degree + 1)
+        }
         class(X) <- "matrix"
         return(X)
     })
@@ -295,7 +305,7 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
 
 ### P-spline (and tensor-product spline) baselearner
 bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
-                 differences = 2, df = 4, lambda = NULL, center = FALSE) {
+                 differences = 2, df = 4, lambda = NULL, center = FALSE, cyclic = FALSE) {
 
     if (!is.null(lambda)) df <- NULL
 
@@ -363,7 +373,7 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
     ret$dpp <- bl_lin(ret, Xfun = X_bbs,
                       args = hyper_bbs(mf, vary, knots = knots,
                       degree = degree, differences = differences,
-                      df = df, lambda = lambda, center = center))
+                      df = df, lambda = lambda, center = center, cyclic = cyclic))
     return(ret)
 }
 

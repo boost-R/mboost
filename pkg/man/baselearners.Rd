@@ -20,7 +20,7 @@
 bols(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
      lambda = 0, contrasts.arg = "contr.treatment")
 bbs(..., by = NULL, index = NULL, knots = 20, degree = 3,
-    differences = 2, df = 4, lambda = NULL, center = FALSE)
+    differences = 2, df = 4, lambda = NULL, center = FALSE, cyclic = FALSE)
 bspatial(...)
 brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
      covFun = stationary.cov,
@@ -75,6 +75,8 @@ bl1 \%X\% bl2
                  re-parameterized such that the unpenalized part of the fit is subtracted and
                  only the deviation effect is fitted. The unpenalized, parametric part has then
          to be included in separate base-learners using \code{bols} (see the examples below).}
+  \item{cyclic}{ if \code{cyclic = TRUE} the fitted values coincide at the boundaries
+                 (useful for cyclic covariates such as day time etc.).}
   \item{covFun}{ the covariance function (i.e. radial basis)
                  needed to compute the basis functions. Per
                  default the \code{\link[fields]{stationary.cov}} function
