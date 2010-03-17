@@ -36,6 +36,8 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   \item{family}{a \code{\link{Family}} object.}
   \item{control}{ a list of parameters controlling the algorithm. For
     more details see \code{\link{boost_control}}. }
+  \item{oobweights}{ an additional vector of out-of-bag weights (used internally
+    by \code{cvrisk}.}
   \item{\dots}{  additional arguments passed to \code{\link{mboost_fit}},
     including \code{weights}, \code{offset}, \code{family} and
     \code{control}. }
