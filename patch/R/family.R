@@ -22,10 +22,10 @@ setMethod("show", "boost_family", function(object) {
 })
 
 Family <- function(ngradient, loss = NULL, risk = NULL,
-                   offset = function(y, w) 
-                       optimize(risk, interval = range(y), y = y, w = w)$minimum, 
+                   offset = function(y, w)
+                       optimize(risk, interval = range(y), y = y, w = w)$minimum,
                    check_y = function(y) y,
-                   weights = c("any", "none", "zeroone", "case"), 
+                   weights = c("any", "none", "zeroone", "case"),
                    nuisance = function() return(NULL),
                    name = "user-specified", fW = NULL, response = function(f) NA)
 {
@@ -42,7 +42,7 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
     }
     weights <- match.arg(weights)
     check_w <- function(w) {
-        switch(weights, 
+        switch(weights,
             "any" = TRUE,
             "none" = isTRUE(all.equal(unique(w), 1)),
             "zeroone" = isTRUE(all.equal(unique(w + abs(w - 1)), 1)),
@@ -53,7 +53,7 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
                weights = check_w, name = name, charloss = charloss)
     if (!is.null(fW))
         RET <- new("boost_family_glm", ngradient = ngradient, nuisance = nuisance,
-                   risk = risk, offset = offset, fW = fW, check_y = check_y, 
+                   risk = risk, offset = offset, fW = fW, check_y = check_y,
                    weights = check_w, name = name, response = response,
                    charloss= charloss)
     RET
@@ -121,7 +121,7 @@ Binomial <- function()
            check_y = function(y) {
                if (!is.factor(y))
                    stop("response is not a factor but ",
-                           sQuote("family = Binomial()"))  
+                           sQuote("family = Binomial()"))
                if (nlevels(y) != 2)
                    stop("response is not a factor at two levels but ",
                            sQuote("family = Binomial()"))
@@ -167,8 +167,8 @@ Huber <- function(d = NULL) {
                         sQuote("family = Huber()"))
                y
            },
-           name = paste("Huber Error", 
-               ifelse(is.null(d), "(with adaptive d)", 
+           name = paste("Huber Error",
+               ifelse(is.null(d), "(with adaptive d)",
                                   paste("(with d = ", dtxt, ")", sep = ""))))
 }
 
@@ -183,7 +183,7 @@ AdaExp <- function()
            check_y = function(y) {
                if (!is.factor(y))
                    stop("response is not a factor but ",
-                           sQuote("family = AdaExp()"))  
+                           sQuote("family = AdaExp()"))
                if (nlevels(y) != 2)
                    stop("response is not a factor at two levels but ",
                            sQuote("family = AdaExp()"))
@@ -223,9 +223,9 @@ CoxPH <- function() {
                .Call("ngradientCoxPLik", time, event, f, w, package = "mboost")
            },
            risk = risk <- function(y, f, w = 1) -sum(plloss(y, f, w), na.rm = TRUE),
-           offset = function(y, w) 
-               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)), 
-                        y = y, w = w)$minimum, 
+           offset = function(y, w)
+               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)),
+                        y = y, w = w)$minimum,
            check_y = function(y) {
                if (!inherits(y, "Surv"))
                    stop("response is not an object of class ", sQuote("Surv"),
@@ -239,15 +239,15 @@ QuantReg <- function(tau = 0.5, qoffset = 0.5) {
     stopifnot(tau > 0 && tau < 1)
     stopifnot(qoffset > 0 && qoffset < 1)
     Family(
-        ngradient = function(y, f, w = 1) 
+        ngradient = function(y, f, w = 1)
             tau*((y - f) >= 0) - (1 - tau)*((y - f)<0) ,
         loss = function(y, f) tau*(y-f)*((y-f)>=0) - (1-tau)*(y-f)*((y-f)<0) ,
-        offset = function(y, w = rep(1, length(y))) 
+        offset = function(y, w = rep(1, length(y)))
             quantile(y[rep(1:length(y), w)], qoffset),
         weights = "case",
         check_y = function(y) {
             if (!is.numeric(y) || !is.null(dim(y)))
-                stop("response is not a numeric vector but ", 
+                stop("response is not a numeric vector but ",
                      sQuote("family = QuantReg()"))
             y
         },
@@ -262,24 +262,25 @@ NBinomial <- function(nuirange = c(0, 100)) {
            sigma * log(sigma) - sigma*log(exp(f) + sigma) + y * f -
            y * log(exp(f) + sigma))
 
-    riskS <- function(sigma, y, fit, w = 1) 
+    riskS <- function(sigma, y, fit, w = 1)
         sum(w * plloss(y = y, f = fit, sigma = sigma))
-    risk <- function(y, f, w = 1) 
+    risk <- function(y, f, w = 1)
        sum(w * plloss(y = y, f = f, sigma = sigma))
 
     ngradient <- function(y, f, w = 1) {
-        sigma <<- optimize(riskS, interval = nuirange, 
+        sigma <<- optimize(riskS, interval = nuirange,
                            y = y, fit = f, w = w)$minimum
         y - (y + sigma)/(exp(f) + sigma) * exp(f)
     }
-	
+
     Family(ngradient = ngradient, risk = risk,
            check_y = function(y) {
                stopifnot(all.equal(unique(y - floor(y)), 0))
                y
            },
            nuisance = function() return(sigma),
-           name = "Negative Negative-Binomial Likelihood")
+           name = "Negative Negative-Binomial Likelihood",
+           response = function(f) exp(f))
 }
 
 PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
@@ -294,9 +295,9 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
         if (length(f) == 1) f <- rep(f, length(y))
         tmp <- lapply(1:(length(sigma) + 1), function(i) {
             if (i == 1) return(1 + exp(f - sigma[i]))
-            if (i == (length(sigma) + 1)) 
+            if (i == (length(sigma) + 1))
                 return(1 - 1/(1 + exp(f - sigma[i - 1])))
-            return(1 / (1 + exp(f - sigma[i])) -  
+            return(1 / (1 + exp(f - sigma[i])) -
                    1 / (1 + exp(f - sigma[i - 1])))
         })
         loss <- log(tmp[[1]]) * (y == levels(y)[1])
@@ -305,21 +306,21 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
         return(loss)
     }
 
-    riskS <- function(delta, y, fit, w = 1) 
+    riskS <- function(delta, y, fit, w = 1)
         sum(w * plloss(y = y, f = fit, sigma = d2s(delta)))
-    risk <- function(y, f, w = 1) 
+    risk <- function(y, f, w = 1)
         sum(w * plloss(y = y, f = f, sigma = sigma))
 
     ngradient <- function(y, f, w = 1) {
-        delta <<- optim(par = delta, fn = riskS, y = y, 
+        delta <<- optim(par = delta, fn = riskS, y = y,
                         fit = f, w = w, method = "BFGS")$par
         sigma <<- d2s(delta)
         if (length(f) == 1) f <- rep(f, length(y))
         ng <- sapply(1:(length(sigma) + 1), function(i) {
             if (i > 1 & i < (length(sigma) + 1)) {
-                ret <- (1 - exp(2 * f - sigma[i - 1] - sigma[i])) / 
-                   (1 + exp(f - sigma[i - 1]) + 
-                        exp(f - sigma[i]) + 
+                ret <- (1 - exp(2 * f - sigma[i - 1] - sigma[i])) /
+                   (1 + exp(f - sigma[i - 1]) +
+                        exp(f - sigma[i]) +
                         exp(2 * f - sigma[i - 1] - sigma[i]))
             } else {
                 if (i == 1) {
@@ -334,13 +335,13 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
     }
 
     offset <- function(y, w = 1) {
-        delta <<- seq(from = nuirange[1], to = nuirange[2], 
+        delta <<- seq(from = nuirange[1], to = nuirange[2],
                       length = nlevels(y) - 1)
         sigma <<- d2s(delta)
         optimize(risk, interval = offrange, y = y, w = w)$minimum
     }
 
-    Family(ngradient = ngradient, 
+    Family(ngradient = ngradient,
            risk = risk, offset = offset,
            check_y = function(y) {
                stopifnot(is.ordered(y))
@@ -352,7 +353,7 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
                    if (i == 1) return(1 / (1 + exp(f - sigma[i])))
                    if (i == (length(sigma) + 1))
                        return(1 - 1/(1 + exp(f - sigma[i - 1])))
-                   return(1 / (1 + exp(f - sigma[i])) -  
+                   return(1 / (1 + exp(f - sigma[i])) -
                        1 / (1 + exp(f - sigma[i - 1])))
                    })
                ret
@@ -375,23 +376,23 @@ Weibull <- function(nuirange = c(0, 100)) {
         - Sevent * log(fw(eta) / sigma) - (1 - Sevent) * log(Sw(eta))
         }
 
-    riskS <- function(sigma, y, fit, w = 1) 
+    riskS <- function(sigma, y, fit, w = 1)
         sum(w * plloss(y = y, f = fit, sigma = sigma))
-    risk <- function(y, f, w = 1) 
+    risk <- function(y, f, w = 1)
        sum(w * plloss(y = y, f = f, sigma = sigma))
 
     ngradient <- function(y, f, w = 1) {
-        sigma <<- optimize(riskS, interval = nuirange, 
-                           y = y, fit = f, w = w)$minimum             
+        sigma <<- optimize(riskS, interval = nuirange,
+                           y = y, fit = f, w = w)$minimum
         lnt <- log(y[,1])
         event <- y[,2]
         eta <- (lnt - f) / sigma
         (event * (exp(eta) - 1) + (1 - event) * exp(eta)) / sigma
         }
-	
+
     Family(ngradient = ngradient, risk = risk,
-           offset = function(y, w) 
-               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)), 
+           offset = function(y, w)
+               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)),
                         y = y, w = w)$minimum,
            check_y = function(y) {
                if (!inherits(y, "Surv"))
@@ -400,7 +401,8 @@ Weibull <- function(nuirange = c(0, 100)) {
                y
            },
            nuisance = function() return(sigma),
-           name = "Negative Weibull Likelihood")
+           name = "Negative Weibull Likelihood",
+           response = function(f) exp(f))
 }
 
 Loglog <- function(nuirange = c(0, 100)) {
@@ -419,24 +421,24 @@ Loglog <- function(nuirange = c(0, 100)) {
         - Sevent * log(fw(eta) / sigma) - (1 - Sevent) * log(Sw(eta))
         }
 
-    riskS <- function(sigma, y, fit, w = 1) 
+    riskS <- function(sigma, y, fit, w = 1)
         sum(w * plloss(y = y, f = fit, sigma = sigma))
-    risk <- function(y, f, w = 1) 
+    risk <- function(y, f, w = 1)
        sum(w * plloss(y = y, f = f, sigma = sigma))
 
     ngradient <- function(y, f, w = 1) {
-        sigma <<- optimize(riskS, interval = nuirange, 
-                           y = y, fit = f, w = w)$minimum   
+        sigma <<- optimize(riskS, interval = nuirange,
+                           y = y, fit = f, w = w)$minimum
         lnt <- log(y[,1])
         event <- y[,2]
         eta <- (lnt - f) / sigma
         nom <- (exp(-eta) + 1)
         (event * (2/nom - 1) + (1 - event) / nom) / sigma
         }
-	
+
     Family(ngradient = ngradient, risk = risk,
-           offset = function(y, w) 
-               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)), 
+           offset = function(y, w)
+               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)),
                         y = y, w = w)$minimum,
            check_y = function(y) {
                if (!inherits(y, "Surv"))
@@ -445,7 +447,8 @@ Loglog <- function(nuirange = c(0, 100)) {
                y
            },
            nuisance = function() return(sigma),
-           name = "Negative Log Logistic Likelihood")
+           name = "Negative Log Logistic Likelihood",
+           response = function(f) exp(f))
 }
 
 Lognormal <- function(nuirange = c(0, 100)) {
@@ -464,23 +467,23 @@ Lognormal <- function(nuirange = c(0, 100)) {
         - Sevent * log(fw(eta) / sigma) - (1 - Sevent) * log(Sw(eta))
         }
 
-    riskS <- function(sigma, y, fit, w = 1) 
+    riskS <- function(sigma, y, fit, w = 1)
         sum(w * plloss(y = y, f = fit, sigma = sigma))
-    risk <- function(y, f, w = 1) 
+    risk <- function(y, f, w = 1)
        sum(w * plloss(y = y, f = f, sigma = sigma))
 
     ngradient <- function(y, f, w = 1) {
-        sigma <<- optimize(riskS, interval = nuirange, 
-                           y = y, fit = f, w = w)$minimum  
+        sigma <<- optimize(riskS, interval = nuirange,
+                           y = y, fit = f, w = w)$minimum
         lnt <- log(y[,1])
         event <- y[,2]
         eta <- (lnt - f) / sigma
         (event * eta + (1 - event) * dnorm(eta) / (1 - pnorm(eta))) / sigma
         }
-	
+
     Family(ngradient = ngradient, risk = risk,
-           offset = function(y, w) 
-               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)), 
+           offset = function(y, w)
+               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)),
                         y = y, w = w)$minimum,
            check_y = function(y) {
                if (!inherits(y, "Surv"))
@@ -489,7 +492,8 @@ Lognormal <- function(nuirange = c(0, 100)) {
                y
            },
            nuisance = function() return(sigma),
-           name = "Negative Lognormal Likelihood")
+           name = "Negative Lognormal Likelihood",
+           response = function(f) exp(f))
 }
 
 ExpectReg <- function (tau = 0.5) {
@@ -497,16 +501,16 @@ ExpectReg <- function (tau = 0.5) {
     Family(
         ngradient = function(y, f, w = 1)
             2 * tau * (y - f) * ((y - f) > 0) - 2 * (1 - tau) *
-            (f - y) * ((y - f) < 0) + 0 * ((y - f) == 0), 
-        loss = function(y, f) tau * (y - f)^2 * 
+            (f - y) * ((y - f) < 0) + 0 * ((y - f) == 0),
+        loss = function(y, f) tau * (y - f)^2 *
             ((y - f) >= 0) + (1 - tau) * (y - f)^2 * ((y - f) < 0),
-        offset = function(y, w = rep(1, length(y))) 
-            mean(y[w == 1]), 
+        offset = function(y, w = rep(1, length(y)))
+            mean(y[w == 1]),
         check_y = function(y) {
             if (!is.numeric(y) || !is.null(dim(y)))
                 stop("response is not a numeric vector but ",
                   sQuote("family = ExpectReg()"))
             y
-        }, 
+        },
         name = "Expectile Regression")
 }

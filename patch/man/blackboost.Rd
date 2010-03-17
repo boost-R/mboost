@@ -6,12 +6,12 @@
   trees are utilized as base-learners.
 }
 \usage{
-blackboost(formula, data = list(), 
+blackboost(formula, data = list(),
            tree_controls = ctree_control(
                teststat = "max",
                testtype = "Teststatistic",
                mincriterion = 0,
-               maxdepth = 2), 
+               maxdepth = 2),
            ...)
 }
 \arguments{
@@ -23,7 +23,9 @@ blackboost(formula, data = list(),
                   It is wise
                   to make sure to understand the consequences of altering any of its
                   arguments.}
-  \item{\dots}{ additional arguments passed to \code{mboost}. }
+  \item{\dots}{  additional arguments passed to \code{\link{mboost_fit}},
+    including \code{weights}, \code{offset}, \code{family} and
+    \code{control}. For default values see \code{\link{mboost_fit}}. }
 }
 \details{
 
@@ -70,7 +72,7 @@ blackboost(formula, data = list(),
 
 }
 \seealso{\code{\link{mboost}} for the generic boosting function and
-  \code{\link{glmboost}} for boosted linear models and 
+  \code{\link{glmboost}} for boosted linear models and
   \code{\link{gamboost}} for boosted additive models. See
   \code{\link{cvrisk}} for cross-validated stopping iteration.
   Furthermore see \code{\link{boost_control}},  \code{\link{Family}} and

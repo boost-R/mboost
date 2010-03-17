@@ -36,7 +36,9 @@
   \item{main}{ a title for the plot.}
   \item{col}{ (a vector of) colors for plotting the lines representing
              the coefficient paths.}
-  \item{\dots}{ additional arguments passed to callies. }
+  \item{\dots}{ additional arguments passed to \code{\link{mboost_fit}},
+    including \code{weights}, \code{offset}, \code{family} and
+    \code{control}. For default values see \code{\link{mboost_fit}}.}
 }
 \details{
 
