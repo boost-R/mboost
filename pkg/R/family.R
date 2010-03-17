@@ -279,7 +279,8 @@ NBinomial <- function(nuirange = c(0, 100)) {
                y
            },
            nuisance = function() return(sigma),
-           name = "Negative Negative-Binomial Likelihood")
+           name = "Negative Negative-Binomial Likelihood",
+           response = function(f) exp(f))
 }
 
 PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
@@ -400,7 +401,8 @@ Weibull <- function(nuirange = c(0, 100)) {
                y
            },
            nuisance = function() return(sigma),
-           name = "Negative Weibull Likelihood")
+           name = "Negative Weibull Likelihood",
+           response = function(f) exp(f))
 }
 
 Loglog <- function(nuirange = c(0, 100)) {
@@ -445,7 +447,8 @@ Loglog <- function(nuirange = c(0, 100)) {
                y
            },
            nuisance = function() return(sigma),
-           name = "Negative Log Logistic Likelihood")
+           name = "Negative Log Logistic Likelihood",
+           response = function(f) exp(f))
 }
 
 Lognormal <- function(nuirange = c(0, 100)) {
@@ -489,7 +492,8 @@ Lognormal <- function(nuirange = c(0, 100)) {
                y
            },
            nuisance = function() return(sigma),
-           name = "Negative Lognormal Likelihood")
+           name = "Negative Lognormal Likelihood",
+           response = function(f) exp(f))
 }
 
 ExpectReg <- function (tau = 0.5) {

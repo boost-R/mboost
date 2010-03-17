@@ -21,7 +21,15 @@
      offset as attribute where applicable.
 
 
-                CHANGES in `mboost' VERSION 2.0-3 (2010-03-10)
+                CHANGES in `mboost' VERSION 2.0-4 (2010-03-17)
+
+  o  added (missing) response functions to families Weibull(),
+     Loglog(), Lognormal() and NBinomial()
+
+  o  improvements in documentation
+
+
+                CHANGES in `mboost' VERSION 2.0-3 (2010-03-10, r456)
 
   o  glmboost(..., center = TRUE) now also centers columns of the
      design matrix corresponding to contrasts of factors

@@ -6,7 +6,7 @@
   smoothing procedures are utilized as base-learners.
 }
 \usage{
-gamboost(formula, data = list(), 
+gamboost(formula, data = list(),
          baselearner = c("bbs", "bols", "btree", "bss", "bns"),
          dfbase = 4, ...)
 }
@@ -17,18 +17,20 @@ gamboost(formula, data = list(),
     learner to be used: \code{\link{bbs}} means P-splines with a
     B-spline basis (see Schmid and Hothorn 2008), \code{\link{bols}}
     linear models and \code{\link{btree}} boosts stumps.
-    \code{bss} and \code{bns} are deprecated. 
+    \code{bss} and \code{bns} are deprecated.
     Component-wise smoothing splines have been considered in Buehlmann
     and Yu (2003) and Schmid and Hothorn (2008) investigate P-splines
     with a B-spline basis. Kneib, Hothorn and Tutz (2009) also utilize
     P-splines with a B-spline basis, supplement them with their
     bivariate tensor product version to estimate interaction surfaces
     and spatial effects and also consider random effects base
-    learners.} 
+    learners.}
   \item{dfbase}{ an integer vector giving the degrees of freedom for the smoothing
     spline, either globally for all variables (when its length is one)
     or separately for each single covariate. }
-  \item{\dots}{ additional arguments passed to \code{mboost}.}
+  \item{\dots}{ additional arguments passed to \code{\link{mboost_fit}},
+    including \code{weights}, \code{offset}, \code{family} and
+    \code{control}. For default values see \code{\link{mboost_fit}}.}
 }
 \details{
 
@@ -39,11 +41,12 @@ gamboost(formula, data = list(),
   \code{formula} differ from \code{baselearner}, the latter argument will be
   ignored. Furthermore, two additional base-learners can be specified in
   \code{formula}: \code{\link{bspatial}} for bivariate tensor product
-  penalized splines and \code{\link{brandom}} for random effects. 
+  penalized splines and \code{\link{brandom}} for random effects.
 }
 \value{
   An object of class \code{mboost} with \code{\link{print}},
-  \code{\link{AIC}}, \code{\link{plot}} and \code{\link{predict}} methods being available.
+  \code{\link{AIC}}, \code{\link{plot}} and \code{\link{predict}}
+  methods being available.
 }
 \references{
 
@@ -62,7 +65,7 @@ gamboost(formula, data = list(),
 
   Matthias Schmid and Torsten Hothorn (2008),
   Boosting additive models using component-wise P-splines as
-  base-learners. \emph{Computational Statistics \& Data Analysis}, 
+  base-learners. \emph{Computational Statistics \& Data Analysis},
   \bold{53}(2), 298--311.
 
 }
@@ -71,7 +74,8 @@ gamboost(formula, data = list(),
   \code{\link{blackboost}} for boosted trees. See e.g. \code{\link{bbs}}
   for possible base-learners. See \code{\link{cvrisk}} for
   cross-validated stopping iteration. Furthermore see
-  \code{\link{boost_control}}, \code{\link{Family}} and  \code{\link[mboost]{methods}}}
+  \code{\link{boost_control}}, \code{\link{Family}} and
+  \code{\link[mboost]{methods}}.}
 \examples{
 
     ### a simple two-dimensional example: cars data
