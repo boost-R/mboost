@@ -721,8 +721,12 @@ fit.bl <- function(object, y)
             K2 <- Matrix(K2)
         }
 
-        X <- kronecker(X1, matrix(1, nc = ncol(X2))) *
-             kronecker(matrix(1, nc = ncol(X1)), X2)
+        X <- kronecker(X1, matrix(1, nc = ncol(X2), 
+                                  dimnames = list("", colnames(X2))), 
+                       make.dimnames = TRUE) *
+             kronecker(matrix(1, nc = ncol(X1)), X2, 
+                       make.dimnames = TRUE)
+        
         K <- kronecker(K1, diag(ncol(X2))) +
              kronecker(diag(ncol(K1)), K2)
         list(X = X, K = K)

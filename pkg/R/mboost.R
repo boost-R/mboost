@@ -312,8 +312,10 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             ix <- (xselect == w & indx)
             cf <- numeric(mstop)
             if (!any(ix)) {
-                if (!cwlin)
-                    cf <- matrix(0, nrow = length(bl[[w]]$Xnames), ncol = mstop)
+                if (!cwlin) {
+                    nm <- bl[[w]]$Xnames
+                    cf <- matrix(0, nrow = length(nm), ncol = mstop)
+                }
             } else {
                 cftmp <- sapply(ens[ix], coef)
                 nr <- NROW(cftmp)
@@ -329,6 +331,16 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
                 },
                 "none" = nu * cf
             )
+            ### set names, but not for bolscw base-learner
+            if (!cwlin) {
+                nm <- bl[[w]]$Xnames
+                if (is.matrix(ret)) {
+                    rownames(ret) <- nm
+                } else {
+                   names(ret) <- nm
+               }
+            }
+            ret
         }
         ret <- lapply(which, cfun)
         names(ret) <- bnames[which]
