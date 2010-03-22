@@ -4,7 +4,7 @@ import(stats)
 
 import(Matrix)
 importFrom(survival, Surv, survfit)
-importFrom(splines, bs)
+importFrom(splines, bs, splineDesign)
 importFrom(lattice, levelplot)
 
 export(glmboost,

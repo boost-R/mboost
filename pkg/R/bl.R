@@ -107,11 +107,15 @@ X_ols <- function(mf, vary, args) {
 }
 
 ### hyper parameters for P-splines baselearner (including tensor product P-splines)
-hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4,
-                      lambda = NULL, center = FALSE, cyclic = FALSE) {
+hyper_bbs <- function(mf, vary, knots = 20, boundary.knots = NULL, degree = 3,
+                      differences = 2, df = 4, lambda = NULL, center = FALSE,
+                      cyclic = FALSE) {
 
-    knotf <- function(x, knots) {
-        boundary.knots <- range(x, na.rm = TRUE)
+    knotf <- function(x, knots, boundary.knots) {
+        if (is.null(boundary.knots))
+            boundary.knots <- range(x, na.rm = TRUE)
+        if ((length(boundary.knots) != 2) || !boundary.knots[1] < boundary.knots[2])
+            stop("boundary.knots must be a vector (or a list of vectors) of length 2 in increasing order")
         if (length(knots) == 1) {
             knots <- seq(from = boundary.knots[1],
                          to = boundary.knots[2], length = knots + 2)
@@ -122,12 +126,16 @@ hyper_bbs <- function(mf, vary, knots = 20, degree = 3, differences = 2, df = 4,
     nm <- colnames(mf)[colnames(mf) != vary]
     if (is.list(knots)) if(!all(names(knots) %in% nm))
         stop("variable names and knot names must be the same")
+    if (is.list(boundary.knots)) if(!all(names(boundary.knots) %in% nm))
+        stop("variable names and boundary.knot names must be the same")
     if (center && cyclic)
         stop("centering of cyclic covariates not yet implemented")
     ret <- vector(mode = "list", length = length(nm))
     names(ret) <- nm
     for (n in nm)
-        ret[[n]] <- knotf(mf[[n]], if (is.list(knots)) knots[[n]] else knots)
+        ret[[n]] <- knotf(mf[[n]], if (is.list(knots)) knots[[n]] else knots,
+                          if (is.list(boundary.knots)) boundary.knots[[n]]
+                          else boundary.knots)
     list(knots = ret, degree = degree, differences = differences,
          df = df, lambda = lambda, center = center, cyclic = cyclic)
 }
@@ -140,12 +148,10 @@ X_bbs <- function(mf, vary, args) {
         X <- bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,
            Boundary.knots = args$knots[[i]]$boundary.knots, intercept = TRUE)
         if (args$cyclic) {
-            if (!require("mgcv"))
-                stop("cannot load ", sQuote("mgcv"))
-            X <- cSplineDes(mf[[i]], 
-                knots = sort(c(args$knots[[i]]$boundary.knots, 
-                               args$knots[[i]]$knots)), 
-                ord = args$degree + 1)
+            X <- cbs(mf[[i]],
+                     knots = args$knots[[i]]$knots,
+                     boundary.knots = args$knots[[i]]$boundary.knots,
+                     degree = args$degree)
         }
         class(X) <- "matrix"
         return(X)
@@ -174,9 +180,18 @@ X_bbs <- function(mf, vary, args) {
                 X <- do.call("cbind", DM)
             }
         }
-        K <- diff(diag(ncol(mm[[1]])), differences = args$differences)
+        if (!args$cyclic) {
+            K <- diff(diag(ncol(mm[[1]])), differences = args$differences)
+        } else {
+            differences <- args$differences
+            K <- diff(diag(ncol(mm[[1]]) + differences), differences=differences)
+            tmp <- K[,(1:differences)]   # save first "differences" columns
+            K <- K[,-(1:differences)]    # drop first "differences" columns
+            indx <- (ncol(mm[[1]]) - differences + 1):(ncol(mm[[1]]))
+            K[,indx] <- K[,indx] + tmp   # add first "differences" columns
+        }
         if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
-            K <- kronecker(diag(ncol(by)), K)
+                K <- kronecker(diag(ncol(by)), K)
         }
         if (args$center) {
             X <- tcrossprod(X, K) %*% solve(tcrossprod(K))
@@ -199,12 +214,29 @@ X_bbs <- function(mf, vary, args) {
             X <- DM
             ### <FIXME> Names of X if by is given
         }
-        Kx <- diff(diag(ncol(mm[[1]])), differences = args$differences)
+        if (!args$cyclic) {
+            Kx <- diff(diag(ncol(mm[[1]])), differences = args$differences)
+            Ky <- diff(diag(ncol(mm[[2]])), differences = args$differences)
+        } else {
+            stop("not yet tested. is kronecker product below ok?")
+            differences <- args$differences
+            Kx <- diff(diag(ncol(mm[[1]]) + differences), differences=differences)
+            Ky <- diff(diag(ncol(mm[[2]]) + differences), differences=differences)
+
+            tmp <- Kx[,(1:differences)]   # save first "differences" columns
+            Kx <- Kx[,-(1:differences)]    # drop first "differences" columns
+            indx <- (ncol(mm[[1]]) - differences + 1):(ncol(mm[[1]]))
+            Kx[,indx] <- Kx[,indx] + tmp   # add first "differences" columns
+
+            tmp <- Ky[,(1:differences)]   # save first "differences" columns
+            Ky <- Ky[,-(1:differences)]    # drop first "differences" columns
+            indx <- (ncol(mm[[2]]) - differences + 1):(ncol(mm[[2]]))
+            Ky[,indx] <- Ky[,indx] + tmp   # add first "differences" columns
+        }
         Kx <- crossprod(Kx)
-        Ky <- diff(diag(ncol(mm[[2]])), differences = args$differences)
         Ky <- crossprod(Ky)
         K <- kronecker(Kx, diag(ncol(mm[[2]]))) +
-             kronecker(diag(ncol(mm[[1]])), Ky)
+            kronecker(diag(ncol(mm[[1]])), Ky)
         if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
             K <- kronecker(diag(ncol(by)), K)
         }
@@ -255,7 +287,7 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
     }
     vary <- ""
     if (!is.null(by)){
-        stopifnot(is.data.frame(mf))        
+        stopifnot(is.data.frame(mf))
         mf <- cbind(mf, by)
         colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(by))
     }
@@ -304,8 +336,9 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
 }
 
 ### P-spline (and tensor-product spline) baselearner
-bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
-                 differences = 2, df = 4, lambda = NULL, center = FALSE, cyclic = FALSE) {
+bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
+                degree = 3, differences = 2, df = 4, lambda = NULL, center = FALSE,
+                cyclic = FALSE) {
 
     if (!is.null(lambda)) df <- NULL
 
@@ -331,7 +364,7 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
             return(bols(as.data.frame(...), by = by, index = index))
     }
     vary <- ""
-    if (!is.null(by)){        
+    if (!is.null(by)){
         mf <- cbind(mf, by)
         colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(by))
     }
@@ -371,10 +404,33 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
     class(ret) <- "blg"
 
     ret$dpp <- bl_lin(ret, Xfun = X_bbs,
-                      args = hyper_bbs(mf, vary, knots = knots,
-                      degree = degree, differences = differences,
+                      args = hyper_bbs(mf, vary, knots = knots, boundary.knots =
+                      boundary.knots, degree = degree, differences = differences,
                       df = df, lambda = lambda, center = center, cyclic = cyclic))
     return(ret)
+}
+
+### cyclic B-splines
+### adapted version of mgcv:cSplineDes from S.N. Wood
+cbs <- function (x, knots, boundary.knots, degree = 3) {
+    # require(splines)
+
+    knots <- c(boundary.knots[1], knots, boundary.knots[2])
+
+    nKnots <- length(knots)
+    ord <- degree + 1
+    xc <- knots[nKnots - ord + 1]
+    knots <- c(boundary.knots[1] -
+               (boundary.knots[2] - knots[(nKnots - ord + 1):(nKnots - 1)]),
+               knots)
+    ind <- x > xc
+    X <- splineDesign(knots, x, ord, outer.ok = TRUE)
+    x[ind] <- x[ind] - boundary.knots[2] + boundary.knots[1]
+    if (sum(ind)) {
+        Xtmp <- splineDesign(knots, x[ind], ord, outer.ok = TRUE)
+        X[ind, ] <- X[ind, ] + Xtmp
+    }
+    return(X)
 }
 
 ### workhorse for fitting (Ridge-penalized) baselearners
@@ -721,12 +777,12 @@ fit.bl <- function(object, y)
             K2 <- Matrix(K2)
         }
 
-        X <- kronecker(X1, matrix(1, nc = ncol(X2), 
-                                  dimnames = list("", colnames(X2))), 
+        X <- kronecker(X1, matrix(1, nc = ncol(X2),
+                                  dimnames = list("", colnames(X2))),
                        make.dimnames = TRUE) *
-             kronecker(matrix(1, nc = ncol(X1)), X2, 
+             kronecker(matrix(1, nc = ncol(X1)), X2,
                        make.dimnames = TRUE)
-        
+
         K <- kronecker(K1, diag(ncol(X2))) +
              kronecker(diag(ncol(K1)), K2)
         list(X = X, K = K)

@@ -1,9 +1,9 @@
-
+### P-spline base-learner with (monotonicity) constraints
 bmono <- function(..., constraint = c("increasing", "decreasing",
                                       "convex", "concave"),
-                  by = NULL, index = NULL, knots = 20, degree = 3,
-                  differences = 2, df = 4, lambda = NULL, lambda2 = 1e6,
-                  niter = 10) {
+                  by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
+                  degree = 3, differences = 2, df = 4,
+                  lambda = NULL, lambda2 = 1e6, niter = 10) {
 
     if (!is.null(lambda)) df <- NULL
 
@@ -71,11 +71,11 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
                 })
     class(ret) <- "blg"
     ret$dpp <- bl_mono(ret, Xfun = X_bbs,
-                      args = c(hyper_bbs(mf, vary, knots = knots,
-                               degree = degree, differences = differences,
-                               df = df, lambda = lambda, center = FALSE),
-                               constraint = constraint, lambda2 = lambda2,
-                               niter = niter))
+                       args = c(hyper_bbs(mf, vary, knots = knots,
+                       boundary.knots =  boundary.knots, degree = degree,
+                       differences = differences, df = df, lambda = lambda,
+                       center = FALSE), constraint = constraint,
+                       lambda2 = lambda2, niter = niter))
     return(ret)
 }
 

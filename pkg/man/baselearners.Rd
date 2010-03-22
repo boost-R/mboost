@@ -19,8 +19,9 @@
 \usage{
 bols(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
      lambda = 0, contrasts.arg = "contr.treatment")
-bbs(..., by = NULL, index = NULL, knots = 20, degree = 3,
-    differences = 2, df = 4, lambda = NULL, center = FALSE, cyclic = FALSE)
+bbs(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
+    degree = 3, differences = 2, df = 4, lambda = NULL, center = FALSE,
+    cyclic = FALSE)
 bspatial(...)
 brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
      covFun = stationary.cov,
@@ -30,8 +31,9 @@ btree(..., tree_controls = ctree_control(stump = TRUE,
                                          mincriterion = 0,
                                          savesplitstats = FALSE))
 bmono(..., constraint = c("increasing", "decreasing", "convex", "concave"),
-      by = NULL, index = NULL, knots = 20, degree = 3, differences = 2,
-      df = 4, lambda = NULL, lambda2 = 1e6, niter=10)
+      by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
+      degree = 3, differences = 2, df = 4, lambda = NULL,
+      lambda2 = 1e6, niter=10)
 bmrf(..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
     center = FALSE)
 bl1 \%+\% bl2
@@ -60,11 +62,16 @@ bl1 \%X\% bl2
              the effect is centered around its unpenalized part and therefore any positive number
              is admissible for \code{df}.}
   \item{lambda}{ smoothing penalty, computed from \code{df} when \code{df} is specified.}
-  \item{knots}{ either the number of (equidistant) interior knots to be used for
-                the regression spline fit or a vector including the positions of the interior
-                knots. For multiple predictor variables, \code{knots}
-		may be a named list where the names in the list are the
-		variable names.}
+  \item{knots}{ either the number of knots or a vector of the positions
+    of the interior knots (for more details see below). For multiple
+    predictor variables, \code{knots} may be a named list where the
+    names in the list are the variable names.}
+  \item{boundary.knots}{ boundary points at which to anchor the B-spline basis
+    (default the range of the data). A vector (of length 2)
+    for the lower and the upper boundary knot can be specified.This is
+    only adviced for \code{bbs(..., cyclic = TRUE)}, where the boundary
+    knots specify the points at which the cyclic function should be joined. In
+    analogy to \code{knots} a names list can be specified. }
   \item{degree}{ degree of the regression spline.}
   \item{differences}{ 1, 2, or 3. If \code{differences} =
                      \emph{k}, \emph{k}-th-order differences are used as a penalty.}
@@ -131,7 +138,15 @@ bl1 \%X\% bl2
   With \code{bbs}, the P-spline approach of Eilers and Marx (1996) is
   used. P-splines use a squared \emph{k}-th-order difference penalty
   which can be interpreted as an approximation of the integrated squared
-  \emph{k}-th derivative of the spline.
+  \emph{k}-th derivative of the spline. In \code{bbs} the argument
+  \code{knots} specifies either the number of (equidistant) \emph{interior}
+  knots to be used for the regression spline fit or a vector including
+  the positions of the \emph{interior} knots. Additionally,
+  \code{boundary.knots} can be specified. However, this is only adviced
+  if one uses cyclic constraints, where the \code{boundary.knots}
+  specify the points where the function is joined (e.g.,
+  \code{boundary.knots = c(0, 2 * pi)} for angles as in a sine function
+  or \code{boundary.knots = c(0, 24)} for hours during the day).
 
   \code{bspatial} implements bivariate tensor product P-splines for the
   estimation of either spatial effects or interaction surfaces. Note
@@ -416,7 +431,7 @@ bl1 \%X\% bl2
   ## due to the shift in x direction we need to subtract
   ## beta_1 * mean(x) to get the correct intercept
   cf_center[1] <- cf_center[1] + mod_center$offset -
-                  cf_center[2] * mean(tmpdata$x) 
+                  cf_center[2] * mean(tmpdata$x)
   cf_center
   coef(lm(y ~ x, data = tmpdata))
 
@@ -447,5 +462,30 @@ bl1 \%X\% bl2
   all.equal(c1, c2)
   all.equal(c1, c3)
 
+  ### cyclic P-splines
+  set.seed(781)
+  x <- runif(200, 0,(2*pi))
+  y <- rnorm(200, mean=sin(x), sd=0.2)
+  newX <- seq(0,2*pi, length=100)
+  ### model without cyclic constraints
+  mod <- gamboost(y ~ bbs(x, knots = 20))
+  ### model with cyclic constraints
+  mod_cyclic <- gamboost(y ~ bbs(x, cyclic=TRUE, knots = 20,
+                                 boundary.knots=c(0, 2*pi)))
+  par(mfrow = c(1,2))
+  plot(x,y, main="bbs (non-cyclic)", cex=0.5)
+  lines(newX, sin(newX), lty="dotted")
+  lines(newX + 2 * pi, sin(newX), lty="dashed")
+  lines(newX, predict(mod, data.frame(x = newX)),
+        col="red", lwd = 1.5)
+  lines(newX + 2 * pi, predict(mod, data.frame(x = newX)),
+        col="blue", lwd=1.5)
+  plot(x,y, main="bbs (cyclic)", cex=0.5)
+  lines(newX, sin(newX), lty="dotted")
+  lines(newX + 2 * pi, sin(newX), lty="dashed")
+  lines(newX, predict(mod_cyclic, data.frame(x = newX)),
+        col="red", lwd = 1.5)
+  lines(newX + 2 * pi, predict(mod_cyclic, data.frame(x = newX)),
+        col="blue", lwd = 1.5)
 }
 \keyword{models}
