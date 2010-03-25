@@ -114,7 +114,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             ### happened for family = Poisson() with nu = 0.1
             if (any(!is.finite(u[!is.na(u)])))
                 stop("Infinite residuals: please decrease step-size nu in ", 
-                     sQuote(boost_control))
+                     sQuote("boost_control"))
 
             ### evaluate risk, either for the learning sample (inbag)
             ### or the test sample (oobag)
