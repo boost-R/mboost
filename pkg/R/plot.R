@@ -1,7 +1,7 @@
 
 ### just a try
 plot.mboost <- function(x, which = NULL, newdata = NULL,
-                        type = "b", rug = TRUE, ylim = NULL,
+                        type = "b", rug = TRUE, rugcol = "black", ylim = NULL,
                         xlab = NULL, ylab = expression(f[partial]), ...) {
 
     which <- x$which(which, usedonly = is.null(which))
@@ -54,7 +54,7 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
             if (ncol(data) == 1) {
                 plot(sort(data[[1]]), pr[order(data[[1]])], type = type,
                      xlab = xl, ylab = yl, ylim = ylim, ...)
-                if (rug) rug(data[[1]])
+                if (rug) rug(data[[1]], col = rugcol)
             }
             if (ncol(data) == 2) {
                 fm <- as.formula(paste("pr ~ ", paste(colnames(data), collapse = "*"), sep = ""))
