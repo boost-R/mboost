@@ -53,7 +53,7 @@ predict.mboost <- function(object, newdata = NULL,
 }
 
 ### extract coefficients
-coef.gamboost <- function(object, which = NULL,
+coef.mboost <- function(object, which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...) {
 
     args <- list(...)
@@ -434,3 +434,75 @@ nuisance <- function(object)
 
 nuisance.mboost <- function(object)
     object$nuisance()[[mstop(object)]]
+
+
+
+extract <- function(object, ...)
+    UseMethod("extract")
+
+extract.mboost <- function(object, what = c("modelM", "penaltyM", "lambda",
+                                   "coefficients", "bnames", "offset",
+                                   "nuisance", "weights", "control"),
+                           which = NULL, ...){
+    what <- match.arg(what)
+    which <- object$which(which, usedonly = is.null(which))
+    if (what == "modelM" || what == "penaltyM"){
+        fun <- function(which)
+            extract(object$baselearner[[which]], what = what)
+        ret <- lapply(which, fun)
+        names(ret) <- extract(object, what = "bnames", which = which)
+        return(ret)
+    }
+    if (what == "lambda"){
+        fun <- function(which)
+            extract(object$basemodel[[which]], what = what)
+        ret <- lapply(which, fun)
+        names(ret) <- extract(object, what = "bnames", which = which)
+        return(ret)
+    }
+    if (what == "coefficients")
+        return(coef(object, which = which))
+    if (what == "bnames")
+        return(get("bnames", envir = environment(object$update))[which])
+    if (what == "offset")
+        return(object$offset)
+    if (what == "nuisance")
+        return(nuisance(object))
+    if (what == "weights")
+        return(model.weights(object))
+    if (what == "control")
+        return(object$control)
+}
+
+extract.blg <- function(object, what = c("modelM", "penaltyM"),
+                        ...){
+    what <- match.arg(what)
+    object <- object$dpp(rep(1, nrow(object$model.frame())))
+    extract(object, what = what)
+}
+
+extract.bl_lin <- function(object, what = c("modelM", "penaltyM", "lambda",
+                                   "weights"),
+                           ...){
+    what <- match.arg(what)
+    if (what == "modelM")
+        return(get("X", envir = environment(object$fit)))
+    if (what == "penaltyM")
+        return(get("K", envir = environment(object$fit)))
+    if (what == "lambda")
+        return(object$df())
+    if (what == "weights")
+        return(get("weights", envir = environment(object$fit)))
+}
+
+extract.bl_tree <- function(object, what = c("modelM", "penaltyM", "lambda",
+                                    "weights"),
+                            ...){
+    what <- match.arg(what)
+    if (what == "weights"){
+        return(get("weights", envir = environment(object$fit)))
+    } else {
+        warning("model matrix, penalty matrix and lambda do not exist for tree base-learners")
+        invisible(NULL)
+    }
+}
