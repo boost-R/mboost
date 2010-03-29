@@ -51,7 +51,7 @@ stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
 
 ### a simple two-dimensional example from `glmboost.Rd'
 data("cars")
-cars.gb <- glmboost(dist ~ speed, data = cars, family = fm,
+cars.gb <- glmboost(dist ~ speed, data = cars, family = fm, center = FALSE,
                     control = boost_control(mstop = 1000, nu = 1))
 cars.gb
 
@@ -63,7 +63,7 @@ stopifnot(all.equal(cf, coef(lm(dist ~ speed, data = cars))))
 ### logistic regression
 mydf <- data.frame(x = runif(100), z = rnorm(100),
                    y = factor(c(rep(0, 30), rep(1, 70))))
-bmod <- glmboost(y ~ x + z, data = mydf, family = Binomial(),
+bmod <- glmboost(y ~ x + z, data = mydf, family = Binomial(), center = FALSE,
                  control = boost_control(mstop = 1000, nu = 1))
 gmod <- glm(y ~ x + z, data = mydf, family = binomial())
 llg <- logLik(gmod)
@@ -87,7 +87,7 @@ df <- data.frame(y = 2 + 3 * x + rnorm(length(x)),
 lmmod <- lm(y ~ x + z, data = df, weights = w)
 
 ### linear model, boosting fit
-lmb <- glmboost(y ~ x + z, data = df, weights = df$w,
+lmb <- glmboost(y ~ x + z, data = df, weights = df$w, center = FALSE,
                 control = boost_control(mstop = 5000, nu = 1))
 
 ### compare fitted values
@@ -109,7 +109,7 @@ if (require("survival")) {
 
     stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, method = "breslow")),
                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test,
-                       family = CoxPH(),
+                       family = CoxPH(), center = FALSE,
                        control = boost_control(mstop = 2000, nu = 1)), which = 1:2)[2]))
 
     stopifnot(all.equal(cx$loglik[2], logLik(gl)))
@@ -120,7 +120,7 @@ if (require("survival")) {
     stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, weights = w,
                                    method = "breslow")),
                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test, weights = w,
-                       family = CoxPH(),
+                       family = CoxPH(), center = FALSE,
                        control = boost_control(mstop = 200, nu = 1)), which = 1:2)[2]))
 
     stopifnot(all.equal(cx$loglik[2], logLik(gl)))
@@ -131,7 +131,7 @@ if (require("survival")) {
     stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test[indx,],
                                    method = "breslow")),
                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test, weights = w,
-                       family = CoxPH(),
+                       family = CoxPH(), center = FALSE,
                        control = boost_control(mstop = 1000)), which = 1:2)[2], tolerance = .Machine$double.eps ^ 0.125))
 
     stopifnot(all.equal(cx$loglik[2], logLik(gl)))
@@ -170,7 +170,8 @@ df$y <- round(exp(f) )
 ctrl <- boost_control(mstop = 2000, nu = 0.1)
 
 gmod <- glm(y ~ x1 + x2, data = df, family = poisson())
-gbmod <- glmboost(y ~ x1 + x2, data = df, family = Poisson(), control = ctrl)
+gbmod <- glmboost(y ~ x1 + x2, data = df, family = Poisson(), control = ctrl,
+                  center = FALSE)
 
 llg <- logLik(gmod)
 attributes(llg) <- NULL
@@ -189,7 +190,7 @@ x3 <- rnorm(100)
 y <- rnorm(100, mean = 3 * x1, sd = 2)
 DF <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
 
-amod <- glmboost(y ~ -1 + x1 + x2, data = DF)
+amod <- glmboost(y ~ -1 + x1 + x2, data = DF, center = FALSE)
 agg <- c("none", "sum", "cumsum")
 whi <- list(NULL, 1, 2, c(1,2))
 for (i in 1:4){
@@ -228,11 +229,11 @@ for (i in 1:4){
 
 y <- rnorm(100, mean = 3 * x1^2, sd = 2)
 DF2 <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
-amod <- glmboost(y ~ -1 + x1 + I(x1^2), data = DF2)
+amod <- glmboost(y ~ -1 + x1 + I(x1^2), data = DF2, center = FALSE)
 stopifnot(ncol(predict(amod, which="x1")) == 2 && all(rowSums(predict(amod, which="x1")) + attr(coef(amod), "offset") - predict(amod) < sqrt(.Machine$double.eps)))
 
 
-amod <- glmboost(y ~ 1+ x1 + x2, data = DF)
+amod <- glmboost(y ~ 1+ x1 + x2, data = DF, center = FALSE)
 pr1 <- predict(amod, aggre = "sum", which= 1:2)
 foo <- DF
 foo$x2 <- 0
@@ -248,7 +249,7 @@ stopifnot(ncol(pr) == 3 || all(pr[,c(1,ncol)] == 0))
 amod[100]
 
 # compare predictions with gamboost
-mod1 <- glmboost(y ~ -1 + x1 + x2 + x3, data = DF)
+mod1 <- glmboost(y ~ -1 + x1 + x2 + x3, data = DF, center=FALSE)
 mod2 <- gamboost(y ~ x1 + x2 + x3, data = DF, baselearner= function(x) bols(x, intercept=FALSE))
 pr1_2 <- predict(mod2, aggre = "cumsum")
 pr2_2 <- predict(mod2, aggre = "none")
@@ -265,7 +266,7 @@ p <- 1/(1 + exp(- 3 * x1))
 y <- as.factor(runif(100) < p)
 DF <- data.frame(y = y, x1 = x1)
 
-logitBoost <- glmboost(y ~ x1, family = Binomial(),
+logitBoost <- glmboost(y ~ x1, family = Binomial(), center = FALSE,
                  data = DF,  control=boost_control(mstop=5000))
 logit <- glm(y ~ x1, data=DF, family=binomial)
 stopifnot(coef(logitBoost)[2]*2 - coef(logit)[2] < 1e-5) # * 2 as we use y = {-1, 1}
@@ -290,7 +291,7 @@ x2 <- rnorm(100)
 x3 <- rnorm(100)
 y <- rnorm(100, mean = 3 * x1, sd = 2)
 DF <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
-amod <- glmboost(y ~ x1 + x2 + x3, data = DF)
+amod <- glmboost(y ~ x1 + x2 + x3, data = DF, center = FALSE)
 
 stopifnot(length(coef(amod)) == 4)
 amod[10]

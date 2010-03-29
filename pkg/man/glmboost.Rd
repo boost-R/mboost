@@ -12,8 +12,8 @@
 \usage{
 \method{glmboost}{formula}(formula, data = list(), weights = NULL,
           na.action = na.pass, contrasts.arg = NULL,
-          center = FALSE, control = boost_control(), ...)
-\method{glmboost}{matrix}(x, y, center = FALSE, control = boost_control(), ...)
+          center = TRUE, control = boost_control(), ...)
+\method{glmboost}{matrix}(x, y, center = TRUE, control = boost_control(), ...)
 \method{glmboost}{default}(x,  ...)
 \method{plot}{glmboost}(x, main = deparse(x$call), col = NULL, ...)
 }

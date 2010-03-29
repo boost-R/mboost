@@ -1,9 +1,16 @@
 
 future
 
+    o  bnice(X, K, df, lambda, index) as generic base-learner
+       with model matrix X and penalty K
+
+    o  generic function(s) to extract model matrix,
+       penalty matrix, lambda, coef, offset, nuisance from
+       a fitted model and where explicable from base-learners
+
     o  Poisson() with some extremely large values in the response
 
-    o  predict.glmboost via coef.glmboost. 
+    o  predict.glmboost via coef.glmboost.
        Remove special code in bolscw (TH, later)
 
     o  new base-learners

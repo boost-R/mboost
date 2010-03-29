@@ -12,7 +12,7 @@ stopifnot(is.factor(pr) && all(levels(pr) %in% levels(dummy$y)))
 ### predict for g{al}mboost.matrix did not work
 ctrl <- boost_control(mstop = 10)
 X <- cbind(int = 1, x = dummy$x)
-gb <- glmboost(x = X, y = dummy$y, family = Binomial(),
+gb <- glmboost(x = X, y = dummy$y, family = Binomial(), center = FALSE,
                control = ctrl)
 stopifnot(all.equal(predict(gb), predict(gb, newdata = X)))
 
@@ -21,6 +21,12 @@ gb <- gamboost(x = X, y = dummy$y, family = Binomial(),
                control = ctrl)
 stopifnot(all.equal(predict(gb), predict(gb, newdata = X)))
 }
+
+### predict with center = TRUE in glmboost.matrix() did not work
+gb <- glmboost(x = X, y = dummy$y, family = Binomial(),
+               control = ctrl, center=TRUE)
+p1 <- X %*% coef(gb)
+stopifnot(max(abs(p1 - predict(gb, newdata = X))) < sqrt(.Machine$double.eps))
 
 ### blackboost _did_ touch the response, arg!
 
@@ -54,7 +60,7 @@ cbodyfat[indep] <- lapply(cbodyfat[indep], function(x) x - mean(x))
 bffm <- DEXfat ~ age + waistcirc + hipcirc + elbowbreadth + kneebreadth +
       anthro3a + anthro3b + anthro3c + anthro4
 
-bf_glm_1 <- glmboost(bffm, data = cbodyfat)
+bf_glm_1 <- glmboost(bffm, data = cbodyfat, center = FALSE)
 cv1 <- cvrisk(bf_glm_1, folds = bs)
 bf_glm_2 <- glmboost(bffm, data = bodyfat, control = boost_control(center = TRUE))
 cv2 <- cvrisk(bf_glm_2, folds = bs)
@@ -86,13 +92,13 @@ xn <- rnorm(20)
 xnm <- xn - mean(xn)
 gc <- glmboost(y ~ xn, center = TRUE,
                family = Binomial())
-g <- glmboost(y ~ xnm, family = Binomial())
+g <- glmboost(y ~ xnm, center = FALSE, family = Binomial())
 cgc <- coef(gc, off2int = TRUE)
 cg <- coef(g, off2int = TRUE) - c(mean(xn) * coef(g)[2], 0)
 names(cgc) <- NULL
 names(cg) <- NULL
 stopifnot(all.equal(cgc, cg))
-stopifnot(all.equal(mstop(AIC(gc, "classical")), 
+stopifnot(all.equal(mstop(AIC(gc, "classical")),
                     mstop(AIC(g, "classical"))))
 
 ### fit ANCOVA models with centering
@@ -112,25 +118,25 @@ fm <- y ~ z:x + x + z:x1
 
 for (cc in ctr) {
     modlm <- lm(fm, contrasts = cc)
-    modT <- glmboost(fm, contrasts.arg = cc, 
+    modT <- glmboost(fm, contrasts.arg = cc,
                      center = TRUE)[mstop]
-    stopifnot(max(abs(coef(modlm) - coef(modT, off2int = TRUE))) 
+    stopifnot(max(abs(coef(modlm) - coef(modT, off2int = TRUE)))
                       < .Machine$double.eps^(1/3))
     stopifnot(max(abs(hatvalues(modlm) - hatvalues(modT))) < 0.01)
-    stopifnot(max(abs(predict(modlm) - predict(modT))) 
+    stopifnot(max(abs(predict(modlm) - predict(modT)))
                       < .Machine$double.eps^(1/3))
 }
 
-y <- factor(rbinom(length(x), size = 1, 
+y <- factor(rbinom(length(x), size = 1,
                     prob = plogis(eff / max(abs(eff)) * 3)))
 for (cc in ctr) {
-    modlm <- glm(fm, contrasts = cc, 
+    modlm <- glm(fm, contrasts = cc,
                  family = binomial())
     modT <- glmboost(fm, contrasts.arg = cc,
         center = TRUE, family = Binomial())[mstop]
-    stopifnot(max(abs(coef(modlm) - coef(modT, off2int = TRUE) * 2)) 
+    stopifnot(max(abs(coef(modlm) - coef(modT, off2int = TRUE) * 2))
                       < .Machine$double.eps^(1/3))
-    stopifnot(max(abs(predict(modlm) - predict(modT) * 2)) 
+    stopifnot(max(abs(predict(modlm) - predict(modT) * 2))
                       < .Machine$double.eps^(1/3))
 }
 
@@ -145,11 +151,11 @@ w <- numeric(n)
 w <- rmultinom(1, n, rep(1, n) / n)[,1]
 ctrl <- boost_control(mstop = 20)
 
-mod1 <- glmboost(DEXfat ~ ., data = bodyfat, weights = w)
+mod1 <- glmboost(DEXfat ~ ., data = bodyfat, weights = w, center = FALSE)
 aic1 <- AIC(mod1, "corrected")
 attributes(aic1) <- NULL
 
-mod2 <- glmboost(DEXfat ~ ., data = bodyfat[rep(1:n, w),])
+mod2 <- glmboost(DEXfat ~ ., data = bodyfat[rep(1:n, w),], center = FALSE)
 aic2 <- AIC(mod2, "corrected")
 attributes(aic2) <- NULL
 
@@ -189,7 +195,7 @@ df <- data.frame(y = rnorm(100), x = runif(100), z = runif(100))
 eps <- sqrt(.Machine$double.eps)
 s <- seq(from = 1, to = 100, by = 3)
 
-x <- glmboost(y ~ ., data = df)
+x <- glmboost(y ~ ., data = df, center = FALSE)
 for (i in s)
     stopifnot(max(abs(predict(x[i]) - predict(x[max(s)], agg = "cumsum")[,i])) < eps)
 
@@ -232,7 +238,7 @@ stopifnot(max(abs(fitted(gamboost(DEXfat ~ age, data = bodyfat)) -
 ### predict for matrix interface to glmboost
 x <- matrix(runif(1000), ncol = 10)
 y <- rowMeans(x) + rnorm(nrow(x))
-mod <- glmboost(x = x, y = y)
+mod <- glmboost(x = x, y = y, center = FALSE)
 stopifnot(length(predict(mod, newdata = x[1:2,])) == 2)
 try(predict(mod, newdata = as.data.frame(x[1:2,])))
 
@@ -291,7 +297,7 @@ set.seed(1907)
 x1 <- rnorm(100)
 x2 <- rnorm(100)
 y <- rnorm(100, mean= 3 * x1,sd=0.01)
-linMod <- glmboost(y ~ x1 + x2)
+linMod <- glmboost(y ~ x1 + x2, center = FALSE)
 stopifnot(length(coef(linMod)) == 2)
 
 ### automated offset computation in Family
@@ -302,8 +308,8 @@ w <- drop(rmultinom(1, 100, rep(1 / 100, 100)))
 G <- Gaussian()
 fm <- Family(ngradient = G@ngradient, risk = G@risk)
 
-m1 <- glmboost(y ~ x, family = G)
-m2 <- glmboost(y ~ x, family = fm)
+m1 <- glmboost(y ~ x, family = G, center = FALSE)
+m2 <- glmboost(y ~ x, family = fm, center = FALSE)
 stopifnot(all.equal(coef(m1), coef(m2)))
 
 ### formula evaluation
@@ -313,7 +319,7 @@ f <- function() {
     y <- rnorm(100)
     list(mboost(y ~ bbs(x)),
          gamboost(y ~ x),
-         glmboost(y ~ x),
+         glmboost(y ~ x, center = FALSE),
          blackboost(y ~ x))
 }
 tmp <- f()
@@ -326,7 +332,7 @@ stopifnot(extends(class(Family(ngradient = function(y, f) y,
                   "boost_family"))
 
 ### check coef with aggregate = "cumsum"
-mod <- glmboost(DEXfat ~ ., data = bodyfat)
+mod <- glmboost(DEXfat ~ ., data = bodyfat, center = FALSE)
 
 stopifnot(max(abs(sapply(coef(mod, aggregate="cumsum"), function(x) x[,100])
                   - coef(mod))) < sqrt(.Machine$double.eps))
@@ -339,7 +345,7 @@ x <- factor(c(2, 1, 2, 2, 2, 1, 1, 1, 2, 2), levels = 1:2,
 data <- data.frame(y,x)
 m1 <- glm(y ~ x, data = data, family = binomial())
 m2 <- glmboost(y ~ x, data = data, family = Binomial(),
-               control = boost_control(mstop = 2000))
+               control = boost_control(mstop = 2000), center = FALSE)
 m3 <- gamboost(y ~ bols(x), data = data, family = Binomial(),
                control = boost_control(mstop = 1000))
 cf1 <- coef(m1)

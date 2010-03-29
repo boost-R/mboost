@@ -16,7 +16,7 @@ glmboost(y ~ x, family = fm)
 
 x <- rnorm(100)
 y <- rnbinom(length(x), size = 2, mu = exp(x * 2))
-mod <- glmboost(y ~ x, family = NBinomial())
+mod <- glmboost(y ~ x, family = NBinomial(), center = FALSE)
 mod[1000]
 coef(mod)
 nuisance(mod)
@@ -33,7 +33,7 @@ summary(glm.nb(y ~ x))
 y <- cut(x, breaks = c(-Inf, quantile(x, prob = c(0.25, 0.5, 0.75)), Inf), ordered = TRUE)
 x <- rnorm(100)
 polr(y ~ x)
-mod <- glmboost(y ~ x, family = PropOdds())
+mod <- glmboost(y ~ x, family = PropOdds(), center = FALSE)
 nuisance(mod) - attr(coef(mod), "offset")
 coef(mod)
 
@@ -64,7 +64,7 @@ event <- survtime < censtime
 stime <- pmin(survtime,censtime)
 
 model1 <- glmboost(Surv(stime,event)~x1+x2, family=Weibull(),
-    control = boost_control(mstop=100))
+    control = boost_control(mstop=100), center = FALSE)
 coef(model1)
 nuisance(model1)
 model2 <- survreg(Surv(stime,event)~x1+x2)
@@ -95,7 +95,7 @@ event <- survtime < censtime
 stime <- pmin(survtime,censtime)
 
 model1 <- glmboost(Surv(stime,event)~x1+x2, family=Loglog(),
-    control = boost_control(mstop=200))
+    control = boost_control(mstop=200), center = FALSE)
 coef(model1)
 nuisance(model1)
 model2 <- survreg(Surv(stime,event)~x1+x2, dist="loglogistic")
@@ -126,7 +126,7 @@ event <- survtime < censtime
 stime <- pmin(survtime,censtime)
 
 model1 <- glmboost(Surv(stime,event)~x1+x2, family=Lognormal(),
-    control = boost_control(mstop=200))
+    control = boost_control(mstop=200), center = FALSE)
 coef(model1)
 nuisance(model1)
 model2 <- survreg(Surv(stime,event)~x1+x2, dist="lognormal")

@@ -115,7 +115,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
 
             ### happened for family = Poisson() with nu = 0.1
             if (any(!is.finite(u[!is.na(u)])))
-                stop("Infinite residuals: please decrease step-size nu in ", 
+                stop("Infinite residuals: please decrease step-size nu in ",
                      sQuote("boost_control"))
 
             ### evaluate risk, either for the learning sample (inbag)
@@ -501,7 +501,7 @@ glmboost <- function(x, ...) UseMethod("glmboost", x)
 
 glmboost.formula <- function(formula, data = list(), weights = NULL,
                              na.action = na.pass, contrasts.arg = NULL,
-                             center = FALSE, control = boost_control(), ...) {
+                             center = TRUE, control = boost_control(), ...) {
 
     ### get the model frame first
     cl <- match.call()
@@ -561,11 +561,11 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     return(ret)
 }
 
-glmboost.matrix <- function(x, y, center = FALSE,
+glmboost.matrix <- function(x, y, center = TRUE,
                             control = boost_control(), ...) {
 
     X <- x
-    if (is.null(colnames(X))) 
+    if (is.null(colnames(X)))
         colnames(X) <- paste("V", 1:ncol(X), sep = "")
     if (control$center) {
         center <- TRUE
@@ -574,10 +574,10 @@ glmboost.matrix <- function(x, y, center = FALSE,
         assign <- numeric(ncol(X))
     cm <- colMeans(X, na.rm = TRUE)
     ### guess intercept
-    intercept <- which(colSums(abs(scale(X, center = cm, scale = FALSE))) 
+    intercept <- which(colSums(abs(scale(X, center = cm, scale = FALSE)))
                                    < .Machine$double.eps)
     if (length(intercept) > 0)
-        intercept <- intercept[colSums(abs(X[, intercept, drop = FALSE])) 
+        intercept <- intercept[colSums(abs(X[, intercept, drop = FALSE]))
                                > .Machine$double.eps]
     INTERCEPT <- length(intercept) == 1
     if (INTERCEPT) {
@@ -596,7 +596,7 @@ glmboost.matrix <- function(x, y, center = FALSE,
     newX <- function(newdata) {
         if (isMATRIX(newdata)) {
             if (all(colnames(X) == colnames(newdata)))
-                return(newdata)
+                return(scale(newdata, center=cm, scale=FALSE))
         }
         stop(sQuote("newdata"), " is not a matrix with the same variables as ",
               sQuote("x"))

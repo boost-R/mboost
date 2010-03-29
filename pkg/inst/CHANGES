@@ -1,5 +1,5 @@
 
-                CHANGES in `mboost' VERSION 2.1-0 (2010-03-04)
+                CHANGES in `mboost' VERSION 2.1-0 (2010-03-29)
 
   o  added base-learners for radial basis functions (brad())
      and smooth monotonic (or convex/concave) functions (bmono())
@@ -19,6 +19,10 @@
 
   o  improved predict.mboost(): added names where missing and the
      offset as attribute where applicable.
+
+  o  changed default in glmboost() to center = TRUE
+
+  o  Fixed bug in predict() mit glmboost.matrix(..., center = TRUE)
 
 
                 CHANGES in `mboost' VERSION 2.0-4 (2010-03-17)
