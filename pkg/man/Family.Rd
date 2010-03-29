@@ -30,7 +30,7 @@ Family(ngradient, loss = NULL, risk = NULL,
                     y = y, w = w)$minimum,
        check_y = function(y) y,
        weights = c("any", "none", "zeroone", "case"),
-       nuisance = function() return(NULL),
+       nuisance = function() return(NA),
        name = "user-specified", fW = NULL, 
        response = function(f) NA)
 AdaExp()

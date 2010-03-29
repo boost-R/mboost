@@ -26,7 +26,7 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
                        optimize(risk, interval = range(y), y = y, w = w)$minimum,
                    check_y = function(y) y,
                    weights = c("any", "none", "zeroone", "case"),
-                   nuisance = function() return(NULL),
+                   nuisance = function() return(NA),
                    name = "user-specified", fW = NULL, response = function(f) NA)
 {
 
@@ -517,7 +517,7 @@ ExpectReg <- function (tau = 0.5) {
 
 ## (1 - AUC)-Loss
 AUC <- function() {
-	
+
 	approxGrad <- function(x) {
 		ifelse(abs(x) >= 1, 0, ifelse(x >= 0, (1 - x), (x + 1)))
 	}
@@ -525,14 +525,14 @@ AUC <- function() {
 		ret <- ifelse(x >= 0, 1 - (1 - x)^2/2, (x + 1)^2/2)
 		ifelse(x < -1, 0, ifelse(x > 1, 1, ret))
 	}
-	
+
 	ind1 <- 0
 	ind0 <- 0
 	n0 <- 0
 	n1 <- 0
 	M0 <- matrix(0,0,0)
-	
-	
+
+
 	Family(ngradient = function(y, f, w = 1) {
 				# if there are weights!=1, observations have to be
 				# repeated/omitted accordingly
@@ -546,12 +546,12 @@ AUC <- function() {
 				if (length(f) == 1) {
 					f <- rep(f, n1 + n0)
 				} else {
-					# scale scores s.t. a gradient of zero makes sense for 
+					# scale scores s.t. a gradient of zero makes sense for
 					# differences in f that are bigger than +/-1
 					f <- f/sd(f)
 				}
-				
-				M0 <<- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) - 
+
+				M0 <<- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) -
 							f[ind0])
 				M1 <- approxGrad(M0)
 				ng <- vector(n1 + n0, mode = "numeric")
@@ -569,7 +569,7 @@ AUC <- function() {
 					if (length(f) == 1) {
 						f <- rep(f, n1 + n0)
 					} else f <- f/sd(f)
-					M0 <- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) - 
+					M0 <- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) -
 								f[ind0])
 				}
 				# 1 - approxAUC
@@ -586,9 +586,9 @@ AUC <- function() {
 						warning("response is constant - AUC is 1.")
 						return(0)
 					}
-					if (length(f) == 1) 
+					if (length(f) == 1)
 						f <- rep(f, n1 + n0)
-					M0 <- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) - 
+					M0 <- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) -
 								f[ind0])
 				}
 				# 1 - AUC
@@ -597,12 +597,12 @@ AUC <- function() {
 			offset = function(y, w) {
 				0
 			}, check_y = function(y) {
-				if (!is.factor(y)) 
+				if (!is.factor(y))
 					stop("response is not a factor but ", sQuote("family = AUC()"))
-				if (nlevels(y) != 2) 
-					stop("response is not a factor at two levels but ", 
+				if (nlevels(y) != 2)
+					stop("response is not a factor at two levels but ",
 							sQuote("family = AUC()"))
-				if (length(unique(y)) != 2) 
+				if (length(unique(y)) != 2)
 					stop("only one class is present in response.")
 				# precompute to speed up ngradient (and warn about conflicting assignments)
 				ind1 <<- which(y == levels(y)[2])
@@ -611,4 +611,4 @@ AUC <- function() {
 				n0 <<- length(ind0)
 				c(-1, 1)[as.integer(y)]
 			}, name = paste("(1 - AUC)-Loss"))
-} 
+}
