@@ -518,9 +518,9 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     mf[[1L]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
     ### center argument moved to this function
-    if (control$center) {
-        center <- TRUE
-        warning("boost_control(center = TRUE) is deprecated, use glmboost(..., center = TRUE)")
+    if (!control$center) {
+        center <- FALSE
+        warning("boost_control(center = FALSE) is deprecated, use glmboost(..., center = FALSE)")
     }
     ### set up the model.matrix and center (if requested)
     X <- model.matrix(attr(mf, "terms"), data = mf,
@@ -572,9 +572,9 @@ glmboost.matrix <- function(x, y, center = TRUE,
     X <- x
     if (is.null(colnames(X)))
         colnames(X) <- paste("V", 1:ncol(X), sep = "")
-    if (control$center) {
-        center <- TRUE
-        warning("boost_control center deprecated")
+    if (!control$center) {
+        center <- FALSE
+        warning("boost_control(center = FALSE) is deprecated, use glmboost(..., center = FALSE)")
     }
     assign <- numeric(ncol(X))
     cm <- numeric(ncol(X))
