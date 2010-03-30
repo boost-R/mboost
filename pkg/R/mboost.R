@@ -576,13 +576,13 @@ glmboost.matrix <- function(x, y, center = TRUE,
         center <- TRUE
         warning("boost_control center deprecated")
     }
-        assign <- numeric(ncol(X))
-    cm <- colMeans(X, na.rm = TRUE)
+    assign <- numeric(ncol(X))
+    cm <- numeric(ncol(X))
     ### guess intercept
-    intercept <- which(colSums(abs(scale(X, center = cm, scale = FALSE)))
+    intercept <- which(colSums(abs(scale(X, center = TRUE, scale = FALSE)), na.rm=TRUE)
                                    < .Machine$double.eps)
     if (length(intercept) > 0)
-        intercept <- intercept[colSums(abs(X[, intercept, drop = FALSE]))
+        intercept <- intercept[colSums(abs(X[, intercept, drop = FALSE]), na.rm=TRUE)
                                > .Machine$double.eps]
     INTERCEPT <- length(intercept) == 1
     if (INTERCEPT) {
@@ -591,12 +591,11 @@ glmboost.matrix <- function(x, y, center = TRUE,
         assign <- 1:ncol(X)
     }
     if (center) {
+        cm <- colMeans(X, na.rm = TRUE)
         if (!INTERCEPT)
             warning("model with centered covariates does not contain intercept")
         cm[assign == 0] <- 0
         X <- scale(X, center = cm, scale = FALSE)
-    } else {
-        cm <- numeric(ncol(X))
     }
     newX <- function(newdata) {
         if (isMATRIX(newdata)) {
@@ -604,7 +603,7 @@ glmboost.matrix <- function(x, y, center = TRUE,
                 return(scale(newdata, center=cm, scale=FALSE))
         }
         stop(sQuote("newdata"), " is not a matrix with the same variables as ",
-              sQuote("x"))
+             sQuote("x"))
         return(NULL)
     }
     bl <- list(bolscw(X))
