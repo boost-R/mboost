@@ -17,11 +17,16 @@
 \alias{mstop.cvrisk}
 
 \alias{predict.mboost}
+\alias{predict.gamboost}
+\alias{predict.blackboost}
 \alias{predict.glmboost}
 \alias{fitted.mboost}
 
 \alias{extract}
 \alias{extract.mboost}
+\alias{extract.gamboost}
+\alias{extract.glmboost}
+\alias{extract.blackboost}
 \alias{extract.blg}
 \alias{extract.bl_lin}
 \alias{extract.bl_tree}
@@ -74,12 +79,12 @@
 \method{extract}{mboost}(object, what = c("design", "penalty", "lambda",
                                    "coefficients", "bnames", "offset",
                                    "nuisance", "weights", "control"),
+                         which = NULL, ...)
+\method{extract}{glmboost}(object, what = c("design", "coefficients",
+                                     "bnames", "offset",
+                                     "nuisance", "weights", "control"),
                            which = NULL, ...)
 \method{extract}{blg}(object, what = c("design", "penalty"), ...)
-%\method{extract}{bl_lin}(object, what = c("design", "penalty", "lambda",
-%                                    "weights"), ...)
-%\method{extract}{bl_tree}(object, what = c("design", "penalty", "lambda",
-%                                    "weights"), ...)
 
 \method{logLik}{mboost}(object, ...)
 \method{hatvalues}{gamboost}(model, ...)
@@ -201,6 +206,12 @@
   \code{i - mstop} steps are fitted. If the model is restricted, the
   spare steps are not dropped, i.e., if we increase \code{i} again,
   these boosting steps are immediately available.
+
+  The generic \code{extract} function can be used to extract various
+  characteristics of a fitted model or a base-learner. Note that the
+  sometimes a penalty function is returned (e.g. by \code{extract(bols(x),
+  what = "penalty")}) even if the estimation is unpenalized. However, in
+  this case the penalty paramter \code{lambda} is set to zero.
 
   The ids of base-learners selected during the fitting process can be
   extracted using \code{selected()}. The \code{nuisance()} method

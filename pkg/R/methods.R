@@ -474,6 +474,44 @@ extract.mboost <- function(object, what = c("design", "penalty", "lambda",
         return(object$control)
 }
 
+extract.glmboost <- function(object, what = c("design", "coefficients",
+                                     "bnames", "offset",
+                                     "nuisance", "weights", "control"),
+                             which = NULL, ...){
+    what <- match.arg(what)
+    center <- get("center", envir = environment(object$newX))
+    if (is.null(which)) {
+        which <- object$which(usedonly = TRUE)
+        ## if center = TRUE for model fitting intercept is implicitly selected
+        if (center){
+            intercept <- which(object$assign == 0)
+            INTERCEPT <- sum(object$assign == 0) == 1
+            if (INTERCEPT && !intercept %in% which)
+                which <- c(intercept, which)
+        }
+    } else {
+        which <- object$which(which)
+    }
+    if (what == "design"){
+        return(object$baselearner[[1]]$get_data()[,which])
+    }
+    if (what == "coefficients")
+        return(coef(object, which = which))
+    if (what == "bnames")
+        return(get("bnames", envir = environment(object$update))[which])
+    if (what == "offset")
+        return(object$offset)
+    if (what == "nuisance")
+        return(nuisance(object))
+    if (what == "weights")
+        return(model.weights(object))
+    if (what == "control")
+        return(object$control)
+}
+
+extract.blackboost <- function(object, ...)
+    stop("function not yet implemented")
+
 extract.blg <- function(object, what = c("design", "penalty"),
                         ...){
     what <- match.arg(what)
