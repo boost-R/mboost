@@ -4,21 +4,28 @@
 
 \alias{summary.mboost}
 
+\alias{coef.mboost}
 \alias{coef.glmboost}
-\alias{coef.gamboost}
 
 \alias{[.mboost}
 
 \alias{AIC.mboost}
-\alias{predict.mboost}
-\alias{predict.glmboost}
 
 \alias{mstop}
 \alias{mstop.gbAIC}
 \alias{mstop.mboost}
 \alias{mstop.cvrisk}
 
+\alias{predict.mboost}
+\alias{predict.glmboost}
 \alias{fitted.mboost}
+
+\alias{extract}
+\alias{extract.mboost}
+\alias{extract.blg}
+\alias{extract.bl_lin}
+\alias{extract.bl_tree}
+
 \alias{logLik.mboost}
 \alias{hatvalues.gamboost}
 \alias{hatvalues.glmboost}
@@ -41,10 +48,10 @@
 
 \method{summary}{mboost}(object, ...)
 
+\method{coef}{mboost}(object, which = NULL,
+    aggregate = c("sum", "cumsum", "none"), ...)
 \method{coef}{glmboost}(object, which = NULL,
     aggregate = c("sum", "cumsum", "none"), off2int = FALSE, ...)
-\method{coef}{gamboost}(object, which = NULL,
-    aggregate = c("sum", "cumsum", "none"), ...)
 
 \method{[}{mboost}(x, i, return = TRUE, ...)
 
@@ -63,6 +70,17 @@
     aggregate = c("sum", "cumsum", "none"), ...)
 
 \method{fitted}{mboost}(object, ...)
+
+\method{extract}{mboost}(object, what = c("design", "penalty", "lambda",
+                                   "coefficients", "bnames", "offset",
+                                   "nuisance", "weights", "control"),
+                           which = NULL, ...)
+\method{extract}{blg}(object, what = c("design", "penalty"), ...)
+%\method{extract}{bl_lin}(object, what = c("design", "penalty", "lambda",
+%                                    "weights"), ...)
+%\method{extract}{bl_tree}(object, what = c("design", "penalty", "lambda",
+%                                    "weights"), ...)
+
 \method{logLik}{mboost}(object, ...)
 \method{hatvalues}{gamboost}(model, ...)
 \method{hatvalues}{glmboost}(model, ...)
@@ -121,7 +139,15 @@
              non-zero coefficients for each boosting iteration.}
   \item{k}{  numeric, the \emph{penalty} per parameter to be used; the default
              \code{k = 2} is the classical AIC. Only used when
-             \code{method = "classical"}.} 
+             \code{method = "classical"}.}
+  \item{what}{ a character specifying the quantities to \code{extract}.
+               Depending on \code{object} this can be a subset of
+               \code{"design"} (default; design matrix),
+               \code{"penalty"} (penalty matrix),
+               \code{"lambda"} (smoothing parameter and df),
+               \code{"coefficients"}, \code{"bnames"} (names of the base-learners),
+               \code{"offset"}, \code{"nuisance"}, \code{"weights"},
+               \code{"control"}.}
   \item{\dots}{ additional arguments passed to callies. }
 }
 \details{
@@ -165,7 +191,7 @@
   iteration). If applicable the \code{offset} is added to the predictions.
   If marginal predictions are requested the \code{offset} is attached
   to the object via \code{attr(..., "offset")} as adding the offset to
-  one of the marginal predictions doesn't make much sense. 
+  one of the marginal predictions doesn't make much sense.
 
   The \code{[.mstop} function can be used to enhance or restrict a given
   boosting model to the specified boosting iteration \code{i}. Note that
@@ -313,7 +339,7 @@
   cf1_all <- coef(model, aggregate = "cumsum")
   cf1_all <- lapply(cf1_all, function(x) x[, ncol(x)]) # last element
   ## same as coef(model)
-  
+
   cf2 <- coef(model, aggregate = "none")
   cf2 <- lapply(cf2, rowSums) # same as coef(model)
 
@@ -327,7 +353,20 @@
 
   ## better: predictions on a equidistant grid
   new_data <- data.frame(x1 = seq(min(data$x1), max(data$x1), length = 100))
-  p2 <- predict(model, newdata = new_data, which = "x1")  
+  p2 <- predict(model, newdata = new_data, which = "x1")
   lines(new_data$x1, rowSums(p2), col = "red")
+
+  ### extraction of model characteristics
+  extract(model, which = "x1")  # design matrices for x1
+  extract(model, what = "penalty", which = "x1") # penalty matrices for x1
+  extract(model, what = "lambda", which = "x1") # df and corresponding lambda for x1
+       ## note that bols(x1, intercept = FALSE) is unpenalized
+
+  ### extract from base-learners
+  extract(bbs(x1), what = "design")
+  extract(bbs(x1), what = "penalty")
+  ## weights and lambda can only be extracted after using dpp
+  weights <- rep(1, length(x1))
+  extract(bbs(x1)$dpp(weights), what = "lambda")
 }
 \keyword{methods}

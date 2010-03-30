@@ -440,13 +440,13 @@ nuisance.mboost <- function(object)
 extract <- function(object, ...)
     UseMethod("extract")
 
-extract.mboost <- function(object, what = c("modelM", "penaltyM", "lambda",
+extract.mboost <- function(object, what = c("design", "penalty", "lambda",
                                    "coefficients", "bnames", "offset",
                                    "nuisance", "weights", "control"),
                            which = NULL, ...){
     what <- match.arg(what)
     which <- object$which(which, usedonly = is.null(which))
-    if (what == "modelM" || what == "penaltyM"){
+    if (what == "design" || what == "penalty"){
         fun <- function(which)
             extract(object$baselearner[[which]], what = what)
         ret <- lapply(which, fun)
@@ -474,20 +474,20 @@ extract.mboost <- function(object, what = c("modelM", "penaltyM", "lambda",
         return(object$control)
 }
 
-extract.blg <- function(object, what = c("modelM", "penaltyM"),
+extract.blg <- function(object, what = c("design", "penalty"),
                         ...){
     what <- match.arg(what)
     object <- object$dpp(rep(1, nrow(object$model.frame())))
     extract(object, what = what)
 }
 
-extract.bl_lin <- function(object, what = c("modelM", "penaltyM", "lambda",
+extract.bl_lin <- function(object, what = c("design", "penalty", "lambda",
                                    "weights"),
                            ...){
     what <- match.arg(what)
-    if (what == "modelM")
+    if (what == "design")
         return(get("X", envir = environment(object$fit)))
-    if (what == "penaltyM")
+    if (what == "penalty")
         return(get("K", envir = environment(object$fit)))
     if (what == "lambda")
         return(object$df())
@@ -495,7 +495,7 @@ extract.bl_lin <- function(object, what = c("modelM", "penaltyM", "lambda",
         return(get("weights", envir = environment(object$fit)))
 }
 
-extract.bl_tree <- function(object, what = c("modelM", "penaltyM", "lambda",
+extract.bl_tree <- function(object, what = c("design", "penalty", "lambda",
                                     "weights"),
                             ...){
     what <- match.arg(what)

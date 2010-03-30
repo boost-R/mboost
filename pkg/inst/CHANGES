@@ -1,5 +1,5 @@
 
-                CHANGES in `mboost' VERSION 2.1-0 (2010-03-29)
+                CHANGES in `mboost' VERSION 2.1-0 (2010-03-30)
 
   o  added base-learners for radial basis functions (brad())
      and smooth monotonic (or convex/concave) functions (bmono())
@@ -11,18 +11,25 @@
   o  bbs(x, cyclic = TRUE) for cyclic covariates ensures that
      predictions at the boundaries coincide
 
+  o  added extract() methods for fitted models and base-learners
+
+  o  added family for AUC loss function
+
   o  changed behavior of cvrisk() if weights are used:
      out-of-bag-risk now weighted according to "weights" as
      specified in call to mboost
-
-  o  added family for AUC loss function
 
   o  improved predict.mboost(): added names where missing and the
      offset as attribute where applicable.
 
   o  changed default in glmboost() to center = TRUE
 
-  o  Fixed bug in predict() mit glmboost.matrix(..., center = TRUE)
+  o  fixed bug in predict() mit glmboost.matrix(..., center = TRUE)
+
+  o  coef now also works with tree base-learners
+     (returns NULL in this case)
+
+  o  changed coef.gamboost to coef.mboost
 
 
                 CHANGES in `mboost' VERSION 2.0-4 (2010-03-17)
