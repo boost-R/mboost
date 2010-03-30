@@ -333,6 +333,9 @@ bl1 \%X\% bl2
 
 
   ### grouped linear effects
+  # center x1 and x2 first
+  x1 <- scale(x1, center = TRUE, scale = FALSE)
+  x2 <- scale(x2, center = TRUE, scale = FALSE)
   model <- gamboost(y ~ bols(x1, x2, intercept = FALSE) +
                         bols(x1, intercept = FALSE) +
                         bols(x2, intercept = FALSE),

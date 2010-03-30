@@ -45,10 +45,10 @@ stopifnot(identical(max(abs(tmp$risk()[x] / sum(bs[,3] == 0)  - cv[3,])), 0))
 
 ### center = TRUE and cvrisk were broken; same issue with masking original data
 
-gb <- glmboost(DEXfat ~ ., data = bodyfat, control = boost_control(center = TRUE))
+gb <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)
 cv1 <- cvrisk(gb, folds = bs)
-tmp <- glmboost(DEXfat ~ ., data = bodyfat,
-                control = boost_control(center = TRUE, risk = "oobag"),
+tmp <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE,
+                control = boost_control(risk = "oobag"),
                 weights = bs[,3])
 stopifnot(identical(max(tmp$risk()[attr(cv1, "mstop")] / sum(bs[,3] == 0) - cv1[3,]), 0))
 
@@ -62,7 +62,7 @@ bffm <- DEXfat ~ age + waistcirc + hipcirc + elbowbreadth + kneebreadth +
 
 bf_glm_1 <- glmboost(bffm, data = cbodyfat, center = FALSE)
 cv1 <- cvrisk(bf_glm_1, folds = bs)
-bf_glm_2 <- glmboost(bffm, data = bodyfat, control = boost_control(center = TRUE))
+bf_glm_2 <- glmboost(bffm, data = bodyfat, center = TRUE)
 cv2 <- cvrisk(bf_glm_2, folds = bs)
 
 stopifnot(mstop(cv1) == mstop(cv2))
@@ -70,9 +70,9 @@ stopifnot(mstop(cv1) == mstop(cv2))
 ### dfbase=1 was not working correctly for ssp
 ### spotted by Matthias Schmid <Matthias.Schmid@imbe.imed.uni-erlangen.de>
 data("bodyfat", package = "mboost")
-ctrl <- boost_control(mstop = 100, center = TRUE)
+ctrl <- boost_control(mstop = 100)
 ga <- gamboost(DEXfat ~ ., data = bodyfat, dfbase = 1, control = ctrl)
-gl <- glmboost(DEXfat ~ ., data = bodyfat, control = ctrl)
+gl <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE, control = ctrl)
 stopifnot(max(abs(predict(ga) - predict(gl))) < 1e-8)
 AIC(gl)
 
