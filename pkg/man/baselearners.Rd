@@ -264,8 +264,12 @@ bl1 \%X\% bl2
   \code{\link{blackboost}} is more efficient for boosting stumps.
 }
 \value{
- An object of class \code{bl} (base-learner) with a \code{dpp} function. The call of \code{dpp} returns
- an object of class \code{bm} (base-model).
+ An object of class \code{blg} (base-learner generator) with a
+ \code{dpp} function.
+
+ The call of \code{dpp} returns an object of class
+ \code{bl} (base-learner) with a \code{fit} function. The call to
+ \code{fit} finally returns an object of class \code{bm} (base-model).
 }
 \references{
   Paul H. C. Eilers (2005), Unimodal smoothing. \emph{Journal of
