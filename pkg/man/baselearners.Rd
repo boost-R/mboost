@@ -91,8 +91,12 @@ bl1 \%X\% bl2
   \item{args}{ a named list of arguments to be passed to
                \code{cov.function}. Thus strongly dependend on the
            specified \code{cov.function}. }
-  \item{contrasts.arg}{ a character suitable for input to the \code{\link{contrasts}} replacement function,
-                        see \code{\link{model.matrix}}.}
+  \item{contrasts.arg}{ a named list of characters suitable for input to the
+                        \code{\link{contrasts}} replacement function, see
+                        \code{\link{model.matrix}}, or a single
+			character which is then used as contrasts for
+			all factors in this base-learner (with the
+			exception of factors in \code{by}). }
   \item{tree_controls}{ an object of class \code{"\linkS4class{TreeControl}"}, which can be
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners,

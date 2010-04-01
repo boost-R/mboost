@@ -32,9 +32,12 @@
   o  changed coef.gamboost to coef.mboost
 
 
-                CHANGES in `mboost' VERSION 2.0-4 (2010-03-17)
+                CHANGES in `mboost' VERSION 2.0-4 (2010-04-01)
 
-  o  added (missing) response functions to families Weibull(),
+  o  fixed bug in bols(): contrast.arg was ignored if not a named list 
+     (which is wasn't per default)
+
+  o  added (missing) response functions to families Weibull(), 
      Loglog(), Lognormal() and NBinomial()
 
   o  improvements in documentation
@@ -55,7 +58,7 @@
      for family = Poisson(), something like boost_control(nu = 0.01)
      fixes this problem.
 
-  o  "by" (in bols() and bbs()) can now handle factors with more than
+  o  "by" (in bols() and bbs()) can now handle factors with more than 
      two levels
 
   o  improved plot.mboost() for varying coefficients
@@ -69,10 +72,12 @@
      wrong handling of factors in gamboost() (spotted by
      Juliane Schaefer <JSchaefer _at_ uhbs.ch>)
 
+  o  reduce memory footprint in blackboost (requires party 0.9-9993)
 
-                 CHANGES in `mboost' VERSION 2.0-1 (2010-03-01)
 
-  o  fixed bug in coef( , aggregate="cumsum"): fraction "nu" was missing
+                CHANGES in `mboost' VERSION 2.0-1 (2010-03-01)
+
+  o  fixed bug in coef( , aggregate = "cumsum"): fraction "nu" was missing
 
 
                 CHANGES in `mboost' VERSION 2.0-0 (2010-02-01)
