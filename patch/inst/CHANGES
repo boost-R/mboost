@@ -1,5 +1,8 @@
 
-                CHANGES in `mboost' VERSION 2.0-4 (2010-03-17)
+                CHANGES in `mboost' VERSION 2.0-4 (2010-04-01)
+
+  o  fixed bug in bols(): contrast.arg was ignored if not a named list 
+     (which is wasn't per default)
 
   o  added (missing) response functions to families Weibull(), 
      Loglog(), Lognormal() and NBinomial()

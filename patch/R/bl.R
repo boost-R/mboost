@@ -73,6 +73,16 @@ X_ols <- function(mf, vary, args) {
         fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary],
                     collapse = "+"), sep = "")
         if (!args$intercept) fm <- paste(fm, "-1")
+        fac <- sapply(mf[colnames(mf) != vary], is.factor)
+        if (any(fac)){
+            if (!is.list(args$contrasts.arg)){
+                txt <- paste("list(", paste(colnames(mf)[colnames(mf) != vary][fac],
+                                            "= args$contrasts.arg", collapse = ", "),")")
+                args$contrasts.arg <- eval(parse(text=txt))
+            }
+        } else {
+            args$contrasts.arg <- NULL
+        }
         X <- model.matrix(as.formula(fm), data = mf, contrasts.arg = args$contrasts.arg)
         contr <- attr(X, "contrasts")
         if (vary != "") {
@@ -235,7 +245,7 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
     }
     vary <- ""
     if (!is.null(by)){
-        stopifnot(is.data.frame(mf))        
+        stopifnot(is.data.frame(mf))
         mf <- cbind(mf, by)
         colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(by))
     }
@@ -311,7 +321,7 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, degree = 3,
             return(bols(as.data.frame(...), by = by, index = index))
     }
     vary <- ""
-    if (!is.null(by)){        
+    if (!is.null(by)){
         mf <- cbind(mf, by)
         colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(by))
     }

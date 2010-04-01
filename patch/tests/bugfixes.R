@@ -92,7 +92,7 @@ cg <- coef(g, off2int = TRUE) - c(mean(xn) * coef(g)[2], 0)
 names(cgc) <- NULL
 names(cg) <- NULL
 stopifnot(all.equal(cgc, cg))
-stopifnot(all.equal(mstop(AIC(gc, "classical")), 
+stopifnot(all.equal(mstop(AIC(gc, "classical")),
                     mstop(AIC(g, "classical"))))
 
 ### fit ANCOVA models with centering
@@ -112,25 +112,25 @@ fm <- y ~ z:x + x + z:x1
 
 for (cc in ctr) {
     modlm <- lm(fm, contrasts = cc)
-    modT <- glmboost(fm, contrasts.arg = cc, 
+    modT <- glmboost(fm, contrasts.arg = cc,
                      center = TRUE)[mstop]
-    stopifnot(max(abs(coef(modlm) - coef(modT, off2int = TRUE))) 
+    stopifnot(max(abs(coef(modlm) - coef(modT, off2int = TRUE)))
                       < .Machine$double.eps^(1/3))
     stopifnot(max(abs(hatvalues(modlm) - hatvalues(modT))) < 0.01)
-    stopifnot(max(abs(predict(modlm) - predict(modT))) 
+    stopifnot(max(abs(predict(modlm) - predict(modT)))
                       < .Machine$double.eps^(1/3))
 }
 
-y <- factor(rbinom(length(x), size = 1, 
+y <- factor(rbinom(length(x), size = 1,
                     prob = plogis(eff / max(abs(eff)) * 3)))
 for (cc in ctr) {
-    modlm <- glm(fm, contrasts = cc, 
+    modlm <- glm(fm, contrasts = cc,
                  family = binomial())
     modT <- glmboost(fm, contrasts.arg = cc,
         center = TRUE, family = Binomial())[mstop]
-    stopifnot(max(abs(coef(modlm) - coef(modT, off2int = TRUE) * 2)) 
+    stopifnot(max(abs(coef(modlm) - coef(modT, off2int = TRUE) * 2))
                       < .Machine$double.eps^(1/3))
-    stopifnot(max(abs(predict(modlm) - predict(modT) * 2)) 
+    stopifnot(max(abs(predict(modlm) - predict(modT) * 2))
                       < .Machine$double.eps^(1/3))
 }
 
@@ -352,3 +352,8 @@ cf3 <- b[[1]] * 2
 stopifnot(max(abs(cf1 - cf2)) < sqrt(.Machine$double.eps))
 stopifnot(max(abs(cf1 - cf3)) < sqrt(.Machine$double.eps))
 stopifnot(max(abs(predict(m2) - predict(m3))) < sqrt(.Machine$double.eps))
+
+### bug in setting contrasts correctly
+z <- as.ordered(gl(3, 10))
+BL <- bols(z, contrasts.arg = "contr.treatment")$dpp
+stopifnot(attr(get("X", envir = environment(BL)), "contrasts")$z == "contr.treatment")
