@@ -442,11 +442,11 @@ extract <- function(object, ...)
 
 extract.mboost <- function(object, what = c("design", "penalty", "lambda",
                                    "coefficients", "bnames", "offset",
-                                   "nuisance", "weights", "control"),
+                                   "nuisance", "weights", "index", "control"),
                            which = NULL, ...){
     what <- match.arg(what)
     which <- object$which(which, usedonly = is.null(which))
-    if (what == "design" || what == "penalty"){
+    if (what == "design" || what == "penalty" || what == "index"){
         fun <- function(which)
             extract(object$baselearner[[which]], what = what)
         ret <- lapply(which, fun)
@@ -475,8 +475,8 @@ extract.mboost <- function(object, what = c("design", "penalty", "lambda",
 }
 
 extract.glmboost <- function(object, what = c("design", "coefficients",
-                                     "bnames", "offset",
-                                     "nuisance", "weights", "control"),
+                                     "bnames", "offset", "nuisance", "weights",
+                                     "index", "control"),
                              which = NULL, ...){
     what <- match.arg(what)
     center <- get("center", envir = environment(object$newX))
@@ -505,6 +505,8 @@ extract.glmboost <- function(object, what = c("design", "coefficients",
         return(nuisance(object))
     if (what == "weights")
         return(model.weights(object))
+    if (what == "index")
+        return(object$baselearner[[1]]$get_index())
     if (what == "control")
         return(object$control)
 }
@@ -512,15 +514,15 @@ extract.glmboost <- function(object, what = c("design", "coefficients",
 extract.blackboost <- function(object, ...)
     stop("function not yet implemented")
 
-extract.blg <- function(object, what = c("design", "penalty"),
+extract.blg <- function(object, what = c("design", "penalty", "index"),
                         ...){
     what <- match.arg(what)
     object <- object$dpp(rep(1, nrow(object$model.frame())))
-    extract(object, what = what)
+    return(extract(object, what = what))
 }
 
 extract.bl_lin <- function(object, what = c("design", "penalty", "lambda",
-                                   "weights"),
+                                   "weights", "index"),
                            ...){
     what <- match.arg(what)
     if (what == "design")
@@ -531,16 +533,19 @@ extract.bl_lin <- function(object, what = c("design", "penalty", "lambda",
         return(object$df())
     if (what == "weights")
         return(get("weights", envir = environment(object$fit)))
+    if (what == "index")
+        return(get("index", envir = environment(object$fit)))
 }
 
 extract.bl_tree <- function(object, what = c("design", "penalty", "lambda",
-                                    "weights"),
+                                    "weights", "index"),
                             ...){
     what <- match.arg(what)
     if (what == "weights"){
         return(get("weights", envir = environment(object$fit)))
     } else {
-        warning("model matrix, penalty matrix and lambda do not exist for tree base-learners")
+        warning(paste("model matrix, penalty matrix, lambda and index",
+                      "do not exist for tree base-learners"))
         invisible(NULL)
     }
 }

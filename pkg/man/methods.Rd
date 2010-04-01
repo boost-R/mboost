@@ -78,13 +78,13 @@
 
 \method{extract}{mboost}(object, what = c("design", "penalty", "lambda",
                                    "coefficients", "bnames", "offset",
-                                   "nuisance", "weights", "control"),
+                                   "nuisance", "weights", "index", "control"),
                          which = NULL, ...)
 \method{extract}{glmboost}(object, what = c("design", "coefficients",
-                                     "bnames", "offset",
-                                     "nuisance", "weights", "control"),
+                                     "bnames", "offset", "nuisance",
+                                     "weights", "index", "control"),
                            which = NULL, ...)
-\method{extract}{blg}(object, what = c("design", "penalty"), ...)
+\method{extract}{blg}(object, what = c("design", "penalty", "index"), ...)
 
 \method{logLik}{mboost}(object, ...)
 \method{hatvalues}{gamboost}(model, ...)
@@ -152,7 +152,7 @@
                \code{"lambda"} (smoothing parameter and df),
                \code{"coefficients"}, \code{"bnames"} (names of the base-learners),
                \code{"offset"}, \code{"nuisance"}, \code{"weights"},
-               \code{"control"}.}
+               \code{index} and \code{"control"}.}
   \item{\dots}{ additional arguments passed to callies. }
 }
 \details{
