@@ -357,3 +357,8 @@ cf3 <- b[[1]] * 2
 stopifnot(max(abs(cf1 - cf2)) < sqrt(.Machine$double.eps))
 stopifnot(max(abs(cf1 - cf3)) < sqrt(.Machine$double.eps))
 stopifnot(max(abs(predict(m2) - predict(m3))) < sqrt(.Machine$double.eps))
+
+### bug in setting contrasts correctly
+z <- as.ordered(gl(3, 10))
+BL <- bols(z, contrasts.arg = "contr.treatment")$dpp
+stopifnot(attr(get("X", envir = environment(BL)), "contrasts")$z == "contr.treatment")

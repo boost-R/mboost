@@ -7,6 +7,7 @@
 \alias{btree}
 \alias{bmono}
 \alias{bmrf}
+\alias{buser}
 \alias{bns}
 \alias{bss}
 \alias{\%+\%}
@@ -36,6 +37,7 @@ bmono(..., constraint = c("increasing", "decreasing", "convex", "concave"),
       lambda2 = 1e6, niter=10)
 bmrf(..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
     center = FALSE)
+buser(X, K = NULL, by = NULL, index = NULL, df = 4, lambda = NULL)
 bl1 \%+\% bl2
 bl1 \%X\% bl2
 }
@@ -111,6 +113,12 @@ bl1 \%X\% bl2
     Object of class \code{bnd}, in which the boundaries of a map are defined and from which neighbourhood
     relations can be construed. See \code{\link[BayesX]{read.bnd}}. If a boundary object is not available,
     the neighbourhood matrix can also be given directly. }
+  \item{X}{ design matrix as it should be used in the penalized least
+    squares estimation. Effect modifiers do not need to be included here
+    (\code{by} can be used for convenience). }
+  \item{K}{ penalty matrix as it should be used in the penalized least
+    squares estimation. If \code{NULL} (default), unpenalized estimation
+    is used. }
   \item{bl1}{a linear base-learner or a list of linear base-learners.}
   \item{bl2}{a linear base-learner or a list of linear base-learners.}
 }
@@ -229,6 +237,15 @@ bl1 \%X\% bl2
   have to be given for each region, and for each neighbourhood relation the value
   in the matrix has to be -1, else 0. With a boundary object at hand, the fitted
   or predicted values can be directly plotted into the map using \code{\link[BayesX]{drawmap}}.
+
+  \code{buser(X, K)} specifies a base-learner with user-specified design
+  matrix \code{X} and penalty matrix \code{K}, where \code{X} and
+  \code{K} are used to minimize a (penalized) least squares
+  criterion with quadratic penalty. This can be used to easily specify
+  base-learners that are not implemented (yet). See examples
+  below for details how \code{buser} can be used to mimic existing
+  base-learners. Note that for predictions you need to set up the
+  design matrix for the new data manually.
 
   For a categorical covariate with non-observed categories
   \code{bols(x)} and \code{brandom(x)} both assign a zero effect
@@ -498,5 +515,27 @@ bl1 \%X\% bl2
         col="red", lwd = 1.5)
   lines(newX + 2 * pi, predict(mod_cyclic, data.frame(x = newX)),
         col="blue", lwd = 1.5)
+
+  ### use buser() to mimic p-spline base-learner:
+  set.seed(1907)
+  x <- rnorm(100)
+  y <- rnorm(100, mean = x^2, sd = 0.1)
+  mod1 <- gamboost(y ~ bbs(x))
+  ## now extract design and penalty matrix
+  X <- extract(bbs(x), "design")
+  K <- extract(bbs(x), "penalty")
+  ## use X and K in buser()
+  mod2 <- gamboost(y ~ buser(X, K))
+  max(abs(predict(mod1) - predict(mod2)))  # same results
+
+  ### use buser() to mimic penalized ordinal base-learner:
+  z <- as.ordered(sample(1:3, 100, replace=TRUE))
+  y <- rnorm(100, mean = as.numeric(z), sd = 0.1)
+  X <- extract(bols(z))
+  K <- extract(bols(z), "penalty")
+  index <- extract(bols(z), "index")
+  mod1 <- gamboost(y ~  buser(X, K, df = 1, index = index))
+  mod2 <- gamboost(y ~  bols(z, df = 1))
+  max(abs(predict(mod1) - predict(mod2)))  # same results
 }
 \keyword{models}

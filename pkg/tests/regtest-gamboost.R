@@ -262,3 +262,55 @@ x <- seq(from = 0, to = 2*pi, length = 100)
 y <- sin(x) + rnorm(length(x), sd = 0.5)
 mod <- gamboost(y ~ bbs(x, cyclic = TRUE))
 stopifnot(diff(fitted(mod)[c(1, 100)]) == 0)
+
+### buser
+set.seed(1907)
+x <- rnorm(100)
+y <- rnorm(100, mean = x^2, sd = 0.1)
+mod1 <- gamboost(y ~ bbs(x))
+X <- extract(bbs(x))
+K <- extract(bbs(x), "penalty")
+mod2 <- gamboost(y ~ buser(X, K))
+stopifnot(max(abs(predict(mod1) - predict(mod2))) < sqrt(.Machine$double.eps))
+
+z <- sample(1:2, 100, replace=TRUE)
+y[z == 2] <- rnorm(100, mean = - x^2, sd = 0.1)[z == 2]
+z <- as.factor(z)
+mod3 <- gamboost(y ~ bbs(x) + bbs(x, by = z),
+                 control = boost_control(mstop = 1000))
+X <- extract(bbs(x))
+K <- extract(bbs(x), "penalty")
+mod4 <- gamboost(y ~  buser(X, K) + buser(X, K, by = z),
+                 control = boost_control(mstop = 1000))
+stopifnot(max(abs(predict(mod3) - predict(mod4))) < sqrt(.Machine$double.eps))
+
+y <- rnorm(100, mean = as.numeric(z), sd = 0.1)
+mod5 <- gamboost(y ~ bols(z))
+X <- extract(bols(z))
+K <- extract(bols(z), "penalty")
+index <- extract(bols(z), "index")
+mod6 <- gamboost(y ~  buser(X, K, lambda = 0, index = index))
+mod6a <- gamboost(y ~  buser(X, index = index))
+stopifnot(max(abs(predict(mod5) - predict(mod6))) < sqrt(.Machine$double.eps))
+stopifnot(max(abs(predict(mod5) - predict(mod6a))) < sqrt(.Machine$double.eps))
+
+z <- sample(1:3, 100, replace = TRUE)
+y <- rnorm(100, mean = z, sd = 0.1)
+z <- as.ordered(z)
+mod7 <- gamboost(y ~ bols(z))
+X <- extract(bols(z))
+K <- extract(bols(z), "penalty")
+index <- extract(bols(z), "index")
+mod8 <- gamboost(y ~  buser(X, K, lambda = 0, index = index))
+stopifnot(max(abs(predict(mod7) - predict(mod8))) < sqrt(.Machine$double.eps))
+
+y[z == 1] <- rnorm(100, mean = x^2, sd = 0.1)[z == 1]
+y[z == 2] <- rnorm(100, mean = - x^2, sd = 0.1)[z == 2]
+y[z == 3] <- rnorm(100, mean = x, sd = 0.1)[z == 3]
+mod9 <- gamboost(y ~ bbs(x) + bbs(x, by = z),
+                 control = boost_control(mstop = 1000))
+X <- extract(bbs(x))
+K <- extract(bbs(x), "penalty")
+mod10 <- gamboost(y ~  buser(X, K) + buser(X, K, by = z),
+                 control = boost_control(mstop = 1000))
+stopifnot(max(abs(predict(mod9) - predict(mod10))) < sqrt(.Machine$double.eps))
