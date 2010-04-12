@@ -424,7 +424,7 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
 ### adapted version of mgcv:cSplineDes from S.N. Wood
 cbs <- function (x, knots, boundary.knots, degree = 3) {
     # require(splines)
-
+    nx <- names(x)
     knots <- c(boundary.knots[1], knots, boundary.knots[2])
 
     nKnots <- length(knots)
@@ -440,6 +440,7 @@ cbs <- function (x, knots, boundary.knots, degree = 3) {
         Xtmp <- splineDesign(knots, x[ind], ord, outer.ok = TRUE)
         X[ind, ] <- X[ind, ] + Xtmp
     }
+    dimnames(X) <- list(nx, 1L:ncol(X))
     return(X)
 }
 
