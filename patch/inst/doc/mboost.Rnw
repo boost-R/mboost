@@ -5,6 +5,8 @@
 \usepackage{amssymb}
 \newcommand{\argmin}{\operatorname{argmin}\displaylimits}
 
+%%\VignetteIndexEntry{mboost}
+%%\VignetteDepends{mboost, party}
 
 %% software markup
 \let\proglang=\textsf
