@@ -184,6 +184,12 @@ bl1 \%X\% bl2
 
   \code{btree} fits a stump to one or more variables. Note that
   \code{\link{blackboost}} is more efficient for boosting stumps.
+
+  Note that the base-learners \code{bns} and \code{bss} are deprecated
+  (and no longer available). Please use \code{bbs} instead, which
+  results in qualitatively the same models but is computationally much
+  more attractive.
+
 }
 \value{
  An object of class \code{bl} (base-learner) with a \code{dpp} function. The call of \code{dpp} returns

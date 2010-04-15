@@ -1,13 +1,15 @@
 
-                CHANGES in `mboost' VERSION 2.0-4 (2010-04-01)
+                CHANGES in `mboost' VERSION 2.0-4 (2010-04-15)
 
-  o  fixed bug in bols(): contrast.arg was ignored if not a named list 
+  o  fixed bug in bols(): contrast.arg was ignored if not a named list
      (which is wasn't per default)
 
-  o  added (missing) response functions to families Weibull(), 
+  o  added (missing) response functions to families Weibull(),
      Loglog(), Lognormal() and NBinomial()
 
-  o  improvements in documentation
+  o  fixed bug in family CoxPH which occured with NAs
+
+  o  improvements and corrections in documentation
 
 
                 CHANGES in `mboost' VERSION 2.0-3 (2010-03-10, r456)
@@ -25,7 +27,7 @@
      for family = Poisson(), something like boost_control(nu = 0.01)
      fixes this problem.
 
-  o  "by" (in bols() and bbs()) can now handle factors with more than 
+  o  "by" (in bols() and bbs()) can now handle factors with more than
      two levels
 
   o  improved plot.mboost() for varying coefficients

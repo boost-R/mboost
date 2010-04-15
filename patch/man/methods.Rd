@@ -83,7 +83,7 @@
   \item{which}{ a subset of base-learners to take into account for computing
                 predictions or coefficients. If \code{which} is given
                 (as an integer vector or characters corresponding
-                 to base-learners) a list is returned.}
+                 to base-learners) a list or matrix is returned.}
   \item{type}{ the type of prediction required.  The default is on the scale
           of the predictors; the alternative \code{"response"} is on
           the scale of the response variable.  Thus for a
@@ -92,12 +92,16 @@
           the predicted probabilities.  The \code{"class"} option returns
           predicted classes.}
   \item{aggregate}{ a character specifying how to aggregate predictions
-                    of single base-learners. The default returns the prediction
-                    for the final number of boosting iterations. \code{"cumsum"}
-                    returns a matrix with the predictions for all iterations
-                    simultaneously (in columns). \code{"none"} returns
-                    a matrix where the jth columns contains the predictions
-                    of the base-learner of the jth boosting iteration.}
+                    or coefficients of single base-learners. The default
+                    returns the prediction or coefficient for the final number of
+                    boosting iterations. \code{"cumsum"} returns a
+                    matrix with the predictions for all iterations
+                    simultaneously (in columns). \code{"none"} returns a
+                    list with matrices where the \eqn{j}th columns of the
+                    respective matrix contains the predictions
+                    of the base-learner of the \eqn{j}th boosting
+                    iteration (and zero if the base-learner is not
+                    selected in this iteration).}
   \item{off2int}{ logical indicating whether the offset should be
                      added to the intercept (if there is any)
                      or if the offset is returned as attribute of
@@ -121,16 +125,21 @@
 }
 \details{
 
-  These functions can be used to extract details from fitted models. \code{print}
-  shows a dense representation of the model fit and \code{summary} gives
-  a more detailed representation.
+  These functions can be used to extract details from fitted models.
+  \code{print} shows a dense representation of the model fit and
+  \code{summary} gives a more detailed representation.
 
-  The function \code{coef} extracts the
-  regression coefficients of a linear model fitted using the \code{\link{glmboost}}
-  function or an additive model fitted using the \code{\link{gamboost}}.
-  Per default, only coefficients of selected base-learners are
-  returned. However, any desired coefficient can be extracted using the
-  \code{which} argument (see examples for details).
+  The function \code{coef} extracts the regression coefficients of a
+  linear model fitted using the \code{\link{glmboost}} function or an
+  additive model fitted using the \code{\link{gamboost}}. Per default,
+  only coefficients of selected base-learners are returned. However, any
+  desired coefficient can be extracted using the \code{which} argument
+  (see examples for details). Per default, the coefficient of the final
+  iteration is returned (\code{aggregate = "sum"}) but it is also
+  possible to return the coefficients from all iterations simultaniously
+  (\code{aggregate = "cumsum"}). If \code{aggregate = "none"} is
+  specified, the coefficients of the \emph{selected} base-learners are
+  returned (see examples below).
   For models fitted via \code{\link{glmboost}} with option \code{center
   = TRUE} the intercept is rarely selected. However, it is implicitly
   estimated through the centering of the design matrix. In this case the
@@ -141,7 +150,7 @@
   for new observations whereas \code{fitted} extracts the regression fit for the observations
   in the learning sample.
 
-  The \code{[.mstop} function can be used to enhance or restrict a given
+  The \code{[.mboost} function can be used to enhance or restrict a given
   boosting model to the specified boosting iteration \code{i}. Note that
   in both cases the original \code{x} will be changed to reduce the
   memory footprint. If the boosting model is enhanced by specifying an
@@ -173,7 +182,7 @@
 
 }
 \note{
-  The \code{[.mstop} function changes the original object, i.e.
+  The \code{[.mboost} function changes the original object, i.e.
   \code{gbmodel[10]} changes \code{gbmodel} directly!
 }
 \section{Warning}{
@@ -194,7 +203,7 @@
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 
-  Travor Hastie (2007), Discussion of ``Boosting algorithms: Regularization, prediction and model fitting''
+  Trevor Hastie (2007), Discussion of ``Boosting algorithms: Regularization, prediction and model fitting''
   by Peter Buehlmann and Torsten Hothorn. \emph{Statistical Science}, \bold{22}(4), 505.
 
   Peter Buehlmann and Bin Yu (2006),
@@ -250,7 +259,7 @@
        ylim = range(cars$dist))
   abline(a = 0, b = 1)
 
-  ### example for extraction of coefficients and predictions
+  ### example for extraction of coefficients
   set.seed(1907)
   n <- 100
   x1 <- rnorm(n)
@@ -259,7 +268,7 @@
   x4 <- rnorm(n)
   int <- rep(1, n)
   y <- 3 * x1^2 - 0.5 * x2 + rnorm(n, sd = 0.1)
-  df <- data.frame(y = y, int = int, x1 = x1, x2 = x2, x3 = x3, x4 = x4)
+  data <- data.frame(y = y, int = int, x1 = x1, x2 = x2, x3 = x3, x4 = x4)
 
   model <- gamboost(y ~ bols(int, intercept = FALSE) +
                         bbs(x1, center = TRUE, df = 1) +
@@ -267,7 +276,8 @@
                         bols(x2, intercept = FALSE) +
                         bols(x3, intercept = FALSE) +
                         bols(x4, intercept = FALSE),
-                    data = df, control = boost_control(mstop = 500))
+                    data = data, control = boost_control(mstop = 500))
+
   coef(model) # standard output (only selected base-learners)
   coef(model,
        which = 1:length(variable.names(model))) # all base-learners

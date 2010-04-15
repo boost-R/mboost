@@ -26,7 +26,7 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
                        optimize(risk, interval = range(y), y = y, w = w)$minimum,
                    check_y = function(y) y,
                    weights = c("any", "none", "zeroone", "case"),
-                   nuisance = function() return(NULL),
+                   nuisance = function() return(NA),
                    name = "user-specified", fW = NULL, response = function(f) NA)
 {
 
@@ -73,6 +73,7 @@ Gaussian <- function()
            name = "Squared Error (Regression)",
            fW = function(f) return(rep(1, length = length(f))),
            response = function(f) f)
+
 GaussReg <- Gaussian
 
 ### Gaussian (-1 / 1 Binary Classification)
@@ -220,6 +221,8 @@ CoxPH <- function() {
                if (length(f) == 1)
                    f <- rep(f, length(time))
                storage.mode(f) <- "double"
+               w[is.na(f)] <- 0.0
+               f[is.na(f)] <- 0.0
                .Call("ngradientCoxPLik", time, event, f, w, package = "mboost")
            },
            risk = risk <- function(y, f, w = 1) -sum(plloss(y, f, w), na.rm = TRUE),

@@ -723,3 +723,10 @@ fit.bl <- function(object, y)
     return(ret)
 }
 
+bns <- function(...)
+    stop("Base-learner ",  sQuote("bns"), " has ben removed. Consider ",
+         sQuote("bbs"), " instead.")
+
+bss <- function(...)
+    stop("Base-learner ",  sQuote("bss"), " has ben removed. Consider ",
+         sQuote("bbs"), " instead.")

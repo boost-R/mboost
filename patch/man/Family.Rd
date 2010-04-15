@@ -25,12 +25,12 @@
 \usage{
 Family(ngradient, loss = NULL, risk = NULL,
        offset = function(y, w)
-           optimize(risk, interval = range(y), 
+           optimize(risk, interval = range(y),
                     y = y, w = w)$minimum,
        check_y = function(y) y,
        weights = c("any", "none", "zeroone", "case"),
-       nuisance = function() return(NULL),
-       name = "user-specified", fW = NULL, 
+       nuisance = function() return(NA),
+       name = "user-specified", fW = NULL,
        response = function(f) NA)
 AdaExp()
 Binomial()
@@ -62,7 +62,7 @@ Lognormal(nuirange = c(0, 100))
              squared error.}
   \item{response}{ inverse link function of a GLM or any other transformation
                    on the scale of the response.}
-  \item{check_y}{ a function for checking and transforming 
+  \item{check_y}{ a function for checking and transforming
                   the class / mode of a response variable.}
   \item{nuisance}{ a function for extracting nuisance parameters from the family.}
   \item{weights}{ a character indicating if weights are allowed. }
@@ -70,14 +70,17 @@ Lognormal(nuirange = c(0, 100))
   \item{d}{ delta parameter for Huber loss function. If omitted, it is chosen adaptively.}
   \item{tau}{ the quantile or expectile to be estimated, a number strictly between 0 and 1.}
   \item{qoffset}{ quantile of response distribution to be used as offset.}
-  \item{nuirange}{ range of starting values for the nuisance parameter.}
+  \item{nuirange}{ a vector containing the end-points of the interval to be
+          searched for the minimum risk w.r.t. the nuisance parameter.
+	  In case of \code{PropOdds}, the starting values for
+	  the nuisance parameters. }
   \item{offrange}{ interval to search for offset in.}
 }
 \details{
-  The boosting algorithm implemented in \code{\link{mboost}} minimizes the 
-  (weighted) empirical risk function \code{risk(y, f, w)} with respect to \code{f}. 
-  By default, the risk function is the weighted sum of the loss function \code{loss(y, f)} 
-  but can be chosen arbitrarily. The \code{ngradient(y, f)} function is the negative 
+  The boosting algorithm implemented in \code{\link{mboost}} minimizes the
+  (weighted) empirical risk function \code{risk(y, f, w)} with respect to \code{f}.
+  By default, the risk function is the weighted sum of the loss function \code{loss(y, f)}
+  but can be chosen arbitrarily. The \code{ngradient(y, f)} function is the negative
   gradient of \code{loss(y, f)} with respect to \code{f}.
 
   Pre-fabricated functions for the most commonly used loss functions are
@@ -93,8 +96,8 @@ Lognormal(nuirange = c(0, 100))
   families for binary classification. \code{AdaExp()} uses the
   exponential loss, which essentially leads to the AdaBoost algorithm
   of Freund and Schapire (1996). \code{Binomial()} implements the
-  negative binomial log-likelihood of a logistic regression model 
-  as loss function. Thus, using \code{Binomial} family closely corresponds 
+  negative binomial log-likelihood of a logistic regression model
+  as loss function. Thus, using \code{Binomial} family closely corresponds
   to fitting a logistic model.
   However, the coefficients resulting from boosting with family
   \code{Binomial} are \eqn{1/2} of the coefficients of a logit model
@@ -120,14 +123,14 @@ Lognormal(nuirange = c(0, 100))
   boosting methods. The implemented loss function is the negative
   Poisson log-likelihood. Note that the natural link function
   \eqn{\log(\mu) = \eta} is assumed. The default step-site \code{nu = 0.1}
-  is probably too large for this family (leading to 
+  is probably too large for this family (leading to
   infinite residuals) and smaller values are more appropriate.
 
   \code{CoxPH()} implements the negative partial log-likelihood for Cox
   models. Hence, survival models can be boosted using this family.
 
   \code{QuantReg()} implements boosting for quantile regression, which is
-  introduced in Fenske et al. (2009). \code{ExpectReg} works in analogy, 
+  introduced in Fenske et al. (2009). \code{ExpectReg} works in analogy,
   only for expectiles, which were introduced to regression by Newey and Powell (1987).
 
   Families with an additional scale parameter can be used for fitting
@@ -172,13 +175,13 @@ Lognormal(nuirange = c(0, 100))
     Asymmetric least squares estimation and testing.
     \emph{Econometrika}, \bold{55}, 819--847.
 
-    Matthias Schmid and Torsten Hothorn (2008), 
-    Flexible boosting of accelerated failure time models. 
+    Matthias Schmid and Torsten Hothorn (2008),
+    Flexible boosting of accelerated failure time models.
     \emph{BMC Bioinformatics}, \bold{9}(269).
 
-    Matthias Schmid, Sergej Potapov, Annette Pfahlberg, 
-    and Torsten Hothorn (2010). Estimation and regularization techniques for 
-    regression models with multidimensional prediction functions. 
+    Matthias Schmid, Sergej Potapov, Annette Pfahlberg,
+    and Torsten Hothorn (2010). Estimation and regularization techniques for
+    regression models with multidimensional prediction functions.
     \emph{Statistics and Computing}, in press.
 
   }

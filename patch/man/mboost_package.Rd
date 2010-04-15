@@ -16,7 +16,7 @@
 Package: \tab mboost\cr
 Type: \tab Package\cr
 Version: \tab 2.0-4\cr
-Date: \tab 2010-04-01\cr
+Date: \tab 2010-04-15\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes\cr
@@ -131,7 +131,8 @@ LazyData: \tab yes\cr
   plot(model, which = 2, newdata = nd)
   detach(bodyfat)
 
-  ### customized
+  ### customized plot
+  layout(1)
   pr <- predict(model, which = "hip", newdata = nd)
   persp(x = h, y = w, z = matrix(pr, nrow = 100, ncol = 100))
 
