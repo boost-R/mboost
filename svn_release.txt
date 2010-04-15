@@ -38,7 +38,7 @@
         cd pkg/R
         svn merge -r(LATEST letzte Version):HEAD --dry-run
             svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/patch/R .
-        cd man/R
+        cd ../man
         svn merge -r(LATEST letzte Version) 
            svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/patch/man
         probabily only *R files in tests
