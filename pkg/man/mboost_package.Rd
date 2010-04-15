@@ -131,7 +131,8 @@ LazyData: \tab yes\cr
   plot(model, which = 2, newdata = nd)
   detach(bodyfat)
 
-  ### customized
+  ### customized plot
+  layout(1)
   pr <- predict(model, which = "hip", newdata = nd)
   persp(x = h, y = w, z = matrix(pr, nrow = 100, ncol = 100))
 

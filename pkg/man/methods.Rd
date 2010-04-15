@@ -198,7 +198,7 @@
   to the object via \code{attr(..., "offset")} as adding the offset to
   one of the marginal predictions doesn't make much sense.
 
-  The \code{[.mstop} function can be used to enhance or restrict a given
+  The \code{[.mboost} function can be used to enhance or restrict a given
   boosting model to the specified boosting iteration \code{i}. Note that
   in both cases the original \code{x} will be changed to reduce the
   memory footprint. If the boosting model is enhanced by specifying an
@@ -240,7 +240,7 @@
 
 }
 \note{
-  The \code{[.mstop} function changes the original object, i.e.
+  The \code{[.mboost} function changes the original object, i.e.
   \code{gbmodel[10]} changes \code{gbmodel} directly!
 }
 \section{Warning}{
@@ -262,7 +262,7 @@
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 
-  Travor Hastie (2007), Discussion of ``Boosting algorithms:
+  Trevor Hastie (2007), Discussion of ``Boosting algorithms:
   Regularization, prediction and model fitting'' by Peter Buehlmann and
   Torsten Hothorn. \emph{Statistical Science}, \bold{22}(4), 505.
 

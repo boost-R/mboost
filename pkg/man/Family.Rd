@@ -72,7 +72,10 @@ Lognormal(nuirange = c(0, 100))
   \item{d}{ delta parameter for Huber loss function. If omitted, it is chosen adaptively.}
   \item{tau}{ the quantile or expectile to be estimated, a number strictly between 0 and 1.}
   \item{qoffset}{ quantile of response distribution to be used as offset.}
-  \item{nuirange}{ range of starting values for the nuisance parameter.}
+  \item{nuirange}{ a vector containing the end-points of the interval to be
+          searched for the minimum risk w.r.t. the nuisance parameter.
+	  In case of \code{PropOdds}, the starting values for
+	  the nuisance parameters. }
   \item{offrange}{ interval to search for offset in.}
 }
 \details{
@@ -102,7 +105,7 @@ However, the coefficients resulting from boosting with family
 \code{Binomial} are \eqn{1/2} of the coefficients of a logit model
 obtained via \code{\link{glm}}. This is due to the internal recoding
 of the response to \eqn{-1} and \eqn{+1} (see below).
-Buehlmann and Hothorn (2007) argue that the
+  However, Buehlmann and Hothorn (2007) argue that the
 family \code{Binomial} is the preferred choice for binary
 classification. For binary classification problems the response
 \code{y} has to be a \code{factor}. Internally \code{y} is re-coded

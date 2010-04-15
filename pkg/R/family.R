@@ -73,6 +73,7 @@ Gaussian <- function()
            name = "Squared Error (Regression)",
            fW = function(f) return(rep(1, length = length(f))),
            response = function(f) f)
+
 GaussReg <- Gaussian
 
 ### Gaussian (-1 / 1 Binary Classification)
