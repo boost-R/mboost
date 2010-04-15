@@ -1,6 +1,8 @@
 
                 CHANGES in `mboost' VERSION 2.0-4 (2010-04-15)
 
+  o  new vignette "mboost" describing 2.0-x series features
+
   o  fixed bug in bols(): contrast.arg was ignored if not a named list
      (which is wasn't per default)
 
