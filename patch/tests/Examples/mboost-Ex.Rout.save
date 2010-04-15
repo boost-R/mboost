@@ -997,6 +997,14 @@ attr(,"offset")
 >     ### sparse high-dimensional example
 >     library("Matrix")
 Loading required package: lattice
+
+Attaching package: 'Matrix'
+
+
+	The following object(s) are masked from package:base :
+
+	 det 
+
 >     n <- 100
 >     p <- 10000
 >     ptrue <- 10
@@ -1039,7 +1047,7 @@ attr(,"offset")
 >   ### formula interface: additive Gaussian model with
 >   ### a non-linear step-function in `age', a linear function in `waistcirc'
 >   ### and a smooth non-linear smooth function in `hipcirc'
->   mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc), 
+>   mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc),
 +                 data = bodyfat)
 Loading required package: party
 Loading required package: survival
@@ -1059,8 +1067,8 @@ Loading required package: colorspace
 >   plot(mod, ask = FALSE, main = "formula")
 > 
 >   ### the same
->   with(bodyfat, 
-+        mod <- mboost_fit(list(btree(age), bols(waistcirc), bbs(hipcirc)), 
+>   with(bodyfat,
++        mod <- mboost_fit(list(btree(age), bols(waistcirc), bbs(hipcirc)),
 +                          response = DEXfat))
 >   plot(mod, ask = FALSE, main = "base-learner")
 > 
@@ -1131,7 +1139,8 @@ NULL
 >   plot(model, which = 2, newdata = nd)
 >   detach(bodyfat)
 > 
->   ### customized
+>   ### customized plot
+>   layout(1)
 >   pr <- predict(model, which = "hip", newdata = nd)
 >   persp(x = h, y = w, z = matrix(pr, nrow = 100, ncol = 100))
 > 
@@ -1323,7 +1332,7 @@ attr(,"offset")
 +        ylim = range(cars$dist))
 >   abline(a = 0, b = 1)
 > 
->   ### example for extraction of coefficients and predictions
+>   ### example for extraction of coefficients
 >   set.seed(1907)
 >   n <- 100
 >   x1 <- rnorm(n)
@@ -1332,7 +1341,7 @@ attr(,"offset")
 >   x4 <- rnorm(n)
 >   int <- rep(1, n)
 >   y <- 3 * x1^2 - 0.5 * x2 + rnorm(n, sd = 0.1)
->   df <- data.frame(y = y, int = int, x1 = x1, x2 = x2, x3 = x3, x4 = x4)
+>   data <- data.frame(y = y, int = int, x1 = x1, x2 = x2, x3 = x3, x4 = x4)
 > 
 >   model <- gamboost(y ~ bols(int, intercept = FALSE) +
 +                         bbs(x1, center = TRUE, df = 1) +
@@ -1340,7 +1349,8 @@ attr(,"offset")
 +                         bols(x2, intercept = FALSE) +
 +                         bols(x3, intercept = FALSE) +
 +                         bols(x4, intercept = FALSE),
-+                     data = df, control = boost_control(mstop = 500))
++                     data = data, control = boost_control(mstop = 500))
+> 
 >   coef(model) # standard output (only selected base-learners)
 $`bols(int, intercept = FALSE)`
 [1] 6.267132
@@ -1551,7 +1561,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  54.651 3.148 64.331 10.608 10.608 
+Time elapsed:  57.583 3.196 70.012 11.22 11.22 
 > grDevices::dev.off()
 null device 
           1 
