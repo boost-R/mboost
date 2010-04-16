@@ -76,17 +76,23 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
         xl <- ifelse(length(xlab) > 1, xlab[w], xlab[1])
         yl <- ifelse(length(ylab) > 1, ylab[w], ylab[1])
 
-        if (vary == "") plot_helper(xl, yl)
-        if (vary != ""){
-            for (i in 1:length(v)){
-                data[[vary]] <- v[rep(i, nrow(data))]
-                if (!userspec){
-                    ## xlab not user specified
-                    plot_helper(paste(xl, "=", v[i]), yl)
-                } else {
-                    plot_helper(paste(xl, "(", vary, "=", v[i], ")"), yl)
+        if (!isMATRIX(data)){
+            if (vary == "") plot_helper(xl, yl)
+            if (vary != ""){
+                for (i in 1:length(v)){
+                    data[[vary]] <- v[rep(i, nrow(data))]
+                    if (!userspec){
+                        ## xlab not user specified
+                        plot_helper(paste(xl, "=", v[i]), yl)
+                    } else {
+                        plot_helper(paste(xl, "(", vary, "=", v[i], ")"), yl)
+                    }
                 }
             }
+        } else {
+            warning(paste(extract(x, what = "bnames", which = w),
+                          ": automated plot not reasonable for base-learners",
+                          " of matrices", sep=""))
         }
     }
 }
