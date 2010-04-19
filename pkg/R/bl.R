@@ -228,7 +228,6 @@ X_bbs <- function(mf, vary, args) {
             Kx <- diff(diag(ncol(mm[[1]])), differences = args$differences)
             Ky <- diff(diag(ncol(mm[[2]])), differences = args$differences)
         } else {
-            stop("not yet tested. is kronecker product below ok?")
             differences <- args$differences
             Kx <- diff(diag(ncol(mm[[1]]) + differences), differences=differences)
             Ky <- diff(diag(ncol(mm[[2]]) + differences), differences=differences)
@@ -370,8 +369,12 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
     }
     ### use bols when appropriate
     if (!is.null(df) & !center) {
-        if (df <= (ncol(mf) + 1))
+        if (df <= (ncol(mf) + 1)){            
+            warning(sQuote("center = FALSE"), " and ", sQuote("df"),
+                    " lower than number of covariates + Intercept; ",
+                    sQuote("bols()"), " used instead.")
             return(bols(as.data.frame(...), by = by, index = index))
+        }
     }
     vary <- ""
     if (!is.null(by)){
