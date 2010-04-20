@@ -63,11 +63,13 @@ indiaraw$mage <- round((indiaraw$b3-indiaraw$v011)/12, 0)
 indiaraw$munemployed <- as.numeric(indiaraw$v717)
 indiaraw$munemployed[indiaraw$munemployed>1] <- 2
 indiaraw$munemployed <- factor(indiaraw$munemployed, labels=c("unemployed","employed"))
+#indiaraw$cunemployed <- recode(indiaraw$v717, "c('prof., tech., manag.','clerical','sales','agric-self employed','agric-employee','household & domestic','services','skilled & unskilled manual','[for nfhs-3 skilled and unskilled manual combined]','unskilled','don\'t know')='working'")
 indiaraw$mreligion <- recode(indiaraw$v130, "c('buddhist/neo-buddhist','jain','jewish','parsi/zoroastrian','no religion','donyi polo')='other'")
 indiaraw$deadchildren <- indiaraw$v206 + indiaraw$v207
 
 vars <- c(vars, c("v445", "v437", "v438", "mage", "v133", "v715", "munemployed", "mreligion", "v025", "deadchildren"))
 nams <- c(nams, c("mbmi", "mweight", "mheight", "mage", "medu", "edupartner", "munemployed", "mreligion", "mresidence", "deadchildren"))
+
 
 # v190     "Wealth index"
 # v119     "Has electricity"
@@ -203,11 +205,70 @@ india <- india[complete.cases(india),]
 
 india$intercept <- 1
 
+center <- function(x)
+  return(x-mean(x))
+
+india$cagec <- center(india$cage)
+india$magec <- center(india$mage)
+india$mbmic <- center(india$mbmi)
+india$meduc <- center(india$medu)
+india$breastfeedingc <- center(india$breastfeeding)
+india$eduparterc <- center(india$edupartner)
+
+# create random partitions of the data set
 set.seed(12345)
-n <- nrow(india)
-india$cv <- 0
-ind <- sample(1:n, size=12541, )
-india$cv[ind] <- 1
+
+help <- rep(1:3, each=nrow(india)/3)
+india$w1 <- sample(help)
+india$w2 <- sample(help)
+india$w3 <- sample(help)
+india$w4 <- sample(help)
+india$w5 <- sample(help)
+india$w6 <- sample(help)
+india$w7 <- sample(help)
+india$w8 <- sample(help)
+india$w9 <- sample(help)
+india$w10 <- sample(help)
+india$w11 <- sample(help)
+india$w12 <- sample(help)
+india$w13 <- sample(help)
+india$w14 <- sample(help)
+india$w15 <- sample(help)
+india$w16 <- sample(help)
+india$w17 <- sample(help)
+india$w18 <- sample(help)
+india$w19 <- sample(help)
+india$w20 <- sample(help)
+india$w21 <- sample(help)
+india$w22 <- sample(help)
+india$w23 <- sample(help)
+india$w24 <- sample(help)
+india$w25 <- sample(help)
+india$w26 <- sample(help)
+india$w27 <- sample(help)
+india$w28 <- sample(help)
+india$w29 <- sample(help)
+india$w30 <- sample(help)
+india$w31 <- sample(help)
+india$w32 <- sample(help)
+india$w33 <- sample(help)
+india$w34 <- sample(help)
+india$w35 <- sample(help)
+india$w36 <- sample(help)
+india$w37 <- sample(help)
+india$w38 <- sample(help)
+india$w39 <- sample(help)
+india$w40 <- sample(help)
+india$w41 <- sample(help)
+india$w42 <- sample(help)
+india$w43 <- sample(help)
+india$w44 <- sample(help)
+india$w45 <- sample(help)
+india$w46 <- sample(help)
+india$w47 <- sample(help)
+india$w48 <- sample(help)
+india$w49 <- sample(help)
+india$w50 <- sample(help)
 
 write.table(india, "india.raw", col.names=TRUE, row.names=FALSE, sep=" ", quote=FALSE)
 save("india", file="india.Rdata")
