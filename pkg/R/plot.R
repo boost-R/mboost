@@ -49,7 +49,8 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
 
         plot_helper <- function(xl, yl){
             pr <- predict(x, newdata = data, which = w)
-            if (!is.null(vary)) data <- data[, colnames(data) != vary, drop = FALSE]
+            if (vary != "")
+                data <- data[, colnames(data) != vary, drop = FALSE]
 
             if (ncol(data) == 1) {
                 plot(sort(data[[1]]), pr[order(data[[1]])], type = type,

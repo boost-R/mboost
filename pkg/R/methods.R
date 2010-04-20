@@ -448,7 +448,7 @@ extract.mboost <- function(object, what = c("design", "penalty", "lambda",
     which <- object$which(which, usedonly = is.null(which))
     if (what == "design" || what == "penalty" || what == "index"){
         fun <- function(which)
-            extract(object$baselearner[[which]], what = what)
+            extract(object$baselearner[[which]], what = what, ...)
         ret <- lapply(which, fun)
         names(ret) <- extract(object, what = "bnames", which = which)
         return(ret)
@@ -476,8 +476,8 @@ extract.mboost <- function(object, what = c("design", "penalty", "lambda",
 
 extract.glmboost <- function(object, what = c("design", "coefficients",
                                      "bnames", "offset", "nuisance", "weights",
-                                     "index", "control"),
-                             which = NULL, ...){
+                                     "control"),
+                             which = NULL, asmatrix = FALSE, ...){
     what <- match.arg(what)
     center <- get("center", envir = environment(object$newX))
     if (is.null(which)) {
@@ -493,7 +493,10 @@ extract.glmboost <- function(object, what = c("design", "coefficients",
         which <- object$which(which)
     }
     if (what == "design"){
-        return(object$baselearner[[1]]$get_data()[,which])
+        mat <- object$baselearner[[1]]$get_data()[,which]
+        if (asmatrix)
+            mat <- as.matrix(mat)
+        return(mat)
     }
     if (what == "coefficients")
         return(coef(object, which = which))
@@ -505,8 +508,9 @@ extract.glmboost <- function(object, what = c("design", "coefficients",
         return(nuisance(object))
     if (what == "weights")
         return(model.weights(object))
-    if (what == "index")
-        return(object$baselearner[[1]]$get_index())
+    ## index doensn't store the index as base-learners in gamboost do
+    #if (what == "index")
+    #    return(object$baselearner[[1]]$get_index())
     if (what == "control")
         return(object$control)
 }
@@ -515,26 +519,38 @@ extract.blackboost <- function(object, ...)
     stop("function not yet implemented")
 
 extract.blg <- function(object, what = c("design", "penalty", "index"),
-                        ...){
+                        asmatrix = FALSE, expand = FALSE, ...){
     what <- match.arg(what)
     object <- object$dpp(rep(1, nrow(object$model.frame())))
-    return(extract(object, what = what))
+    return(extract(object, what = what,
+                   sparseMatrix = sparseMatrix, expand = expand))
 }
 
 extract.bl_lin <- function(object, what = c("design", "penalty", "lambda",
                                    "weights", "index"),
-                           ...){
+                           asmatrix = FALSE, expand = FALSE,  ...){
     what <- match.arg(what)
     if (what == "design")
-        return(get("X", envir = environment(object$fit)))
+        mat <- get("X", envir = environment(object$fit))
     if (what == "penalty")
-        return(get("K", envir = environment(object$fit)))
+        mat <- get("K", envir = environment(object$fit))
     if (what == "lambda")
         return(object$df())
     if (what == "weights")
         return(get("weights", envir = environment(object$fit)))
     if (what == "index")
         return(get("index", envir = environment(object$fit)))
+    ## only applicable for design and penalty matrix
+    if (asmatrix){
+        mat <- as.matrix(mat)
+    }
+    if (expand && !is.null(indx <- extract(object, what = "index"))){
+        a <- attributes(mat)
+        mat <- mat[indx,]
+        a[c("dim", "dimnames")] <- attributes(mat)[c("dim", "dimnames")]
+        attributes(mat) <- a
+    }
+    return(mat)
 }
 
 extract.bl_tree <- function(object, what = c("design", "penalty", "lambda",

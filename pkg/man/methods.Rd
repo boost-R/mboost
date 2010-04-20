@@ -82,9 +82,10 @@
                          which = NULL, ...)
 \method{extract}{glmboost}(object, what = c("design", "coefficients",
                                      "bnames", "offset", "nuisance",
-                                     "weights", "index", "control"),
-                           which = NULL, ...)
-\method{extract}{blg}(object, what = c("design", "penalty", "index"), ...)
+                                     "weights", "control"),
+                           which = NULL, asmatrix = FALSE, ...)
+\method{extract}{blg}(object, what = c("design", "penalty", "index"),
+                      asmatrix = FALSE, expand = FALSE, ...)
 
 \method{logLik}{mboost}(object, ...)
 \method{hatvalues}{gamboost}(model, ...)
@@ -152,7 +153,21 @@
                \code{"lambda"} (smoothing parameter and df),
                \code{"coefficients"}, \code{"bnames"} (names of the base-learners),
                \code{"offset"}, \code{"nuisance"}, \code{"weights"},
-               \code{index} and \code{"control"}.}
+               \code{"index"} (index of ties used to expand the design
+               matrix) and \code{"control"}.}
+  \item{asmatrix}{ a logical indicating whether the the returned
+        matrix should be coerced to a matrix (default) or if the
+        returned object stays as it is (i.e., potentially a
+        \emph{sparse} matrix). This option is only applicable if
+        \code{extract} returns matrices, i.e., \code{what = "design"} or
+        \code{what = "penalty"}. }
+  \item{expand}{ a logical indicating whether the design matrix should
+        be expanded (default: \code{FALSE}). This is useful if  ties
+        where taken into account either manually (via argument
+        \code{index} in a base-learner) or automatically for data sets
+        with many observations. \code{expand = TRUE} is equivalent to
+        \code{extract(B)[extract(B, what = "index"),]} for a
+        base-learner \code{B}.}
   \item{\dots}{ additional arguments passed to callies. }
 }
 \details{
