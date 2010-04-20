@@ -261,6 +261,21 @@ X_bbs <- function(mf, vary, args) {
     if (length(mm) > 2)
         stop("not possible to specify more than two variables in ",
              sQuote("..."), " argument of smooth base-learners")
+
+    ## compare specified degrees of freedom to dimension of null space
+    if (!is.null(args$df)){
+        rns <- ncol(K) - qr(as.matrix(K))$rank # compute rank of null space
+        if (rns == args$df)
+            warning( sQuote("df"), " equal to rank of null space ",
+                    "(unpenalized part of P-spline);\n\t",
+                    "Consider larger value for ", sQuote("df"),
+                    " or set ", sQuote("center = TRUE"), ".", immediate.=TRUE)
+        if (rns > args$df)
+            stop("not possible to specify ", sQuote("df"),
+                 " smaller than the rank of the null space\n\t",
+                 "(unpenalized part of P-spline). Use larger value for ",
+                 sQuote("df"), " or set ", sQuote("center = TRUE"), ".")
+    }
     return(list(X = X, K = K))
 }
 
@@ -364,17 +379,13 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
     }
     stopifnot(is.data.frame(mf))
     if(!(all(sapply(mf, is.numeric)))) {
-        if (ncol(mf) == 1) return(bols(as.data.frame(...), by = by, index = index))
-        stop("cannot compute bbs for non-numeric variables")
-    }
-    ### use bols when appropriate
-    if (!is.null(df) & !center) {
-        if (df <= (ncol(mf) + 1)){            
-            warning(sQuote("center = FALSE"), " and ", sQuote("df"),
-                    " lower than number of covariates + Intercept; ",
-                    sQuote("bols()"), " used instead.")
-            return(bols(as.data.frame(...), by = by, index = index))
+        if (ncol(mf) == 1){
+            warning("cannot compute ", sQuote("bbs"),
+                    " for non-numeric variables; used ",
+                    sQuote("bols"), " instead.")
+            return(bols(mf, by = by, index = index))
         }
+        stop("cannot compute bbs for non-numeric variables")
     }
     vary <- ""
     if (!is.null(by)){
@@ -555,8 +566,9 @@ bl_lin <- function(blg, Xfun, args) {
 }
 
 ### tensor-product spline baselearner
-bspatial <- function(...) {
+bspatial <- function(..., df = 6) {
     cl <- cltmp <- match.call()
+    if (is.null(cl$df)) cl$df <- df
     cl[[1L]] <- as.name("bbs")
     ret <- eval(cl, parent.frame())
     cltmp[[1]] <- as.name("bspatial")

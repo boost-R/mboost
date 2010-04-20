@@ -89,7 +89,6 @@ ga <- gamboost(y ~ xf + x.2, data = df,
                control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ xf + x.2 - 1, data = df)), fitted(ga))
 ga <- gamboost(y ~ xf + sin(x.1) + x.2, data = df,
-               dfbase = 1,
                control = boost_control(mstop = 500, nu = 1))
 stopin(fitted(lm(y ~ xf + sin(x.1) + x.2, data = df)), fitted(ga))
 

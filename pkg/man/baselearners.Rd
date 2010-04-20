@@ -23,7 +23,7 @@ bols(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
 bbs(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
     degree = 3, differences = 2, df = 4, lambda = NULL, center = FALSE,
     cyclic = FALSE)
-bspatial(...)
+bspatial(..., df = 6)
 brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
      covFun = stationary.cov,
      args = list(Covariance="Matern", smoothness = 1.5, theta=NULL))
@@ -184,33 +184,42 @@ bl1 \%X\% bl2
   freedom is used. For ordinal variables, a ridge penalty for the
   differences of the adjacent categories (Gertheiss and Tutz 2009) is applied.
 
-  If \code{by} is specified as an additional argument, a
-  varying coefficients term is estimated, where \code{by} is the
-  interaction variable and the effect modifier is given by either
-  \code{x} or \code{x} and \code{y} (specified via \code{...}).
-  If \code{bbs} is used, this corresponds to the
-  classical situation of varying coefficients, where the effect of
-  \code{by} varies over the co-domain of \code{x}. In case of \code{bspatial} as
-  base-learner, the effect of \code{by} varies with respect to both
-  \code{x} and \code{y}, i.e. an interaction surface between \code{x} and
-  \code{y} is specified as effect modifier. For \code{brandom} specification of \code{by}
-  leads to the estimation of random slopes for covariate \code{by} with grouping structure
-  defined by factor \code{x} instead of a simple random intercept.
+  If \code{by} is specified as an additional argument, a varying
+  coefficients term is estimated, where \code{by} is the interaction
+  variable and the effect modifier is given by either \code{x} or
+  \code{x} and \code{y} (specified via \code{...}). If \code{bbs} is
+  used, this corresponds to the classical situation of varying
+  coefficients, where the effect of \code{by} varies over the co-domain
+  of \code{x}. In case of \code{bspatial} as base-learner, the effect of
+  \code{by} varies with respect to both \code{x} and \code{y}, i.e. an
+  interaction surface between \code{x} and \code{y} is specified as
+  effect modifier. For \code{brandom} specification of \code{by} leads
+  to the estimation of random slopes for covariate \code{by} with
+  grouping structure defined by factor \code{x} instead of a simple
+  random intercept. If \code{bbs} or \code{bspatial} is specified with
+  an factor variable \code{by} with more than two factors, the degrees
+  of freedom are shared for the complete base-learner (i.e., spread over
+  all factor levels). Note that the null space (see next paragraph)
+  increases, as a separate null space for each factor level is present.
+  Thus, the minimum degrees of freedom increase with increasing number
+  of levels of \code{by} (if \code{center = FALSE}).
 
-  For \code{bbs} and \code{bspatial}, option \code{center} requests that the
-  fitted effect is centered around its parametric, unpenalized part. For
-  example, with second order difference penalty, a linear effect of \code{x}
-  remains unpenalized by \code{bbs} and therefore the degrees of freedom for the base-learner
-  have to be larger than two. To avoid this restriction, option \code{center = TRUE}
-  subtracts the unpenalized linear effect from the fit, allowing to specify any
-  positive number as \code{df}. Note that in this case the linear effect
-  \code{x} should generally be specified as an additional base-learner
-  \code{bols(x)}. For \code{bspatial} and, for example, second order
-  differences, a linear effect of \code{x} (\code{bols(x)}), a linear effect of
-  \code{y} (\code{bols(y)}), and their interaction (\code{bols(x*y)}) are
-  subtracted from the effect and have to be added separately to the model
-  equation. More details on centering can be found in Kneib, Hothorn and Tutz
-  (2009) and Fahrmeir, Kneib and Lang (2004).
+  For \code{bbs} and \code{bspatial}, option \code{center} requests that
+  the fitted effect is centered around its parametric, unpenalized part
+  (the so called null space). For example, with second order difference
+  penalty, a linear effect of \code{x} remains unpenalized by \code{bbs}
+  and therefore the degrees of freedom for the base-learner have to be
+  larger than two. To avoid this restriction, option \code{center =
+  TRUE} subtracts the unpenalized linear effect from the fit, allowing
+  to specify any positive number as \code{df}. Note that in this case
+  the linear effect \code{x} should generally be specified as an
+  additional base-learner \code{bols(x)}. For \code{bspatial} and, for
+  example, second order differences, a linear effect of \code{x}
+  (\code{bols(x)}), a linear effect of \code{y} (\code{bols(y)}), and
+  their interaction (\code{bols(x*y)}) are subtracted from the effect
+  and have to be added separately to the model equation. More details on
+  centering can be found in Kneib, Hothorn and Tutz (2009) and Fahrmeir,
+  Kneib and Lang (2004).
 
   \code{brad(x)} specifies penalized radial basis functions as used in
   Kriging. If \code{knots} is used to specify the number of knots, the
@@ -277,9 +286,12 @@ bl1 \%X\% bl2
   additional asymmetric penalty enforcing monotonicity or
   convexity/concavity (see Eilers, 2005).
 
-  Two or more linear base-learners can be joined using \code{\%+\%}. A tensor product
-  of two or more linear base-learners is returned by \code{\%X\%}.
-  These two features are experimental and for expert use only.
+  Two or more linear base-learners can be joined using \code{\%+\%}. A
+  tensor product of two or more linear base-learners is returned by
+  \code{\%X\%}. In both cased the overall degrees of freedom of the
+  combined base-learner increase (additive or multiplicative,
+  respectively). These two features are experimental and for expert use
+  only.
 
   \code{btree} fits a stump to one or more variables. Note that
   \code{\link{blackboost}} is more efficient for boosting stumps.
