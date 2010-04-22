@@ -440,22 +440,15 @@ nuisance.mboost <- function(object)
 extract <- function(object, ...)
     UseMethod("extract")
 
-extract.mboost <- function(object, what = c("design", "penalty", "lambda",
+extract.mboost <- function(object, what = c("design", "penalty", "lambda", "df",
                                    "coefficients", "bnames", "offset",
                                    "nuisance", "weights", "index", "control"),
                            which = NULL, ...){
     what <- match.arg(what)
     which <- object$which(which, usedonly = is.null(which))
-    if (what == "design" || what == "penalty" || what == "index"){
+    if (what %in% c("design", "penalty", "lambda", "df", "index")){
         fun <- function(which)
-            extract(object$baselearner[[which]], what = what, ...)
-        ret <- lapply(which, fun)
-        names(ret) <- extract(object, what = "bnames", which = which)
-        return(ret)
-    }
-    if (what == "lambda"){
-        fun <- function(which)
-            extract(object$basemodel[[which]], what = what)
+            extract(object$basemodel[[which]], what = what, ...)
         ret <- lapply(which, fun)
         names(ret) <- extract(object, what = "bnames", which = which)
         return(ret)
@@ -523,10 +516,10 @@ extract.blg <- function(object, what = c("design", "penalty", "index"),
     what <- match.arg(what)
     object <- object$dpp(rep(1, nrow(object$model.frame())))
     return(extract(object, what = what,
-                   sparseMatrix = sparseMatrix, expand = expand))
+                   asmatrix = asmatrix, expand = expand))
 }
 
-extract.bl_lin <- function(object, what = c("design", "penalty", "lambda",
+extract.bl_lin <- function(object, what = c("design", "penalty", "lambda", "df",
                                    "weights", "index"),
                            asmatrix = FALSE, expand = FALSE,  ...){
     what <- match.arg(what)
@@ -534,12 +527,10 @@ extract.bl_lin <- function(object, what = c("design", "penalty", "lambda",
         mat <- get("X", envir = environment(object$fit))
     if (what == "penalty")
         mat <- get("K", envir = environment(object$fit))
-    if (what == "lambda")
-        return(object$df())
-    if (what == "weights")
-        return(get("weights", envir = environment(object$fit)))
-    if (what == "index")
-        return(get("index", envir = environment(object$fit)))
+    if (what %in% c("lambda", "df"))
+        return(object$df()[what])
+    if (what %in% c("weights", "index"))
+        return(get(what, envir = environment(object$fit)))
     ## only applicable for design and penalty matrix
     if (asmatrix){
         mat <- as.matrix(mat)
@@ -553,7 +544,7 @@ extract.bl_lin <- function(object, what = c("design", "penalty", "lambda",
     return(mat)
 }
 
-extract.bl_tree <- function(object, what = c("design", "penalty", "lambda",
+extract.bl_tree <- function(object, what = c("design", "penalty", "lambda", "df",
                                     "weights", "index"),
                             ...){
     what <- match.arg(what)

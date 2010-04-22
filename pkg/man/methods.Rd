@@ -76,7 +76,7 @@
 
 \method{fitted}{mboost}(object, ...)
 
-\method{extract}{mboost}(object, what = c("design", "penalty", "lambda",
+\method{extract}{mboost}(object, what = c("design", "penalty", "lambda", "df",
                                    "coefficients", "bnames", "offset",
                                    "nuisance", "weights", "index", "control"),
                          which = NULL, ...)
@@ -150,8 +150,9 @@
                Depending on \code{object} this can be a subset of
                \code{"design"} (default; design matrix),
                \code{"penalty"} (penalty matrix),
-               \code{"lambda"} (smoothing parameter and df),
-               \code{"coefficients"}, \code{"bnames"} (names of the base-learners),
+               \code{"lambda"} (smoothing parameter), \code{"df"}
+               (degrees of freedom), \code{"coefficients"},
+               \code{"bnames"} (names of the base-learners),
                \code{"offset"}, \code{"nuisance"}, \code{"weights"},
                \code{"index"} (index of ties used to expand the design
                matrix) and \code{"control"}.}
