@@ -71,7 +71,7 @@ bl1 \%X\% bl2
   \item{boundary.knots}{ boundary points at which to anchor the B-spline basis
     (default the range of the data). A vector (of length 2)
     for the lower and the upper boundary knot can be specified.This is
-    only adviced for \code{bbs(..., cyclic = TRUE)}, where the boundary
+    only advised for \code{bbs(..., cyclic = TRUE)}, where the boundary
     knots specify the points at which the cyclic function should be joined. In
     analogy to \code{knots} a names list can be specified. }
   \item{degree}{ degree of the regression spline.}
@@ -91,7 +91,7 @@ bl1 \%X\% bl2
                  default the \code{\link[fields]{stationary.cov}} function
                  (package \code{fields}) is used. }
   \item{args}{ a named list of arguments to be passed to
-               \code{cov.function}. Thus strongly dependend on the
+               \code{cov.function}. Thus strongly dependent on the
            specified \code{cov.function}. }
   \item{contrasts.arg}{ a named list of characters suitable for input to the
                         \code{\link{contrasts}} replacement function, see
@@ -110,9 +110,9 @@ bl1 \%X\% bl2
   \item{niter}{ maximum number of iterations used to compute constraint
     estimates. Increase this number if a warning is displayed. }
   \item{bnd}{
-    Object of class \code{bnd}, in which the boundaries of a map are defined and from which neighbourhood
+    Object of class \code{bnd}, in which the boundaries of a map are defined and from which neighborhood
     relations can be construed. See \code{\link[BayesX]{read.bnd}}. If a boundary object is not available,
-    the neighbourhood matrix can also be given directly. }
+    the neighborhood matrix can also be given directly. }
   \item{X}{ design matrix as it should be used in the penalized least
     squares estimation. Effect modifiers do not need to be included here
     (\code{by} can be used for convenience). }
@@ -139,7 +139,7 @@ bl1 \%X\% bl2
   equivalent to \code{lm(y ~ ., data = x)} or \code{lm(y ~ x1 + x2)},
   respectively. By default, an intercept term is added to the
   corresponding design matrix (which can be omitted using
-  \code{intercept = FALSE}). It is \emph{strongly} adviced to (mean-)
+  \code{intercept = FALSE}). It is \emph{strongly} advised to (mean-)
   center continuous covariates, if no intercept is used in \code{bols} (see Hofner
   et al., 2009). When \code{df} is given, a ridge estimator with
   \code{df} degrees of freedom (trace of hat matrix) is used as
@@ -154,7 +154,7 @@ bl1 \%X\% bl2
   \code{knots} specifies either the number of (equidistant) \emph{interior}
   knots to be used for the regression spline fit or a vector including
   the positions of the \emph{interior} knots. Additionally,
-  \code{boundary.knots} can be specified. However, this is only adviced
+  \code{boundary.knots} can be specified. However, this is only advised
   if one uses cyclic constraints, where the \code{boundary.knots}
   specify the points where the function is joined (e.g.,
   \code{boundary.knots = c(0, 2 * pi)} for angles as in a sine function
@@ -196,13 +196,19 @@ bl1 \%X\% bl2
   effect modifier. For \code{brandom} specification of \code{by} leads
   to the estimation of random slopes for covariate \code{by} with
   grouping structure defined by factor \code{x} instead of a simple
-  random intercept. If \code{bbs} or \code{bspatial} is specified with
-  an factor variable \code{by} with more than two factors, the degrees
-  of freedom are shared for the complete base-learner (i.e., spread over
-  all factor levels). Note that the null space (see next paragraph)
-  increases, as a separate null space for each factor level is present.
-  Thus, the minimum degrees of freedom increase with increasing number
-  of levels of \code{by} (if \code{center = FALSE}).
+  random intercept. In \code{bbs}, \code{bspatial} and \code{brandom}
+  the computation of the smoothing parameter \code{lambda} for given
+  \code{df}, or vice versa, might become (numerically) instable if the
+  values of the interaction variable \code{by} become too large. In this
+  case, we recommend to rescale the interaction covariate e.g. by
+  dividing by \code{max(abs(by))}. If \code{bbs} or \code{bspatial} is
+  specified with an factor variable \code{by} with more than two
+  factors, the degrees of freedom are shared for the complete
+  base-learner (i.e., spread over all factor levels). Note that the null
+  space (see next paragraph) increases, as a separate null space for
+  each factor level is present. Thus, the minimum degrees of freedom
+  increase with increasing number of levels of \code{by} (if
+  \code{center = FALSE}).
 
   For \code{bbs} and \code{bspatial}, option \code{center} requests that
   the fitted effect is centered around its parametric, unpenalized part
@@ -238,12 +244,12 @@ bl1 \%X\% bl2
   \deqn{\rho(c; \theta = 1) = \varepsilon,}{rho(c; theta = 1) = epsilon,}
   where \eqn{\varepsilon = 0.001}{epsilon = 0.001}.
 
-  \code{bmrf} builds a base of a markov random field consisting of several regions
-  with a neighbourhood structure. The input variable is the observed region.
+  \code{bmrf} builds a base of a Markov random field consisting of several regions
+  with a neighborhood structure. The input variable is the observed region.
   The penalty matrix is either construed from a boundary object or must be
   given directly via the option \code{bnd}. In that case the \code{dimnames} of
-  the matrix have to be the region names, on the diagonal the number of neighbours
-  have to be given for each region, and for each neighbourhood relation the value
+  the matrix have to be the region names, on the diagonal the number of neighbors
+  have to be given for each region, and for each neighborhood relation the value
   in the matrix has to be -1, else 0. With a boundary object at hand, the fitted
   or predicted values can be directly plotted into the map using \code{\link[BayesX]{drawmap}}.
 
@@ -268,7 +274,7 @@ bl1 \%X\% bl2
   intercept term should be added to \code{gamboost} via \code{bols} (see
   example below). With \code{bols(x, intercept = FALSE)} with categorical
   covariate \code{x} a separate effect for each group (mean effect) is
-  estimated (see examples for resulting design matrizes).
+  estimated (see examples for resulting design matrices).
 
   Three global options affect the base-learners: \code{option("mboost_useMatrix")}
   defaulting to \code{TRUE} indicates that the base-learner may use
@@ -450,7 +456,7 @@ bl1 \%X\% bl2
   nd$pred_gam <- predict(mod_gam, newdata = nd)
   for (i in seq(along = levels(z)))
       with(nd[nd$z == i,], lines(x, pred_gam, col = z, lty = "dashed"))
-  ### convinience function for plotting
+  ### convenience function for plotting
   par(mfrow = c(1,3))
   plot(mod_gam)
 

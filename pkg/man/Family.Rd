@@ -88,7 +88,7 @@ Lognormal(nuirange = c(0, 100))
   Pre-fabricated functions for the most commonly used loss functions are
   available as well. Buehlmann and Hothorn (2007) give a detailed
   overview of the available loss functions. The \code{offset} function
-  returns the population minimisers evaluated at the response, i.e.,
+  returns the population minimizers evaluated at the response, i.e.,
   \eqn{1/2 \log(p / (1 - p))} for \code{Binomial()} or \code{AdaExp()}
   and \eqn{(\sum w_i)^{-1} \sum w_i y_i} for \code{Gaussian()} and the
   median for \code{Huber()} and \code{Laplace()}. A short summary of the

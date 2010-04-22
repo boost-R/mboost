@@ -10,17 +10,25 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
     if (!is.null(lambda))
         if (lambda == 0) return(c(df = ncol(X), lambda = 0))
 
+    ## check for possible instability
+    if (max(abs(X)) > 10)
+        warning("Some absolute values in design matrix are greater 10. Hence, ",
+                sQuote("df2lambda"), " might be numerically instable.\n  ",
+                "See documentation of argument ", sQuote("by"),
+                " in ?bbs for further information.",
+                immediate. = TRUE)
+    ## instable df2lambda might for example occure if one uses bbs(x, by = z)
+    ## with large values of z
+
     # Demmler-Reinsch Orthogonalization (cf. Ruppert et al., 2003,
     # Semiparametric Regression, Appendix B.1.1).
 
-    ### option
     A <- crossprod(X * weights, X) + dmat * 10e-10
     Rm <- solve(chol(A))
-
     decomp <- svd(crossprod(Rm, dmat) %*% Rm)
     d <- decomp$d
-    d[d < sqrt(.Machine$double.eps)] <- 0 ## set very small values to 0
 
+    ### option
     if (options("mboost_dftraceS")[[1]]){
         ## df := trace(S)
         dfFun <- function(lambda) sum(1 / (1 + lambda * d))
@@ -37,14 +45,15 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
     df2l <- function(lambda)
         dfFun(lambda) - df
 
-    lambdaMax <- options("mboost_lambdaMax")[[1]]
     ### option
+    lambdaMax <- options("mboost_lambdaMax")[[1]]
+
     if (df2l(lambdaMax) > 0){
         if (df2l(lambdaMax) > sqrt(.Machine$double.eps))
             warning("lambda needs to be larger than ", lambdaMax, " for given ",
-                    sQuote("df"), ";\nsetting lambda = ", lambdaMax,
+                    sQuote("df"), ";\n  setting lambda = ", lambdaMax,
                     " leeds to an deviation from ", sQuote("df"), " of ",
-                    df2l(lambdaMax), ";\nYou can increase lambda_max via ",
+                    df2l(lambdaMax), ";\n  You can increase lambda_max via ",
                     sQuote("options(mboost_lambdaMax = value)"))
         return(c(df = df, lambda = lambdaMax))
     }
@@ -267,12 +276,12 @@ X_bbs <- function(mf, vary, args) {
         rns <- ncol(K) - qr(as.matrix(K))$rank # compute rank of null space
         if (rns == args$df)
             warning( sQuote("df"), " equal to rank of null space ",
-                    "(unpenalized part of P-spline);\n\t",
+                    "(unpenalized part of P-spline);\n  ",
                     "Consider larger value for ", sQuote("df"),
                     " or set ", sQuote("center = TRUE"), ".", immediate.=TRUE)
         if (rns > args$df)
             stop("not possible to specify ", sQuote("df"),
-                 " smaller than the rank of the null space\n\t",
+                 " smaller than the rank of the null space\n  ",
                  "(unpenalized part of P-spline). Use larger value for ",
                  sQuote("df"), " or set ", sQuote("center = TRUE"), ".")
     }

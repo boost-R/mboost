@@ -1,5 +1,5 @@
 
-                CHANGES in `mboost' VERSION 2.1-0 (2010-03-30)
+                CHANGES in `mboost' VERSION 2.1-0 (2010-04-22)
 
   o  added base-learners for radial basis functions (brad())
      and smooth monotonic (or convex/concave) functions (bmono())
@@ -9,11 +9,12 @@
   o  bols(x, intercept = FALSE) only reasonable if x is centered
 
   o  bbs(x, cyclic = TRUE) for cyclic covariates ensures that
-     predictions at the boundaries coincide
+     predictions at the boundaries coincide and that the resulting
+     function estimate is smoothly joined
 
-  o  added extract() methods for fitted models and base-learners
+  o  added extract() methods for base-learners and fitted models
 
-  o  added family for AUC loss function
+  o  added family for AUC loss function (AUC())
 
   o  changed behavior of cvrisk() if weights are used:
      out-of-bag-risk now weighted according to "weights" as
@@ -24,12 +25,22 @@
 
   o  changed default in glmboost() to center = TRUE
 
-  o  fixed bug in predict() mit glmboost.matrix(..., center = TRUE)
+  o  fixed bug in predict() with glmboost.matrix(..., center = TRUE)
 
   o  coef now also works with tree base-learners
      (returns NULL in this case)
 
   o  changed coef.gamboost to coef.mboost
+
+  o  changed default for degrees of freedom in bspatial()
+     to df = 6
+
+  o  added checks in bbs (and brandom) to ensure that the specified
+     degrees of freedom are greater than the range of the (unpenalized)
+     null space
+
+  o  added warning if df2lambda is likely to become numerically
+     instable (i.e. in the case of large entries in the design matrix)
 
 
                 CHANGES in `mboost' VERSION 2.0-4 (2010-04-15, r490)
@@ -39,7 +50,7 @@
   o  fixed bug in bols(): contrast.arg was ignored if not a named list
      (which is wasn't per default)
 
-  o  added (missing) response functions to families Weibull(), 
+  o  added (missing) response functions to families Weibull(),
      Loglog(), Lognormal() and NBinomial()
 
   o  fixed bug in family CoxPH which occured with NAs
@@ -62,7 +73,7 @@
      for family = Poisson(), something like boost_control(nu = 0.01)
      fixes this problem.
 
-  o  "by" (in bols() and bbs()) can now handle factors with more than 
+  o  "by" (in bols() and bbs()) can now handle factors with more than
      two levels
 
   o  improved plot.mboost() for varying coefficients
