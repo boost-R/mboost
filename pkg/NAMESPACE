@@ -71,5 +71,6 @@ S3method(extract, blackboost)
 S3method(extract, blg)
 S3method(extract, bl_lin)
 S3method(extract, bl_tree)
+S3method(residuals, mboost)
 
 useDynLib(mboost)

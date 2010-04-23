@@ -14,6 +14,9 @@
 
   o  added extract() methods for base-learners and fitted models
 
+  o  added residuals() function to extract residuals from the
+     model
+
   o  added family for AUC loss function (AUC())
 
   o  changed behavior of cvrisk() if weights are used:

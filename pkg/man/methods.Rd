@@ -21,6 +21,8 @@
 \alias{predict.blackboost}
 \alias{predict.glmboost}
 \alias{fitted.mboost}
+\alias{residuals.mboost}
+\alias{resid.mboost}
 
 \alias{extract}
 \alias{extract.mboost}
@@ -76,11 +78,14 @@
 
 \method{fitted}{mboost}(object, ...)
 
+\method{residuals}{mboost}(object, ...)
+\method{resid}{mboost}(object, ...)
+
 \method{extract}{mboost}(object, what = c("design", "penalty", "lambda", "df",
-                                   "coefficients", "bnames", "offset",
+                                   "coefficients", "residuals", "bnames", "offset",
                                    "nuisance", "weights", "index", "control"),
                          which = NULL, ...)
-\method{extract}{glmboost}(object, what = c("design", "coefficients",
+\method{extract}{glmboost}(object, what = c("design", "coefficients", "residuals",
                                      "bnames", "offset", "nuisance",
                                      "weights", "control"),
                            which = NULL, asmatrix = FALSE, ...)
@@ -152,10 +157,11 @@
                \code{"penalty"} (penalty matrix),
                \code{"lambda"} (smoothing parameter), \code{"df"}
                (degrees of freedom), \code{"coefficients"},
-               \code{"bnames"} (names of the base-learners),
+               \code{"residuals"}, \code{"bnames"} (names of the base-learners),
                \code{"offset"}, \code{"nuisance"}, \code{"weights"},
                \code{"index"} (index of ties used to expand the design
-               matrix) and \code{"control"}.}
+               matrix) and \code{"control"}. In future versions additional
+               extractors might be specified.}
   \item{asmatrix}{ a logical indicating whether the the returned
         matrix should be coerced to a matrix (default) or if the
         returned object stays as it is (i.e., potentially a
@@ -214,6 +220,10 @@
   to the object via \code{attr(..., "offset")} as adding the offset to
   one of the marginal predictions doesn't make much sense.
 
+  The \code{residuals} function can be used to extract the residuals
+  (i.e., the negative gradient of the current iteration). \code{resid}
+  is is an alias for \code{residuals}.
+
   The \code{[.mboost} function can be used to enhance or restrict a given
   boosting model to the specified boosting iteration \code{i}. Note that
   in both cases the original \code{x} will be changed to reduce the
@@ -225,9 +235,16 @@
 
   The generic \code{extract} function can be used to extract various
   characteristics of a fitted model or a base-learner. Note that the
-  sometimes a penalty function is returned (e.g. by \code{extract(bols(x),
-  what = "penalty")}) even if the estimation is unpenalized. However, in
-  this case the penalty paramter \code{lambda} is set to zero.
+  sometimes a penalty function is returned (e.g. by
+  \code{extract(bols(x), what = "penalty")}) even if the estimation is
+  unpenalized. However, in this case the penalty paramter \code{lambda}
+  is set to zero. If a matrix is returned by \code{extract} one can to
+  set \code{asmatrix = TRUE} if the returned matrix should be coerced to
+  class \code{matrix}. If \code{asmatrix = FALSE} one might get a sparse
+  matrix as implemented in package \code{Matrix}. If one requests the
+  design matrix (\code{what = "design"}) \code{expand = TRUE} expands
+  the resulting matrix by taking the duplicates handeled via
+  \code{index} into account.
 
   The ids of base-learners selected during the fitting process can be
   extracted using \code{selected()}. The \code{nuisance()} method

@@ -441,7 +441,7 @@ extract <- function(object, ...)
     UseMethod("extract")
 
 extract.mboost <- function(object, what = c("design", "penalty", "lambda", "df",
-                                   "coefficients", "bnames", "offset",
+                                   "coefficients", "residuals", "bnames", "offset",
                                    "nuisance", "weights", "index", "control"),
                            which = NULL, ...){
     what <- match.arg(what)
@@ -455,6 +455,8 @@ extract.mboost <- function(object, what = c("design", "penalty", "lambda", "df",
     }
     if (what == "coefficients")
         return(coef(object, which = which))
+    if (what == "residuals")
+        return(residuals(object))
     if (what == "bnames")
         return(get("bnames", envir = environment(object$update))[which])
     if (what == "offset")
@@ -467,7 +469,7 @@ extract.mboost <- function(object, what = c("design", "penalty", "lambda", "df",
         return(object$control)
 }
 
-extract.glmboost <- function(object, what = c("design", "coefficients",
+extract.glmboost <- function(object, what = c("design", "coefficients", "residuals",
                                      "bnames", "offset", "nuisance", "weights",
                                      "control"),
                              which = NULL, asmatrix = FALSE, ...){
@@ -493,6 +495,8 @@ extract.glmboost <- function(object, what = c("design", "coefficients",
     }
     if (what == "coefficients")
         return(coef(object, which = which))
+    if (what == "residuals")
+        return(residuals(object))
     if (what == "bnames")
         return(get("bnames", envir = environment(object$update))[which])
     if (what == "offset")
@@ -555,4 +559,8 @@ extract.bl_tree <- function(object, what = c("design", "penalty", "lambda", "df"
                       "do not exist for tree base-learners"))
         invisible(NULL)
     }
+}
+
+residuals.mboost <- function(object, ...){
+    object$resid()
 }
