@@ -8,6 +8,7 @@
 \alias{Huber}
 \alias{Laplace}
 \alias{Poisson}
+\alias{GammaReg}
 \alias{CoxPH}
 \alias{QuantReg}
 \alias{ExpectReg}
@@ -26,12 +27,12 @@
 \usage{
 Family(ngradient, loss = NULL, risk = NULL,
        offset = function(y, w)
-           optimize(risk, interval = range(y), 
+           optimize(risk, interval = range(y),
                     y = y, w = w)$minimum,
        check_y = function(y) y,
        weights = c("any", "none", "zeroone", "case"),
        nuisance = function() return(NA),
-       name = "user-specified", fW = NULL, 
+       name = "user-specified", fW = NULL,
        response = function(f) NA)
 AdaExp()
 AUC()
@@ -42,6 +43,7 @@ Gaussian()
 Huber(d = NULL)
 Laplace()
 Poisson()
+GammaReg(nuirange = c(0, 100))
 CoxPH()
 QuantReg(tau = 0.5, qoffset = 0.5)
 ExpectReg(tau = 0.5)
@@ -64,7 +66,7 @@ Lognormal(nuirange = c(0, 100))
              squared error.}
   \item{response}{ inverse link function of a GLM or any other transformation
                    on the scale of the response.}
-  \item{check_y}{ a function for checking and transforming 
+  \item{check_y}{ a function for checking and transforming
                   the class / mode of a response variable.}
   \item{nuisance}{ a function for extracting nuisance parameters from the family.}
   \item{weights}{ a character indicating if weights are allowed. }
@@ -79,10 +81,10 @@ Lognormal(nuirange = c(0, 100))
   \item{offrange}{ interval to search for offset in.}
 }
 \details{
-  The boosting algorithm implemented in \code{\link{mboost}} minimizes the 
-  (weighted) empirical risk function \code{risk(y, f, w)} with respect to \code{f}. 
-  By default, the risk function is the weighted sum of the loss function \code{loss(y, f)} 
-  but can be chosen arbitrarily. The \code{ngradient(y, f)} function is the negative 
+  The boosting algorithm implemented in \code{\link{mboost}} minimizes the
+  (weighted) empirical risk function \code{risk(y, f, w)} with respect to \code{f}.
+  By default, the risk function is the weighted sum of the loss function \code{loss(y, f)}
+  but can be chosen arbitrarily. The \code{ngradient(y, f)} function is the negative
   gradient of \code{loss(y, f)} with respect to \code{f}.
 
   Pre-fabricated functions for the most commonly used loss functions are
@@ -93,13 +95,13 @@ Lognormal(nuirange = c(0, 100))
   and \eqn{(\sum w_i)^{-1} \sum w_i y_i} for \code{Gaussian()} and the
   median for \code{Huber()} and \code{Laplace()}. A short summary of the
   available families is given in the following paragraphs:
-  
+
 \code{AdaExp()}, \code{Binomial()} and \code{AUC()} implement
 families for binary classification. \code{AdaExp()} uses the
 exponential loss, which essentially leads to the AdaBoost algorithm
 of Freund and Schapire (1996). \code{Binomial()} implements the
-negative binomial log-likelihood of a logistic regression model 
-as loss function. Thus, using \code{Binomial} family closely corresponds 
+negative binomial log-likelihood of a logistic regression model
+as loss function. Thus, using \code{Binomial} family closely corresponds
 to fitting a logistic model.
 However, the coefficients resulting from boosting with family
 \code{Binomial} are \eqn{1/2} of the coefficients of a logit model
@@ -110,13 +112,13 @@ family \code{Binomial} is the preferred choice for binary
 classification. For binary classification problems the response
 \code{y} has to be a \code{factor}. Internally \code{y} is re-coded
 to \eqn{-1} and \eqn{+1} (Buehlmann and Hothorn 2007).
-\code{AUC()} uses \eqn{1-AUC(y, f)} as the loss function. 
-The area under the ROC curve (AUC) is defined as 
+\code{AUC()} uses \eqn{1-AUC(y, f)} as the loss function.
+The area under the ROC curve (AUC) is defined as
 \eqn{AUC = (n_{-1} n_1)^{-1} \sum_{i: y_i = 1} \sum_{j: y_j = -1} I(f_i > f_j)}.
 Since this is not differentiable in \code{f}, we approximate the jump function
-\eqn{I((f_i - f_j) > 0)} by the distribution function of the triangular 
-distribution on \eqn{[-1, 1]} with mean \eqn{0}, similar to the logistic 
-distribution approximation used in Ma and Huang (2005). 
+\eqn{I((f_i - f_j) > 0)} by the distribution function of the triangular
+distribution on \eqn{[-1, 1]} with mean \eqn{0}, similar to the logistic
+distribution approximation used in Ma and Huang (2005).
 
   \code{Gaussian()} is the default family in \code{\link{mboost}}. It
   implements \eqn{L_2}Boosting for continuous response. Note
@@ -132,14 +134,19 @@ distribution approximation used in Ma and Huang (2005).
   boosting methods. The implemented loss function is the negative
   Poisson log-likelihood. Note that the natural link function
   \eqn{\log(\mu) = \eta} is assumed. The default step-site \code{nu = 0.1}
-  is probably too large for this family (leading to 
+  is probably too large for this family (leading to
   infinite residuals) and smaller values are more appropriate.
+
+  \code{GammaReg()} implements a family for fitting nonnegative response
+  variables. The implemented loss function is the negative Gamma
+  log-likelihood with logarithmic link function (instead of the natural
+  link).
 
   \code{CoxPH()} implements the negative partial log-likelihood for Cox
   models. Hence, survival models can be boosted using this family.
 
   \code{QuantReg()} implements boosting for quantile regression, which is
-  introduced in Fenske et al. (2009). \code{ExpectReg} works in analogy, 
+  introduced in Fenske et al. (2009). \code{ExpectReg} works in analogy,
   only for expectiles, which were introduced to regression by Newey and Powell (1987).
 
   Families with an additional scale parameter can be used for fitting
@@ -159,10 +166,10 @@ distribution approximation used in Ma and Huang (2005).
   The coefficients resulting from boosting with family
   \code{Binomial} are \eqn{1/2} of the coefficients of a logit model
   obtained via \code{\link{glm}}. This is due to the internal recoding
-  of the response to \eqn{-1} and \eqn{+1} (see above). 
-  
-  For \code{AUC()}, variables should be centered and scaled and observations with weight > 0 must not contain missing values. 
-  The estimated coefficients for \code{AUC()} have no probabilistic interpretation.      
+  of the response to \eqn{-1} and \eqn{+1} (see above).
+
+  For \code{AUC()}, variables should be centered and scaled and observations with weight > 0 must not contain missing values.
+  The estimated coefficients for \code{AUC()} have no probabilistic interpretation.
 }
 \value{
   An object of class \code{boost_family}.
@@ -185,20 +192,20 @@ distribution approximation used in Ma and Huang (2005).
 
 	Shuangge Ma and Jian Huang (2005),
 	Regularized ROC method for disease classification and biomarker
-	selection with microarray data. 
+	selection with microarray data.
 	\emph{Bioinformatics}, \bold{21}(24), 4356--4362.
 
     Whitney K. Newey and James L. Powell (1987),
     Asymmetric least squares estimation and testing.
     \emph{Econometrika}, \bold{55}, 819--847.
 
-    Matthias Schmid and Torsten Hothorn (2008), 
-    Flexible boosting of accelerated failure time models. 
+    Matthias Schmid and Torsten Hothorn (2008),
+    Flexible boosting of accelerated failure time models.
     \emph{BMC Bioinformatics}, \bold{9}(269).
 
-    Matthias Schmid, Sergej Potapov, Annette Pfahlberg, 
-    and Torsten Hothorn (2010). Estimation and regularization techniques for 
-    regression models with multidimensional prediction functions. 
+    Matthias Schmid, Sergej Potapov, Annette Pfahlberg,
+    and Torsten Hothorn (2010). Estimation and regularization techniques for
+    regression models with multidimensional prediction functions.
     \emph{Statistics and Computing}, in press.
 
   }

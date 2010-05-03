@@ -2,11 +2,12 @@
 ### just a try
 plot.mboost <- function(x, which = NULL, newdata = NULL,
                         type = "b", rug = TRUE, rugcol = "black", ylim = NULL,
-                        xlab = NULL, ylab = expression(f[partial]), ...) {
+                        xlab = NULL, ylab = expression(f[partial]),
+                        print = TRUE,  ...) {
 
     which <- x$which(which, usedonly = is.null(which))
 
-    pr <- predict(x, which = which)
+    pr <- predict(x, which = which, newdata = newdata)
     if (is.null(ylim)) ylim <- range(pr)
 
     ## FIXED?
@@ -34,6 +35,8 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
     stopifnot(length(ylab) %in% c(1, length(variable.names(x))))
     ## FIXED?
 
+    RET <- vector("list", length = length(which))
+
     for (w in which) {
 
         data <- model.frame(x, which = w)[[1]]
@@ -59,7 +62,9 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
             }
             if (ncol(data) == 2) {
                 fm <- as.formula(paste("pr ~ ", paste(colnames(data), collapse = "*"), sep = ""))
-                print(levelplot(fm, data = data, ...))
+                RET[[w]] <<- levelplot(fm, data = data, ...)
+                if (print)
+                    print(RET[[w]])
             }
             if (ncol(data) > 2) {
                 for (v in colnames(data)) {
@@ -95,6 +100,11 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                           ": automated plot not reasonable for base-learners",
                           " of matrices", sep=""))
         }
+    }
+    if (!print && any(foo <- !sapply(RET, is.null))){
+        if (sum(foo) == 1)
+            return(RET[foo][[1]])
+        return(RET[foo])
     }
 }
 

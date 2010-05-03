@@ -17,7 +17,9 @@
   o  added residuals() function to extract residuals from the
      model
 
-  o  added family for AUC loss function (AUC())
+  o  added new families:
+       - AUC() for AUC loss function
+       - GammaReg() for gamma regression models
 
   o  changed behavior of cvrisk() if weights are used:
      out-of-bag-risk now weighted according to "weights" as
@@ -41,6 +43,8 @@
   o  added checks in bbs (and brandom) to ensure that the specified
      degrees of freedom are greater than the range of the (unpenalized)
      null space
+
+  o  various improvements in plot.mboost function
 
   o  added warning if df2lambda is likely to become numerically
      instable (i.e. in the case of large entries in the design matrix)

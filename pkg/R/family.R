@@ -615,3 +615,38 @@ AUC <- function() {
 				c(-1, 1)[as.integer(y)]
 			}, name = paste("(1 - AUC)-Loss"))
 }
+
+
+
+GammaReg <- function(nuirange = c(0, 100)) {
+    sigma <- 1
+    plloss <- function(sigma, y, f){
+        lgamma(sigma) + sigma * y * exp(-f) - sigma * log(y) -
+              sigma * log(sigma) + sigma * f
+    }
+    riskS <- function(sigma, y, fit, w = 1)
+        sum(w * plloss(y = y, f = fit, sigma = sigma))
+    risk <- function(y, f, w = 1)
+       sum(w * plloss(y = y, f = f, sigma = sigma))
+    ngradient <- function(y, f, w = 1) {
+        sigma <<- optimize(riskS, interval = nuirange,
+                           y = y, fit = f, w = w)$minimum
+        sigma * y * exp(-f) - sigma
+    }
+    Family(ngradient = ngradient, risk = risk,
+           offset = function(y, w){
+               optimize(risk, interval = c(0, max(y^2, na.rm = TRUE)),
+                        y = y, w = w)$minimum
+           },
+           check_y = function(y){
+               if (!is.numeric(y) || !is.null(dim(y)))
+                   stop("response is not a numeric vector but ",
+                        sQuote("family = GammaReg()"))
+               if (any(y <= 0))
+                   stop("response is not positive but ",
+                        sQuote("family = GammaReg()"))
+               y
+           },
+           nuisance = function() return(sigma),
+           name = "Negative Gamma Likelihood")
+}
