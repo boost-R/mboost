@@ -2,13 +2,14 @@
 ### just a try
 plot.mboost <- function(x, which = NULL, newdata = NULL,
                         type = "b", rug = TRUE, rugcol = "black", ylim = NULL,
-                        xlab = NULL, ylab = expression(f[partial]),
-                        print = TRUE,  ...) {
+                        xlab = NULL, ylab = expression(f[partial]), ...) {
 
     which <- x$which(which, usedonly = is.null(which))
 
     pr <- predict(x, which = which, newdata = newdata)
     if (is.null(ylim)) ylim <- range(pr)
+    ## <FIXME> default ylim not suitable for plotting varying coefficient
+    ##         base-learners; Users need to specify suitable values themselves
 
     ## FIXED?
     if (is.null(xlab)){
@@ -63,8 +64,6 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
             if (ncol(data) == 2) {
                 fm <- as.formula(paste("pr ~ ", paste(colnames(data), collapse = "*"), sep = ""))
                 RET[[w]] <<- levelplot(fm, data = data, ...)
-                if (print)
-                    print(RET[[w]])
             }
             if (ncol(data) > 2) {
                 for (v in colnames(data)) {
@@ -101,10 +100,11 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                           " of matrices", sep=""))
         }
     }
-    if (!print && any(foo <- !sapply(RET, is.null))){
+    if (any(foo <- !sapply(RET, is.null))){
         if (sum(foo) == 1)
             return(RET[foo][[1]])
-        return(RET[foo])
+        stop(paste("Cannot plot multiple surfaces via levelplot;",
+             "Plot base-learners seperately via plot(model, which = ...)!"))
     }
 }
 

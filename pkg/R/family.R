@@ -90,7 +90,8 @@ Laplace <- function()
                         sQuote("family = Laplace()"))
                y
            },
-           name = "Absolute Error")
+           name = "Absolute Error",
+           response = function(f) f)
 
 ### Binomial
 # lfinv <- binomial()$linkinv
@@ -170,7 +171,8 @@ Huber <- function(d = NULL) {
            },
            name = paste("Huber Error",
                ifelse(is.null(d), "(with adaptive d)",
-                                  paste("(with d = ", dtxt, ")", sep = ""))))
+                                  paste("(with d = ", dtxt, ")", sep = ""))),
+           response = function(f) f)
 }
 
 ### Adaboost
@@ -633,7 +635,8 @@ GammaReg <- function(nuirange = c(0, 100)) {
                            y = y, fit = f, w = w)$minimum
         sigma * y * exp(-f) - sigma
     }
-    Family(ngradient = ngradient, risk = risk,
+    Family(ngradient = ngradient,
+           risk = risk,
            offset = function(y, w){
                optimize(risk, interval = c(0, max(y^2, na.rm = TRUE)),
                         y = y, w = w)$minimum
@@ -642,11 +645,12 @@ GammaReg <- function(nuirange = c(0, 100)) {
                if (!is.numeric(y) || !is.null(dim(y)))
                    stop("response is not a numeric vector but ",
                         sQuote("family = GammaReg()"))
-               if (any(y <= 0))
+               if (any(y < 0))
                    stop("response is not positive but ",
                         sQuote("family = GammaReg()"))
                y
            },
            nuisance = function() return(sigma),
-           name = "Negative Gamma Likelihood")
+           name = "Negative Gamma Likelihood",
+           response = function(f) exp(f))
 }

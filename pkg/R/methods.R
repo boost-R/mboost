@@ -10,7 +10,7 @@
     if (is.list(pr)) {
         rownames(pr) <- nm
         if (type != "link")
-            warning("argument link is ignored")
+            warning("argument", sQuote("type"), " is ignored")
         return(pr)
     }
     if (type == "link") ret <- pr
@@ -562,5 +562,8 @@ extract.bl_tree <- function(object, what = c("design", "penalty", "lambda", "df"
 }
 
 residuals.mboost <- function(object, ...){
-    object$resid()
+    if(object$family@name == "Squared Error (Regression)")
+        return(object$resid())
+    stop(sQuote("residuals()"), " only implemented for ",
+         sQuote("family = Gaussian()"))
 }
