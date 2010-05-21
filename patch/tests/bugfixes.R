@@ -30,7 +30,7 @@ bb <- blackboost(DEXfat ~ ., data = bodyfat, control = ctrl)
 n <- nrow(bodyfat)
 bs <- rmultinom(3, n, rep(1, n) / n)
 x <- seq(from = 10, to = 500, by = 10)
-cv <- cvrisk(bb, bs, grid = x)
+cv <- cvrisk(bb, bs, grid = x, papply = lapply)
 ctrl$risk <- "oobag"
 tmp <- blackboost(DEXfat ~ ., data = bodyfat, control = ctrl,
                  weights = bs[,3])
@@ -40,7 +40,7 @@ stopifnot(identical(max(abs(tmp$risk()[x] / sum(bs[,3] == 0)  - cv[3,])), 0))
 ### center = TRUE and cvrisk were broken; same issue with masking original data
 
 gb <- glmboost(DEXfat ~ ., data = bodyfat, control = boost_control(center = TRUE))
-cv1 <- cvrisk(gb, folds = bs)
+cv1 <- cvrisk(gb, folds = bs, papply = lapply)
 tmp <- glmboost(DEXfat ~ ., data = bodyfat,
                 control = boost_control(center = TRUE, risk = "oobag"),
                 weights = bs[,3])
@@ -55,9 +55,9 @@ bffm <- DEXfat ~ age + waistcirc + hipcirc + elbowbreadth + kneebreadth +
       anthro3a + anthro3b + anthro3c + anthro4
 
 bf_glm_1 <- glmboost(bffm, data = cbodyfat)
-cv1 <- cvrisk(bf_glm_1, folds = bs)
+cv1 <- cvrisk(bf_glm_1, folds = bs, papply = lapply)
 bf_glm_2 <- glmboost(bffm, data = bodyfat, control = boost_control(center = TRUE))
-cv2 <- cvrisk(bf_glm_2, folds = bs)
+cv2 <- cvrisk(bf_glm_2, folds = bs, papply = lapply)
 
 stopifnot(mstop(cv1) == mstop(cv2))
 
