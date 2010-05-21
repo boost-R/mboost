@@ -100,7 +100,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
 
   ### 10-fold cross-validation
   cv10f <- cv(model.weights(model), type = "kfold")
-  cvm <- cvrisk(model, folds = cv10f)
+  cvm <- cvrisk(model, folds = cv10f, papply = lapply)
   print(cvm)
   mstop(cvm)
   plot(cvm)
@@ -109,14 +109,14 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   set.seed(290875)
   n <- nrow(bodyfat)
   bs25 <- rmultinom(25, n, rep(1, n)/n)
-  cvm <- cvrisk(model, folds = bs25)
+  cvm <- cvrisk(model, folds = bs25, papply = lapply)
   print(cvm)
   mstop(cvm)
   plot(cvm)
 
   ### same by default
   set.seed(290875)
-  cvrisk(model)
+  cvrisk(model, papply = lapply)
 
   ### 25 bootstrap iterations (using cv)
   set.seed(290875)
@@ -125,7 +125,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
 
   ### trees
   blackbox <- blackboost(DEXfat ~ ., data = bodyfat)
-  cvtree <- cvrisk(blackbox)
+  cvtree <- cvrisk(blackbox, papply = lapply)
   plot(cvtree)
 
 

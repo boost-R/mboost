@@ -110,7 +110,7 @@ LazyData: \tab yes\cr
       data = bodyfat, control = boost_control(mstop = 100))
 
   ### bootstrap for assessing `optimal' number of boosting iterations
-  cvm <- cvrisk(model)
+  cvm <- cvrisk(model, papply = lapply)
 
   ### restrict model to mstop(cvm)
   model[mstop(cvm), return = FALSE]

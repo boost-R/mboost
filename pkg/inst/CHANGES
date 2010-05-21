@@ -50,6 +50,11 @@
      instable (i.e. in the case of large entries in the design matrix)
 
 
+                CHANGES in `mboost' VERSION 2.0-5 (2010-05-21, r507)
+
+  o  no not use multicore functionality in R CMD check
+
+
                 CHANGES in `mboost' VERSION 2.0-4 (2010-04-15, r490)
 
   o  new vignette "mboost" describing 2.0-x series features
