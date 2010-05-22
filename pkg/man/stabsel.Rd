@@ -7,13 +7,19 @@
     Selection of influential variables or model components with error control.
 }
 \usage{
-stabsel(object, FWER = 0.05, cutoff, q, ...)
+stabsel(object, FWER = 0.05, cutoff, q, 
+        papply = if (require("multicore")) mclapply else lapply, ...)
 }
 \arguments{
   \item{object}{an \code{mboost} object.}
   \item{FWER}{family-wise error rate to be controlled by the selection procedure.}
   \item{cutoff}{cutoff between 0.5 and 1.}
   \item{q}{average number of selected variables.}
+  \item{papply}{ (parallel) apply function. In the absence of package \code{multicore} sequential
+    computations via \code{\link{lapply}} are performed. Alternatively,
+    parallel computing via \code{\link[multicore]{mclapply}} (package \code{multicore}),
+    or \code{clusterApplyLB} (package \code{snow}) can be used. In the
+    latter case, usually more setup is needed (see example for some details).}
   \item{\dots}{additional arguments to \code{\link{cvrisk}}.}
 }
 \details{
