@@ -14,7 +14,7 @@ stabsel(object, FWER = 0.05, cutoff, q, ...)
   \item{FWER}{family-wise error rate to be controlled by the selection procedure.}
   \item{cutoff}{cutoff between 0.5 and 1.}
   \item{q}{average number of selected variables.}
-  \item{\dots}{additional arguments to \code{\link{cv}}.}
+  \item{\dots}{additional arguments to \code{\link{cvrisk}}.}
 }
 \details{
 
@@ -46,7 +46,8 @@ stabsel(object, FWER = 0.05, cutoff, q, ...)
 
 
   ### (too) low-dimensional example    
-  sbody <- stabsel(glmboost(DEXfat ~ ., data = bodyfat), q = 3)
+  sbody <- stabsel(glmboost(DEXfat ~ ., data = bodyfat), q = 3,
+                   papply = lapply)
   sbody
   opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
   plot(sbody)

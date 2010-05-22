@@ -1,5 +1,5 @@
 
-                CHANGES in `mboost' VERSION 2.0-6 (2010-05-22,)
+                CHANGES in `mboost' VERSION 2.0-6 (2010-05-22, r510)
 
   o  no not use multicore functionality in R CMD check, really.
 
