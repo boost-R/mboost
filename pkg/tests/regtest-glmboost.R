@@ -297,3 +297,18 @@ stopifnot(length(coef(amod)) == 4)
 amod[10]
 stopifnot(length(coef(amod)) == 1)
 stopifnot(length(coef(amod, which=1:3)) == 3)
+
+### check with logical design matrices
+n <- 1000
+p <- 10
+X <- matrix(as.logical(rbinom(n * p, size = 1, prob = 0.5)), nrow = n)
+y <- rnorm(n)
+
+mod <- glmboost(x = X, y = y)
+
+Xd <- X
+storage.mode(Xd) <- "double"
+modd <- glmboost(x = Xd, y = y)
+stopifnot(all.equal(coef(modd), coef(mod)))
+
+

@@ -24,6 +24,7 @@ bolscw <- function(X) {
 
     ret$dpp <- function(weights) {
 
+        ### <FIXME> if X is logical unnecessary copying takes place
         weights <- weights[cc]
         xw <- t(X * weights)
         xtx <- colSums(X^2 * weights, na.rm = TRUE)
@@ -38,6 +39,7 @@ bolscw <- function(X) {
                 y <- y[cc]
 
             mmu <- max(amu <- abs(mu <- MPinvS %*% y))
+        ### <FIXME>
             xselect <- which(as.logical(mmu == amu))[1]
             coef <- mu[xselect] / sxtx[xselect]
             ret <- list(model = c(coef = coef, xselect = xselect, p = p),
