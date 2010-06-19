@@ -571,6 +571,9 @@ glmboost.matrix <- function(x, y, center = TRUE,
                             control = boost_control(), ...) {
 
     X <- x
+    if (nrow(X) != NROW(y))
+        stop("dimensions of ", sQuote("x"), " and ", sQuote("y"), 
+             " do not match")
     if (is.null(colnames(X)))
         colnames(X) <- paste("V", 1:ncol(X), sep = "")
     if (!control$center) {

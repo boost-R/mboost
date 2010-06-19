@@ -368,3 +368,6 @@ stopifnot(max(abs(predict(m2) - predict(m3))) < sqrt(.Machine$double.eps))
 z <- as.ordered(gl(3, 10))
 BL <- bols(z, contrasts.arg = "contr.treatment")$dpp
 stopifnot(attr(get("X", envir = environment(BL)), "contrasts")$z == "contr.treatment")
+
+### check dimensions
+try(glmboost(x = matrix(1:10, nrow = 5), y = rnorm(4)))
