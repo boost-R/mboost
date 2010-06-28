@@ -37,7 +37,7 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   \item{control}{ a list of parameters controlling the algorithm. For
     more details see \code{\link{boost_control}}. }
   \item{oobweights}{ an additional vector of out-of-bag weights (used internally
-    by \code{cvrisk}.}
+    by \code{cvrisk}).}
   \item{\dots}{  additional arguments passed to \code{\link{mboost_fit}},
     including \code{weights}, \code{offset}, \code{family} and
     \code{control}. }
@@ -62,6 +62,13 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   Base-learners can be specified via a formula interface
   (function \code{mboost}) or as a list of objects of class \code{bl},
   see \code{\link{bols}}.
+  
+  \code{oobweights} is a vector used internally by \code{cvrisk}. When carrying
+  out cross-validation to determine the optimal stopping iteration of a boosting
+  model, the default value of \code{oobweights} (out-of-bag weights) assures
+  that the cross-validated risk is computed using the same observation weights
+  as those used for fitting the boosting model. It is strongly recommended to
+  leave this argument unspecified.
 
   Note that the more convenient modelling interfaces \code{\link{gamboost}},
   \code{\link{glmboost}} and \code{\link{blackboost}} all call
