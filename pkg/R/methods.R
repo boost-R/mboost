@@ -314,6 +314,9 @@ coef.glmboost <- function(object, which = NULL,
         if (off2int & length(offset) == 1) {
             cf[[1]] <- cf[[1]] + offset
         } else {
+            if (off2int)
+                warning(sQuote("off2int = TRUE"),
+                        " ignored for non-scalar offset")
             attr(cf, "offset") <- offset
         }
     }

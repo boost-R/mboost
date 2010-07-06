@@ -108,9 +108,10 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
     }
 }
 
-plot.glmboost <- function(x, main = deparse(x$call), col = NULL, ...) {
+plot.glmboost <- function(x, main = deparse(x$call), col = NULL,
+                          off2int = FALSE, ...) {
 
-    cp <- coef(x, aggregate = "cumsum")
+    cp <- coef(x, aggregate = "cumsum", off2int = off2int)
     ncp <- names(cp)
     cp <- matrix(unlist(cp), nrow = length(cp), byrow = TRUE)
     cf <- cp[, ncol(cp)]
