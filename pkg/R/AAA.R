@@ -24,8 +24,15 @@
 }
 
 .onLoad <- function(libname, pkgname) {
+    if (options("expressions")[[1]] <= 5000)
+        options(expressions = 10000)  ### increase maximum number of expressions
     options(mboost_useMatrix = TRUE, ### allow for Matrix package?
             mboost_indexmin = 10000, ### handle ties for n > 10000
             mboost_dftraceS = TRUE,  ### df = trace(S) or df = trace(2 S - StS)
             mboost_lambdaMax = 1e+15)### maximum value for lambda as used in df2lambda
+}
+
+.onUnload <- function(libpath) {
+    if (options("expressions")[[1]] == 10000)
+        options(expression = 5000)  ### decrease maximum number of expressions again
 }
