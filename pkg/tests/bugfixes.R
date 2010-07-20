@@ -371,3 +371,17 @@ stopifnot(attr(get("X", envir = environment(BL)), "contrasts")$z == "contr.treat
 
 ### check dimensions
 try(glmboost(x = matrix(1:10, nrow = 5), y = rnorm(4)))
+
+### (slight) abuse of bolscw
+X <- runif(1000)
+X <- matrix(X, nrow = 100)
+y <- rnorm(100)
+glmboost(x = X, y = y)
+b <- list(mboost:::bolscw(X))
+mboost_fit(blg = b, response = y)
+z <- rnorm(100)
+b <- list(b1 = mboost:::bolscw(X), b2 = bbs(z))
+mboost_fit(blg = b, response = y)
+mod <- mboost_fit(blg = b, response = y)
+cf <- coef(mod, which = 1)
+stopifnot(length(cf) == ncol(X))

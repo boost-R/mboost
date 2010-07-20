@@ -318,7 +318,11 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
                     cf <- matrix(0, nrow = length(nm), ncol = mstop)
                 }
             } else {
-                cftmp <- sapply(ens[ix], coef)
+                if (inherits(ens[ix][[1]], "bm_cwlin") && !cwlin) {
+                    cftmp <- sapply(ens[ix], coef, all = TRUE)
+                } else {
+                    cftmp <- sapply(ens[ix], coef)
+                }
                 nr <- NROW(cftmp)
                 if (!is.matrix(cftmp)) nr <- 1
                 cf <- matrix(0, nrow = nr, ncol = mstop)
