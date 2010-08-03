@@ -383,5 +383,5 @@ z <- rnorm(100)
 b <- list(b1 = mboost:::bolscw(X), b2 = bbs(z))
 mboost_fit(blg = b, response = y)
 mod <- mboost_fit(blg = b, response = y)
-cf <- coef(mod, which = 1)
+cf <- coef(mod, which = 1)[[1]]
 stopifnot(length(cf) == ncol(X))
