@@ -407,9 +407,10 @@ variable.names.glmboost <- function(object, ...) {
 }
 
 
-selected <- function(object) UseMethod("selected", object)
+selected <- function(object, ...)
+    UseMethod("selected", object)
 
-selected.mboost <- function(object)
+selected.mboost <- function(object, ...)
     object$xselect()
 
 summary.mboost <- function(object, ...) {

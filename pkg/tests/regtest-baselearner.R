@@ -233,3 +233,14 @@ m1 <- gamboost(y ~ (bols(x1, intercept = FALSE, df = 1) %+%
                     bols(x2, intercept = FALSE, df = 1)) %X% bols(f, df = 4) +
                     bbs(x1) + bspatial(x1, x2))
 
+
+### test bmono with categorical covariates
+set.seed(781)
+x <- as.ordered(gl(4, 50))
+y <- rnorm(200, mean = rep(c(1,3,2,4), each = 50), sd = 1)
+#plot(x, y)
+mod1 <- gamboost(y ~ bols(x))
+diff(coef(mod1)[[1]])
+mod2 <- gamboost(y ~ bmono(x, lambda2 = 10^15))
+stopifnot(abs(coef(mod1)[[1]] - coef(mod2)[[1]])[c(1,4)] < 1e-5)
+stopifnot(all(diff(coef(mod2)[[1]]) > - sqrt(.Machine$double.eps)))

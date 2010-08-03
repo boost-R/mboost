@@ -34,7 +34,8 @@ btree(..., tree_controls = ctree_control(stump = TRUE,
 bmono(..., constraint = c("increasing", "decreasing", "convex", "concave"),
       by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
       degree = 3, differences = 2, df = 4, lambda = NULL,
-      lambda2 = 1e6, niter=10)
+      lambda2 = 1e6, niter=10, intercept = TRUE,
+      contrasts.arg = "contr.treatment")
 bmrf(..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
     center = FALSE)
 buser(X, K = NULL, by = NULL, index = NULL, df = 4, lambda = NULL)

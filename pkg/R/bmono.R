@@ -3,7 +3,8 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
                                       "convex", "concave"),
                   by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
                   degree = 3, differences = 2, df = 4,
-                  lambda = NULL, lambda2 = 1e6, niter = 10) {
+                  lambda = NULL, lambda2 = 1e6, niter = 10,
+                  intercept = TRUE, contrasts.arg = "contr.treatment") {
 
     if (!is.null(lambda)) df <- NULL
 
@@ -20,9 +21,9 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
         colnames(mf) <- sapply(cl, function(x) deparse(x))
     }
     stopifnot(is.data.frame(mf))
-    if(!(all(sapply(mf, is.numeric)))) {
-        if (ncol(mf) == 1) return(bols(as.data.frame(...), by = by, index = index))
-        stop("cannot compute ", sQuote("bmono"), " for non-numeric variables")
+    if (!(all(sapply(mf, is.numeric))) && !all(sapply(mf, is.ordered))) {
+        stop("cannot compute ", sQuote("bmono"),
+             ": variables must be numeric or ordered")
     }
     ### use bols when appropriate
     if (!is.null(df)) {
@@ -38,9 +39,12 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
 
     CC <- all(Complete.cases(mf))
     ### option
-    DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]])
+    DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]] ||
+                is.factor(mf[[1]]))
     if (is.null(index)) {
         if (!CC || DOINDEX) {
+            ### try to remove duplicated observations or
+            ### observations with missings
             index <- get_index(mf)
             mf <- mf[index[[1]],,drop = FALSE]
             index <- index[[2]]
@@ -70,12 +74,22 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
                     attr(mf, "names") <<- value
                 })
     class(ret) <- "blg"
-    ret$dpp <- bl_mono(ret, Xfun = X_bbs,
-                       args = c(hyper_bbs(mf, vary, knots = knots,
-                       boundary.knots =  boundary.knots, degree = degree,
-                       differences = differences, df = df, lambda = lambda,
-                       center = FALSE), constraint = constraint,
-                       lambda2 = lambda2, niter = niter))
+    if (!is.factor(mf[[1]])){
+        ret$dpp <- bl_mono(ret, Xfun = X_bbs,
+                           args = c(hyper_bbs(mf, vary, knots = knots,
+                                boundary.knots =  boundary.knots,
+                                degree = degree, differences = differences,
+                                df = df, lambda = lambda, center = FALSE),
+                                constraint = constraint,
+                                lambda2 = lambda2, niter = niter))
+    } else {
+        ret$dpp <- bl_mono(ret, Xfun = X_ols,
+                           args = c(hyper_ols(df = df, lambda = lambda,
+                                    intercept = intercept,
+                                    contrasts.arg = contrasts.arg),
+                                constraint = constraint,
+                                lambda2 = lambda2, niter = niter))
+    }
     return(ret)
 }
 
