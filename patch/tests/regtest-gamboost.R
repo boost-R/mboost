@@ -213,7 +213,7 @@ pr1 <- predict(amod, aggre = "sum", which= 1:2)
 foo <- bodyfat[,names(bodyfat) %in% c("hipcirc", "anthro3a", "kneebreadth")]
 foo$kneebreadth <- mean(bodyfat$kneebreadth)
 pr2 <- predict(amod, aggre = "sum", newdata=foo)
-stopifnot(length(unique(rowSums(pr1) - pr2)) == 1) # changes in level are ok
+stopifnot(all(diff(rowSums(pr1) - pr2) < sqrt(.Machine$double.eps))) # changes in level are ok
 newData <- as.data.frame(rbind(mean(bodyfat)[-2], mean(bodyfat)[-2]+1*sd(bodyfat)[-2]))
 if (!is.list(pr <- predict(amod, newdata=newData, which=1:2)))
     warning("predict(amod, newdata=newData, which=1:2) does not return a list") # no list but a matrix is returned!

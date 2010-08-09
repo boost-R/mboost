@@ -158,7 +158,10 @@ bl_mono <- function(blg, Xfun, args) {
                 if (all( V == (V <- do.call(args$constraint,
                                             args=list(as.vector(coef)))) ))
                     break    # if both are equal: done!
-                if (i == args$niter) warning("no convergence of coef in bmono")
+                if (i == args$niter)
+                    warning("no convergence of coef in bmono\n",
+                            "You could try increasing ", sQuote("niter"),
+                            " or ", sQuote("lambda2"))
             }
 
             ret <- list(model = coef,
