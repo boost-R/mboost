@@ -62,6 +62,7 @@ buser <- function(X, K = NULL,  by = NULL, index = NULL, df = 4, lambda = NULL){
 ### model.matrix for arbitrary user-specified base-learners
 X_user <- function(mf, vary, args) {
     X <- mf
+    K <- args$K
     if (vary != "") {
         by <- model.matrix(as.formula(paste("~", vary, collapse = "")),
                            data = as.data.frame(mf))[ , -1, drop = FALSE]
@@ -76,7 +77,6 @@ X_user <- function(mf, vary, args) {
         } else {
             X <- do.call("cbind", DM)
         }
-        K <- args$K
         if (ncol(by) > 1)
             K <- kronecker(diag(ncol(by)), K)
     }
