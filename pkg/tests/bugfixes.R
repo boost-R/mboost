@@ -385,3 +385,15 @@ mboost_fit(blg = b, response = y)
 mod <- mboost_fit(blg = b, response = y)
 cf <- coef(mod, which = 1)[[1]]
 stopifnot(length(cf) == ncol(X))
+
+
+### check interface of buser
+### (K was fetched from global environment)
+set.seed(1907)
+x <- rnorm(100)
+y <- rnorm(100, mean = x^2, sd = 0.1)
+mod1 <- gamboost(y ~ bbs(x))
+X1 <- extract(bbs(x))
+K1 <- extract(bbs(x), "penalty")
+mod2 <- gamboost(y ~ buser(X1, K1))
+stopifnot(max(abs(predict(mod1) - predict(mod2))) < sqrt(.Machine$double.eps))
