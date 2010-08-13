@@ -294,6 +294,11 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             fit <<- RET$predict()
             u <<- ngradient(y, fit, weights)
         } else {
+            ## first increase to "old" mstop
+            mstop <<- length(xselect)
+            fit <<- RET$predict()
+            u <<- ngradient(y, fit, weights)
+            ## now fit the rest
             tmp <- boost(i - mstop)
         }
     }
@@ -576,7 +581,7 @@ glmboost.matrix <- function(x, y, center = TRUE,
 
     X <- x
     if (nrow(X) != NROW(y))
-        stop("dimensions of ", sQuote("x"), " and ", sQuote("y"), 
+        stop("dimensions of ", sQuote("x"), " and ", sQuote("y"),
              " do not match")
     if (is.null(colnames(X)))
         colnames(X) <- paste("V", 1:ncol(X), sep = "")
