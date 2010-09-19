@@ -311,4 +311,22 @@ storage.mode(Xd) <- "double"
 modd <- glmboost(x = Xd, y = y)
 stopifnot(all.equal(coef(modd), coef(mod)))
 
+### probit models
+set.seed(29)
+n <- 1000
+x <- runif(n, min = -2, max = 2)
+y <- factor(rbinom(n, size = 1, prob = pnorm(3 * x)))
+table(y)
+mod <- glm(y ~ x, family = binomial(link = "probit"))
+coef(mod)
+
+mod2 <- glmboost(y ~ x, family = Binomial(link = "probit"),
+                 control = boost_control(nu = 0.5, mstop = 1000))
+coef(mod2, off2int = TRUE)
+stopifnot(all.equal(round(coef(mod), 2), round(coef(mod2, off2int = TRUE), 2)))
+
+data("GlaucomaM", package = "ipred")
+coef(mod3 <- glm(Class ~ varg, data = GlaucomaM, family = binomial(link = "probit")))
+coef(mod4 <- glmboost(Class ~ varg, data = GlaucomaM, family = Binomial(link = "probit"))[1000])
+stopifnot(all.equal(round(coef(mod3), 3), round(coef(mod4, off2int = TRUE), 3)))
 

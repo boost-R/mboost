@@ -95,8 +95,19 @@ Laplace <- function()
 
 ### Binomial
 # lfinv <- binomial()$linkinv
-Binomial <- function()
-    Family(ngradient = function(y, f, w = 1) {
+Binomial <- function(link = c("logit", "probit")) {
+    link <- match.arg(link)
+    biny <- function(y) {
+        if (!is.factor(y))
+            stop("response is not a factor but ",
+                  sQuote("family = Binomial()"))
+            if (nlevels(y) != 2)
+                stop("response is not a factor at two levels but ",
+                      sQuote("family = Binomial()"))
+        return(c(-1, 1)[as.integer(y)])
+    }
+    if (link == "logit")
+    return(Family(ngradient = function(y, f, w = 1) {
                exp2yf <- exp(-2 * y * f)
                -(-2 * y * exp2yf) / (log(2) * (1 + exp2yf))
            },
@@ -120,16 +131,38 @@ Binomial <- function()
                p <- exp(f) / (exp(f) + exp(-f))
                return(p)
            },
-           check_y = function(y) {
-               if (!is.factor(y))
-                   stop("response is not a factor but ",
-                           sQuote("family = Binomial()"))
-               if (nlevels(y) != 2)
-                   stop("response is not a factor at two levels but ",
-                           sQuote("family = Binomial()"))
-               c(-1, 1)[as.integer(y)]
+           check_y = biny,
+           name = "Negative Binomial Likelihood"))
+
+    if (link == "probit") {
+        trf <- function(f) {
+            thresh <- -qnorm(.Machine$double.eps)
+            f <- pmin(pmax(f, -thresh), thresh)
+        }
+
+    return(Family(ngradient = function(y, f, w = 1) {
+               y <- (y + 1) / 2
+               p <- pnorm(trf(f))
+               d <- dnorm(trf(f))
+               y * 1 / p * d - (1 - y) * 1 / (1 - p) * d
            },
-           name = "Negative Binomial Likelihood")
+           loss = function(y, f) {
+               p <- pnorm(trf(f))
+               y <- (y + 1) / 2
+               -y * log(p) - (1 - y) * log(1 - p)
+           },
+           offset = function(y, w) {
+               p <- weighted.mean(y > 0, w)
+               qnorm(p)
+           },
+           response = function(f) {
+               p <- pnorm(trf(f))
+               return(p)
+           },
+           check_y = biny,
+           name = "Negative Binomial Likelihood -- Probit Link"))
+    }
+}
 
 ### Poisson
 Poisson <- function()

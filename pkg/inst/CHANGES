@@ -1,6 +1,8 @@
 
                 CHANGES in `mboost' VERSION 2.1-0 (2010-0x-xx)
 
+  o  add Binomial(link = "probit")
+
   o  bolscw can be mixed with other base-learners (although
      not yet exported and not via the formula interface)
 

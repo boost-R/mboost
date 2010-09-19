@@ -36,7 +36,7 @@ Family(ngradient, loss = NULL, risk = NULL,
        response = function(f) NA)
 AdaExp()
 AUC()
-Binomial()
+Binomial(link = c("logit", "probit"))
 GaussClass()
 GaussReg()
 Gaussian()
@@ -71,6 +71,7 @@ Lognormal(nuirange = c(0, 100))
   \item{nuisance}{ a function for extracting nuisance parameters from the family.}
   \item{weights}{ a character indicating if weights are allowed. }
   \item{name}{ a character giving the name of the loss function for pretty printing. }
+  \item{link}{ link function for binomial family.}
   \item{d}{ delta parameter for Huber loss function. If omitted, it is chosen adaptively.}
   \item{tau}{ the quantile or expectile to be estimated, a number strictly between 0 and 1.}
   \item{qoffset}{ quantile of response distribution to be used as offset.}
