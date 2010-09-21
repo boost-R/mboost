@@ -7,6 +7,7 @@ setClass("boost_family", representation = representation(
     weights    = "function",
     nuisance   = "function",
     response   = "function",
+    rclass     = "function",
     name       = "character",
     charloss   = "character"
 ))
@@ -27,7 +28,9 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
                    check_y = function(y) y,
                    weights = c("any", "none", "zeroone", "case"),
                    nuisance = function() return(NA),
-                   name = "user-specified", fW = NULL, response = function(f) NA)
+                   name = "user-specified", fW = NULL,
+                   response = function(f) NA,
+                   rclass = function(f) NA)
 {
 
     if (is.null(loss)) {
@@ -49,13 +52,14 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
             "case" = isTRUE(all.equal(unique(w - floor(w)), 0)))
     }
     RET <- new("boost_family", ngradient = ngradient, nuisance = nuisance,
-               risk = risk, offset = offset, check_y = check_y, response = response,
-               weights = check_w, name = name, charloss = charloss)
+               risk = risk, offset = offset, check_y = check_y,
+               response = response, rclass = rclass, weights = check_w,
+               name = name, charloss = charloss)
     if (!is.null(fW))
         RET <- new("boost_family_glm", ngradient = ngradient, nuisance = nuisance,
                    risk = risk, offset = offset, fW = fW, check_y = check_y,
                    weights = check_w, name = name, response = response,
-                   charloss= charloss)
+                   rclass = rclass, charloss= charloss)
     RET
 }
 
@@ -131,6 +135,7 @@ Binomial <- function(link = c("logit", "probit")) {
                p <- exp(f) / (exp(f) + exp(-f))
                return(p)
            },
+           rclass = function(f) (f > 0) + 1 ,
            check_y = biny,
            name = "Negative Binomial Likelihood"))
 
@@ -159,6 +164,7 @@ Binomial <- function(link = c("logit", "probit")) {
                p <- pnorm(trf(f))
                return(p)
            },
+           rclass = function(f) (f > 0) + 1 ,
            check_y = biny,
            name = "Negative Binomial Likelihood -- Probit Link"))
     }
@@ -225,6 +231,7 @@ AdaExp <- function()
                            sQuote("family = AdaExp()"))
                c(-1, 1)[as.integer(y)]
            },
+           rclass = function(f) (f > 0) + 1 ,
            name = "Adaboost Exponential Error")
 
 ### Cox proportional hazards model (partial likelihood)
@@ -379,6 +386,17 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
         optimize(risk, interval = offrange, y = y, w = w)$minimum
     }
 
+    response <- function(f) {
+        ret <- sapply(1:(length(sigma) + 1), function(i) {
+            if (i == 1) return(1 / (1 + exp(f - sigma[i])))
+            if (i == (length(sigma) + 1))
+            return(1 - 1/(1 + exp(f - sigma[i - 1])))
+            return(1 / (1 + exp(f - sigma[i])) -
+               1 / (1 + exp(f - sigma[i - 1])))
+            })
+            ret
+        }
+
     Family(ngradient = ngradient,
            risk = risk, offset = offset,
            check_y = function(y) {
@@ -386,16 +404,8 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
                y
            },
            nuisance = function() return(sigma),
-           response = function(f) {
-               ret <- sapply(1:(length(sigma) + 1), function(i) {
-                   if (i == 1) return(1 / (1 + exp(f - sigma[i])))
-                   if (i == (length(sigma) + 1))
-                       return(1 - 1/(1 + exp(f - sigma[i - 1])))
-                   return(1 / (1 + exp(f - sigma[i])) -
-                       1 / (1 + exp(f - sigma[i - 1])))
-                   })
-               ret
-               })
+           response = response,
+           rclass = function(f) apply(response(f), 1, which.max))
 }
 
 Weibull <- function(nuirange = c(0, 100)) {
@@ -648,7 +658,9 @@ AUC <- function() {
 				n1 <<- length(ind1)
 				n0 <<- length(ind0)
 				c(-1, 1)[as.integer(y)]
-			}, name = paste("(1 - AUC)-Loss"))
+			},
+      rclass = function(f) (f > 0) + 1,
+      name = paste("(1 - AUC)-Loss") )
 }
 
 
@@ -687,3 +699,32 @@ GammaReg <- function(nuirange = c(0, 100)) {
            name = "Negative Gamma Likelihood",
            response = function(f) exp(f))
 }
+
+### Hinge Loss
+HingeLoss <- function(alphaCost = 0.5) {
+    if (alphaCost <= 0 | alphaCost >= 1 | !is.numeric(alphaCost) |
+        length(alphaCost) != 1)
+        stop("cost parameter must be a number within the range (0, 1)")
+    Family(ngradient = function(y, f, w = 1){
+               ngr <- ifelse(y > 0, 1 - alphaCost, alphaCost) * y
+               ngr[(1 - y * f) < 0] <- 0
+               return(ngr)
+               },
+           loss = function(y, f) ifelse(y > 0, 1 - alphaCost, alphaCost) *
+               pmax(0, 1 - y * f),
+           offset = function(y, w) {
+               p <- weighted.mean(y > 0, w)
+               1/2 * log(p / (1 - p))
+           },
+           check_y = function(y) {
+               if (!is.factor(y))
+                   stop("response is not a factor but ",
+                           sQuote("family = HingeLoss()"))
+               if (nlevels(y) != 2)
+                   stop("response is not a factor at two levels but ",
+                           sQuote("family = HingeLoss()"))
+               c(-1, 1)[as.integer(y)]
+           },
+           rclass = function(f) (f > (2 * alphaCost - 1)) + 1,
+           name = "Hinge Loss")
+           }

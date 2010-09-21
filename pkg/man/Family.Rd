@@ -33,7 +33,8 @@ Family(ngradient, loss = NULL, risk = NULL,
        weights = c("any", "none", "zeroone", "case"),
        nuisance = function() return(NA),
        name = "user-specified", fW = NULL,
-       response = function(f) NA)
+       response = function(f) NA,
+       rclass = function(f) NA)
 AdaExp()
 AUC()
 Binomial(link = c("logit", "probit"))
@@ -66,6 +67,8 @@ Lognormal(nuirange = c(0, 100))
              squared error.}
   \item{response}{ inverse link function of a GLM or any other transformation
                    on the scale of the response.}
+  \item{rclass}{ function to derive class predictions from conditional class
+                   probabilities (for models with factor response variable).}
   \item{check_y}{ a function for checking and transforming
                   the class / mode of a response variable.}
   \item{nuisance}{ a function for extracting nuisance parameters from the family.}

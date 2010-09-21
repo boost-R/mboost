@@ -17,13 +17,8 @@
     if (type == "response") ret <- family@response(pr)
     if (type == "class") {
         if (!is.factor(y)) stop("response is not a factor")
-        if (nlevels(y) == 2) {
-            ret <- factor(levels(y)[(pr > 0) + 1], levels = levels(y))
-        } else {
-            ret <- factor(levels(y)[apply(family@response(pr), 1, which.max)],
-                          levels = levels(y))
+            ret <- factor(levels(y)[family@rclass(pr)], levels = levels(y))
         }
-    }
     names(ret) <- names(pr)
     return(ret)
 }
