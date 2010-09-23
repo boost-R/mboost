@@ -97,10 +97,24 @@ Laplace <- function()
            name = "Absolute Error",
            response = function(f) f)
 
+link2dist <- function(link, choices = c("logit", "probit"), ...) {                
+    i <- pmatch(link, choices, nomatch = 0L, duplicates.ok = TRUE)
+    if (i[1] == 1) return("logit")
+    if (i[1] == 2) return(list(p = pnorm, d = dnorm, q = qnorm))
+    p <- get(paste("p", link, sep = ""))
+    d <- get(paste("d", link, sep = ""))
+    q <- get(paste("q", link, sep = ""))
+    ret <- list(p = function(x) p(x, ...),
+                d = function(x) d(x, ...),
+                q = function(x) q(x, ...))
+    attr(ret, "link") <- link
+    ret
+}
+    
 ### Binomial
 # lfinv <- binomial()$linkinv
-Binomial <- function(link = c("logit", "probit")) {
-    link <- match.arg(link)
+Binomial <- function(link = c("logit", "probit"), ...) {
+    link <- link2dist(link, ...)
     biny <- function(y) {
         if (!is.factor(y))
             stop("response is not a factor but ",
@@ -110,7 +124,7 @@ Binomial <- function(link = c("logit", "probit")) {
                       sQuote("family = Binomial()"))
         return(c(-1, 1)[as.integer(y)])
     }
-    if (link == "logit")
+    if (isTRUE(all.equal(link, "logit")))
     return(Family(ngradient = function(y, f, w = 1) {
                exp2yf <- exp(-2 * y * f)
                -(-2 * y * exp2yf) / (log(2) * (1 + exp2yf))
@@ -139,35 +153,34 @@ Binomial <- function(link = c("logit", "probit")) {
            check_y = biny,
            name = "Negative Binomial Likelihood"))
 
-    if (link == "probit") {
-        trf <- function(f) {
-            thresh <- -qnorm(.Machine$double.eps)
-            f <- pmin(pmax(f, -thresh), thresh)
-        }
+    trf <- function(f) {
+        thresh <- -link$q(.Machine$double.eps)
+        pmin(pmax(f, -thresh), thresh)
+    }
 
     return(Family(ngradient = function(y, f, w = 1) {
                y <- (y + 1) / 2
-               p <- pnorm(trf(f))
-               d <- dnorm(trf(f))
+               p <- link$p(trf(f))
+               d <- link$d(trf(f))
                y * 1 / p * d - (1 - y) * 1 / (1 - p) * d
            },
            loss = function(y, f) {
-               p <- pnorm(trf(f))
+               p <- link$p(trf(f))
                y <- (y + 1) / 2
                -y * log(p) - (1 - y) * log(1 - p)
            },
            offset = function(y, w) {
                p <- weighted.mean(y > 0, w)
-               qnorm(p)
+               link$q(p)
            },
            response = function(f) {
-               p <- pnorm(trf(f))
+               p <- link$p(trf(f))
                return(p)
            },
            rclass = function(f) (f > 0) + 1 ,
            check_y = biny,
-           name = "Negative Binomial Likelihood -- Probit Link"))
-    }
+           name = paste("Negative Binomial Likelihood --", 
+                        attr(link, "link"), "Link")))
 }
 
 ### Poisson
