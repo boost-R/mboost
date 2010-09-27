@@ -500,7 +500,12 @@ bl_lin <- function(blg, Xfun, args) {
 
         if (is(X, "Matrix")) {
             ### chol benutzen
-            XtXC <- Cholesky(forceSymmetric(XtX))
+            sXtX <- forceSymmetric(XtX)
+            if (extends(class(sXtX), "dsyMatrix")) {
+                XtXC <- chol(sXtX)
+            } else {
+                XtXC <- Cholesky(sXtX)
+            }
             mysolve <- function(y) solve(XtXC, crossprod(X, y))
         } else {
             mysolve <- function(y)
