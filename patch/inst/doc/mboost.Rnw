@@ -289,7 +289,7 @@ plot(model, which = "bbs(anthro3b",
      cex.lab = cex)
 mtext(text = "(C)", side = 3, 1, adj = 1)
 @
-<<mboost-bodyfat-plot-2, echo = FALSE, fig = TRUE>>=
+<<mboost-bodyfat-plot-2, echo = FALSE, results = hide, fig = TRUE>>=
 ### plot interaction of hip and waist circumference
 ### first setup grid of hip and waist values
 nd <- with(bodyfat,
