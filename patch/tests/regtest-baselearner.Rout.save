@@ -1,6 +1,6 @@
 
-R version 2.10.1 (2009-12-14)
-Copyright (C) 2009 The R Foundation for Statistical Computing
+R version 2.11.1 (2010-05-31)
+Copyright (C) 2010 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -18,21 +18,23 @@ Type 'q()' to quit R.
 > 
 > library("mboost")
 > attach(asNamespace("mboost"))
+The following object(s) are masked from 'package:mboost':
 
-	The following object(s) are masked from package:mboost :
-
-	 %+% %X% AdaExp bbs Binomial blackboost bns bols boost_control brandom bspatial bss btree CoxPH cv cvrisk ExpectReg Family FP gamboost GaussClass Gaussian GaussReg glmboost Huber IPCweights Laplace Loglog Lognormal mboost mboost_fit mstop NBinomial nuisance Poisson PropOdds QuantReg selected stabsel survFit Weibull 
-
+    %+%, AdaExp, bbs, Binomial, blackboost, bns, bols, boost_control,
+    brandom, bspatial, bss, btree, CoxPH, cv, cvrisk, ExpectReg,
+    Family, FP, gamboost, GaussClass, Gaussian, GaussReg, glmboost,
+    Huber, IPCweights, Laplace, Loglog, Lognormal, mboost, mboost_fit,
+    mstop, NBinomial, nuisance, Poisson, PropOdds, QuantReg, selected,
+    stabsel, survFit, Weibull, %X%
 > library("MASS")
 > library("Matrix")
 Loading required package: lattice
 
 Attaching package: 'Matrix'
 
+The following object(s) are masked from 'package:base':
 
-	The following object(s) are masked from package:base :
-
-	 det 
+    det
 
 > 
 > set.seed(290875)
@@ -291,25 +293,25 @@ In data.frame(..., check.names = FALSE) :
   row names were found from a short variable and have been discarded
 > coef(m1)
 $`"bbs(x1) %X% bols(f, intercept = FALSE, df = 5)"`
- [1]  0.730895171  0.038870922 -0.005399569 -0.148991281 -0.329031840
- [6] -0.220643444  0.154919020 -0.300950311 -0.873054991 -0.519028732
-[11]  0.320637179 -0.303918059 -0.610811537 -0.686367706  0.342235456
-[16]  0.015554696 -0.135101120 -0.315273962 -0.092935904  0.357645322
-[21]  0.403799615  0.601384744 -0.296924404  0.084490869  0.416705690
-[26]  0.448347137  0.462026108 -0.277978035 -0.008355033 -0.223355153
-[31]  0.100481865 -0.072720712 -0.172365196 -0.347188904 -0.542295914
-[36] -0.091497556 -0.110402447 -0.062103717 -0.042659116 -0.315372175
-[41] -0.037990696  0.207814428  0.200650463  0.012818782  0.038118949
+ [1]  0.730895170  0.038870922 -0.005399569 -0.148991281 -0.329031839
+ [6] -0.220643444  0.154919020 -0.300950310 -0.873054989 -0.519028732
+[11]  0.320637178 -0.303918057 -0.610811536 -0.686367706  0.342235455
+[16]  0.015554696 -0.135101119 -0.315273961 -0.092935903  0.357645321
+[21]  0.403799615  0.601384744 -0.296924402  0.084490869  0.416705690
+[26]  0.448347137  0.462026107 -0.277978034 -0.008355033 -0.223355153
+[31]  0.100481865 -0.072720712 -0.172365196 -0.347188904 -0.542295913
+[36] -0.091497556 -0.110402447 -0.062103717 -0.042659116 -0.315372174
+[41] -0.037990696  0.207814428  0.200650463  0.012818782  0.038118948
 [46]  0.093509262  0.113732497  0.280359393 -0.037694530 -0.148325380
-[51] -0.026317909 -0.006505122  0.063325194 -0.152492547  0.051858835
-[56]  0.052133940  0.023312796  0.310295070 -0.133932734  0.119637727
-[61] -0.371533883  0.042400169  0.125771268 -0.689991471 -0.022849336
+[51] -0.026317909 -0.006505122  0.063325194 -0.152492546  0.051858834
+[56]  0.052133940  0.023312796  0.310295069 -0.133932733  0.119637727
+[61] -0.371533883  0.042400169  0.125771267 -0.689991470 -0.022849336
 [66] -0.109987692  0.071981650 -0.054482987  0.019664720  0.458025083
-[71]  0.347018048  0.154893844 -0.104385886  0.829366071  0.433741504
-[76]  0.219947980 -0.012472865  0.378273519  0.385671821  0.105267425
-[81] -0.332167839 -0.332316112  0.664484861 -0.063076836 -0.368592581
-[86] -0.935470908  0.587630225 -0.036879027 -0.193482916 -1.010237013
-[91]  0.429416563 -0.011876975 -0.009186625 -0.599968165  0.438317733
+[71]  0.347018048  0.154893844 -0.104385886  0.829366071  0.433741503
+[76]  0.219947980 -0.012472866  0.378273519  0.385671821  0.105267425
+[81] -0.332167838 -0.332316111  0.664484860 -0.063076836 -0.368592580
+[86] -0.935470906  0.587630224 -0.036879027 -0.193482915 -1.010237011
+[91]  0.429416562 -0.011876975 -0.009186625 -0.599968164  0.438317732
 [96]  0.006562539
 
 attr(,"offset")
@@ -325,7 +327,7 @@ attr(,"offset")
  [7,] -0.010560163
  [8,] -0.098703524
  [9,]  0.077330699
-[10,] -0.190650493
+[10,] -0.190650492
 > 
 > ### cbind
 > m1 <- gamboost(y ~ bols(x1, intercept = FALSE, df = 1) %+%

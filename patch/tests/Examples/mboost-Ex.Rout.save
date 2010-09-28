@@ -1,6 +1,6 @@
 
-R version 2.10.1 (2009-12-14)
-Copyright (C) 2009 The R Foundation for Statistical Computing
+R version 2.11.1 (2010-05-31)
+Copyright (C) 2010 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -273,16 +273,16 @@ $class
 +                         control = boost_control(mstop = 400))
 >   coef(model, which = 1)   # one base-learner for x1 and x2
 $`bols(x1, x2, intercept = FALSE)`
-[1]  1.79313591 -0.03333542
+[1]  1.79313589 -0.03333542
 
 attr(,"offset")
 [1] 1.334042
 >   coef(model, which = 2:3) # two separate base-learners for x1 and x2
 $`bols(x1, intercept = FALSE)`
-[1] 3.136929e-12
+[1] 2.254822e-08
 
 $`bols(x2, intercept = FALSE)`
-[1] 3.307395e-14
+[1] 4.018326e-11
 
 attr(,"offset")
 [1] 1.334042
@@ -414,7 +414,7 @@ $class
 >   cf[1] <- cf[1] + mod$offset
 >   cf
 bols(int, intercept = FALSE)   bols(x, intercept = FALSE) 
-               -0.1298897810                 0.0003555854 
+               -0.1298897898                 0.0003555856 
 >   coef(lm(y ~ x, data = tmpdata))
   (Intercept)             x 
 -0.1298898174  0.0003555861 
@@ -560,6 +560,13 @@ Number of baselearners:  1
 > 
 > 
 > cleanEx()
+
+detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
+  ‘package:MASS’, ‘package:strucchange’, ‘package:sandwich’,
+  ‘package:zoo’, ‘package:coin’, ‘package:mvtnorm’,
+  ‘package:modeltools’, ‘package:stats4’, ‘package:grid’,
+  ‘package:survival’, ‘package:splines’
+
 > nameEx("bodyfat")
 > ### * bodyfat
 > 
@@ -648,8 +655,7 @@ Degrees of freedom (for mstop = 45): 1.917234
 > 
 >   ### 10-fold cross-validation
 >   cv10f <- cv(model.weights(model), type = "kfold")
->   cvm <- cvrisk(model, folds = cv10f)
-Loading required package: multicore
+>   cvm <- cvrisk(model, folds = cv10f, papply = lapply)
 >   print(cvm)
 
 	 Cross-validated Squared Error (Regression) 
@@ -691,7 +697,7 @@ Loading required package: multicore
 >   set.seed(290875)
 >   n <- nrow(bodyfat)
 >   bs25 <- rmultinom(25, n, rep(1, n)/n)
->   cvm <- cvrisk(model, folds = bs25)
+>   cvm <- cvrisk(model, folds = bs25, papply = lapply)
 >   print(cvm)
 
 	 Cross-validated Squared Error (Regression) 
@@ -731,7 +737,7 @@ Loading required package: multicore
 > 
 >   ### same by default
 >   set.seed(290875)
->   cvrisk(model)
+>   cvrisk(model, papply = lapply)
 
 	 Cross-validated Squared Error (Regression) 
 	 glmboost.formula(formula = DEXfat ~ ., data = bodyfat, center = TRUE) 
@@ -787,7 +793,7 @@ Loading required package: strucchange
 Loading required package: vcd
 Loading required package: MASS
 Loading required package: colorspace
->   cvtree <- cvrisk(blackbox)
+>   cvtree <- cvrisk(blackbox, papply = lapply)
 >   plot(cvtree)
 > 
 > 
@@ -819,6 +825,13 @@ Loading required package: colorspace
 > 
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
+
+detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
+  ‘package:MASS’, ‘package:strucchange’, ‘package:sandwich’,
+  ‘package:zoo’, ‘package:coin’, ‘package:mvtnorm’,
+  ‘package:modeltools’, ‘package:stats4’, ‘package:grid’,
+  ‘package:survival’, ‘package:splines’
+
 > nameEx("gamboost")
 > ### * gamboost
 > 
@@ -856,7 +869,7 @@ Number of baselearners:  1
 >     AIC(cars.gb, method = "corrected")
 [1] 6.60797
 Optimal number of boosting iterations: 24 
-Degrees of freedom (for mstop = 24): 4.481721 
+Degrees of freedom (for mstop = 24): 4.481737 
 > 
 >     ### plot fit for mstop = 1, ..., 50
 >     plot(dist ~ speed, data = cars)
@@ -1000,10 +1013,9 @@ Loading required package: lattice
 
 Attaching package: 'Matrix'
 
+The following object(s) are masked from 'package:base':
 
-	The following object(s) are masked from package:base :
-
-	 det 
+    det
 
 >     n <- 100
 >     p <- 10000
@@ -1029,6 +1041,9 @@ attr(,"offset")
 > 
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
+
+detaching ‘package:Matrix’, ‘package:lattice’
+
 > nameEx("mboost")
 > ### * mboost
 > 
@@ -1075,6 +1090,13 @@ Loading required package: colorspace
 > 
 > 
 > cleanEx()
+
+detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
+  ‘package:MASS’, ‘package:strucchange’, ‘package:sandwich’,
+  ‘package:zoo’, ‘package:coin’, ‘package:mvtnorm’,
+  ‘package:modeltools’, ‘package:stats4’, ‘package:grid’,
+  ‘package:survival’, ‘package:splines’
+
 > nameEx("mboost_package")
 > ### * mboost_package
 > 
@@ -1115,8 +1137,7 @@ Loading required package: MASS
 Loading required package: colorspace
 > 
 >   ### bootstrap for assessing `optimal' number of boosting iterations
->   cvm <- cvrisk(model)
-Loading required package: multicore
+>   cvm <- cvrisk(model, papply = lapply)
 > 
 >   ### restrict model to mstop(cvm)
 >   model[mstop(cvm), return = FALSE]
@@ -1148,6 +1169,13 @@ NULL
 > 
 > 
 > cleanEx()
+
+detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
+  ‘package:MASS’, ‘package:strucchange’, ‘package:sandwich’,
+  ‘package:zoo’, ‘package:coin’, ‘package:mvtnorm’,
+  ‘package:modeltools’, ‘package:stats4’, ‘package:grid’,
+  ‘package:survival’, ‘package:splines’
+
 > nameEx("methods")
 > ### * methods
 > 
@@ -1252,9 +1280,9 @@ attr(,"offset")
 >   cars.gb <- gamboost(dist ~ speed, data = cars,
 +                       control = boost_control(mstop = 100, trace = TRUE))
 [   1] ...................................... -- risk: 10338.67 
-[  41] ...................................... -- risk: 10159.83 
+[  41] ...................................... -- risk: 10159.82 
 [  81] ..................
-Final risk: 10094.04 
+Final risk: 10094.03 
 >   cars.gb[10]
 
 	 Model-based Boosting
@@ -1276,55 +1304,55 @@ Number of baselearners:  1
 >   cars.gb[100, return = FALSE] # no refitting required
 NULL
 >   cars.gb[150, return = FALSE] # only iterations 101 to 150
-[101] ...................................... -- risk: 9976.168 
+[101] ...................................... -- risk: 9976.16 
 [141] ........
-Final risk: 9948.547 
+Final risk: 9948.54 
 NULL
 >                                # are newly fitted
 > 
 >   ### coefficients for optimal number of boosting iterations
 >   coef(cars.gb[mstop(aic)])
-[  151] ...................................... -- risk: 9843.547 
-[  191] ...................................... -- risk: 9745.992 
-[  231] ...................................... -- risk: 9654.792 
-[  271] ...................................... -- risk: 9569.225 
-[  311] ...................................... -- risk: 9488.741 
-[  351] ...................................... -- risk: 9412.896 
-[  391] ...................................... -- risk: 9341.312 
-[  431] ...................................... -- risk: 9273.66 
-[  471] ...................................... -- risk: 9209.65 
-[  511] ...................................... -- risk: 9149.022 
-[  551] ...................................... -- risk: 9091.543 
-[  591] ...................................... -- risk: 9036.999 
-[  631] ...................................... -- risk: 8985.197 
-[  671] ...................................... -- risk: 8935.961 
-[  711] ...................................... -- risk: 8889.127 
-[  751] ...................................... -- risk: 8844.546 
-[  791] ...................................... -- risk: 8802.08 
-[  831] ...................................... -- risk: 8761.602 
-[  871] ...................................... -- risk: 8722.992 
-[  911] ...................................... -- risk: 8686.141 
-[  951] ...................................... -- risk: 8650.948 
-[  991] ...................................... -- risk: 8617.316 
-[1'031] ...................................... -- risk: 8585.158 
-[1'071] ...................................... -- risk: 8554.39 
-[1'111] ...................................... -- risk: 8524.937 
-[1'151] ...................................... -- risk: 8496.726 
-[1'191] ...................................... -- risk: 8469.688 
-[1'231] ...................................... -- risk: 8443.761 
-[1'271] ...................................... -- risk: 8418.886 
-[1'311] ...................................... -- risk: 8395.006 
-[1'351] ...................................... -- risk: 8372.07 
-[1'391] ...................................... -- risk: 8350.028 
-[1'431] ...................................... -- risk: 8328.835 
-[1'471] ...................................... -- risk: 8308.446 
+[  151] ...................................... -- risk: 9843.537 
+[  191] ...................................... -- risk: 9745.981 
+[  231] ...................................... -- risk: 9654.78 
+[  271] ...................................... -- risk: 9569.212 
+[  311] ...................................... -- risk: 9488.728 
+[  351] ...................................... -- risk: 9412.882 
+[  391] ...................................... -- risk: 9341.298 
+[  431] ...................................... -- risk: 9273.645 
+[  471] ...................................... -- risk: 9209.635 
+[  511] ...................................... -- risk: 9149.007 
+[  551] ...................................... -- risk: 9091.527 
+[  591] ...................................... -- risk: 9036.983 
+[  631] ...................................... -- risk: 8985.181 
+[  671] ...................................... -- risk: 8935.944 
+[  711] ...................................... -- risk: 8889.11 
+[  751] ...................................... -- risk: 8844.53 
+[  791] ...................................... -- risk: 8802.064 
+[  831] ...................................... -- risk: 8761.585 
+[  871] ...................................... -- risk: 8722.975 
+[  911] ...................................... -- risk: 8686.125 
+[  951] ...................................... -- risk: 8650.931 
+[  991] ...................................... -- risk: 8617.3 
+[1'031] ...................................... -- risk: 8585.141 
+[1'071] ...................................... -- risk: 8554.374 
+[1'111] ...................................... -- risk: 8524.921 
+[1'151] ...................................... -- risk: 8496.71 
+[1'191] ...................................... -- risk: 8469.672 
+[1'231] ...................................... -- risk: 8443.745 
+[1'271] ...................................... -- risk: 8418.87 
+[1'311] ...................................... -- risk: 8394.99 
+[1'351] ...................................... -- risk: 8372.055 
+[1'391] ...................................... -- risk: 8350.013 
+[1'431] ...................................... -- risk: 8328.82 
+[1'471] ...................................... -- risk: 8308.431 
 [1'511] .....................................
-Final risk: 8289.302 
+Final risk: 8289.288 
 $`bbs(speed, df = dfbase)`
- [1] -36.995016 -35.596203 -34.085118 -32.349487 -30.277039 -27.732665
- [7] -24.322707 -20.863456 -21.899775 -19.121759  -6.090496   2.438362
-[13]  -4.941562  -7.667407   2.660116  16.107860  12.731676   6.129820
-[19]   7.150962  15.682258  30.314977  47.848817  52.733340  46.576861
+ [1] -36.995014 -35.596207 -34.085126 -32.349499 -30.277051 -27.732672
+ [7] -24.322691 -20.863409 -21.899798 -19.121834  -6.090472   2.438463
+[13]  -4.941603  -7.667530   2.660073  16.107959  12.731713   6.129781
+[19]   7.150887  15.682174  30.314926  47.848883  52.733402  46.576793
 
 attr(,"offset")
 [1] 42.98
@@ -1356,13 +1384,13 @@ $`bols(int, intercept = FALSE)`
 [1] 6.267132
 
 $`bbs(x1, df = 1, center = TRUE)`
- [1] -0.02478711 -0.01925254  0.07735510  0.24268927  0.39127892  0.49333021
- [7]  0.58205157  0.65523850  0.67973447  0.64955713  0.60211202  0.54410925
-[13]  0.44971270  0.34981919  0.33270628  0.36324091  0.37184588  0.37876602
-[19]  0.39836919  0.42301404  0.36842328  0.22804990
+ [1] -0.02478725 -0.01925279  0.07735492  0.24268927  0.39127901  0.49333025
+ [7]  0.58205156  0.65523852  0.67973446  0.64955704  0.60211196  0.54410924
+[13]  0.44971260  0.34981894  0.33270613  0.36324101  0.37184615  0.37876648
+[19]  0.39836988  0.42301499  0.36842422  0.22805053
 
 $`bols(x1, intercept = FALSE)`
-[1] 3.775258
+[1] 3.775259
 
 $`bols(x2, intercept = FALSE)`
 [1] -0.3592216
@@ -1375,13 +1403,13 @@ $`bols(int, intercept = FALSE)`
 [1] 6.267132
 
 $`bbs(x1, df = 1, center = TRUE)`
- [1] -0.02478711 -0.01925254  0.07735510  0.24268927  0.39127892  0.49333021
- [7]  0.58205157  0.65523850  0.67973447  0.64955713  0.60211202  0.54410925
-[13]  0.44971270  0.34981919  0.33270628  0.36324091  0.37184588  0.37876602
-[19]  0.39836919  0.42301404  0.36842328  0.22804990
+ [1] -0.02478725 -0.01925279  0.07735492  0.24268927  0.39127901  0.49333025
+ [7]  0.58205156  0.65523852  0.67973446  0.64955704  0.60211196  0.54410924
+[13]  0.44971260  0.34981894  0.33270613  0.36324101  0.37184615  0.37876648
+[19]  0.39836988  0.42301499  0.36842422  0.22805053
 
 $`bols(x1, intercept = FALSE)`
-[1] 3.775258
+[1] 3.775259
 
 $`bols(x2, intercept = FALSE)`
 [1] -0.3592216
@@ -1396,13 +1424,13 @@ attr(,"offset")
 [1] 4.431516
 >   coef(model, which = "x1") # shows all base-learners for x1
 $`bbs(x1, df = 1, center = TRUE)`
- [1] -0.02478711 -0.01925254  0.07735510  0.24268927  0.39127892  0.49333021
- [7]  0.58205157  0.65523850  0.67973447  0.64955713  0.60211202  0.54410925
-[13]  0.44971270  0.34981919  0.33270628  0.36324091  0.37184588  0.37876602
-[19]  0.39836919  0.42301404  0.36842328  0.22804990
+ [1] -0.02478725 -0.01925279  0.07735492  0.24268927  0.39127901  0.49333025
+ [7]  0.58205156  0.65523852  0.67973446  0.64955704  0.60211196  0.54410924
+[13]  0.44971260  0.34981894  0.33270613  0.36324101  0.37184615  0.37876648
+[19]  0.39836988  0.42301499  0.36842422  0.22805053
 
 $`bols(x1, intercept = FALSE)`
-[1] 3.775258
+[1] 3.775259
 
 attr(,"offset")
 [1] 4.431516
@@ -1425,8 +1453,8 @@ attr(,"offset")
 > 
 > 
 >   ### (too) low-dimensional example    
->   sbody <- stabsel(glmboost(DEXfat ~ ., data = bodyfat), q = 3)
-Loading required package: multicore
+>   sbody <- stabsel(glmboost(DEXfat ~ ., data = bodyfat), q = 3,
++                    papply = lapply)
 >   sbody
 	Stability Selection
 
@@ -1530,6 +1558,9 @@ attr(,"class")
 > 
 > 
 > cleanEx()
+
+detaching ‘package:survival’, ‘package:splines’
+
 > nameEx("wpbc")
 > ### * wpbc
 > 
@@ -1561,7 +1592,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  57.583 3.196 70.012 11.22 11.22 
+Time elapsed:  61.04 2.36 64.166 0 0 
 > grDevices::dev.off()
 null device 
           1 

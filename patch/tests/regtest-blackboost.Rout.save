@@ -1,6 +1,6 @@
 
-R version 2.10.1 (2009-12-14)
-Copyright (C) 2009 The R Foundation for Statistical Computing
+R version 2.11.1 (2010-05-31)
+Copyright (C) 2010 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -74,21 +74,21 @@ Loading required package: colorspace
 Loading required package: gbm
 Loading required package: lattice
 Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-     1       74.4121             nan     0.1000       nan
-     2       65.6474             nan     0.1000       nan
-     3       58.7034             nan     0.1000       nan
-     4       52.6088             nan     0.1000       nan
-     5       47.5788             nan     0.1000       nan
-     6       43.1559             nan     0.1000       nan
-     7       39.3997             nan     0.1000       nan
-     8       35.9511             nan     0.1000       nan
-     9       33.1632             nan     0.1000       nan
-    10       30.6850             nan     0.1000       nan
-   100        6.8694             nan     0.1000       nan
-   200        5.0890             nan     0.1000       nan
-   300        3.9605             nan     0.1000       nan
-   400        3.2681             nan     0.1000       nan
-   500        2.7537             nan     0.1000       nan
+     1       74.4121            -nan     0.1000      -nan
+     2       65.6474            -nan     0.1000      -nan
+     3       58.7034            -nan     0.1000      -nan
+     4       52.6088            -nan     0.1000      -nan
+     5       47.5788            -nan     0.1000      -nan
+     6       43.1559            -nan     0.1000      -nan
+     7       39.3997            -nan     0.1000      -nan
+     8       35.9511            -nan     0.1000      -nan
+     9       33.1632            -nan     0.1000      -nan
+    10       30.6850            -nan     0.1000      -nan
+   100        6.8694            -nan     0.1000      -nan
+   200        5.0890            -nan     0.1000      -nan
+   300        3.9605            -nan     0.1000      -nan
+   400        3.2681            -nan     0.1000      -nan
+   500        2.7537            -nan     0.1000      -nan
 
 [1] 2.753747
 > 

@@ -1,6 +1,6 @@
 
-R version 2.10.1 (2009-12-14)
-Copyright (C) 2009 The R Foundation for Statistical Computing
+R version 2.11.1 (2010-05-31)
+Copyright (C) 2010 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -62,8 +62,7 @@ Loading required package: colorspace
 > n <- nrow(bodyfat)
 > bs <- rmultinom(3, n, rep(1, n) / n)
 > x <- seq(from = 10, to = 500, by = 10)
-> cv <- cvrisk(bb, bs, grid = x)
-Loading required package: multicore
+> cv <- cvrisk(bb, bs, grid = x, papply = lapply)
 > ctrl$risk <- "oobag"
 > tmp <- blackboost(DEXfat ~ ., data = bodyfat, control = ctrl,
 +                  weights = bs[,3])
@@ -76,7 +75,7 @@ Loading required package: multicore
 Warning message:
 In glmboost.formula(DEXfat ~ ., data = bodyfat, control = boost_control(center = TRUE)) :
   boost_control(center = TRUE) is deprecated, use glmboost(..., center = TRUE)
-> cv1 <- cvrisk(gb, folds = bs)
+> cv1 <- cvrisk(gb, folds = bs, papply = lapply)
 > tmp <- glmboost(DEXfat ~ ., data = bodyfat,
 +                 control = boost_control(center = TRUE, risk = "oobag"),
 +                 weights = bs[,3])
@@ -94,12 +93,12 @@ In glmboost.formula(DEXfat ~ ., data = bodyfat, control = boost_control(center =
 +       anthro3a + anthro3b + anthro3c + anthro4
 > 
 > bf_glm_1 <- glmboost(bffm, data = cbodyfat)
-> cv1 <- cvrisk(bf_glm_1, folds = bs)
+> cv1 <- cvrisk(bf_glm_1, folds = bs, papply = lapply)
 > bf_glm_2 <- glmboost(bffm, data = bodyfat, control = boost_control(center = TRUE))
 Warning message:
 In glmboost.formula(bffm, data = bodyfat, control = boost_control(center = TRUE)) :
   boost_control(center = TRUE) is deprecated, use glmboost(..., center = TRUE)
-> cv2 <- cvrisk(bf_glm_2, folds = bs)
+> cv2 <- cvrisk(bf_glm_2, folds = bs, papply = lapply)
 > 
 > stopifnot(mstop(cv1) == mstop(cv2))
 > 

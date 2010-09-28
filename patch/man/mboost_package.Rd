@@ -15,8 +15,8 @@
 \tabular{ll}{
 Package: \tab mboost\cr
 Type: \tab Package\cr
-Version: \tab 2.0-4\cr
-Date: \tab 2010-04-15\cr
+Version: \tab 2.0-7\cr
+Date: \tab 2010-09-28\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes\cr
@@ -46,9 +46,9 @@ LazyData: \tab yes\cr
   determine an appropriate model complexity. This task is the responsibility
   of the data analyst.
 }
-\section{NEWS in 2.0-0}{
+\section{NEWS in 2.0-series}{
 
-  Version 2.0-0 comes with new features, is faster and more accurate
+  Version 2.0 comes with new features, is faster and more accurate
   in some aspects. In addition, some changes to the user interface
   were necessary: Subsetting \code{mboost} objects changes the object.
   At each time, a model is associated with a number of boosting iterations
@@ -85,6 +85,11 @@ LazyData: \tab yes\cr
   Peter Buehlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
+
+  Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Mattthias Schmid
+  and Benjamin Hofner (2010),
+  Model-based Boosting 2.0.
+  \emph{Journal of Machine Learning Research}, \bold{11}, 2109 -- 2113.
 }
 
 \seealso{
