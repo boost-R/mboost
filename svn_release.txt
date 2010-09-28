@@ -22,6 +22,7 @@
     Increase patch level in DESCRIPTION
     Update Date: field in DESCRIPTION
     Update NEWS
+    Update Date and Version in /man/mboost_package.Rd
 
     R CMD build patch
     R CMD check mboost_XXX
@@ -53,6 +54,7 @@
     Increase minor level in DESCRIPTION (patch level 0)
     Update Date: field in DESCRIPTION  
     Update NEWS
+    Update Date and Version in /man/mboost_package.Rd
    
     R CMD build pkg
     R CMD check mboost_XXX
