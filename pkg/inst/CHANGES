@@ -1,4 +1,3 @@
-
                 CHANGES in `mboost' VERSION 2.1-0 (2010-0x-xx)
 
   o  add Binomial(link = "probit") and general cdf's as link
@@ -56,6 +55,13 @@
 
   o  added warning if df2lambda is likely to become numerically
      instable (i.e. in the case of large entries in the design matrix)
+
+
+		CHANGES in `mboost' VERSION 2.0-7 (2010-09-28, r534)
+
+  o  vignette "mboost" updated
+
+  o  remove problem with R CMD check that occured on some 64bit systems
 
 
                 CHANGES in `mboost' VERSION 2.0-6 (2010-05-22, r510)
