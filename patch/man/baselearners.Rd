@@ -68,7 +68,7 @@ bl1 \%X\% bl2
 			character which is then used as contrasts for
 			all factors in this base-learner (with the
 			exception of factors in \code{by}). }
-  \item{tree_controls}{ an object of class \code{"\linkS4class{TreeControl}"}, which can be
+  \item{tree_controls}{ an object of class \code{"TreeControl"}, which can be
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners,
                   stumps are fitted by default.}
