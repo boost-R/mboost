@@ -17,7 +17,7 @@ blackboost(formula, data = list(),
 \arguments{
   \item{formula}{ a symbolic description of the model to be fit. }
   \item{data}{ a data frame containing the variables in the model. }
-  \item{tree_controls}{ an object of class \code{"\linkS4class{TreeControl}"}, which can be
+  \item{tree_controls}{ an object of class \code{"TreeControl"}, which can be
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners.
                   It is wise
