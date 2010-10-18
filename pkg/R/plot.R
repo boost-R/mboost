@@ -1,8 +1,8 @@
-
 ### just a try
 plot.mboost <- function(x, which = NULL, newdata = NULL,
                         type = "b", rug = TRUE, rugcol = "black", ylim = NULL,
-                        xlab = NULL, ylab = expression(f[partial]), ...) {
+                        xlab = NULL, ylab = expression(f[partial]), add = FALSE,
+                        ...) {
 
     which <- x$which(which, usedonly = is.null(which))
 
@@ -57,9 +57,25 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                 data <- data[, colnames(data) != vary, drop = FALSE]
 
             if (ncol(data) == 1) {
-                plot(sort(data[[1]]), pr[order(data[[1]])], type = type,
-                     xlab = xl, ylab = yl, ylim = ylim, ...)
-                if (rug) rug(data[[1]], col = rugcol)
+                if (!add){
+                    plot(sort(data[[1]]), pr[order(data[[1]])], type = type,
+                         xlab = xl, ylab = yl, ylim = ylim, ...)
+                    if (rug) rug(data[[1]], col = rugcol)
+                } else {
+                    if (is.factor(data[[1]])){
+                        boxplot(pr[order(data[[1]])] ~ sort(data[[1]]),
+                                add = TRUE, ...)
+                    } else {
+                        lines(sort(data[[1]]), pr[order(data[[1]])], type =
+                              type, ...)
+                        if (rug){
+                            rug(data[[1]], col = rugcol)
+                            warning(sQuote("rug  =TRUE"),
+                                    " should be used with care if ",
+                                    sQuote("add = TRUE"))
+                        }
+                    }
+                }
             }
             if (ncol(data) == 2) {
                 fm <- as.formula(paste("pr ~ ", paste(colnames(data), collapse = "*"), sep = ""))
@@ -80,6 +96,10 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
 
         xl <- ifelse(length(xlab) > 1, xlab[w], xlab[1])
         yl <- ifelse(length(ylab) > 1, ylab[w], ylab[1])
+
+        if (add && length(which) > 1)
+            warning(sQuote("add = TRUE"),
+                    " should be used for single plots only")
 
         if (!isMATRIX(data)){
             if (vary == "") plot_helper(xl, yl)
@@ -107,6 +127,12 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
              "Plot base-learners seperately via plot(model, which = ...)!"))
     }
 }
+
+
+lines.mboost <- function(x, type = "l", rug = FALSE, ...){
+    plot(x, type = type, add = TRUE, rug = rug, ...)
+}
+
 
 plot.glmboost <- function(x, main = deparse(x$call), col = NULL,
                           off2int = FALSE, ...) {
