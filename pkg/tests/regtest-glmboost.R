@@ -147,7 +147,7 @@ fit2 <- glmboost(fm, data = ovarian, family = CoxPH(),
 fit3 <- glmboost(fm, data = ovarian, family = CoxPH(),
     control=boost_control(mstop = 1000), center = FALSE)
 
-A1 <- survfit(fit)
+A1 <- survfit(fit, censor=FALSE)
 A2 <- survFit(fit2)
 A3 <- survFit(fit3)
 
@@ -155,7 +155,7 @@ max(A1$surv-A2$surv)
 max(A1$surv-A3$surv)
 
 newdata <- ovarian[c(1,3,12),]
-A1 <- survfit(fit, newdata = newdata)
+A1 <- survfit(fit, newdata = newdata, censor=FALSE)
 A2 <- survFit(fit2, newdata = newdata)
 A3 <- survFit(fit3, newdata = newdata)
 
