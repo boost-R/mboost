@@ -56,6 +56,10 @@
   o  added warning if df2lambda is likely to become numerically
      instable (i.e. in the case of large entries in the design matrix)
 
+                CHANGES in `mboost' VERSION 2.0-9 (2010-11-19, r543)
+
+  o  add gbm to Suggests
+
 
 		CHANGES in `mboost' VERSION 2.0-8 (2010-11-11, r542)
 
