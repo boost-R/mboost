@@ -1,3 +1,8 @@
+		CHANGES in `mboost' VERSION 2.0-8 (2010-11-19, r543)
+
+  o  add gbm to Suggests
+
+
 		CHANGES in `mboost' VERSION 2.0-8 (2010-11-11, r542)
 
   o  make survival package happy again
