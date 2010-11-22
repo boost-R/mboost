@@ -332,7 +332,7 @@
   coef(cars.gb_centered)               # intercept implicitly estimated
                                        # and thus returned
   ## intercept is internally corrected for mean-centering
-  - mean(cars$speed) * coef(cars.gb_centered, which="speed")
+  - mean(cars$speed) * coef(cars.gb_centered, which="speed") # = intercept
   # not asked for intercept thus not returned
   coef(cars.gb_centered, which="speed")
   # explicitly asked for intercept

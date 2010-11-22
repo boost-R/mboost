@@ -181,7 +181,11 @@ X_bbs <- function(mf, vary, args) {
     if (MATRIX) {
         diag <- Diagonal
         cbind <- cBind
-        for (i in 1:length(mm)) mm[[i]] <- Matrix(mm[[i]])
+        for (i in 1:length(mm)){
+            tmp <- attributes(mm[[i]])[c("degree", "knots", "Boundary.knots")]
+            mm[[i]] <- Matrix(mm[[i]])
+            attributes(mm[[i]])[c("degree", "knots", "Boundary.knots")] <- tmp
+        }
     }
     if (length(mm) == 1) {
         X <- mm[[1]]
@@ -213,7 +217,9 @@ X_bbs <- function(mf, vary, args) {
                 K <- kronecker(diag(ncol(by)), K)
         }
         if (args$center) {
+            tmp <- attributes(X)[c("degree", "knots", "Boundary.knots")]
             X <- tcrossprod(X, K) %*% solve(tcrossprod(K))
+            attributes(X)[c("degree", "knots", "Boundary.knots")] <- tmp
             K <- diag(ncol(X))
         } else {
             K <- crossprod(K)
