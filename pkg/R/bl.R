@@ -726,8 +726,8 @@ fit.bl <- function(object, y)
 
         K <- matrix(0, ncol = ncol(K1) + ncol(K2),
                     nrow = nrow(K1) + nrow(K2))
-        K[1:nrow(K1), 1:ncol(K1)] <- K1
-        K[-(1:nrow(K1)), -(1:ncol(K1))] <- K2
+        K[1:nrow(K1), 1:ncol(K1)] <- as.matrix(K1)
+        K[-(1:nrow(K1)), -(1:ncol(K1))] <- as.matrix(K2)
         list(X = cbind(X1, X2), K = K)
     }
 
