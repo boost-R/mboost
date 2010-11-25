@@ -728,7 +728,7 @@ fit.bl <- function(object, y)
                     nrow = nrow(K1) + nrow(K2))
         K[1:nrow(K1), 1:ncol(K1)] <- as.matrix(K1)
         K[-(1:nrow(K1)), -(1:ncol(K1))] <- as.matrix(K2)
-        list(X = cbind(X1, X2), K = K)
+        list(X = cbind(as.matrix(X1), as.matrix(X2)), K = K)
     }
 
     ret$dpp <- bl_lin(ret, Xfun = Xfun, args = args)
