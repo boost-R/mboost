@@ -129,8 +129,8 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
 }
 
 
-lines.mboost <- function(x, type = "l", rug = FALSE, ...){
-    plot(x, type = type, add = TRUE, rug = rug, ...)
+lines.mboost <- function(x, which = NULL, type = "l", rug = FALSE, ...){
+    plot(x, which = which, type = type, add = TRUE, rug = rug, ...)
 }
 
 

@@ -76,8 +76,9 @@ bl1 \%X\% bl2
     knots specify the points at which the cyclic function should be joined. In
     analogy to \code{knots} a names list can be specified. }
   \item{degree}{ degree of the regression spline.}
-  \item{differences}{ 1, 2, or 3. If \code{differences} =
-                     \emph{k}, \emph{k}-th-order differences are used as a penalty.}
+  \item{differences}{ a non-negative integer, typically 1, 2 or 3. If \code{differences} =
+                     \emph{k}, \emph{k}-th-order differences are used as
+		     a penalty (\emph{0}-th order differences specify a ridge penalty).}
   \item{intercept}{ if \code{intercept = TRUE} an intercept is added to the design matrix
                     of a linear base-learner. If \code{intercept =
 		      FALSE}, continuous covariates should be (mean-) centered.}

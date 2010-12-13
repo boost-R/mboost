@@ -203,16 +203,25 @@ X_bbs <- function(mf, vary, args) {
                 X <- do.call("cbind", DM)
             }
         }
-        if (!args$cyclic) {
-            K <- diff(diag(ncol(mm[[1]])), differences = args$differences)
+        if (args$differences > 0){
+            if (!args$cyclic) {
+                K <- diff(diag(ncol(mm[[1]])), differences = args$differences)
+            } else {
+                ## cyclic P-splines
+                differences <- args$differences
+                K <- diff(diag(ncol(mm[[1]]) + differences),
+                          differences = differences)
+                tmp <- K[,(1:differences)]   # save first "differences" columns
+                K <- K[,-(1:differences)]    # drop first "differences" columns
+                indx <- (ncol(mm[[1]]) - differences + 1):(ncol(mm[[1]]))
+                K[,indx] <- K[,indx] + tmp   # add first "differences" columns
+            }
         } else {
-            differences <- args$differences
-            K <- diff(diag(ncol(mm[[1]]) + differences), differences=differences)
-            tmp <- K[,(1:differences)]   # save first "differences" columns
-            K <- K[,-(1:differences)]    # drop first "differences" columns
-            indx <- (ncol(mm[[1]]) - differences + 1):(ncol(mm[[1]]))
-            K[,indx] <- K[,indx] + tmp   # add first "differences" columns
+            if (args$differences != 0)
+                stop(sQuote("differences"), " must be an non-neative integer")
+            K <- diag(ncol(mm[[1]]))
         }
+
         if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
                 K <- kronecker(diag(ncol(by)), K)
         }
@@ -239,24 +248,35 @@ X_bbs <- function(mf, vary, args) {
             X <- DM
             ### <FIXME> Names of X if by is given
         }
-        if (!args$cyclic) {
-            Kx <- diff(diag(ncol(mm[[1]])), differences = args$differences)
-            Ky <- diff(diag(ncol(mm[[2]])), differences = args$differences)
+        if (args$differences > 0){
+            if (!args$cyclic) {
+                Kx <- diff(diag(ncol(mm[[1]])), differences = args$differences)
+                Ky <- diff(diag(ncol(mm[[2]])), differences = args$differences)
+            } else {
+                ## cyclic P-splines
+                differences <- args$differences
+                Kx <- diff(diag(ncol(mm[[1]]) + differences),
+                           differences = differences)
+                Ky <- diff(diag(ncol(mm[[2]]) + differences),
+                           differences = differences)
+
+                tmp <- Kx[,(1:differences)]   # save first "differences" columns
+                Kx <- Kx[,-(1:differences)]    # drop first "differences" columns
+                indx <- (ncol(mm[[1]]) - differences + 1):(ncol(mm[[1]]))
+                Kx[,indx] <- Kx[,indx] + tmp   # add first "differences" columns
+
+                tmp <- Ky[,(1:differences)]   # save first "differences" columns
+                Ky <- Ky[,-(1:differences)]    # drop first "differences" columns
+                indx <- (ncol(mm[[2]]) - differences + 1):(ncol(mm[[2]]))
+                Ky[,indx] <- Ky[,indx] + tmp   # add first "differences" columns
+            }
         } else {
-            differences <- args$differences
-            Kx <- diff(diag(ncol(mm[[1]]) + differences), differences=differences)
-            Ky <- diff(diag(ncol(mm[[2]]) + differences), differences=differences)
-
-            tmp <- Kx[,(1:differences)]   # save first "differences" columns
-            Kx <- Kx[,-(1:differences)]    # drop first "differences" columns
-            indx <- (ncol(mm[[1]]) - differences + 1):(ncol(mm[[1]]))
-            Kx[,indx] <- Kx[,indx] + tmp   # add first "differences" columns
-
-            tmp <- Ky[,(1:differences)]   # save first "differences" columns
-            Ky <- Ky[,-(1:differences)]    # drop first "differences" columns
-            indx <- (ncol(mm[[2]]) - differences + 1):(ncol(mm[[2]]))
-            Ky[,indx] <- Ky[,indx] + tmp   # add first "differences" columns
+            if (args$differences != 0)
+                stop(sQuote("differences"), " must be an non-neative integer")
+            Kx <- diag(ncol(mm[[1]]))
+            Ky <- diag(ncol(mm[[2]]))
         }
+
         Kx <- crossprod(Kx)
         Ky <- crossprod(Ky)
         K <- kronecker(Kx, diag(ncol(mm[[2]]))) +
