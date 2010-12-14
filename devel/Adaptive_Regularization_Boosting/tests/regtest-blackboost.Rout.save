@@ -1,0 +1,213 @@
+
+R version 2.10.1 (2009-12-14)
+Copyright (C) 2009 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> 
+> require("mboost")
+Loading required package: mboost
+> library("party")
+Loading required package: survival
+Loading required package: splines
+Loading required package: grid
+Loading required package: modeltools
+Loading required package: stats4
+Loading required package: coin
+Loading required package: mvtnorm
+Loading required package: zoo
+Loading required package: sandwich
+Loading required package: strucchange
+Loading required package: vcd
+Loading required package: MASS
+Loading required package: colorspace
+> 
+> set.seed(290875)
+> 
+> tst <- try(data("BostonHousing", package = "mlbench"))
+> if (!inherits(tst, "try-error")) {
++ 
++     system.time(a <- blackboost(medv ~ ., data = BostonHousing,
++         tree_controls = ctree_control(teststat = "max",
++                                 testtype = "Teststatistic",
++                                 mincriterion = 0,
++                                 maxdepth = 2),
++         control = boost_control(mstop = 500)))
++ 
++     print(ae <- mean((predict(a) - BostonHousing$medv)^2))
++ 
++     pdiffs <- max(abs(predict(update(a, model.weights(a))) - predict(a)))
++     stopifnot(pdiffs < sqrt(.Machine$double.eps))
++ 
++ 
++     ### attach `gbm', quietly
++     sink("tmpfile")
++     require("gbm")
++     sink()
++     file.remove("tmpfile")
++ 
++     if (require("gbm")) {
++         system.time(b <- gbm(medv ~ ., data = BostonHousing,
++             n.trees = 500, interaction = 2, distribution = "gaussian",
++             shrinkage = 0.1, bag = 1))
++     print(be <- mean((predict(b, newdata = BostonHousing, n.trees = 500) -
++                 BostonHousing$medv)^2))
++     plot(BostonHousing$medv, predict(a), col = "red", pch = "+")
++     points(BostonHousing$medv,
++            predict(b, newdata = BostonHousing, n.trees = 500),
++            col = "blue", pch = "+")
++     stopifnot(ae < be)
++     }
++ }
+[1] 2.367443
+Loading required package: gbm
+Loading required package: lattice
+Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+     1       74.4121             nan     0.1000       nan
+     2       65.6474             nan     0.1000       nan
+     3       58.7034             nan     0.1000       nan
+     4       52.6088             nan     0.1000       nan
+     5       47.5788             nan     0.1000       nan
+     6       43.1559             nan     0.1000       nan
+     7       39.3997             nan     0.1000       nan
+     8       35.9511             nan     0.1000       nan
+     9       33.1632             nan     0.1000       nan
+    10       30.6850             nan     0.1000       nan
+   100        6.8694             nan     0.1000       nan
+   200        5.0890             nan     0.1000       nan
+   300        3.9605             nan     0.1000       nan
+   400        3.2681             nan     0.1000       nan
+   500        2.7537             nan     0.1000       nan
+
+[1] 2.753747
+> 
+> ### check different interfaces
+> x <- as.matrix(BostonHousing[,colnames(BostonHousing) != "medv"])
+> y <- BostonHousing$medv
+> p2 <- predict(blackboost(medv ~ ., data = BostonHousing, family = Laplace()),
++               newdata = BostonHousing)
+> 
+> ## Cox model
+> library("survival")
+> 
+> fit2 <- blackboost(Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps,
++     data = ovarian, family = CoxPH(), control = boost_control(mstop = 1000))
+Warning message:
+In optimize(risk, interval = c(0, max(y[, 1], na.rm = TRUE)), y = y,  :
+  NA/Inf replaced by maximum positive value
+> 
+> A2 <- survFit(fit2)
+> A2
+$surv
+           [,1]
+ [1,] 0.9841918
+ [2,] 0.9666614
+ [3,] 0.9469438
+ [4,] 0.9242761
+ [5,] 0.8975049
+ [6,] 0.8712777
+ [7,] 0.8409125
+ [8,] 0.8006312
+ [9,] 0.7546636
+[10,] 0.7068952
+[11,] 0.5857876
+[12,] 0.4577911
+
+$time
+  1   2   3  22  23  24  25   5   7   8  10  11 
+ 59 115 156 268 329 353 365 431 464 475 563 638 
+
+$n.event
+ [1] 1 1 1 1 1 1 1 1 1 1 1 1
+
+attr(,"class")
+[1] "survFit"
+> 
+> newdata <- ovarian[c(1,3,12),]
+> A2 <- survFit(fit2, newdata = newdata)
+> A2
+$surv
+                1           3        12
+ [1,] 0.892791971 0.890891580 0.9963054
+ [2,] 0.785599489 0.782045428 0.9921547
+ [3,] 0.678429845 0.673501949 0.9874165
+ [4,] 0.570977653 0.564996671 0.9818748
+ [5,] 0.463206357 0.456556240 0.9751939
+ [6,] 0.375067125 0.368219124 0.9684987
+ [7,] 0.291386559 0.284712599 0.9605510
+ [8,] 0.205471922 0.199452200 0.9496607
+ [9,] 0.134896401 0.129913035 0.9367064
+[10,] 0.084702500 0.080863210 0.9225860
+[11,] 0.022236317 0.020701582 0.8831788
+[12,] 0.003846373 0.003464763 0.8340207
+
+$time
+  1   2   3  22  23  24  25   5   7   8  10  11 
+ 59 115 156 268 329 353 365 431 464 475 563 638 
+
+$n.event
+ [1] 1 1 1 1 1 1 1 1 1 1 1 1
+
+attr(,"class")
+[1] "survFit"
+> 
+> ### predictions:
+> set.seed(1907)
+> x1 <- rnorm(100)
+> x2 <- rnorm(100)
+> x3 <- rnorm(100)
+> y <- rnorm(100, mean = 3 * x1, sd = 2)
+> DF <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
+> 
+> amod <- blackboost(y ~ -1 + x1 + x2, data = DF)
+> agg <- c("none", "sum", "cumsum")
+> whi <- list(NULL, 1)
+> for (i in 1:2){
++     pred <- vector("list", length=3)
++     for (j in 1:3){
++         pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
++     }
++     if (i == 1){
++         stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
++         if ((pred[[2]] - rowSums(pred[[1]]))[1] - amod$offset < sqrt(.Machine$double.eps))
++             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
++         stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - amod$offset))   < sqrt(.Machine$double.eps))
++     } else {
++         stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
++         stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
++     }
++ }
+Warning message:
+'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
+> 
+> stopifnot(all(predict(amod, which=1) + amod$offset  - predict(amod) < sqrt(.Machine$double.eps)))
+> 
+> 
+> # check type argument
+> set.seed(1907)
+> x1 <- rnorm(100)
+> p <- 1/(1 + exp(- 3 * x1))
+> y <- as.factor(runif(100) < p)
+> DF <- data.frame(y = y, x1 = x1)
+> 
+> mod <- blackboost(y ~ x1, family = Binomial(),
++                   data = DF,  control=boost_control(mstop=5000))
+> 
+> pr <- predict(mod)
+> pr <- predict(mod, type="class")
+> foo <- table(pr, y)
+> stopifnot(foo[1,2] + foo[2,1] == 0)
+> pr <- predict(mod, type="response")
+> # <FIXME> How do we check "correctness" of results?</FIXME>
+> 

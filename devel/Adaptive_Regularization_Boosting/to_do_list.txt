@@ -1,0 +1,33 @@
+
+future
+
+    o  Poisson() with some extremely large values in the response
+
+    o  predict.glmboost via coef.glmboost.
+       Remove special code in bolscw (TH, later)
+
+    o  new base-learners
+
+    o  check status == "N" in wpbc
+
+    o  use better colours
+
+    o  use col = rgb(0, 0, 0, 0.1) for lines in plot.cvrisk
+
+    o  AIC(..., "classical") as default???
+
+    o  multivariate responses
+
+    o  reweight generic?
+
+    o  hatvalues + AIC geht so nur fuer GaussReg!
+    o  hat matrices fuer GAMS (Hastie & Tib)
+
+    o  AIC(..., "corrected") monoton steigend???
+
+    o  need party?
+
+    o  look at coffee dataset
+       http://sensor.ing.unibs.it/_people/pardo/dataset.html
+
+    o  checks for gMLD
