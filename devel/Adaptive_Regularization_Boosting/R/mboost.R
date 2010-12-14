@@ -97,6 +97,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
         }
     }
 
+    nupen <- control$nupen
 
     ### set up a function for boosting
     boost <- function(niter) {
@@ -105,9 +106,13 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             ### fit baselearner(s)
             basess <- basefit(u, m)
 
+            if (!is.null(nupen))
+                nu[m] <<- nuhat(y, fit, basess$fitted(), 
+                    weights, riskfct, nupen)                
+
             ### update step
             ### <FIXME> handle missing values!
-            fit <<- fit + nu * basess$fitted()
+            fit <<- fit + nu[m] * basess$fitted()
             ### <FIXME>
 
             ### negative gradient vector, the new `residuals'

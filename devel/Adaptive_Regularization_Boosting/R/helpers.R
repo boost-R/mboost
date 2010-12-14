@@ -121,3 +121,22 @@ bhatmat <- function(n, H, xselect, fitm, fW) {
     }
     list(hatmatrix = B, trace = tr)
 }
+
+nuhat <- function(y, f, basefit, weights, risk, nupen) {
+
+    tf <- function(nu, lambda, w)
+        risk(y, f + nu * basefit, w) + lambda * nupen(nu)
+
+    folds <- cv(weights, type = "kfold")
+
+    tf2 <- function(lambda) {
+        mean(apply(folds, 2, function(w) 
+             optimize(tf, lambda = lambda, w = w,
+                      lower = 0, upper = 1e6)$objective))
+    }
+
+    lambdaopt <- optimize(tf2, lower = 0, upper = 1e6)$minimum
+    nulambda <- optimize(tf, lambda = lambdaopt, w = weights,
+             lower = 0, upper = 1e6)$minimum
+    nulambda
+}
