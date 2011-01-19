@@ -12,7 +12,23 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
     cll[[1]] <- as.name("bmono")
 
     mf <- list(...)
-    constraint <- match.arg(constraint)
+
+    ## change this to use lists as for knots
+    if (!is.list(constraint)) {
+        constraint <- match.arg(constraint)
+    } else {
+        c.args <- eval(formals(sys.function(sys.parent()))[["constraint"]])
+        constraint <- lapply(constraint, match.arg, choices = c.args)
+    }
+    if (length(mf) > 1){
+        if(length(mf) != 2)
+            stop("Only one or two covariates can be specified in",
+                 sQuote("bmono"))
+        if (length(constraint) == 1)
+            constraint <- list(constraint, constraint)
+    }
+    ##
+
     if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
         mf <- as.data.frame(mf[[1]])
     } else {
@@ -75,20 +91,24 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
                 })
     class(ret) <- "blg"
     if (!is.factor(mf[[1]])){
+        args <- hyper_bbs(mf, vary, knots = knots,
+                          boundary.knots =  boundary.knots,
+                          degree = degree, differences = differences,
+                          df = df, lambda = lambda, center = FALSE)
+        args$constraint <- constraint
+        args$lambda2 <- lambda2
+        args$niter <- niter
         ret$dpp <- bl_mono(ret, Xfun = X_bbs,
-                           args = c(hyper_bbs(mf, vary, knots = knots,
-                                boundary.knots =  boundary.knots,
-                                degree = degree, differences = differences,
-                                df = df, lambda = lambda, center = FALSE),
-                                constraint = constraint,
-                                lambda2 = lambda2, niter = niter))
+                           args = args)
     } else {
+        args <- hyper_ols(df = df, lambda = lambda,
+                          intercept = intercept,
+                          contrasts.arg = contrasts.arg)
+        args$constraint <- constraint
+        args$lambda2 <- lambda2
+        args$niter <- niter
         ret$dpp <- bl_mono(ret, Xfun = X_ols,
-                           args = c(hyper_ols(df = df, lambda = lambda,
-                                    intercept = intercept,
-                                    contrasts.arg = contrasts.arg),
-                                constraint = constraint,
-                                lambda2 = lambda2, niter = niter))
+                           args = args)
     }
     return(ret)
 }
@@ -110,15 +130,43 @@ bl_mono <- function(blg, Xfun, args) {
     K <- X$K
     X <- X$X
 
-    if (args$constraint %in% c("increasing", "decreasing")){
-        diff_order <- 1
-    } else { # i.e. args$constraint %in% c("convex", "concave")
-        diff_order <- 2
-    }
+    if (length(args$constraint) == 1) {
+        if (args$constraint %in% c("increasing", "decreasing")){
+            diff_order <- 1
+        } else { # i.e. args$constraint %in% c("convex", "concave")
+            diff_order <- 2
+        }
+        D <- V <- lambda2 <- vector(mode = "list", length =2)
+        D[[1]] <- diff(diag(ncol(X)), differences = diff_order)
+        V[[1]] <- matrix(0, ncol = ncol(X) - diff_order, nrow =  ncol(X) -
+        diff_order)
 
-    D <- diff(diag(ncol(X)), differences = diff_order)
-    V <- matrix(0, ncol = ncol(X) - diff_order, nrow =  ncol(X) - diff_order)
-    lambda2 <- args$lambda2
+        lambda2[[1]] <- args$lambda2
+        lambda2[[2]] <- 0
+    }
+    if (length(args$constraint) == 2) {
+        diff_order <- lapply(args$constraint, function(x){
+            ifelse( x %in% c("increasing", "decreasing"), 1, 2) } )
+
+        ## CHECK THIS:
+        ## sqrt() only works if knots have the same dim for x1 and x2
+        D <- V <- lambda2 <- vector(mode = "list", length =2)
+        D[[1]] <- kronecker(diff(diag(sqrt(ncol(X))),
+                                 differences = diff_order[[1]]),
+                            diag(sqrt(ncol(X))))
+        D[[2]] <- kronecker(diag(sqrt(ncol(X))),
+                            diff(diag(sqrt(ncol(X))),
+                                 differences = diff_order[[2]]))
+        V[[1]] <- matrix(0, ncol = nrow(D[[1]]), nrow =  nrow(D[[1]]))
+        V[[2]] <- matrix(0, ncol = nrow(D[[2]]), nrow =  nrow(D[[2]]))
+        if (length(args$lambda2) == 1) {
+            lambda2[[1]] <- lambda2[[2]] <- args$lambda2
+        } else {
+            lambda2 <- args$lambda2
+        }
+        ## CHECK THIS
+
+    }
 
     dpp <- function(weights) {
         weights[!Complete.cases(mf)] <- 0
@@ -133,16 +181,36 @@ bl_mono <- function(blg, Xfun, args) {
         XtX <- XtX + lambda * K
 
         if (is(X, "Matrix")) {
-            ## use chol
-            mysolve <- function(y, V) {
-                XtXC <- Cholesky(forceSymmetric(XtX +
-                                 lambda2 * crossprod(D, V %*% D)))
-                solve(XtXC, crossprod(X, y))
+            if (lambda2[[2]] == 0){
+                mysolve <- function(y, V) {
+                    XtXC <- Cholesky(forceSymmetric(XtX +
+                        lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]])))
+                    solve(XtXC, crossprod(X, y))
+                }
+            } else {
+                ## use chol
+                mysolve <- function(y, V) {
+                    XtXC <- Cholesky(forceSymmetric(XtX +
+                        lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]])) +
+                        lambda2[[2]] * crossprod(D[[2]], V[[2]] %*% D[[2]]))
+                    solve(XtXC, crossprod(X, y))
+                }
             }
-        } else {
-            mysolve <- function(y, V)
-                .Call("La_dgesv", XtX + lambda2 * crossprod(D, V %*% D),
-                       crossprod(X, y), .Machine$double.eps, PACKAGE = "base")
+        } else { ## not Matrix
+            if (lambda2[[2]] == 0){#
+                mysolve <- function(y, V)
+                    .Call("La_dgesv", XtX +
+                          lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]]),
+                          crossprod(X, y), .Machine$double.eps,
+                          PACKAGE = "base")
+            } else {
+                mysolve <- function(y, V)
+                    .Call("La_dgesv", XtX +
+                          lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]]) +
+                          lambda2[[2]] * crossprod(D[[2]], V[[2]] %*% D[[2]]),
+                          crossprod(X, y), .Machine$double.eps,
+                          PACKAGE = "base")
+            }
         }
         fit <- function(y) {
             if (!is.null(index)) {
@@ -154,10 +222,19 @@ bl_mono <- function(blg, Xfun, args) {
 
             for (i in 1:args$niter){
                 coef <- mysolve(y, V)
-                # compare old and new V
-                if (all( V == (V <- do.call(args$constraint,
-                                            args=list(as.vector(coef)))) ))
+                ## compare old and new V
+                tmp1 <- do.call(args$constraint[[1]],
+                                args=list(D[[1]] %*% coef))
+                if (lambda2[[2]] != 0)
+                    tmp2 <- do.call(args$constraint[[2]],
+                                    args=list(D[[2]] %*% coef))
+
+                if ( all( V[[1]] == tmp1 ) &&
+                    ( lambda2[[2]] == 0 || all( V[[2]] == tmp2 ) ) )
                     break    # if both are equal: done!
+                V[[1]] <- tmp1
+                if (lambda2[[2]] != 0)
+                    V[[2]] <- tmp2
                 if (i == args$niter)
                     warning("no convergence of coef in bmono\n",
                             "You could try increasing ", sQuote("niter"),
@@ -173,7 +250,6 @@ bl_mono <- function(blg, Xfun, args) {
             class(ret) <- c("bm_lin", "bm")
             ret
         }
-
 
         hatvalues <- function() {
             stop("not possible for monotonic base-learners")
@@ -220,14 +296,14 @@ bl_mono <- function(blg, Xfun, args) {
     return(dpp)
 }
 
-increasing <- function(coef)
-    diag(as.numeric(c(diff(coef, differences=1))) <= 0)
+increasing <- function(diffs)
+    diag(c(as.numeric(diffs)) <= 0)
 
 decreasing <- function(coef)
-    diag(as.numeric(c(diff(coef, differences=1))) >= 0)
+    diag(c(as.numeric(diffs)) >= 0)
 
 convex <- function(coef)
-    diag(as.numeric(c(diff(coef, differences=2))) <= 0)
+    diag(c(as.numeric(diffs)) <= 0)
 
 concave <- function(coef)
-    diag(as.numeric(c(diff(coef, differences=2))) >= 0)
+    diag(c(as.numeric(diffs)) >= 0)
