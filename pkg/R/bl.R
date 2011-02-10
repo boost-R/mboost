@@ -829,24 +829,25 @@ fit.bl <- function(object, y)
         K1 <- X1$K
         X1 <- X1$X
         if (!is.null(l1)) K1 <- l1 * K1
-        if (options("mboost_useMatrix")$mboost_useMatrix) {
+        MATRIX <- options("mboost_useMatrix")$mboost_useMatrix
+        if (MATRIX & !is(X1, "Matrix")) 
             X1 <- Matrix(X1)
+        if (MATRIX & !is(K1, "Matrix")) 
             K1 <- Matrix(K1)
-        }
 
         X2 <- newX2(mf[, bl2$get_names(), drop = FALSE])
         K2 <- X2$K
         X2 <- X2$X
         if (!is.null(l2)) K2 <- l2 * K2
-        if (options("mboost_useMatrix")$mboost_useMatrix) {
+        if (MATRIX & !is(X2, "Matrix")) 
             X2 <- Matrix(X2)
+        if (MATRIX & !is(K2, "Matrix")) 
             K2 <- Matrix(K2)
-        }
 
-        X <- kronecker(X1, matrix(1, nc = ncol(X2),
+        X <- kronecker(X1, Matrix(1, nc = ncol(X2),
                                   dimnames = list("", colnames(X2))),
                        make.dimnames = TRUE) *
-             kronecker(matrix(1, nc = ncol(X1)), X2,
+             kronecker(Matrix(1, nc = ncol(X1)), X2,
                        make.dimnames = TRUE)
 
         K <- kronecker(K1, diag(ncol(X2))) +

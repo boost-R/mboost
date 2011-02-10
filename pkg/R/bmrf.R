@@ -62,7 +62,8 @@ function (mf, vary, bnd = NULL, df = 4, lambda = NULL, center = FALSE)
              all(levels(mf[[1]]) %in% rownames(bnd))) 
         K <- bnd
     else stop("Neighbourhood matrix not defined as stated in manual page.")
-    K <- as(K, "matrix")
+    ###    K <- as(K, "matrix")
+    K <- Matrix(K)
     nm <- colnames(mf)[colnames(mf) != vary]
     list(K = K, bnd = bnd, pen = TRUE, df = df, lambda = lambda, 
         center = center)
@@ -73,14 +74,17 @@ function (mf, vary, args)
 {
     K <- args$K
     districts <- rownames(K)
-    X <- matrix(0, nrow = nrow(mf), ncol = ncol(K))
-    for (i in 1:nrow(mf)) X[i, which(districts == mf[i, 1])] <- 1
-    MATRIX <- any(dim(X) > c(500, 50))
-    MATRIX <- MATRIX && options("mboost_useMatrix")$mboost_useMatrix
-    if (MATRIX) {
-        diag <- Diagonal
-        X <- Matrix(X)
-    }
+    X <- Diagonal(nrow(K))
+    colnames(X) <- districts
+    X <- X[as.integer(mf[,1]),]
+    # X <- matrix(0, nrow = nrow(mf), ncol = ncol(K))
+    # for (i in 1:nrow(mf)) X[i, which(districts == mf[i, 1])] <- 1
+    # MATRIX <- any(dim(X) > c(500, 50))
+    # MATRIX <- MATRIX && options("mboost_useMatrix")$mboost_useMatrix
+    # if (MATRIX) {
+    #    diag <- Diagonal
+    #     X <- Matrix(X)
+    # }
     if (vary != "") {
         by <- model.matrix(as.formula(paste("~", vary, collapse = "")), 
             data = mf)[, 2]
