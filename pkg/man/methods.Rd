@@ -253,16 +253,18 @@
   \code{"\linkS4class{boost_family}"}.
 
   For (generalized) linear and additive models, the \code{AIC} function
-  can be used to compute both the classical and corrected AIC (Hurvich
-  et al., 1998, only available when \code{family = GaussReg()} was
-  used), which is useful for the determination of the optimal number of
-  boosting iterations to be applied (which can be extracted via
-  \code{mstop}). The degrees of freedom are either computed via the
-  trace of the boosting hat matrix (which is rather slow even for
-  moderate sample sizes) or the number of variables (non-zero
-  coefficients) that entered the model so far (faster but only
-  meaningful for linear models fitted via \code{\link{gamboost}} (see
-  Hastie, 2007)).
+  can be used to compute both the classical AIC (only available for
+  \code{familiy = Binomial()} and \code{familiy = Poisson()}) and
+  corrected AIC (Hurvich et al., 1998, only available when \code{family
+  = Gaussian()} was used). Details on the used approximations for the
+  hat matrix can be found in Buehlmann and Hothorn (2007). The AIC is
+  useful for the determination of the optimal number of boosting
+  iterations to be applied (which can be extracted via \code{mstop}).
+  The degrees of freedom are either computed via the trace of the
+  boosting hat matrix (which is rather slow even for moderate sample
+  sizes) or the number of variables (non-zero coefficients) that entered
+  the model so far (faster but only meaningful for linear models fitted
+  via \code{\link{gamboost}} (see Hastie, 2007)).
 
   In addition, the general Minimum Description Length criterion
   (Buehlmann and Yu, 2006) can be computed using function \code{AIC}.

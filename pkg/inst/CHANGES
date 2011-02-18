@@ -8,8 +8,10 @@
 
   o  speed up glmboost() a little bit
 
+  o  added base-learners for smooth monotonic (or convex/concave)
+     functions of one or two variables (bmono())
+
   o  added base-learners for radial basis functions (brad())
-     and smooth monotonic (or convex/concave) functions (bmono())
 
   o  added base-learners for Markov random fields (bmrf())
 
@@ -55,6 +57,8 @@
 
   o  added warning if df2lambda is likely to become numerically
      instable (i.e. in the case of large entries in the design matrix)
+
+  o  various improvements and fixes in manuals
 
                 CHANGES in `mboost' VERSION 2.0-9 (2010-11-19, r543)
 

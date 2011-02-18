@@ -148,14 +148,19 @@ bl_mono <- function(blg, Xfun, args) {
         diff_order <- lapply(args$constraint, function(x){
             ifelse( x %in% c("increasing", "decreasing"), 1, 2) } )
 
-        ## CHECK THIS:
-        ## sqrt() only works if knots have the same dim for x1 and x2
+        ## ncol1 = length(knots[[1]]) + degree + 1
+        ## ncol2 = length(knots[[1]]) + degree + 1
+        ## ncol(X) = ncol1 * ncol2
+        ncoli <- lapply(args$knots, function(x)
+                        length(x$knots) + args$degree + 1)
+        stopifnot(ncoli[[1]] * ncoli[[2]] == ncol(X))
+
         D <- V <- lambda2 <- vector(mode = "list", length =2)
-        D[[1]] <- kronecker(diff(diag(sqrt(ncol(X))),
+        D[[1]] <- kronecker(diff(diag(ncoli[[1]]),
                                  differences = diff_order[[1]]),
-                            diag(sqrt(ncol(X))))
-        D[[2]] <- kronecker(diag(sqrt(ncol(X))),
-                            diff(diag(sqrt(ncol(X))),
+                            diag(ncoli[[2]]))
+        D[[2]] <- kronecker(diag(ncoli[[1]]),
+                            diff(diag(ncoli[[2]]),
                                  differences = diff_order[[2]]))
         V[[1]] <- matrix(0, ncol = nrow(D[[1]]), nrow =  nrow(D[[1]]))
         V[[2]] <- matrix(0, ncol = nrow(D[[2]]), nrow =  nrow(D[[2]]))
@@ -164,8 +169,6 @@ bl_mono <- function(blg, Xfun, args) {
         } else {
             lambda2 <- args$lambda2
         }
-        ## CHECK THIS
-
     }
 
     dpp <- function(weights) {

@@ -238,9 +238,54 @@ m1 <- gamboost(y ~ (bols(x1, intercept = FALSE, df = 1) %+%
 set.seed(781)
 x <- as.ordered(gl(4, 50))
 y <- rnorm(200, mean = rep(c(1,3,2,4), each = 50), sd = 1)
-#plot(x, y)
 mod1 <- gamboost(y ~ bols(x))
 diff(coef(mod1)[[1]])
 mod2 <- gamboost(y ~ bmono(x, lambda2 = 10^15))
 stopifnot(abs(coef(mod1)[[1]] - coef(mod2)[[1]])[c(1,4)] < 1e-5)
 stopifnot(all(diff(coef(mod2)[[1]]) > - sqrt(.Machine$double.eps)))
+
+### test bmono for tensor-product splines
+x1 <- runif(100, min = -2, max = 3)
+x2 <- runif(100, min = -2, max = 3)
+f <- function(x1, x2)
+    0.5 + x1^2 * (x2 + 3)
+y <- rnorm(100, mean = f(x1, x2), sd = 0.5)
+mod1 <- mboost(y ~ bspatial(x1, x2, df = 6, knots = list(x1 = 10, x2 = 5)),
+               control = boost_control(mstop = 50))
+mod21 <- mboost(y ~ bmono(x1, x2, df = 6, knots = list(x1 = 10, x2 = 5),
+                          lambda2 = list(x1 = 10e6, x2 = 0)),
+                control = boost_control(mstop = 50))
+mod22 <- mboost(y ~ bmono(x1, x2, df = 6, knots = list(x1 = 10, x2 = 5),
+                          lambda2 = list(x1 = 0, x2 = 10e6)),
+                control = boost_control(mstop = 50))
+
+diff_order <- 1
+D1 <- kronecker(diff(diag(10 + 3 + 1), differences = diff_order),
+                diag(5 + 3 + 1))
+D2 <- kronecker(diag(10 + 3 + 1), diff(diag(5 + 3 + 1),
+                              differences = diff_order))
+
+beta <- coef(mod1)[[1]]
+sum((D1 %*% beta)[D1 %*% beta <= 0])
+sum((D2 %*% beta)[D2 %*% beta <= 0])
+
+beta <- coef(mod21)[[1]]
+sum((D1 %*% beta)[D1 %*% beta <= 0])
+sum((D2 %*% beta)[D2 %*% beta <= 0])
+stopifnot(all(D1 %*% beta > - 2e-05))
+
+beta <- coef(mod22)[[1]]
+sum((D1 %*% beta)[D1 %*% beta <= 0])
+sum((D2 %*% beta)[D2 %*% beta <= 0])
+stopifnot(all(D2 %*% beta > - 2e-05))
+
+#nd <- expand.grid(sort(x1), sort(x2))
+#names(nd) <- c("x1", "x2")
+#contour(sort(x1), sort(x2),
+#        z = matrix(predict(mod1, newdata = nd), ncol = length(x1)))
+#contour(sort(x1), sort(x2),
+#        z = matrix(predict(mod21, newdata = nd), ncol = length(x1)),
+#        col = "red", add = TRUE)
+#contour(sort(x1), sort(x2),
+#        z = matrix(predict(mod22, newdata = nd), ncol = length(x1)),
+#        col = "green", add = TRUE)

@@ -84,6 +84,12 @@ hatvalues.gamboost <- function(model, ...) {
     RET
 }
 
+hatvalues.mboost <- function(model, ...) {
+    stop("hatvalues are not implemented for models fitted via function ",
+         sQuote("mboost"), ".\n Please use functions ", sQuote("gamboost"),
+         " or ", sQuote("glmboost"), " instead.")
+}
+
 AIC.mboost <- function(object, method = c("corrected", "classical", "gMDL"),
                        df = c("trace", "actset"), ..., k = 2) {
 
