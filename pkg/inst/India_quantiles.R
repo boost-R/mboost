@@ -20,6 +20,14 @@ source("india_blackboost.R", echo=TRUE)
 source("india_stumps.R", echo=TRUE)
 
 # Summarise results for plotting
+# (all algorithms without rqss)
 source("india_summary.R", echo=TRUE)
 # and create plots
 source("india_plots.R", echo=TRUE)
+
+
+# Fit additive quantile regression by rqss
+source("india_rqss.R", echo=TRUE)
+
+# And plot results for empirical risk results for all algorithms
+source("india_rqssResults.R", echo=TRUE)
