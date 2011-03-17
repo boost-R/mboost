@@ -59,6 +59,10 @@
   o  added warning if df2lambda is likely to become numerically
      instable (i.e. in the case of large entries in the design matrix)
 
+  o  improved storage, speed and stability using Matrix technology for 
+     bols() for factors with many levels and brandom(); 
+     further improvements in base-learners that are combined via %+%.
+
   o  various improvements and fixes in manuals
 
 

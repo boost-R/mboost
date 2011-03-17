@@ -94,6 +94,14 @@ X_ols <- function(mf, vary, args) {
         }
         X <- model.matrix(as.formula(fm), data = mf, contrasts.arg = args$contrasts.arg)
         contr <- attr(X, "contrasts")
+        MATRIX <- any(dim(X) > c(500, 50)) && any(fac)
+        MATRIX <- MATRIX && options("mboost_useMatrix")$mboost_useMatrix
+        if (MATRIX) {
+            diag <- Diagonal
+            cbind <- cBind
+            if (!is(X, "Matrix"))
+                X <- Matrix(X)
+        }
         if (vary != "") {
             by <- model.matrix(as.formula(paste("~", vary, collapse = "")),
                                data = mf)[ , -1, drop = FALSE] # drop intercept
@@ -122,6 +130,8 @@ X_ols <- function(mf, vary, args) {
         K <- crossprod(K)
     }
     ### </FIXME>
+    if (is(X, "Matrix") && !is(K, "Matrix"))
+        K <- Matrix(K)
     list(X = X, K = K)
 }
 
@@ -752,7 +762,14 @@ fit.bl <- function(object, y)
                     nrow = nrow(K1) + nrow(K2))
         K[1:nrow(K1), 1:ncol(K1)] <- as.matrix(K1)
         K[-(1:nrow(K1)), -(1:ncol(K1))] <- as.matrix(K2)
-        list(X = cbind(as.matrix(X1), as.matrix(X2)), K = K)
+        X <- cbind(as.matrix(X1), as.matrix(X2))
+        MATRIX <- any(dim(X) > c(500, 50)) &&
+                  options("mboost_useMatrix")$mboost_useMatrix
+        if (MATRIX & !is(X, "Matrix"))
+            X <- Matrix(X)
+        if (MATRIX & !is(K, "Matrix"))
+            K <- Matrix(K)
+        list(X = X, K = K)
     }
 
     ret$dpp <- bl_lin(ret, Xfun = Xfun, args = args)
@@ -834,18 +851,18 @@ fit.bl <- function(object, y)
         X1 <- X1$X
         if (!is.null(l1)) K1 <- l1 * K1
         MATRIX <- options("mboost_useMatrix")$mboost_useMatrix
-        if (MATRIX & !is(X1, "Matrix")) 
+        if (MATRIX & !is(X1, "Matrix"))
             X1 <- Matrix(X1)
-        if (MATRIX & !is(K1, "Matrix")) 
+        if (MATRIX & !is(K1, "Matrix"))
             K1 <- Matrix(K1)
 
         X2 <- newX2(mf[, bl2$get_names(), drop = FALSE])
         K2 <- X2$K
         X2 <- X2$X
         if (!is.null(l2)) K2 <- l2 * K2
-        if (MATRIX & !is(X2, "Matrix")) 
+        if (MATRIX & !is(X2, "Matrix"))
             X2 <- Matrix(X2)
-        if (MATRIX & !is(K2, "Matrix")) 
+        if (MATRIX & !is(K2, "Matrix"))
             K2 <- Matrix(K2)
 
         X <- kronecker(X1, Matrix(1, nc = ncol(X2),
