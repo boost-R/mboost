@@ -62,12 +62,17 @@
   o  various improvements and fixes in manuals
 
 
+		CHANGES in `mboost' VERSION 2.0-11 (2011-03-17, r561)
+
+  o  fix problem in bl_lin when using dense matrices from package "Matrix"
+
+
 		CHANGES in `mboost' VERSION 2.0-10 (2011-02-20, r556)
 
   o  add rqss results for India childhood malnutrition data
 
 
-                CHANGES in `mboost' VERSION 2.0-9 (2010-11-19, r543)
+        CHANGES in `mboost' VERSION 2.0-9 (2010-11-19, r543)
 
   o  add gbm to Suggests
 
