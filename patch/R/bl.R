@@ -398,11 +398,20 @@ bl_lin <- function(blg, Xfun, args) {
         lambda <- lambdadf["lambda"]
         XtX <- XtX + lambda * K
 
-        if (is(X, "Matrix")) {
-            ### chol benutzen
-            XtXC <- Cholesky(forceSymmetric(XtX))
-            mysolve <- function(y) solve(XtXC, crossprod(X, y))
+        ## matrizes of class dgeMatrix are dense generic matrices; they should
+        ## be coerced to class matrix and handled in the standard way
+        if (is(X, "Matrix") && !extends(class(XtX), "dgeMatrix")) {
+            sXtX <- forceSymmetric(XtX)
+            XtXC <- Cholesky(sXtX)
+            mysolve <- function(y)
+                solve(XtXC, crossprod(X, y))  ## special solve routine from
+                                              ## package Matrix
         } else {
+            if (is(X, "Matrix")) {
+                ## coerce Matrix to matrix
+                X <- as(X, "matrix")
+                XtX <- as(XtX, "matrix")
+            }
             mysolve <- function(y)
                 .Call("La_dgesv", XtX, crossprod(X, y), .Machine$double.eps,
                       PACKAGE = "base")

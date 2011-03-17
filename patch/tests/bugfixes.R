@@ -1,5 +1,6 @@
 
 require("mboost")
+require("Matrix")
 
 set.seed(290875)
 
@@ -357,3 +358,23 @@ stopifnot(max(abs(predict(m2) - predict(m3))) < sqrt(.Machine$double.eps))
 z <- as.ordered(gl(3, 10))
 BL <- bols(z, contrasts.arg = "contr.treatment")$dpp
 stopifnot(attr(get("X", envir = environment(BL)), "contrasts")$z == "contr.treatment")
+
+
+### check if mysolve works correctly
+set.seed(1907)
+X <- matrix(runif(1000), ncol = 10)
+XM <- Matrix(X)
+y <- rnorm(nrow(X))
+# use interface for dense matrices from package Matrix
+f1 <- fitted(gamboost(y ~ bols(XM)))
+# use interface for matrices of class "matrix"
+f2 <- fitted(gamboost(y ~ bols(X)))
+stopifnot(max(abs(f1 - f2)) < sqrt(.Machine$double.eps))
+## Now same with sparse matrix
+X[X < .9] <- 0
+XM <- Matrix(X)
+# use interface for sparse matrices from package Matrix
+f1 <- fitted(gamboost(y ~ bols(XM)))
+# use interface for matrices of class "matrix"
+f2 <- fitted(gamboost(y ~ bols(X)))
+stopifnot(max(abs(f1 - f2)) < sqrt(.Machine$double.eps))

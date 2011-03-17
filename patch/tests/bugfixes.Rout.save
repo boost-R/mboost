@@ -1,7 +1,8 @@
 
-R version 2.11.1 (2010-05-31)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.12.2 (2011-02-25)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -18,6 +19,16 @@ Type 'q()' to quit R.
 > 
 > require("mboost")
 Loading required package: mboost
+> require("Matrix")
+Loading required package: Matrix
+Loading required package: lattice
+
+Attaching package: 'Matrix'
+
+The following object(s) are masked from 'package:base':
+
+    det
+
 > 
 > set.seed(290875)
 > 
@@ -336,9 +347,6 @@ Note: Method with signature "diagonalMatrix#Matrix" chosen for function "kroneck
 Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
  target signature "dtTMatrix#dsCMatrix".
  "TsparseMatrix#sparseMatrix" would also be valid
-Warning message:
-In asMethod(object) :
-  as(.,"dsCMatrix") is deprecated; do use as(., "symmetricMatrix")
 > stopifnot(!is.na(predict(model,data[1,-1])))
 > 
 > ### bols with intercept = FALSE for categorical covariates was broken
@@ -437,4 +445,24 @@ In asMethod(object) :
 > z <- as.ordered(gl(3, 10))
 > BL <- bols(z, contrasts.arg = "contr.treatment")$dpp
 > stopifnot(attr(get("X", envir = environment(BL)), "contrasts")$z == "contr.treatment")
+> 
+> 
+> ### check if mysolve works correctly
+> set.seed(1907)
+> X <- matrix(runif(1000), ncol = 10)
+> XM <- Matrix(X)
+> y <- rnorm(nrow(X))
+> # use interface for dense matrices from package Matrix
+> f1 <- fitted(gamboost(y ~ bols(XM)))
+> # use interface for matrices of class "matrix"
+> f2 <- fitted(gamboost(y ~ bols(X)))
+> stopifnot(max(abs(f1 - f2)) < sqrt(.Machine$double.eps))
+> ## Now same with sparse matrix
+> X[X < .9] <- 0
+> XM <- Matrix(X)
+> # use interface for sparse matrices from package Matrix
+> f1 <- fitted(gamboost(y ~ bols(XM)))
+> # use interface for matrices of class "matrix"
+> f2 <- fitted(gamboost(y ~ bols(X)))
+> stopifnot(max(abs(f1 - f2)) < sqrt(.Machine$double.eps))
 > 

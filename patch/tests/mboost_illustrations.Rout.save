@@ -1,7 +1,8 @@
 
-R version 2.11.1 (2010-05-31)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.12.2 (2011-02-25)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -102,9 +103,6 @@ R> mopt <- grid[which.min(colMeans(boob))]
 R> layout(matrix(1:2, nrow = 2))
 R> perfplot(boob, grid, ylab = "Out-of-bootstrap squared error", 
          xlab = "Number of boosting iterations", alpha = 0.05)
-Warning message:
-In matplot(x = x, y = y, type = type, lty = lty, lwd = lwd, pch = pch,  :
-  default 'pch' is smaller than number of columns and hence recycled
 R> abline(h = mean(boobrest), lty = 2)
 R> lines(c(which.min(colMeans(boob)), which.min(colMeans(boob))), 
            c(0, min(colMeans(boob))), lty = 2)

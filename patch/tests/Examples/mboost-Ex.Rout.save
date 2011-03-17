@@ -1,7 +1,8 @@
 
-R version 2.11.1 (2010-05-31)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.12.2 (2011-02-25)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -273,16 +274,16 @@ $class
 +                         control = boost_control(mstop = 400))
 >   coef(model, which = 1)   # one base-learner for x1 and x2
 $`bols(x1, x2, intercept = FALSE)`
-[1]  1.79313589 -0.03333542
+[1]  1.79313591 -0.03333542
 
 attr(,"offset")
 [1] 1.334042
 >   coef(model, which = 2:3) # two separate base-learners for x1 and x2
 $`bols(x1, intercept = FALSE)`
-[1] 2.254822e-08
+[1] 1.178178e-10
 
 $`bols(x2, intercept = FALSE)`
-[1] 4.018326e-11
+[1] 2.118703e-12
 
 attr(,"offset")
 [1] 1.334042
@@ -414,7 +415,7 @@ $class
 >   cf[1] <- cf[1] + mod$offset
 >   cf
 bols(int, intercept = FALSE)   bols(x, intercept = FALSE) 
-               -0.1298897898                 0.0003555856 
+               -0.1298897900                 0.0003555856 
 >   coef(lm(y ~ x, data = tmpdata))
   (Intercept)             x 
 -0.1298898174  0.0003555861 
@@ -1592,7 +1593,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  61.04 2.36 64.166 0 0 
+Time elapsed:  59.53 2.14 61.891 0 0 
 > grDevices::dev.off()
 null device 
           1 

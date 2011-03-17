@@ -1,7 +1,8 @@
 
-R version 2.11.1 (2010-05-31)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.12.2 (2011-02-25)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -20,12 +21,12 @@ Type 'q()' to quit R.
 > attach(asNamespace("mboost"))
 The following object(s) are masked from 'package:mboost':
 
-    %+%, AdaExp, bbs, Binomial, blackboost, bns, bols, boost_control,
-    brandom, bspatial, bss, btree, CoxPH, cv, cvrisk, ExpectReg,
-    Family, FP, gamboost, GaussClass, Gaussian, GaussReg, glmboost,
-    Huber, IPCweights, Laplace, Loglog, Lognormal, mboost, mboost_fit,
-    mstop, NBinomial, nuisance, Poisson, PropOdds, QuantReg, selected,
-    stabsel, survFit, Weibull, %X%
+    %+%, %X%, AdaExp, Binomial, CoxPH, ExpectReg, FP, Family,
+    GaussClass, GaussReg, Gaussian, Huber, IPCweights, Laplace, Loglog,
+    Lognormal, NBinomial, Poisson, PropOdds, QuantReg, Weibull, bbs,
+    blackboost, bns, bols, boost_control, brandom, bspatial, bss,
+    btree, cv, cvrisk, gamboost, glmboost, mboost, mboost_fit, mstop,
+    nuisance, selected, stabsel, survFit
 > library("MASS")
 > library("Matrix")
 Loading required package: lattice
@@ -257,9 +258,6 @@ Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "k
 Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
  target signature "dgTMatrix#dsCMatrix".
  "TsparseMatrix#sparseMatrix" would also be valid
-Warning message:
-In asMethod(object) :
-  as(.,"dsCMatrix") is deprecated; do use as(., "symmetricMatrix")
 > m2 <- gamboost(y ~ bspatial(x1, x2, df = 16))
 Note: Method with signature "Matrix#diagonalMatrix" chosen for function "kronecker",
  target signature "dsCMatrix#ddiMatrix".
