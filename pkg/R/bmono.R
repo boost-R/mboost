@@ -187,7 +187,7 @@ bl_mono <- function(blg, Xfun, args) {
             if (lambda2[[2]] == 0){
                 mysolve <- function(y, V) {
                     XtXC <- Cholesky(forceSymmetric(XtX +
-                        lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]])))
+                        lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]])))                    
                     solve(XtXC, crossprod(X, y))
                 }
             } else {
@@ -302,11 +302,11 @@ bl_mono <- function(blg, Xfun, args) {
 increasing <- function(diffs)
     diag(c(as.numeric(diffs)) <= 0)
 
-decreasing <- function(coef)
+decreasing <- function(diffs)
     diag(c(as.numeric(diffs)) >= 0)
 
-convex <- function(coef)
+convex <- function(diffs)
     diag(c(as.numeric(diffs)) <= 0)
 
-concave <- function(coef)
+concave <- function(diffs)
     diag(c(as.numeric(diffs)) >= 0)
