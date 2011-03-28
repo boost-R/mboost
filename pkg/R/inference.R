@@ -1,5 +1,6 @@
 
 stabsel <- function(object, FWER = 0.05, cutoff, q, 
+                    folds = cv(model.weights(object), type = "subsampling"),
                     papply = if (require("multicore")) mclapply else lapply, ...) {
 
     p <- length(variable.names(object))
@@ -20,7 +21,7 @@ stabsel <- function(object, FWER = 0.05, cutoff, q,
         xs
     }
     ss <- cvrisk(object, fun  = fun, 
-                 folds = cv(model.weights(object), type = "subsampling", ...),
+                 folds = folds,
                  papply = papply)
     ret <- matrix(0, nrow = length(ibase), ncol = m <- mstop(object))
     for (i in 1:length(ss)) {
