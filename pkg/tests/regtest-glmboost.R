@@ -141,7 +141,9 @@ if (require("survival")) {
 ## Cox model with predictions obtained from survFit function
 
 fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps - 1
-fit <- coxph(fm, data = ovarian)
+## no need to drop the intercept here:
+fmSurv <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps
+fit <- coxph(fmSurv, data = ovarian)
 fit2 <- glmboost(fm, data = ovarian, family = CoxPH(),
     control=boost_control(mstop = 1000), center = TRUE)
 fit3 <- glmboost(fm, data = ovarian, family = CoxPH(),
