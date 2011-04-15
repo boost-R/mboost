@@ -137,9 +137,14 @@ bl_mono <- function(blg, Xfun, args) {
             diff_order <- 2
         }
         D <- V <- lambda2 <- vector(mode = "list", length =2)
-        D[[1]] <- diff(diag(ncol(X)), differences = diff_order)
-        V[[1]] <- matrix(0, ncol = ncol(X) - diff_order, nrow =  ncol(X) -
-        diff_order)
+        if (is.factor(mf[[1]]) && args$intercept){
+            D[[1]] <- diff(diag(ncol(X)), differences = diff_order)
+            D[[1]][1,1] <- 0
+        } else {
+            D[[1]] <- diff(diag(ncol(X)), differences = diff_order)
+        }
+        V[[1]] <- matrix(0, ncol = ncol(X) - diff_order,
+                         nrow =  ncol(X) - diff_order)
 
         lambda2[[1]] <- args$lambda2
         lambda2[[2]] <- 0
@@ -148,6 +153,9 @@ bl_mono <- function(blg, Xfun, args) {
         diff_order <- lapply(args$constraint, function(x){
             ifelse( x %in% c("increasing", "decreasing"), 1, 2) } )
 
+        if (is.factor(mf[[1]]))
+            stop(paste("Bivariate monotonic effects currently not",
+                       "implemented for ordered factors"))
         ## ncol1 = length(knots[[1]]) + degree + 1
         ## ncol2 = length(knots[[1]]) + degree + 1
         ## ncol(X) = ncol1 * ncol2
@@ -187,7 +195,7 @@ bl_mono <- function(blg, Xfun, args) {
             if (lambda2[[2]] == 0){
                 mysolve <- function(y, V) {
                     XtXC <- Cholesky(forceSymmetric(XtX +
-                        lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]])))                    
+                        lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]])))
                     solve(XtXC, crossprod(X, y))
                 }
             } else {
