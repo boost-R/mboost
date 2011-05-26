@@ -194,9 +194,11 @@ Lognormal(nuirange = c(0, 100))
 
     Laplace()
 
-    Family(ngradient = function(y, f) y - f,
-           loss = function(y, f) (y - f)^2,
-           name = "My Gauss Variant")
+    MyGaussian <- function(){
+           Family(ngradient = function(y, f, w = 1) y - f,
+                  loss = function(y, f) (y - f)^2,
+                  name = "My Gauss Variant")
+    }
 
 }
 \keyword{models}

@@ -164,21 +164,24 @@ bl1 \%X\% bl2
 
   \code{bspatial} implements bivariate tensor product P-splines for the
   estimation of either spatial effects or interaction surfaces. Note
-  that \code{bspatial(x, y)} is equivalent to \code{bbs(x, y)}. For
-  possible arguments and defaults see there.
-  The penalty term is constructed based on bivariate extensions of the
-  univariate penalties in \code{x} and \code{y} directions, see Kneib,
-  Hothorn and Tutz (2009) for details. Note that the dimensions of the
-  penalty matrix increase (quickly) with the number of knots with strong
-  impact on computational time. Thus, both should not be chosen to
-  large. Different knots for \code{x} and \code{y} can be specified
-  by a named list.
+  that \code{bspatial(x, y)} is equivalent to \code{bbs(x, y, df = 6)}.
+  For possible arguments and defaults see there. The penalty term is
+  constructed based on bivariate extensions of the univariate penalties
+  in \code{x} and \code{y} directions, see Kneib, Hothorn and Tutz
+  (2009) for details. Note that the dimensions of the penalty matrix
+  increase (quickly) with the number of knots with strong impact on
+  computational time. Thus, both should not be chosen to large.
+  Different knots for \code{x} and \code{y} can be specified by a named
+  list.
 
   \code{brandom(x)} specifies a random effects base-learner based on a
   factor variable \code{x} that defines the grouping structure of the
   data set. For each level of \code{x}, a separate random intercept is
   fitted, where the random effects variance is governed by the
-  specification of the degrees of freedom \code{df}.
+  specification of the degrees of freedom \code{df}. Note that
+  \code{brandom(...)} is essentially a wrapper to \code{bols(..., df =
+  4)}, i.e., a wrapper that utilizes ridge-penalized categorical
+  effects. For possible arguments and defaults see \code{bols}.
 
   For all linear base-learners the amount of smoothing is determined by the
   trace of the hat matrix, as indicated by \code{df}. If \code{df} is

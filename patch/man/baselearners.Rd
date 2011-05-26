@@ -117,7 +117,10 @@ bl1 \%X\% bl2
   factor variable \code{x} that defines the grouping structure of the
   data set. For each level of \code{x}, a separate random intercept is
   fitted, where the random effects variance is governed by the
-  specification of the degrees of freedom \code{df}.
+  specification of the degrees of freedom \code{df}. Note that
+  \code{brandom(...)} is essentially a wrapper to \code{bols(..., df =
+  4)}, i.e., a wrapper that utilizes ridge-penalized categorical
+  effects. For possible arguments and defaults see \code{bols}.
 
   For all linear base-learners the amount of smoothing is determined by the
   trace of the hat matrix, as indicated by \code{df}. If \code{df} is

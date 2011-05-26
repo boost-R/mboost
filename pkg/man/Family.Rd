@@ -232,9 +232,11 @@ distribution approximation used in Ma and Huang (2005).
 
     Laplace()
 
-    Family(ngradient = function(y, f) y - f,
+    MyGaussian <- function(){
+           Family(ngradient = function(y, f, w = 1) y - f,
            loss = function(y, f) (y - f)^2,
            name = "My Gauss Variant")
+    }
 
 }
 \keyword{models}
