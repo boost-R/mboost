@@ -1,6 +1,8 @@
 
 future
 
+    o  bols(x, center = FALSE) removes intercept by accident
+
     o  Poisson() with some extremely large values in the response
 
     o  predict.glmboost via coef.glmboost.
