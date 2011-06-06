@@ -1,7 +1,8 @@
 
 ### compute Ridge shrinkage parameter lambda from df
 ### or the other way round
-df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
+df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights,
+                      XtX = NULL) {
 
 
     stopifnot(xor(is.null(df), is.null(lambda)))
@@ -23,7 +24,10 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights) {
     # Demmler-Reinsch Orthogonalization (cf. Ruppert et al., 2003,
     # Semiparametric Regression, Appendix B.1.1).
 
-    A <- crossprod(X * weights, X) + dmat * 10e-10
+    ### there may be more efficient ways to compute XtX, but we do this
+    ### elsewhere (e.g. in %O%)
+    if (is.null(XtX)) XtX <- crossprod(X * weights, X)
+    A <- XtX + dmat * 10e-10
     Rm <- solve(chol(A))
     decomp <- svd(crossprod(Rm, dmat) %*% Rm)
     d <- decomp$d
@@ -245,8 +249,8 @@ X_bbs <- function(mf, vary, args) {
         }
     }
     if (length(mm) == 2) {
-        X <- kronecker(mm[[1]], matrix(1, nc = ncol(mm[[2]]))) *
-             kronecker(matrix(1, nc = ncol(mm[[1]])), mm[[2]])
+        X <- kronecker(mm[[1]], matrix(1, ncol = ncol(mm[[2]]))) *
+             kronecker(matrix(1, ncol = ncol(mm[[1]])), mm[[2]])
         if (vary != "") {
             by <- model.matrix(as.formula(paste("~", vary, collapse = "")),
                                data = mf)[ , -1, drop = FALSE] # drop intercept
@@ -790,6 +794,8 @@ fit.bl <- function(object, y)
     stopifnot(inherits(bl1, "blg"))
     stopifnot(inherits(bl2, "blg"))
 
+    stopifnot(!any(colnames(model.frame(bl1)) %in% 
+                   colnames(model.frame(bl2))))
     mf <- cbind(model.frame(bl1), model.frame(bl2))
     index1 <- bl1$get_index()
     index2 <- bl2$get_index()
@@ -865,14 +871,15 @@ fit.bl <- function(object, y)
         if (MATRIX & !is(K2, "Matrix"))
             K2 <- Matrix(K2)
 
-        X <- kronecker(X1, Matrix(1, nc = ncol(X2),
+        X <- kronecker(X1, Matrix(1, ncol = ncol(X2),
                                   dimnames = list("", colnames(X2))),
                        make.dimnames = TRUE) *
-             kronecker(Matrix(1, nc = ncol(X1)), X2,
-                       make.dimnames = TRUE)
+             kronecker(Matrix(1, ncol = ncol(X1),
+                              dimnames = list("", colnames(X1))), 
+                       X2, make.dimnames = TRUE)
 
         K <- kronecker(K1, diag(ncol(X2))) +
-             kronecker(diag(ncol(K1)), K2)
+             kronecker(diag(ncol(X1)), K2)
         list(X = X, K = K)
     }
 
