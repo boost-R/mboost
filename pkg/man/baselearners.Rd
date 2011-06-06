@@ -12,6 +12,7 @@
 \alias{bss}
 \alias{\%+\%}
 \alias{\%X\%}
+\alias{\%O\%}
 \title{ Base-learners for Gradient Boosting }
 \description{
   Base-learners for fitting base-models in the generic implementation of
@@ -41,6 +42,7 @@ bmrf(..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
 buser(X, K = NULL, by = NULL, index = NULL, df = 4, lambda = NULL)
 bl1 \%+\% bl2
 bl1 \%X\% bl2
+bl1 \%O\% bl2
 }
 \arguments{
   \item{...}{ one or more predictor variables or one data frame of
@@ -299,9 +301,13 @@ bl1 \%X\% bl2
 
   Two or more linear base-learners can be joined using \code{\%+\%}. A
   tensor product of two or more linear base-learners is returned by
-  \code{\%X\%}. In both cased the overall degrees of freedom of the
+  \code{\%X\%}. When the design matrix can be written as the
+  Kronecker product of two matrices \code{X = kronecker(X2, X1)},
+  then \code{bl1 \%X\% bl2} with design matrices X1 and X2, respectively,
+  can be used to efficiently compute Ridge-estimates
+  following Currie, Durban, Eilers (2006). In cases the overall degrees of freedom of the
   combined base-learner increase (additive or multiplicative,
-  respectively). These two features are experimental and for expert use
+  respectively). These three features are experimental and for expert use
   only.
 
   \code{btree} fits a stump to one or more variables. Note that
@@ -322,6 +328,13 @@ bl1 \%X\% bl2
  \code{fit} finally returns an object of class \code{bm} (base-model).
 }
 \references{
+
+  Iain D. Currie, Maria Durban, and Paul H. C. Eilers (2006),
+  Generalized linear array models with applications to 
+  multidimensional smoothing. \emph{Journal of the Royal
+  Statistical Society, Series B--Statistical Methodology},
+  \bold{68}(2), 259--280.
+
   Paul H. C. Eilers (2005), Unimodal smoothing. \emph{Journal of
   Chemometrics}, \bold{19}, 317--328.
 
@@ -566,5 +579,34 @@ bl1 \%X\% bl2
   mod1 <- gamboost(y ~  buser(X, K, df = 1, index = index))
   mod2 <- gamboost(y ~  bols(z, df = 1))
   max(abs(predict(mod1) - predict(mod2)))  # same results
+
+  ### kronecker product for matrix-valued responses
+  data("volcano", package = "datasets")
+  layout(matrix(1:2, ncol = 2))
+
+  ## estimate mean of image treating image as matrix
+  image(volcano, main = "data")
+  x1 <- 1:nrow(volcano)
+  x2 <- 1:ncol(volcano)
+
+  vol <- as.vector(volcano)
+  mod <- mboost(vol ~ bbs(x1, df = 3, knots = 10)\%O\%
+                      bbs(x2, df = 3, knots = 10), 
+                      control = boost_control(nu = 0.25))
+  mod[250]
+
+  volf <- matrix(fitted(mod), nrow = nrow(volcano))
+  image(volf, main = "fitted")
+
+  ## the old-fashioned way, a waste of space and time
+  x <- expand.grid(x1, x2)
+  modx <- mboost(vol ~ bbs(Var2, df = 3, knots = 10)\%X\%
+                       bbs(Var1, df = 3, knots = 10), data = x,
+                       control = boost_control(nu = 0.25))
+  modx[250]
+
+  max(abs(fitted(mod) - fitted(modx)))
+
+
 }
 \keyword{models}
