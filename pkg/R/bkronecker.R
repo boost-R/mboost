@@ -12,7 +12,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         if (!is.null(newdata)) {
             stopifnot(all(names(newdata) == names(blg)))
             # stopifnot(all(class(newdata) == class(mf)))
-            mf <- newdata[,names(blg),drop = FALSE]
+            mf <- newdata[names(blg)]
         }
         return(Xfun(mf, vary, args))
     }
@@ -100,7 +100,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
             if(!is.null(newdata)) {
                 index <- NULL
                 nm <- names(blg)
-                newdata <- newdata[,nm, drop = FALSE]
+                newdata <- newdata[nm]
                 X <- newX(newdata)$X
             }
             ncfprod <- function(b) 
