@@ -31,7 +31,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
 
     dpp <- function(weights) {
 
-        W <- matrix(weights, nrow = n1)
+        W <- matrix(weights, nrow = n1, ncol = n2)
 
         ### X = kronecker(X2, X1)
         XtX <- as(crossprod(G(X$X1), W) %*% G(X$X2), "matrix")
@@ -71,12 +71,14 @@ bl_lin_matrix <- function(blg, Xfun, args) {
             }
         }
 
+        cfprod <- function(b) tcrossprod(X$X1 %*% b, X$X2)
+
         fit <- function(y) {
             coef <- as(mysolve(y), "matrix")
             if (nrow(coef) != c1) coef <- matrix(as.vector(coef), nrow = c1)
             ret <- list(model = coef,
                         fitted = function() {
-                            f <- X$X1 %*% coef %*% t(X$X2)
+                            f <- cfprod(coef)
                             as.vector(as(f, "matrix"))
                         })
             class(ret) <- c("bm_lin", "bm")
@@ -101,27 +103,27 @@ bl_lin_matrix <- function(blg, Xfun, args) {
                 newdata <- newdata[,nm, drop = FALSE]
                 X <- newX(newdata)$X
             }
+            ncfprod <- function(b) 
+                as.vector(as(tcrossprod(X$X1 %*% b, X$X2), "matrix"))
             aggregate <- match.arg(aggregate)
             pr <- switch(aggregate, "sum" = {
                 cf2 <- 0
                 for (b in cf) cf2 <- cf2 + b
-                as.vector(as(X$X1 %*% cf2 %*% t(X$X2), "matrix"))
+                ncfprod(cf2)
             },
             "cumsum" = {
                 cf2 <- 0
                 ret <- c()
                 for (b in cf) {
                     cf2 <- cf2 + b
-                    ret <- cbind(ret, 
-                        as.vector(as(X$X1 %*% cf2 %*% t(X$X2), "matrix")))
+                    ret <- cbind(ret, ncfprod(cf2))
                 }
                 ret
             },
             "none" = {
                 ret <- c()
                 for (b in cf) {   
-                    ret <- cbind(ret, 
-                        as.vector(as(X$X1 %*% b %*% t(X$X2), "matrix")))
+                    ret <- cbind(ret, ncfprod(b))
                 }
                 ret
             })
