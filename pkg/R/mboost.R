@@ -219,11 +219,8 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
 
         pfun <- function(w, agg) {
             ix <- xselect == w & indx
-            if (!any(ix)) {
-                n <- ifelse(!is.null(newdata), nrow(newdata), length(y))
-                if (agg == "sum") return(rep.int(0, n))
-                return(Matrix(0, nrow = n, ncol = sum(indx)))
-            }
+            if (!any(ix))
+                return(0)
             if (cwlin) w <- 1
             ret <- nu * bl[[w]]$predict(ens[ix],
                    newdata = newdata, aggregate = agg)
@@ -234,7 +231,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
         }
 
         pr <- switch(aggregate, "sum" = {
-            pr <- sapply(which, pfun, agg = "sum")
+            pr <- do.call("cbind", lapply(which, pfun, agg = "sum"))
             if (!nw){
                 colnames(pr) <- bnames[which]
                 attr(pr, "offset") <- offset
@@ -242,19 +239,19 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             } else {
                 ## only if no selection of baselearners
                 ## was made via the `which' argument
-                if (!is.matrix(pr)) pr <- matrix(pr, nrow = 1)
                 return(offset + matrix(rowSums(pr), ncol = 1))
             }
         }, "cumsum" = {
             if (!nw) {
                 pr <- lapply(which, pfun, agg = "none")
-                pr <- lapply(pr, function(x) .Call("R_mcumsum", as(x, "matrix")))
+                pr <- lapply(pr, function(x) {
+                    .Call("R_mcumsum", as(x, "matrix"))
+                })
                 names(pr) <- bnames[which]
                 attr(pr, "offset") <- offset
                 return(pr)
             } else {
-                tmp <- pfun(1, agg = "none")
-                ret <- Matrix(0, nrow = nrow(tmp), ncol = sum(indx))
+                ret <- 0
                 for (i in 1:max(xselect)) ret <- ret + pfun(i, agg = "none")
                 return(.Call("R_mcumsum", as(ret, "matrix")) + offset)
             }
@@ -266,8 +263,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
                 attr(pr, "offset") <- offset
                 return(pr)
             } else {
-                tmp <- pfun(1, agg = "none")
-                ret <- Matrix(0, nrow = nrow(tmp), ncol = sum(indx))
+                ret <- 0
                 for (i in 1:max(xselect)) ret <- ret + pfun(i, agg = "none")
                 ret <- as(ret, "matrix")
                 attr(ret, "offset") <- offset
