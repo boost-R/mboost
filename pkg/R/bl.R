@@ -1,7 +1,7 @@
 
 ### compute Ridge shrinkage parameter lambda from df
 ### or the other way round
-df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights,
+df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
                       XtX = NULL) {
 
 
@@ -27,6 +27,10 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = diag(ncol(X)), weights,
     ### there may be more efficient ways to compute XtX, but we do this
     ### elsewhere (e.g. in %O%)
     if (is.null(XtX)) XtX <- crossprod(X * weights, X)
+    if (is.null(dmat)) {
+        if(is(XtX, "Matrix")) diag <- Diagonal
+        dmat <- diag(ncol(XtX))
+    } 
     A <- XtX + dmat * 10e-10
     Rm <- solve(chol(A))
     decomp <- svd(crossprod(Rm, dmat) %*% Rm)
@@ -541,8 +545,7 @@ bl_lin <- function(blg, Xfun, args) {
         ## matrizes of class dgeMatrix are dense generic matrices; they should
         ## be coerced to class matrix and handled in the standard way
         if (is(X, "Matrix") && !extends(class(XtX), "dgeMatrix")) {
-            sXtX <- forceSymmetric(XtX)
-            XtXC <- Cholesky(sXtX)
+            XtXC <- Cholesky(forceSymmetric(XtX))
             mysolve <- function(y)
                 solve(XtXC, crossprod(X, y))  ## special solve routine from
                                               ## package Matrix
