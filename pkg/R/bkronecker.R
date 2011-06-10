@@ -49,8 +49,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         ## matrizes of class dgeMatrix are dense generic matrices; they should
         ## be coerced to class matrix and handled in the standard way
         if (is(XtX, "Matrix") && !extends(class(XtX), "dgeMatrix")) {
-            sXtX <- forceSymmetric(XtX)
-            XtXC <- Cholesky(sXtX)
+            XtXC <- Cholesky(forceSymmetric(XtX))
             mysolve <- function(y) {
                 Y <- matrix(y, nrow = n1) * W
                 XWY <- as.vector(crossprod(X$X1, Y) %*% X$X2)
