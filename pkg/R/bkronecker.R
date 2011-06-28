@@ -79,7 +79,10 @@ bl_lin_matrix <- function(blg, Xfun, args) {
             f <- as(f, "matrix")
             if (options("mboost_Xmonotone")$mboost_Xmonotone) {
                 md <- apply(f, 1, function(x) min(diff(x)))
-                if (any(md < 0)) f <- matrix(0, nrow = nrow(f), ncol = ncol(f))
+                if (any(md < 0)) {
+                    coef <- matrix(0, nrow = nrow(coef), ncol = ncol(coef))
+                    f <- matrix(0, nrow = nrow(f), ncol = ncol(f))
+                }
             }
             ret <- list(model = coef,
                         fitted = function() as.vector(f))
