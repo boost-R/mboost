@@ -75,11 +75,14 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         fit <- function(y) {
             coef <- as(mysolve(y), "matrix")
             if (nrow(coef) != c1) coef <- matrix(as.vector(coef), nrow = c1)
+            f <- cfprod(coef)
+            f <- as(f, "matrix")
+            if (options("mboost_Xmonotone")$mboost_Xmonotone) {
+                md <- apply(f, 1, function(x) min(diff(x)))
+                if (any(md < 0)) f <- matrix(0, nrow = nrow(f), ncol = ncol(f))
+            }
             ret <- list(model = coef,
-                        fitted = function() {
-                            f <- cfprod(coef)
-                            as.vector(as(f, "matrix"))
-                        })
+                        fitted = function() as.vector(f))
             class(ret) <- c("bm_lin", "bm")
             ret
         }

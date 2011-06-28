@@ -29,7 +29,8 @@
     options(mboost_useMatrix = TRUE, ### allow for Matrix package?
             mboost_indexmin = 10000, ### handle ties for n > 10000
             mboost_dftraceS = TRUE,  ### df = trace(S) or df = trace(2 S - StS)
-            mboost_lambdaMax = 1e+15)### maximum value for lambda as used in df2lambda
+            mboost_lambdaMax = 1e+15,### maximum value for lambda as used in df2lambda
+            mboost_Xmonotone = FALSE)### don't force monotonicity in %X%
 }
 
 .onUnload <- function(libpath) {
