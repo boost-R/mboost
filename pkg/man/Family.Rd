@@ -112,7 +112,7 @@ negative binomial log-likelihood of a logistic regression model
 as loss function. Thus, using \code{Binomial} family closely corresponds
 to fitting a logistic model. Alternative link functions
 can be specified via the name of the corresponding distribution, for
-example \code{link = "cauchy"} lead to \code{\link{pcauchy}} 
+example \code{link = "cauchy"} lead to \code{\link{pcauchy}}
 used as link function. This feature is still experimental and
 not well tested.
 
@@ -203,10 +203,9 @@ distribution approximation used in Ma and Huang (2005).
     In \emph{Machine Learning: Proc. Thirteenth International Conference},
     148--156.
 
-	Shuangge Ma and Jian Huang (2005),
-	Regularized ROC method for disease classification and biomarker
-	selection with microarray data.
-	\emph{Bioinformatics}, \bold{21}(24), 4356--4362.
+    Shuangge Ma and Jian Huang (2005), Regularized ROC method for
+    disease classification and biomarker selection with microarray
+    data. \emph{Bioinformatics}, \bold{21}(24), 4356--4362.
 
     Whitney K. Newey and James L. Powell (1987),
     Asymmetric least squares estimation and testing.
