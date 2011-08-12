@@ -193,8 +193,8 @@ fitted.mboost <- function(object, ...) {
         names(ret) <- object$rownames
     } else {
         ret <- predict(object, newdata=NULL, ...)
-        if (NROW(ret) == length(ret))
-            rownames(ret) <- object$rownames
+        #if (NROW(ret) == length(ret))
+        #    rownames(ret) <- object$rownames
     }
     ret
 }
