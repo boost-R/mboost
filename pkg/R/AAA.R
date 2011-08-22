@@ -16,7 +16,7 @@
 #             "Please read the NEWS file, consult the documentation and have fun!",
 #             "\n",
 #             "Would you like to see this message on startup again?")
-#    writeLines(txt)
+#    packageStartupMessage(txt)
 #    choice <- menu(c("Please, no!", "Yes, please!"))
 #    if (choice == 2) return(TRUE)
 #    file.create(sup)
