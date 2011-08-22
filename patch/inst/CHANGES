@@ -1,3 +1,14 @@
+		CHANGES in `mboost' VERSION 2.0-12 (2011-08-22, r586)
+
+  o  minor bugfixes to make mboost work with gamboostLSS
+
+  o  replaced writeLines with packageStartupMessage in .onAttach()
+
+  o  replaced partially matched function arguments by full arguments
+
+  o  minor fixes in manuals
+
+
 		CHANGES in `mboost' VERSION 2.0-11 (2011-03-17, r561)
 
   o  fix problem in bl_lin when using dense matrices from package "Matrix"

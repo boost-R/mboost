@@ -1,5 +1,5 @@
 
-R version 2.12.2 (2011-02-25)
+R version 2.13.1 (2011-07-08)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -194,7 +194,9 @@ Loading required package: splines
 > ## Cox model with predictions obtained from survFit function
 > 
 > fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps - 1
-> fit <- coxph(fm, data = ovarian)
+> ## no need to drop the intercept here:
+> fmSurv <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps
+> fit <- coxph(fmSurv, data = ovarian)
 > fit2 <- glmboost(fm, data = ovarian, family = CoxPH(),
 +     control=boost_control(mstop = 1000, center = TRUE))
 Warning messages:

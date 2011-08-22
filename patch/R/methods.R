@@ -186,9 +186,9 @@ fitted.mboost <- function(object, ...) {
         ret <- object$fitted()
         names(ret) <- object$rownames
     } else {
-        ret <- object$predict(...)
-        if (NROW(ret) == length(ret))
-            rownames(ret) <- object$rownames
+        ret <- predict(object, newdata=NULL, ...)
+        #if (NROW(ret) == length(ret))
+        #    rownames(ret) <- object$rownames
     }
     ret
 }
@@ -398,9 +398,10 @@ variable.names.glmboost <- function(object, ...) {
 }
 
 
-selected <- function(object) UseMethod("selected", object)
+selected <- function(object, ...)
+    UseMethod("selected", object)
 
-selected.mboost <- function(object)
+selected.mboost <- function(object, ...)
     object$xselect()
 
 summary.mboost <- function(object, ...) {
@@ -408,7 +409,7 @@ summary.mboost <- function(object, ...) {
     ret <- list(object = object, selprob = NULL)
     xs <- selected(object)
     nm <- variable.names(object)
-    selprob <- tabulate(xs, nbin = length(nm)) / length(xs)
+    selprob <- tabulate(xs, nbins = length(nm)) / length(xs)
     names(selprob) <- names(nm)
     selprob <- sort(selprob, decreasing = TRUE)
     ret$selprob <- selprob[selprob > 0]

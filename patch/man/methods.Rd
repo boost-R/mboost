@@ -67,7 +67,7 @@
 \method{hatvalues}{gamboost}(model, ...)
 \method{hatvalues}{glmboost}(model, ...)
 
-\method{selected}{mboost}(object)
+\method{selected}{mboost}(object, ...)
 
 \method{nuisance}{mboost}(object)
 }

@@ -1,7 +1,8 @@
 
-R version 2.11.1 (2010-05-31)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.13.1 (2011-07-08)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -91,19 +92,19 @@ Loss function:
 
 Number of boosting iterations: mstop = 1000 
 Step size:  0.1 
-Offset:  1.633160 
+Offset:  1.63316 
 
 Coefficients: 
 (Intercept)           x 
   -1.481156    1.912433 
 attr(,"offset")
-[1] 1.633160
+[1] 1.63316
 
 > coef(mod)
 (Intercept)           x 
   -1.481156    1.912433 
 attr(,"offset")
-[1] 1.633160
+[1] 1.63316
 > nuisance(mod)
 [1] 1.331289
 > 

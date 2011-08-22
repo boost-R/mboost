@@ -186,8 +186,8 @@ X_bbs <- function(mf, vary, args) {
         }
     }
     if (length(mm) == 2) {
-        X <- kronecker(mm[[1]], matrix(1, nc = ncol(mm[[2]]))) *
-             kronecker(matrix(1, nc = ncol(mm[[1]])), mm[[2]])
+        X <- kronecker(mm[[1]], matrix(1, ncol = ncol(mm[[2]]))) *
+             kronecker(matrix(1, ncol = ncol(mm[[1]])), mm[[2]])
         if (vary != "") {
             by <- model.matrix(as.formula(paste("~", vary, collapse = "")),
                                data = mf)[ , -1, drop = FALSE] # drop intercept
@@ -720,8 +720,8 @@ fit.bl <- function(object, y)
             K2 <- Matrix(K2)
         }
 
-        X <- kronecker(X1, matrix(1, nc = ncol(X2))) *
-             kronecker(matrix(1, nc = ncol(X1)), X2)
+        X <- kronecker(X1, matrix(1, ncol = ncol(X2))) *
+             kronecker(matrix(1, ncol = ncol(X1)), X2)
         K <- kronecker(K1, diag(ncol(X2))) +
              kronecker(diag(ncol(K1)), K2)
         list(X = X, K = K)

@@ -11,7 +11,7 @@
             add bug fixes only
 
     devel/  next generation development version; experimental stuff
-            add experimental material or 
+            add experimental material or
             start new generation package
 
 
@@ -24,7 +24,7 @@
     Update NEWS
     Update Date and Version in /man/mboost_package.Rd
 
-    R CMD build patch
+    R CMD build --resave-data --compact-vignettes patch
     R CMD check mboost_XXX
 
     gives no warnings / errors.
@@ -40,7 +40,7 @@
         svn merge -r(LATEST letzte Version):HEAD --dry-run
             svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/patch/R .
         cd ../man
-        svn merge -r(LATEST letzte Version) 
+        svn merge -r(LATEST letzte Version)
            svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/patch/man
         probabily only *R files in tests
     Make sure not to modify version numbers etc. in pkg
@@ -52,13 +52,13 @@
     Several new tools have been added to pkg/.
 
     Increase minor level in DESCRIPTION (patch level 0)
-    Update Date: field in DESCRIPTION  
+    Update Date: field in DESCRIPTION
     Update NEWS
     Update Date and Version in /man/mboost_package.Rd
-   
-    R CMD build pkg
+
+    R CMD build --resave-data --compact-vignettes pkg
     R CMD check mboost_XXX
-   
+
     gives no warnings / errors.
 
     Commit changes to pkg/

@@ -77,7 +77,7 @@ plot.cvrisk <- function(x, ylab = attr(x, "risk"),
     ms <- which.min(cm)
     lines(c(ms, ms), c(min(c(0, ylim[1] * ifelse(ylim[1] < 0, 2, 0.5))), cm[ms]), lty = 2)
     lines(1:ncol(x), cm, type = "l")
-    axis(1, at = 1:ncol(x), label = attr(x, "mstop"))
+    axis(1, at = 1:ncol(x), labels = attr(x, "mstop"))
     axis(2)
     box()
 }

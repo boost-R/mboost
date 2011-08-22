@@ -1,5 +1,5 @@
 
-R version 2.12.2 (2011-02-25)
+R version 2.13.1 (2011-07-08)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -45,6 +45,13 @@ Loading required package: stats4
 Loading required package: coin
 Loading required package: mvtnorm
 Loading required package: zoo
+
+Attaching package: 'zoo'
+
+The following object(s) are masked from 'package:base':
+
+    as.Date
+
 Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: vcd

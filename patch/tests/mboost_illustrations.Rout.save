@@ -1,5 +1,5 @@
 
-R version 2.12.2 (2011-02-25)
+R version 2.13.1 (2011-07-08)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -297,7 +297,7 @@ R> aic <- AIC(wpbc_glm, "classical")
 R> aic
 [1] 198.44
 Optimal number of boosting iterations: 260 
-Degrees of freedom (for mstop = 260): 7.032 
+Degrees of freedom (for mstop = 260): 7.0319 
 R> 
 R> 
 R> ###################################################

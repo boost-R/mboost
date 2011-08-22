@@ -1,5 +1,5 @@
 
-R version 2.12.2 (2011-02-25)
+R version 2.13.1 (2011-07-08)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -141,14 +141,11 @@ FP(kneebreadth, scaling = FALSE)log(kneebreadth)kneebreadth^-1
 Loss function: abs(y - f) 
  
 > 
->     Family(ngradient = function(y, f) y - f,
-+            loss = function(y, f) (y - f)^2,
-+            name = "My Gauss Variant")
-
-	 My Gauss Variant 
-
-Loss function: (y - f)^2 
- 
+>     MyGaussian <- function(){
++            Family(ngradient = function(y, f, w = 1) y - f,
++                   loss = function(y, f) (y - f)^2,
++                   name = "My Gauss Variant")
++     }
 > 
 > 
 > 
@@ -529,6 +526,13 @@ Loading required package: stats4
 Loading required package: coin
 Loading required package: mvtnorm
 Loading required package: zoo
+
+Attaching package: 'zoo'
+
+The following object(s) are masked from 'package:base':
+
+    as.Date
+
 Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: vcd
@@ -789,6 +793,13 @@ Loading required package: stats4
 Loading required package: coin
 Loading required package: mvtnorm
 Loading required package: zoo
+
+Attaching package: 'zoo'
+
+The following object(s) are masked from 'package:base':
+
+    as.Date
+
 Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: vcd
@@ -983,7 +994,7 @@ Offset:  35.99999
 
 Coefficients: 
 (Intercept)       speed 
- -29.544000    2.096250 
+  -29.54400     2.09625 
 attr(,"offset")
 [1] 35.99999
 
@@ -1074,6 +1085,13 @@ Loading required package: stats4
 Loading required package: coin
 Loading required package: mvtnorm
 Loading required package: zoo
+
+Attaching package: 'zoo'
+
+The following object(s) are masked from 'package:base':
+
+    as.Date
+
 Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: vcd
@@ -1131,6 +1149,13 @@ Loading required package: stats4
 Loading required package: coin
 Loading required package: mvtnorm
 Loading required package: zoo
+
+Attaching package: 'zoo'
+
+The following object(s) are masked from 'package:base':
+
+    as.Date
+
 Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: vcd
@@ -1307,7 +1332,7 @@ NULL
 >   cars.gb[150, return = FALSE] # only iterations 101 to 150
 [101] ...................................... -- risk: 9976.16 
 [141] ........
-Final risk: 9948.54 
+Final risk: 9948.539 
 NULL
 >                                # are newly fitted
 > 
@@ -1315,7 +1340,7 @@ NULL
 >   coef(cars.gb[mstop(aic)])
 [  151] ...................................... -- risk: 9843.537 
 [  191] ...................................... -- risk: 9745.981 
-[  231] ...................................... -- risk: 9654.78 
+[  231] ...................................... -- risk: 9654.781 
 [  271] ...................................... -- risk: 9569.212 
 [  311] ...................................... -- risk: 9488.728 
 [  351] ...................................... -- risk: 9412.882 
@@ -1327,14 +1352,14 @@ NULL
 [  591] ...................................... -- risk: 9036.983 
 [  631] ...................................... -- risk: 8985.181 
 [  671] ...................................... -- risk: 8935.944 
-[  711] ...................................... -- risk: 8889.11 
+[  711] ...................................... -- risk: 8889.111 
 [  751] ...................................... -- risk: 8844.53 
 [  791] ...................................... -- risk: 8802.064 
 [  831] ...................................... -- risk: 8761.585 
 [  871] ...................................... -- risk: 8722.975 
 [  911] ...................................... -- risk: 8686.125 
 [  951] ...................................... -- risk: 8650.931 
-[  991] ...................................... -- risk: 8617.3 
+[  991] ...................................... -- risk: 8617.299 
 [1'031] ...................................... -- risk: 8585.141 
 [1'071] ...................................... -- risk: 8554.374 
 [1'111] ...................................... -- risk: 8524.921 
@@ -1342,7 +1367,7 @@ NULL
 [1'191] ...................................... -- risk: 8469.672 
 [1'231] ...................................... -- risk: 8443.745 
 [1'271] ...................................... -- risk: 8418.87 
-[1'311] ...................................... -- risk: 8394.99 
+[1'311] ...................................... -- risk: 8394.991 
 [1'351] ...................................... -- risk: 8372.055 
 [1'391] ...................................... -- risk: 8350.013 
 [1'431] ...................................... -- risk: 8328.82 
@@ -1593,7 +1618,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  59.53 2.14 61.891 0 0 
+Time elapsed:  60.75 2.32 69.317 0 0 
 > grDevices::dev.off()
 null device 
           1 
