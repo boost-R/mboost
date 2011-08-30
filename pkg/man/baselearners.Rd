@@ -145,11 +145,13 @@ bl1 \%O\% bl2
   corresponding design matrix (which can be omitted using
   \code{intercept = FALSE}). It is \emph{strongly} advised to (mean-)
   center continuous covariates, if no intercept is used in \code{bols} (see Hofner
-  et al., 2009). When \code{df} is given, a ridge estimator with
+  et al., 2011). When \code{df} is given, a ridge estimator with
   \code{df} degrees of freedom (trace of hat matrix) is used as
   base-learner. Note that all variables are treated as a group, i.e.,
   they enter the model together if the corresponding base-learner is
-  selected.
+  selected. For ordinal variables, a ridge penalty for the differences
+  of the adjacent categories (Gertheiss and Tutz 2009, Hofner et al.
+  2011) is applied.
 
   With \code{bbs}, the P-spline approach of Eilers and Marx (1996) is
   used. P-splines use a squared \emph{k}-th-order difference penalty
@@ -185,11 +187,8 @@ bl1 \%O\% bl2
   4)}, i.e., a wrapper that utilizes ridge-penalized categorical
   effects. For possible arguments and defaults see \code{bols}.
 
-  For all linear base-learners the amount of smoothing is determined by the
-  trace of the hat matrix, as indicated by \code{df}. If \code{df} is
-  specified in \code{bols} a ridge penalty with the according degrees of
-  freedom is used. For ordinal variables, a ridge penalty for the
-  differences of the adjacent categories (Gertheiss and Tutz 2009) is applied.
+  For all linear base-learners the amount of smoothing is determined by
+  the trace of the hat matrix, as indicated by \code{df}.
 
   If \code{by} is specified as an additional argument, a varying
   coefficients term is estimated, where \code{by} is the interaction
@@ -292,12 +291,13 @@ bl1 \%O\% bl2
   \code{option("mboost_dftraceS")}, which is also \code{TRUE} by default,
   indicates that the trace of the smoother matrix is used as degrees
   of freedom. If \code{FALSE}, an alternative is used (see
-  Hofner et al., 2009).
+  Hofner et al., 2011).
 
   Smooth estimates with constraints can be computed using the base-learner
   \code{bmono()} which specifies P-spline base-learners with an
   additional asymmetric penalty enforcing monotonicity or
-  convexity/concavity (see Eilers, 2005).
+  convexity/concavity (see and Eilers, 2005). For more details in the boosting 
+  context and monotonic effects of ordinal factors see Hofner, Mueller and Hothorn (2011).
 
   Two or more linear base-learners can be joined using \code{\%+\%}. A
   tensor product of two or more linear base-learners is returned by
@@ -348,10 +348,17 @@ bl1 \%O\% bl2
   Jan Gertheiss and Gerhard Tutz (2009), Penalized regression with ordinal
   predictors, \emph{International Statistical Review}, \bold{77}(3), 345--365.
 
-  Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2009),
+  Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011),
   A framework for unbiased model selection based on boosting.
-  Technical Report Nr. 72, Institut fuer Statistik, LMU Muenchen.
-  \url{http://epub.ub.uni-muenchen.de/11243/}
+  \emph{Journal of Computational and Graphical Statistics}, in press.
+  doi:10.1198/jcgs.2011.09220
+
+  Preliminary version: Department of Statistics, Technical Report Nr.
+  72, LMU Muenchen. \url{http://epub.ub.uni-muenchen.de/11243/}
+
+  B. Hofner, J. Mueller, and T. Hothorn (2011),
+  Monotonicity-Constrained Species Distribution Models, 
+  \emph{Ecology}, in press. doi:10.1890/10-2276.1
 
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable selection and
   model choice in geoadditive regression models, \emph{Biometrics}, \bold{65}(2),

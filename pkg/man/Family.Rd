@@ -192,11 +192,10 @@ distribution approximation used in Ma and Huang (2005).
     Boosting algorithms: regularization, prediction and model fitting.
     \emph{Statistical Science}, \bold{22}(4), 477--505.
 
-    Nora Fenske, Thomas Kneib, and Torsten Hothorn (2009).
+    Nora Fenske, Thomas Kneib, and Torsten Hothorn (2011),
     Identifying risk factors for severe childhood malnutrition by
-    boosting additive quantile regression. Technical Report Nr. 52,
-    Institut fuer Statistik, LMU Muenchen.
-    \url{http://epub.ub.uni-muenchen.de/10510/}
+    boosting additive quantile regression. 
+	\emph{Journal of the American Statistical Association}, \bold{106}:494-510.
 
     Yoav Freund and Robert E. Schapire (1996),
     Experiments with a new boosting algorithm.
@@ -218,7 +217,7 @@ distribution approximation used in Ma and Huang (2005).
     Matthias Schmid, Sergej Potapov, Annette Pfahlberg,
     and Torsten Hothorn (2010). Estimation and regularization techniques for
     regression models with multidimensional prediction functions.
-    \emph{Statistics and Computing}, in press.
+    \emph{Statistics and Computing}, \bold{20}, 139-150.
 
   }
 \seealso{\code{\link{mboost}} for the usage of \code{Family}s. See

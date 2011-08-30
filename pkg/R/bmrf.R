@@ -75,8 +75,9 @@ function (mf, vary, args)
     K <- args$K
     districts <- rownames(K)
     X <- Diagonal(nrow(K))
+    rownames(X) <- districts
     colnames(X) <- districts
-    X <- X[as.integer(mf[,1]),]
+    X <- X[as.character(mf[,1]),]
     # X <- matrix(0, nrow = nrow(mf), ncol = ncol(K))
     # for (i in 1:nrow(mf)) X[i, which(districts == mf[i, 1])] <- 1
     # MATRIX <- any(dim(X) > c(500, 50))
