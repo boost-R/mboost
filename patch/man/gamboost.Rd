@@ -68,6 +68,11 @@ gamboost(formula, data = list(),
   base-learners. \emph{Computational Statistics \& Data Analysis},
   \bold{53}(2), 298--311.
 
+  Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Mattthias Schmid
+  and Benjamin Hofner (2010),
+  Model-based Boosting 2.0.
+  \emph{Journal of Machine Learning Research}, \bold{11}, 2109 -- 2113.
+
 }
 \seealso{\code{\link{mboost}} for the generic boosting function and
   \code{\link{glmboost}} for boosted linear models and

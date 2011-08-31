@@ -73,6 +73,11 @@
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 
+  Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Mattthias Schmid
+  and Benjamin Hofner (2010),
+  Model-based Boosting 2.0.
+  \emph{Journal of Machine Learning Research}, \bold{11}, 2109 -- 2113.
+
 }
 \seealso{\code{\link{mboost}} for the generic boosting function and
   \code{\link{gamboost}} for boosted additive models and

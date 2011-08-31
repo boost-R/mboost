@@ -85,16 +85,20 @@ bl1 \%X\% bl2
   (default for \code{bbs}, \code{bspatial}, and \code{brandom}) or specified directly
   (\code{lambda = 0} means no penalization as default for \code{bols}).
 
-  In \code{bols(x)}, \code{x} may be a numeric vector or factor. Alternatively,
-  \code{x} can be a data frame containing numeric or factor variables.
-  In this case, or when multiple predictor variables are specified, e.g.,
-  using \code{bols(x1, x2)}, the model is equivalent to \code{lm(y ~ ., data = x)}
-  or \code{lm(y ~ x1 + x2)}, respectively.
-  By default, an intercept term is added to the corresponding design matrix
-  (which can be omitted using \code{intercept = FALSE}). When \code{df} is
-  given, a ridge estimator with \code{df} degrees of freedom (trace of hat matrix)
-  is used as base-learner. Note that all variables are treated as a group,
-  i.e., they enter the model together if the corresponding base-learner is selected.
+  In \code{bols(x)}, \code{x} may be a numeric vector or factor.
+  Alternatively, \code{x} can be a data frame containing numeric or
+  factor variables. In this case, or when multiple predictor variables
+  are specified, e.g., using \code{bols(x1, x2)}, the model is
+  equivalent to \code{lm(y ~ ., data = x)} or \code{lm(y ~ x1 + x2)},
+  respectively. By default, an intercept term is added to the
+  corresponding design matrix (which can be omitted using
+  \code{intercept = FALSE}). When \code{df} is given, a ridge estimator
+  with \code{df} degrees of freedom (trace of hat matrix) is used as
+  base-learner. Note that all variables are treated as a group, i.e.,
+  they enter the model together if the corresponding base-learner is
+  selected. For ordinal variables, a ridge penalty for the differences
+  of the adjacent categories (Gertheiss and Tutz 2009, Hofner et al.
+  2011) is applied.
 
   With \code{bbs}, the P-spline approach of Eilers and Marx (1996) is
   used. P-splines use a squared \emph{k}-th-order difference penalty
@@ -122,11 +126,8 @@ bl1 \%X\% bl2
   4)}, i.e., a wrapper that utilizes ridge-penalized categorical
   effects. For possible arguments and defaults see \code{bols}.
 
-  For all linear base-learners the amount of smoothing is determined by the
-  trace of the hat matrix, as indicated by \code{df}. If \code{df} is
-  specified in \code{bols} a ridge penalty with the according degrees of
-  freedom is used. For ordinal variables, a ridge penalty for the
-  differences of the adjacent categories (Gertheiss and Tutz 2009) is applied.
+  For all linear base-learners the amount of smoothing is determined by
+  the trace of the hat matrix, as indicated by \code{df}.
 
   If \code{by} is specified as an additional argument, a
   varying coefficients term is estimated, where \code{by} is the
@@ -179,7 +180,7 @@ bl1 \%X\% bl2
   \code{option("mboost_dftraceS")}, which is also \code{TRUE} by default,
   indicates that the trace of the smoother matrix is used as degrees
   of freedom. If \code{FALSE}, an alternative is used (see
-  Hofner et al., 2009).
+  Hofner et al., 2011).
 
   Two or more linear base-learners can be joined using \code{\%+\%}. A tensor product
   of two or more linear base-learners is returned by \code{\%X\%}.
@@ -195,8 +196,9 @@ bl1 \%X\% bl2
 
 }
 \value{
- An object of class \code{bl} (base-learner) with a \code{dpp} function. The call of \code{dpp} returns
- an object of class \code{bm} (base-model).
+  An object of class \code{bl} (base-learner) with a \code{dpp}
+  function. The call of \code{dpp} returns an object of class \code{bm}
+  (base-model).
 }
 \references{
 
@@ -210,10 +212,13 @@ bl1 \%X\% bl2
   Jan Gertheiss and Gerhard Tutz (2009), Penalized regression with ordinal
   predictors, \emph{International Statistical Review}, \bold{77}(3), 345--365.
 
-  Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2009),
+  Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011),
   A framework for unbiased model selection based on boosting.
-  Technical Report Nr. 72, Institut fuer Statistik, LMU Muenchen.
-  \url{http://epub.ub.uni-muenchen.de/11243/}
+  \emph{Journal of Computational and Graphical Statistics}, in press.
+  doi:10.1198/jcgs.2011.09220
+
+  Preliminary version: Department of Statistics, Technical Report Nr.
+  72, LMU Muenchen. \url{http://epub.ub.uni-muenchen.de/11243/}
 
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable selection and
   model choice in geoadditive regression models, \emph{Biometrics}, \bold{65}(2),
