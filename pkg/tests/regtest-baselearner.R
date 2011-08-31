@@ -310,7 +310,7 @@ colnames(B2) <- paste("B2", 1:ncol(B2), sep = "_")
 X <- kronecker(X2, X1)
 w <- rep(1, nrow(X))
 
-B <- kronecker(matrix(1, ncol = ncol(B2)), B1) * 
+B <- kronecker(matrix(1, ncol = ncol(B2)), B1) *
      kronecker(B2, matrix(1, ncol = ncol(B1)))
 
 tol <- 1 / 10000
@@ -319,13 +319,13 @@ stopifnot(max(abs(X - B)) < tol)
 K1 <- diag(ncol(B1))
 K2 <- crossprod(diff(diag(ncol(B2)), diff = 2))
 
-b1 <- buser(B2, K = diag(ncol(B2))) %X% 
+b1 <- buser(B2, K = diag(ncol(B2))) %X%
             buser(B1, K = diag(ncol(B1)))
 
 stopifnot(max(abs(extract(b1, "design") - B)) < tol)
 b1d <- b1$dpp(w)
 
-b2 <- buser(X1, K = diag(ncol(X1))) %O% 
+b2 <- buser(X1, K = diag(ncol(X1))) %O%
       buser(X2, K = diag(ncol(X2)))
 b2d <- b2$dpp(w)
 
@@ -334,7 +334,7 @@ stopifnot(max(abs(get("XtX", environment(b1d$fit)) -
 
 y <- runif(nrow(X))
 
-stopifnot(max(abs(b1d$fit(y)$model - as.vector(b2d$fit(y)$model))) < tol)
+stopifnot(max(abs(b1d$fit(y)$model - as.vector(b2d$fit(y)$model))) < 1/1000)
 
 m1 <- b1d$fit(y)
 p1 <- b1d$predict(list(m1, m1))
@@ -352,11 +352,11 @@ d <- expand.grid(x1, x2)
 d$y <- y
 w <- as.vector(rmultinom(1, length(y), rep(1 / length(y), length(y))))
 
-m1 <- mboost(y ~ bbs(Var2, df = 3, knots = 5) %X% 
+m1 <- mboost(y ~ bbs(Var2, df = 3, knots = 5) %X%
                      bbs(Var1, df = 3, knots = 7),
                      data = d, weights = w)
 m2 <- mboost(y ~ bbs(x1, df = 3, knots = 7)%O%
-                 bbs(x2, df = 3, knots = 5), 
+                 bbs(x2, df = 3, knots = 5),
                  weights = w)
 
 stopifnot(max(abs(fitted(m1) - fitted(m2))) < tol)
