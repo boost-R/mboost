@@ -137,7 +137,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
 
         ret <- list(fit = fit, hatvalues = hatvalues,
                     predict = predict, df = df,
-                    Xnames = c(colnames(X$X1), colnames(X$X2)))
+                    Xnames = c(interaction(colnames(X$X1), colnames(X$X2))))
         class(ret) <- c("bl_lin", "bl")
         return(ret)
 
@@ -166,10 +166,6 @@ bl_lin_matrix <- function(blg, Xfun, args) {
     stopifnot(!any(colnames(mf1) %in%
                    colnames(mf2)))
     mf <- c(mf1, mf2)
-    index1 <- bl1$get_index()
-    index2 <- bl2$get_index()
-    if (!is.null(index1)) mf[[1]] <- mf[[1]][index1]
-    if (!is.null(index2)) mf[[2]] <- mf[[2]][index2]
     stopifnot(all(complete.cases(mf[[1]])))
     stopifnot(all(complete.cases(mf[[2]])))
 
