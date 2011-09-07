@@ -38,12 +38,21 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         XtX <- array(XtX, c(c1, c1, c2, c2))
         XtX <- matrix(aperm(XtX, c(1, 3, 2, 4)), nrow = c1 * c2)
 
-        ### <FIXME>: is there a better way to feed XtX into lambdadf?
-        lambdadf <- df2lambda(matrix(0, ncol = ncol(X$X1) + ncol(X$X2)), 
-                              df = args$df, lambda = args$lambda,
-                              dmat = K, weights = weights, XtX = XtX)
+        ### <FIXME> This does not happen in bl_lin / df2lambda.
+        ### For one base learner only, it makes sense to allow
+        ### for a direct choice of lambda (regardless of df)
         ### </FIXME>
-        lambda <- lambdadf["lambda"]
+        if (is.null(args$lambda)) {
+
+            ### <FIXME>: is there a better way to feed XtX into lambdadf?
+            lambdadf <- df2lambda(matrix(0, ncol = ncol(X$X1) + ncol(X$X2)), 
+                                  df = args$df, lambda = args$lambda,
+                                  dmat = K, weights = weights, XtX = XtX)
+            ### </FIXME>
+            lambda <- lambdadf["lambda"]
+        } else {
+            lambda <- args$lambda
+        }
         XtX <- XtX + lambda * K
 
         ## matrizes of class dgeMatrix are dense generic matrices; they should
@@ -195,7 +204,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
     l1 <- args1$lambda
     l2 <- args2$lambda
     if (!is.null(l1) && !is.null(l2)) {
-        args <- list(lambda = 1, df = NULL)
+        args <- list(lambda = l1 + l2, df = NULL)
     } else {
         args <- list(lambda = NULL,
             df = ifelse(is.null(args1$df), 1, args1$df) *
