@@ -63,7 +63,8 @@ function (mf, vary, bnd = NULL, df = 4, lambda = NULL, center = FALSE)
         K <- bnd
     else stop("Neighbourhood matrix not defined as stated in manual page.")
     ###    K <- as(K, "matrix")
-    K <- Matrix(unclass(K))
+    if (!is(K, "Matrix"))
+        K <- Matrix(unclass(K))
     nm <- colnames(mf)[colnames(mf) != vary]
     list(K = K, bnd = bnd, pen = TRUE, df = df, lambda = lambda,
         center = center)
