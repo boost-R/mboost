@@ -88,7 +88,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
             f <- as(f, "matrix")
             if (options("mboost_Xmonotone")$mboost_Xmonotone) {
                 md <- apply(f, 1, function(x) min(diff(x)))
-                if (any(md < 0)) {
+                if (any(md < (-.Machine$double.eps)^(1/3))) {
                     coef <- matrix(0, nrow = nrow(coef), ncol = ncol(coef))
                     f <- matrix(0, nrow = nrow(f), ncol = ncol(f))
                 }
