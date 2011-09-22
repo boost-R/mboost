@@ -162,7 +162,7 @@ Binomial <- function(link = c("logit", "probit"), ...) {
                y <- (y + 1) / 2
                p <- link$p(trf(f))
                d <- link$d(trf(f))
-               y * 1 / p * d - (1 - y) * 1 / (1 - p) * d
+               d * (y / p - (1 - y) / (1 - p))
            },
            loss = function(y, f) {
                p <- link$p(trf(f))
@@ -740,4 +740,4 @@ HingeLoss <- function(alphaCost = 0.5) {
            },
            rclass = function(f) (f > (2 * alphaCost - 1)) + 1,
            name = "Hinge Loss")
-           }
+}
