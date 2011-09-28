@@ -431,7 +431,10 @@ Weibull <- function(nuirange = c(0, 100)) {
         Sw <- function(pred){
             exp(-exp(pred))
             }
-        lnt <- log(y[,1])
+        time <- y[,1]
+        ### log(0) won't fly
+        time[time == 0] <- sort(unique(time))[2] / 10
+        lnt <- log(time)
         Sevent <- y[,2]
         eta <- (lnt - f) / sigma
         - Sevent * log(fw(eta) / sigma) - (1 - Sevent) * log(Sw(eta))
@@ -445,7 +448,11 @@ Weibull <- function(nuirange = c(0, 100)) {
     ngradient <- function(y, f, w = 1) {
         sigma <<- optimize(riskS, interval = nuirange,
                            y = y, fit = f, w = w)$minimum
-        lnt <- log(y[,1])
+
+        time <- y[,1]
+        ### log(0) won't fly
+        time[time == 0] <- sort(unique(time))[2] / 10
+        lnt <- log(time)
         event <- y[,2]
         eta <- (lnt - f) / sigma
         (event * (exp(eta) - 1) + (1 - event) * exp(eta)) / sigma
@@ -476,7 +483,11 @@ Loglog <- function(nuirange = c(0, 100)) {
         Sw <- function(pred){
             1 / (1 + exp(pred))
             }
-        lnt <- log(y[,1])
+
+        time <- y[,1]
+        ### log(0) won't fly
+        time[time == 0] <- sort(time)[2] / 10
+        lnt <- log(time)
         Sevent <- y[,2]
         eta <- (lnt - f) / sigma
         - Sevent * log(fw(eta) / sigma) - (1 - Sevent) * log(Sw(eta))
@@ -490,7 +501,10 @@ Loglog <- function(nuirange = c(0, 100)) {
     ngradient <- function(y, f, w = 1) {
         sigma <<- optimize(riskS, interval = nuirange,
                            y = y, fit = f, w = w)$minimum
-        lnt <- log(y[,1])
+        time <- y[,1]
+        ### log(0) won't fly
+        time[time == 0] <- sort(unique(time))[2] / 10
+        lnt <- log(time)
         event <- y[,2]
         eta <- (lnt - f) / sigma
         nom <- (exp(-eta) + 1)
@@ -522,7 +536,10 @@ Lognormal <- function(nuirange = c(0, 100)) {
         Sw <- function(pred){
             1 - pnorm(pred)
             }
-        lnt <- log(y[,1])
+        time <- y[,1]
+        ### log(0) won't fly
+        time[time == 0] <- sort(time)[2] / 10
+        lnt <- log(time)
         Sevent <- y[,2]
         eta <- (lnt - f) / sigma
         - Sevent * log(fw(eta) / sigma) - (1 - Sevent) * log(Sw(eta))
@@ -536,7 +553,10 @@ Lognormal <- function(nuirange = c(0, 100)) {
     ngradient <- function(y, f, w = 1) {
         sigma <<- optimize(riskS, interval = nuirange,
                            y = y, fit = f, w = w)$minimum
-        lnt <- log(y[,1])
+        time <- y[,1]
+        ### log(0) won't fly
+        time[time == 0] <- sort(unique(time))[2] / 10
+        lnt <- log(time)
         event <- y[,2]
         eta <- (lnt - f) / sigma
         (event * eta + (1 - event) * dnorm(eta) / (1 - pnorm(eta))) / sigma
