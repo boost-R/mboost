@@ -41,6 +41,9 @@ cvrisk <- function (object, folds = cv(model.weights(object)), grid = 1:mstop(ob
     oobrisk <- papply(1:ncol(folds),
         function(i) dummyfct(weights = folds[, i],
                              oobweights = OOBweights[, i]), ...)
+    ## get errors if mclapply is used
+    if (any(idx <- sapply(oobrisk, is.character)))
+        stop(sapply(oobrisk[idx], function(x) x))
     if (!is.null(fun))
         return(oobrisk)
     oobrisk <- t(as.data.frame(oobrisk))
