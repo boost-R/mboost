@@ -1,7 +1,8 @@
 
-R version 2.10.1 (2009-12-14)
-Copyright (C) 2009 The R Foundation for Statistical Computing
+R version 2.14.0 (2011-10-31)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -72,9 +73,6 @@ R> ###################################################
 R> ### chunk number 3: bodyfat-glmboost-fit
 R> ###################################################
 R> bf_glm <- glmboost(DEXfat ~ ., data = bodyfat, control = boost_control(center = TRUE))
-Warning message:
-In glmboost.formula(DEXfat ~ ., data = bodyfat, control = boost_control(center = TRUE)) :
-  boost_control(center = TRUE) is deprecated, use glmboost(..., center = TRUE)
 R> 
 R> 
 R> ###################################################
@@ -102,9 +100,6 @@ R> mopt <- grid[which.min(colMeans(boob))]
 R> layout(matrix(1:2, nrow = 2))
 R> perfplot(boob, grid, ylab = "Out-of-bootstrap squared error", 
          xlab = "Number of boosting iterations", alpha = 0.05)
-Warning message:
-In matplot(x = x, y = y, type = type, lty = lty, lwd = lwd, pch = pch,  :
-  default 'pch' is smaller than number of columns and hence recycled
 R> abline(h = mean(boobrest), lty = 2)
 R> lines(c(which.min(colMeans(boob)), which.min(colMeans(boob))), 
            c(0, min(colMeans(boob))), lty = 2)
@@ -232,7 +227,7 @@ R> ###################################################
 R> ctrl <- boost_control(mstop = 5000)
 R> bf_bs <- glmboost(bsfm, data = bodyfat, control = ctrl)
 R> mstop(aic <- AIC(bf_bs))
-[1] 2891
+[1] 136
 R> 
 R> 
 R> ###################################################
@@ -287,9 +282,6 @@ R> ### fit logistic regression model via gradient boosting
 R> ctrl <- boost_control(mstop = 500, center = TRUE)
 R> wpbc_glm <- glmboost(status ~ ., data = wpbc2, family = Binomial(),
                           control = ctrl)
-Warning message:
-In glmboost.formula(status ~ ., data = wpbc2, family = Binomial(),  :
-  boost_control(center = TRUE) is deprecated, use glmboost(..., center = TRUE)
 R> 
 R> 
 R> ###################################################
@@ -299,7 +291,7 @@ R> aic <- AIC(wpbc_glm, "classical")
 R> aic
 [1] 198.44
 Optimal number of boosting iterations: 260 
-Degrees of freedom (for mstop = 260): 7.032 
+Degrees of freedom (for mstop = 260): 7.0319 
 R> 
 R> 
 R> ###################################################
@@ -364,9 +356,6 @@ R> ###################################################
 R> ctrl <- boost_control(mstop = 500, center = TRUE)
 R> wpbc_surv <- glmboost(log(time) ~ ., data = wpbc3,
                        control = ctrl, weights = iw)
-Warning message:
-In glmboost.formula(log(time) ~ ., data = wpbc3, control = ctrl,  :
-  boost_control(center = TRUE) is deprecated, use glmboost(..., center = TRUE)
 R> mstop(aic <- AIC(wpbc_surv))
 [1] 111
 R> wpbc_surv <- wpbc_surv[mstop(aic)]

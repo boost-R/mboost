@@ -1,7 +1,8 @@
 
-R version 2.10.1 (2009-12-14)
-Copyright (C) 2009 The R Foundation for Statistical Computing
+R version 2.14.0 (2011-10-31)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -63,56 +64,54 @@ DEXfat ~ FP(age, scaling = FALSE) + FP(waistcirc, scaling = FALSE) +
 > 
 >     ### when to stop
 >     mstop(aic <- AIC(bf_fp))
-[1] 2480
+[1] 56
 >     plot(aic)
 > 
 >     ### coefficients
 >     cf <- coef(bf_fp[mstop(aic)])
 >     length(cf)
-[1] 21
+[1] 20
 >     cf[abs(cf) > 0]
-                                FP(age, scaling = FALSE)age^-2 
-                                                   -1.97698853 
-                         FP(age, scaling = FALSE)log(age)age^3 
-                                                   -0.01230829 
-                    FP(waistcirc, scaling = FALSE)waistcirc^-2 
-                                                   -7.86296964 
-      FP(waistcirc, scaling = FALSE)log(waistcirc)waistcirc^-2 
-                                                   -7.47556696 
-       FP(waistcirc, scaling = FALSE)log(waistcirc)waistcirc^3 
-                                                    0.67466523 
-                FP(waistcirc, scaling = FALSE)log(waistcirc)^2 
-                                                    5.40114493 
-                        FP(hipcirc, scaling = FALSE)hipcirc^-2 
-                                                   -4.00222773 
-            FP(hipcirc, scaling = FALSE)log(hipcirc)hipcirc^-2 
-                                                    6.09380842 
-            FP(hipcirc, scaling = FALSE)log(hipcirc)hipcirc^-1 
-                                                    6.07680354 
-             FP(hipcirc, scaling = FALSE)log(hipcirc)hipcirc^3 
-                                                   -0.45247988 
-                    FP(hipcirc, scaling = FALSE)log(hipcirc)^2 
-                                                   18.07362051 
-              FP(elbowbreadth, scaling = FALSE)elbowbreadth^-2 
-                                                    1.19027807 
-FP(kneebreadth, scaling = FALSE)log(kneebreadth)kneebreadth^-2 
-                                                   -1.42177852 
-FP(kneebreadth, scaling = FALSE)log(kneebreadth)kneebreadth^-1 
-                                                   -3.22763358 
- FP(kneebreadth, scaling = FALSE)log(kneebreadth)kneebreadth^3 
-                                                    1.85814405 
-                      FP(anthro3a, scaling = FALSE)anthro3a^-2 
-                                                    0.16767775 
-         FP(anthro3a, scaling = FALSE)log(anthro3a)anthro3a^-2 
-                                                   -8.14937266 
-          FP(anthro3a, scaling = FALSE)log(anthro3a)anthro3a^3 
-                                                    0.90354249 
-                      FP(anthro3b, scaling = FALSE)anthro3b^-2 
-                                                   -0.13985229 
-          FP(anthro3b, scaling = FALSE)log(anthro3b)anthro3b^3 
-                                                    1.31511811 
-                      FP(anthro3c, scaling = FALSE)anthro3c^-2 
-                                                  -10.94522292 
+                                                      (Intercept) 
+                                                     -35.45275161 
+                           FP(age, scaling = FALSE)log(age)age^-2 
+                                                       2.11026490 
+                      FP(waistcirc, scaling = FALSE)waistcirc^0.5 
+                                                      14.20277701 
+        FP(waistcirc, scaling = FALSE)log(waistcirc)waistcirc^0.5 
+                                                       2.28180362 
+                   FP(waistcirc, scaling = FALSE)log(waistcirc)^2 
+                                                       0.54593567 
+                         FP(hipcirc, scaling = FALSE)log(hipcirc) 
+                                                      18.45449919 
+               FP(hipcirc, scaling = FALSE)log(hipcirc)hipcirc^-1 
+                                                       0.77202815 
+             FP(hipcirc, scaling = FALSE)log(hipcirc)hipcirc^-0.5 
+                                                       1.10979091 
+FP(elbowbreadth, scaling = FALSE)log(elbowbreadth)elbowbreadth^-2 
+                                                      -9.88716312 
+    FP(kneebreadth, scaling = FALSE)log(kneebreadth)kneebreadth^3 
+                                                       1.61737263 
+             FP(anthro3a, scaling = FALSE)log(anthro3a)anthro3a^3 
+                                                       0.99133823 
+                          FP(anthro3b, scaling = FALSE)anthro3b^2 
+                                                       0.04258098 
+                          FP(anthro3b, scaling = FALSE)anthro3b^3 
+                                                       0.18774736 
+             FP(anthro3b, scaling = FALSE)log(anthro3b)anthro3b^3 
+                                                       1.13691580 
+                       FP(anthro3c, scaling = FALSE)anthro3c^-0.5 
+                                                      -1.19387668 
+                        FP(anthro3c, scaling = FALSE)anthro3c^0.5 
+                                                       0.67657512 
+                          FP(anthro3c, scaling = FALSE)anthro3c^1 
+                                                       1.00838581 
+                       FP(anthro3c, scaling = FALSE)log(anthro3c) 
+                                                       0.35923868 
+           FP(anthro3c, scaling = FALSE)log(anthro3c)anthro3c^0.5 
+                                                       0.36867521 
+                FP(anthro4, scaling = FALSE)log(anthro4)anthro4^3 
+                                                       0.48548065 
 > 
 > 
 > 
@@ -126,8 +125,8 @@ FP(kneebreadth, scaling = FALSE)log(kneebreadth)kneebreadth^-1
 > ### Name: Family
 > ### Title: Gradient Boosting Families
 > ### Aliases: Family AdaExp Binomial GaussClass GaussReg Gaussian Huber
-> ###   Laplace Poisson CoxPH QuantReg ExpectReg NBinomial PropOdds Weibull
-> ###   Loglog Lognormal
+> ###   Laplace Poisson GammaReg CoxPH QuantReg ExpectReg NBinomial PropOdds
+> ###   Weibull Loglog Lognormal AUC
 > ### Keywords: models
 > 
 > ### ** Examples
@@ -140,14 +139,11 @@ FP(kneebreadth, scaling = FALSE)log(kneebreadth)kneebreadth^-1
 Loss function: abs(y - f) 
  
 > 
->     Family(ngradient = function(y, f) y - f,
+>     MyGaussian <- function(){
++            Family(ngradient = function(y, f, w = 1) y - f,
 +            loss = function(y, f) (y - f)^2,
 +            name = "My Gauss Variant")
-
-	 My Gauss Variant 
-
-Loss function: (y - f)^2 
- 
++     }
 > 
 > 
 > 
@@ -185,7 +181,8 @@ Loss function: (y - f)^2
 > 
 > ### Name: baselearners
 > ### Title: Base-learners for Gradient Boosting
-> ### Aliases: bols bbs bspatial brandom btree bns bss %+% %X%
+> ### Aliases: bols bbs bspatial brad brandom btree bmono bmrf buser bns bss
+> ###   %+% %X% %O%
 > ### Keywords: models
 > 
 > ### ** Examples
@@ -261,32 +258,35 @@ $class
 >   ### more convenient formula interface
 >   mod2 <- mboost(y ~ bbs(x1, knots = 20, df = 4) +
 +                      bbs(x2, knots = knots.x2, df = 5) +
-+                      bols(x3) + bols(x4))
++                      bols(x3) + bols(x4), weights = weights)
 >   all.equal(coef(mod1), coef(mod2))
-[1] TRUE
+[1] "names for current but not for target"
 > 
 > 
 >   ### grouped linear effects
+>   # center x1 and x2 first
+>   x1 <- scale(x1, center = TRUE, scale = FALSE)
+>   x2 <- scale(x2, center = TRUE, scale = FALSE)
 >   model <- gamboost(y ~ bols(x1, x2, intercept = FALSE) +
 +                         bols(x1, intercept = FALSE) +
 +                         bols(x2, intercept = FALSE),
 +                         control = boost_control(mstop = 400))
 >   coef(model, which = 1)   # one base-learner for x1 and x2
 $`bols(x1, x2, intercept = FALSE)`
-[1]  1.79313591 -0.03333542
+         x1          x2 
+ 1.82015195 -0.02260988 
 
 attr(,"offset")
 [1] 1.334042
 >   coef(model, which = 2:3) # two separate base-learners for x1 and x2
 $`bols(x1, intercept = FALSE)`
-[1] 3.136929e-12
+[1] 7.571584e-08
 
 $`bols(x2, intercept = FALSE)`
-[1] 3.307395e-14
+[1] 2.815168e-13
 
 attr(,"offset")
 [1] 1.334042
-> 
 > 
 >   ### example for bspatial
 >   x1 <- runif(250,-pi,pi)
@@ -352,8 +352,10 @@ $class
 >   model <- gamboost(y ~ brandom(id), weights = obs)
 >   coef(model)
 $`brandom(id)`
- [1] -1.6160630 -0.2135858  0.9059067  0.9446846  0.7015708 -0.7640177
- [7]  0.5272501  0.8650154 -1.3507611  0.0000000
+       id1        id2        id3        id4        id5        id6        id7 
+-1.6160630 -0.2135858  0.9059067  0.9446846  0.7015708 -0.7640177  0.5272501 
+       id8        id9       id10 
+ 0.8650154 -1.3507611  0.0000000 
 
 attr(,"offset")
 [1] -0.6983303
@@ -361,6 +363,7 @@ attr(,"offset")
         46         47         48         49         50 
 -0.6983303 -0.6983303 -0.6983303 -0.6983303 -0.6983303 
 >                        # random effects models
+> 
 > 
 >   ### random slope
 >   z <- runif(50)
@@ -395,12 +398,24 @@ $class
 +       with(nd[nd$z == i,], lines(x, pred_glm, col = z))
 >   mod_gam <- gamboost(y ~ bbs(x) + bbs(x, by = z),
 +                       control = boost_control(mstop = 1000))
+Warning in Xfun(mf, vary, args) :
+  ‘df’ equal to rank of null space (unpenalized part of P-spline);
+  Consider larger value for ‘df’ or set ‘center = TRUE’.
 >   nd$pred_gam <- predict(mod_gam, newdata = nd)
+Warning in Xfun(mf, vary, args) :
+  ‘df’ equal to rank of null space (unpenalized part of P-spline);
+  Consider larger value for ‘df’ or set ‘center = TRUE’.
 >   for (i in seq(along = levels(z)))
 +       with(nd[nd$z == i,], lines(x, pred_gam, col = z, lty = "dashed"))
->   ### convinience function for plotting
+>   ### convenience function for plotting
 >   par(mfrow = c(1,3))
 >   plot(mod_gam)
+Warning in Xfun(mf, vary, args) :
+  ‘df’ equal to rank of null space (unpenalized part of P-spline);
+  Consider larger value for ‘df’ or set ‘center = TRUE’.
+Warning in Xfun(mf, vary, args) :
+  ‘df’ equal to rank of null space (unpenalized part of P-spline);
+  Consider larger value for ‘df’ or set ‘center = TRUE’.
 > 
 > 
 >   ### remove intercept from base-learner
@@ -410,64 +425,36 @@ $class
 +                       bols(x, intercept = FALSE),
 +                   data = tmpdata,
 +                   control = boost_control(mstop = 2500))
+Warning in bols(x, intercept = FALSE) :
+  covariates should be (mean-) centered if ‘intercept = FALSE’
 >   cf <- unlist(coef(mod))
 >   cf[1] <- cf[1] + mod$offset
 >   cf
-bols(int, intercept = FALSE)   bols(x, intercept = FALSE) 
-               -0.1298897810                 0.0003555854 
+bols(int, intercept = FALSE).int     bols(x, intercept = FALSE).x 
+                   -0.1298897900                     0.0003555856 
 >   coef(lm(y ~ x, data = tmpdata))
   (Intercept)             x 
 -0.1298898174  0.0003555861 
 > 
->   ### bols(, intercept = FALSE) for categorical covariates
->   ### estimates seperate (mean-) effect for each group
->   x <- gl(3, 5)
->   model.matrix(~ x)       # design matrix used in bols(x)
-   (Intercept) x2 x3
-1            1  0  0
-2            1  0  0
-3            1  0  0
-4            1  0  0
-5            1  0  0
-6            1  1  0
-7            1  1  0
-8            1  1  0
-9            1  1  0
-10           1  1  0
-11           1  0  1
-12           1  0  1
-13           1  0  1
-14           1  0  1
-15           1  0  1
-attr(,"assign")
-[1] 0 1 1
-attr(,"contrasts")
-attr(,"contrasts")$x
-[1] "contr.treatment"
-
->   model.matrix(~ x - 1)   # design matrix used in bols(x, intercept = FALSE)
-   x1 x2 x3
-1   1  0  0
-2   1  0  0
-3   1  0  0
-4   1  0  0
-5   1  0  0
-6   0  1  0
-7   0  1  0
-8   0  1  0
-9   0  1  0
-10  0  1  0
-11  0  0  1
-12  0  0  1
-13  0  0  1
-14  0  0  1
-15  0  0  1
-attr(,"assign")
-[1] 1 1 1
-attr(,"contrasts")
-attr(,"contrasts")$x
-[1] "contr.treatment"
-
+>   ### quicker and better with (mean-) centering
+>   tmpdata$x_center <- tmpdata$x - mean(tmpdata$x)
+>   mod_center <- gamboost(y ~ bols(int, intercept = FALSE) +
++                              bols(x_center, intercept = FALSE),
++                          data = tmpdata,
++                          control = boost_control(mstop = 500))
+>   cf_center <- unlist(coef(mod_center, which=1:2))
+>   ## due to the shift in x direction we need to subtract
+>   ## beta_1 * mean(x) to get the correct intercept
+>   cf_center[1] <- cf_center[1] + mod_center$offset -
++                   cf_center[2] * mean(tmpdata$x)
+>   cf_center
+          bols(int, intercept = FALSE).int 
+                             -0.1298898010 
+bols(x_center, intercept = FALSE).x_center 
+                              0.0003555858 
+>   coef(lm(y ~ x, data = tmpdata))
+  (Intercept)             x 
+-0.1298898174  0.0003555861 
 > 
 >   ### large data set with ties
 >   nunique <- 100
@@ -497,6 +484,135 @@ attr(,"contrasts")$x
 [1] TRUE
 >   all.equal(c1, c3)
 [1] TRUE
+> 
+>   ### cyclic P-splines
+>   set.seed(781)
+>   x <- runif(200, 0,(2*pi))
+>   y <- rnorm(200, mean=sin(x), sd=0.2)
+>   newX <- seq(0,2*pi, length=100)
+>   ### model without cyclic constraints
+>   mod <- gamboost(y ~ bbs(x, knots = 20))
+>   ### model with cyclic constraints
+>   mod_cyclic <- gamboost(y ~ bbs(x, cyclic=TRUE, knots = 20,
++                                  boundary.knots=c(0, 2*pi)))
+>   par(mfrow = c(1,2))
+>   plot(x,y, main="bbs (non-cyclic)", cex=0.5)
+>   lines(newX, sin(newX), lty="dotted")
+>   lines(newX + 2 * pi, sin(newX), lty="dashed")
+>   lines(newX, predict(mod, data.frame(x = newX)),
++         col="red", lwd = 1.5)
+Warning in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
+  some 'x' values beyond boundary knots may cause ill-conditioned bases
+>   lines(newX + 2 * pi, predict(mod, data.frame(x = newX)),
++         col="blue", lwd=1.5)
+Warning in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
+  some 'x' values beyond boundary knots may cause ill-conditioned bases
+>   plot(x,y, main="bbs (cyclic)", cex=0.5)
+>   lines(newX, sin(newX), lty="dotted")
+>   lines(newX + 2 * pi, sin(newX), lty="dashed")
+>   lines(newX, predict(mod_cyclic, data.frame(x = newX)),
++         col="red", lwd = 1.5)
+>   lines(newX + 2 * pi, predict(mod_cyclic, data.frame(x = newX)),
++         col="blue", lwd = 1.5)
+> 
+>   ### use buser() to mimic p-spline base-learner:
+>   set.seed(1907)
+>   x <- rnorm(100)
+>   y <- rnorm(100, mean = x^2, sd = 0.1)
+>   mod1 <- gamboost(y ~ bbs(x))
+>   ## now extract design and penalty matrix
+>   X <- extract(bbs(x), "design")
+>   K <- extract(bbs(x), "penalty")
+>   ## use X and K in buser()
+>   mod2 <- gamboost(y ~ buser(X, K))
+>   max(abs(predict(mod1) - predict(mod2)))  # same results
+[1] 0
+> 
+>   ### use buser() to mimic penalized ordinal base-learner:
+>   z <- as.ordered(sample(1:3, 100, replace=TRUE))
+>   y <- rnorm(100, mean = as.numeric(z), sd = 0.1)
+>   X <- extract(bols(z))
+>   K <- extract(bols(z), "penalty")
+>   index <- extract(bols(z), "index")
+>   mod1 <- gamboost(y ~  buser(X, K, df = 1, index = index))
+>   mod2 <- gamboost(y ~  bols(z, df = 1))
+>   max(abs(predict(mod1) - predict(mod2)))  # same results
+[1] 0
+> 
+>   ### kronecker product for matrix-valued responses
+>   data("volcano", package = "datasets")
+>   layout(matrix(1:2, ncol = 2))
+> 
+>   ## estimate mean of image treating image as matrix
+>   image(volcano, main = "data")
+>   x1 <- 1:nrow(volcano)
+>   x2 <- 1:ncol(volcano)
+> 
+>   vol <- as.vector(volcano)
+>   mod <- mboost(vol ~ bbs(x1, df = 3, knots = 10)%O%
++                       bbs(x2, df = 3, knots = 10), 
++                       control = boost_control(nu = 0.25))
+Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
+ target signature "dsCMatrix#dgTMatrix".
+ "sparseMatrix#TsparseMatrix" would also be valid
+Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
+ target signature "dgTMatrix#dsCMatrix".
+ "TsparseMatrix#sparseMatrix" would also be valid
+>   mod[250]
+
+	 Model-based Boosting
+
+Call:
+mboost(formula = vol ~ bbs(x1, df = 3, knots = 10) %O% bbs(x2,     df = 3, knots = 10), control = boost_control(nu = 0.25))
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 250 
+Step size:  0.25 
+Offset:  130.1879 
+Number of baselearners:  1 
+
+> 
+>   volf <- matrix(fitted(mod), nrow = nrow(volcano))
+>   image(volf, main = "fitted")
+> 
+>   ## the old-fashioned way, a waste of space and time
+>   x <- expand.grid(x1, x2)
+>   modx <- mboost(vol ~ bbs(Var2, df = 3, knots = 10)%X%
++                        bbs(Var1, df = 3, knots = 10), data = x,
++                        control = boost_control(nu = 0.25))
+Note: Method with signature "sparseMatrix#ANY" chosen for function "kronecker",
+ target signature "dgCMatrix#dgeMatrix".
+ "ANY#Matrix" would also be valid
+Note: Method with signature "ANY#sparseMatrix" chosen for function "kronecker",
+ target signature "dgeMatrix#dgCMatrix".
+ "Matrix#ANY" would also be valid
+>   modx[250]
+
+	 Model-based Boosting
+
+Call:
+mboost(formula = vol ~ bbs(Var2, df = 3, knots = 10) %X% bbs(Var1,     df = 3, knots = 10), data = x, control = boost_control(nu = 0.25))
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 250 
+Step size:  0.25 
+Offset:  130.1879 
+Number of baselearners:  1 
+
+> 
+>   max(abs(fitted(mod) - fitted(modx)))
+[1] 2.006573e-11
+> 
 > 
 > 
 > 
@@ -528,6 +644,13 @@ Loading required package: stats4
 Loading required package: coin
 Loading required package: mvtnorm
 Loading required package: zoo
+
+Attaching package: ‘zoo’
+
+The following object(s) are masked from ‘package:base’:
+
+    as.Date, as.Date.numeric
+
 Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: vcd
@@ -560,6 +683,13 @@ Number of baselearners:  1
 > 
 > 
 > cleanEx()
+
+detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
+  ‘package:MASS’, ‘package:strucchange’, ‘package:sandwich’,
+  ‘package:zoo’, ‘package:coin’, ‘package:mvtnorm’,
+  ‘package:modeltools’, ‘package:stats4’, ‘package:grid’,
+  ‘package:survival’, ‘package:splines’
+
 > nameEx("bodyfat")
 > ### * bodyfat
 > 
@@ -648,8 +778,7 @@ Degrees of freedom (for mstop = 45): 1.917234
 > 
 >   ### 10-fold cross-validation
 >   cv10f <- cv(model.weights(model), type = "kfold")
->   cvm <- cvrisk(model, folds = cv10f)
-Loading required package: multicore
+>   cvm <- cvrisk(model, folds = cv10f, papply = lapply)
 >   print(cvm)
 
 	 Cross-validated Squared Error (Regression) 
@@ -691,7 +820,7 @@ Loading required package: multicore
 >   set.seed(290875)
 >   n <- nrow(bodyfat)
 >   bs25 <- rmultinom(25, n, rep(1, n)/n)
->   cvm <- cvrisk(model, folds = bs25)
+>   cvm <- cvrisk(model, folds = bs25, papply = lapply)
 >   print(cvm)
 
 	 Cross-validated Squared Error (Regression) 
@@ -731,7 +860,7 @@ Loading required package: multicore
 > 
 >   ### same by default
 >   set.seed(290875)
->   cvrisk(model)
+>   cvrisk(model, papply = lapply)
 
 	 Cross-validated Squared Error (Regression) 
 	 glmboost.formula(formula = DEXfat ~ ., data = bodyfat, center = TRUE) 
@@ -782,12 +911,19 @@ Loading required package: stats4
 Loading required package: coin
 Loading required package: mvtnorm
 Loading required package: zoo
+
+Attaching package: ‘zoo’
+
+The following object(s) are masked from ‘package:base’:
+
+    as.Date, as.Date.numeric
+
 Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: vcd
 Loading required package: MASS
 Loading required package: colorspace
->   cvtree <- cvrisk(blackbox)
+>   cvtree <- cvrisk(blackbox, papply = lapply)
 >   plot(cvtree)
 > 
 > 
@@ -819,6 +955,13 @@ Loading required package: colorspace
 > 
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
+
+detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
+  ‘package:MASS’, ‘package:strucchange’, ‘package:sandwich’,
+  ‘package:zoo’, ‘package:coin’, ‘package:mvtnorm’,
+  ‘package:modeltools’, ‘package:stats4’, ‘package:grid’,
+  ‘package:survival’, ‘package:splines’
+
 > nameEx("gamboost")
 > ### * gamboost
 > 
@@ -856,7 +999,7 @@ Number of baselearners:  1
 >     AIC(cars.gb, method = "corrected")
 [1] 6.60797
 Optimal number of boosting iterations: 24 
-Degrees of freedom (for mstop = 24): 4.481721 
+Degrees of freedom (for mstop = 24): 4.481737 
 > 
 >     ### plot fit for mstop = 1, ..., 50
 >     plot(dist ~ speed, data = cars)
@@ -969,14 +1112,14 @@ Offset:  35.99999
 
 Coefficients: 
 (Intercept)       speed 
- -29.544000    2.096250 
+      -47.6         3.4 
 attr(,"offset")
 [1] 35.99999
 
 > 
 >     coef(cars.gbl) + c(cars.gbl$offset, 0)
 (Intercept)       speed 
-   6.455987    2.096250 
+  -11.60001     3.40000 
 attr(,"offset")
 [1] 35.99999
 >     lines(cars$speed, predict(cars.gbl), col = "green")
@@ -998,12 +1141,11 @@ attr(,"offset")
 >     library("Matrix")
 Loading required package: lattice
 
-Attaching package: 'Matrix'
+Attaching package: ‘Matrix’
 
+The following object(s) are masked from ‘package:base’:
 
-	The following object(s) are masked from package:base :
-
-	 det 
+    det
 
 >     n <- 100
 >     p <- 10000
@@ -1029,6 +1171,9 @@ attr(,"offset")
 > 
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
+
+detaching ‘package:Matrix’, ‘package:lattice’
+
 > nameEx("mboost")
 > ### * mboost
 > 
@@ -1058,6 +1203,13 @@ Loading required package: stats4
 Loading required package: coin
 Loading required package: mvtnorm
 Loading required package: zoo
+
+Attaching package: ‘zoo’
+
+The following object(s) are masked from ‘package:base’:
+
+    as.Date, as.Date.numeric
+
 Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: vcd
@@ -1075,6 +1227,13 @@ Loading required package: colorspace
 > 
 > 
 > cleanEx()
+
+detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
+  ‘package:MASS’, ‘package:strucchange’, ‘package:sandwich’,
+  ‘package:zoo’, ‘package:coin’, ‘package:mvtnorm’,
+  ‘package:modeltools’, ‘package:stats4’, ‘package:grid’,
+  ‘package:survival’, ‘package:splines’
+
 > nameEx("mboost_package")
 > ### * mboost_package
 > 
@@ -1088,12 +1247,12 @@ Loading required package: colorspace
 > ### ** Examples
 > 
 > 
-> 
+>   
 >   data("bodyfat")
 >   set.seed(290875)
 > 
 >   ### model conditional expectation of DEXfat given
->   model <- mboost(DEXfat ~
+>   model <- mboost(DEXfat ~ 
 +       bols(age) +                 ### a linear function of age
 +       btree(hipcirc, waistcirc) + ### a non-linear interaction of
 +                                   ### hip and waist circumference
@@ -1108,6 +1267,13 @@ Loading required package: stats4
 Loading required package: coin
 Loading required package: mvtnorm
 Loading required package: zoo
+
+Attaching package: ‘zoo’
+
+The following object(s) are masked from ‘package:base’:
+
+    as.Date, as.Date.numeric
+
 Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: vcd
@@ -1115,8 +1281,7 @@ Loading required package: MASS
 Loading required package: colorspace
 > 
 >   ### bootstrap for assessing `optimal' number of boosting iterations
->   cvm <- cvrisk(model)
-Loading required package: multicore
+>   cvm <- cvrisk(model, papply = lapply)
 > 
 >   ### restrict model to mstop(cvm)
 >   model[mstop(cvm), return = FALSE]
@@ -1129,7 +1294,7 @@ NULL
 >   plot(model, which = c("age", "kneebreadth"))
 > 
 >   ### plot interaction of hip and waist circumference
->   attach(bodyfat)
+>   attach(bodyfat) 
 >   nd <- expand.grid(hipcirc = h <- seq(from = min(hipcirc),
 +                                   to = max(hipcirc),
 +                                   length = 100),
@@ -1148,6 +1313,13 @@ NULL
 > 
 > 
 > cleanEx()
+
+detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
+  ‘package:MASS’, ‘package:strucchange’, ‘package:sandwich’,
+  ‘package:zoo’, ‘package:coin’, ‘package:mvtnorm’,
+  ‘package:modeltools’, ‘package:stats4’, ‘package:grid’,
+  ‘package:survival’, ‘package:splines’
+
 > nameEx("methods")
 > ### * methods
 > 
@@ -1155,11 +1327,14 @@ NULL
 > 
 > ### Name: methods
 > ### Title: Methods for Gradient Boosting Objects
-> ### Aliases: print.glmboost print.mboost summary.mboost coef.glmboost
-> ###   coef.gamboost [.mboost AIC.mboost predict.mboost predict.glmboost
-> ###   mstop mstop.gbAIC mstop.mboost mstop.cvrisk fitted.mboost
-> ###   logLik.mboost hatvalues.gamboost hatvalues.glmboost selected
-> ###   selected.mboost nuisance nuisance.mboost
+> ### Aliases: print.glmboost print.mboost summary.mboost coef.mboost
+> ###   coef.glmboost [.mboost AIC.mboost mstop mstop.gbAIC mstop.mboost
+> ###   mstop.cvrisk predict.mboost predict.gamboost predict.blackboost
+> ###   predict.glmboost fitted.mboost residuals.mboost resid.mboost extract
+> ###   extract.mboost extract.gamboost extract.glmboost extract.blackboost
+> ###   extract.blg extract.bl_lin extract.bl_tree logLik.mboost
+> ###   hatvalues.gamboost hatvalues.glmboost selected selected.mboost
+> ###   nuisance nuisance.mboost
 > ### Keywords: methods
 > 
 > ### ** Examples
@@ -1230,7 +1405,7 @@ attr(,"offset")
 [1] 42.98
 >                                        # and thus returned
 >   ## intercept is internally corrected for mean-centering
->   - mean(cars$speed) * coef(cars.gb_centered, which="speed")
+>   - mean(cars$speed) * coef(cars.gb_centered, which="speed") # = intercept
     speed 
 -60.55749 
 attr(,"offset")
@@ -1251,10 +1426,10 @@ attr(,"offset")
 >   ### enhance or restrict model
 >   cars.gb <- gamboost(dist ~ speed, data = cars,
 +                       control = boost_control(mstop = 100, trace = TRUE))
-[   1] ...................................... -- risk: 10338.67 
-[  41] ...................................... -- risk: 10159.83 
+[   1] ...................................... -- risk: 10338.66 
+[  41] ...................................... -- risk: 10159.82 
 [  81] ..................
-Final risk: 10094.04 
+Final risk: 10094.03 
 >   cars.gb[10]
 
 	 Model-based Boosting
@@ -1276,55 +1451,59 @@ Number of baselearners:  1
 >   cars.gb[100, return = FALSE] # no refitting required
 NULL
 >   cars.gb[150, return = FALSE] # only iterations 101 to 150
-[101] ...................................... -- risk: 9976.168 
+[101] ...................................... -- risk: 9976.16 
 [141] ........
-Final risk: 9948.547 
+Final risk: 9948.539 
 NULL
 >                                # are newly fitted
 > 
 >   ### coefficients for optimal number of boosting iterations
 >   coef(cars.gb[mstop(aic)])
-[  151] ...................................... -- risk: 9843.547 
-[  191] ...................................... -- risk: 9745.992 
-[  231] ...................................... -- risk: 9654.792 
-[  271] ...................................... -- risk: 9569.225 
-[  311] ...................................... -- risk: 9488.741 
-[  351] ...................................... -- risk: 9412.896 
-[  391] ...................................... -- risk: 9341.312 
-[  431] ...................................... -- risk: 9273.66 
-[  471] ...................................... -- risk: 9209.65 
-[  511] ...................................... -- risk: 9149.022 
-[  551] ...................................... -- risk: 9091.543 
-[  591] ...................................... -- risk: 9036.999 
-[  631] ...................................... -- risk: 8985.197 
-[  671] ...................................... -- risk: 8935.961 
-[  711] ...................................... -- risk: 8889.127 
-[  751] ...................................... -- risk: 8844.546 
-[  791] ...................................... -- risk: 8802.08 
-[  831] ...................................... -- risk: 8761.602 
-[  871] ...................................... -- risk: 8722.992 
-[  911] ...................................... -- risk: 8686.141 
-[  951] ...................................... -- risk: 8650.948 
-[  991] ...................................... -- risk: 8617.316 
-[1'031] ...................................... -- risk: 8585.158 
-[1'071] ...................................... -- risk: 8554.39 
-[1'111] ...................................... -- risk: 8524.937 
-[1'151] ...................................... -- risk: 8496.726 
-[1'191] ...................................... -- risk: 8469.688 
-[1'231] ...................................... -- risk: 8443.761 
-[1'271] ...................................... -- risk: 8418.886 
-[1'311] ...................................... -- risk: 8395.006 
-[1'351] ...................................... -- risk: 8372.07 
-[1'391] ...................................... -- risk: 8350.028 
-[1'431] ...................................... -- risk: 8328.835 
-[1'471] ...................................... -- risk: 8308.446 
+[  151] ...................................... -- risk: 9843.537 
+[  191] ...................................... -- risk: 9745.981 
+[  231] ...................................... -- risk: 9654.78 
+[  271] ...................................... -- risk: 9569.212 
+[  311] ...................................... -- risk: 9488.728 
+[  351] ...................................... -- risk: 9412.882 
+[  391] ...................................... -- risk: 9341.297 
+[  431] ...................................... -- risk: 9273.645 
+[  471] ...................................... -- risk: 9209.634 
+[  511] ...................................... -- risk: 9149.006 
+[  551] ...................................... -- risk: 9091.526 
+[  591] ...................................... -- risk: 9036.982 
+[  631] ...................................... -- risk: 8985.181 
+[  671] ...................................... -- risk: 8935.944 
+[  711] ...................................... -- risk: 8889.11 
+[  751] ...................................... -- risk: 8844.529 
+[  791] ...................................... -- risk: 8802.064 
+[  831] ...................................... -- risk: 8761.585 
+[  871] ...................................... -- risk: 8722.975 
+[  911] ...................................... -- risk: 8686.124 
+[  951] ...................................... -- risk: 8650.931 
+[  991] ...................................... -- risk: 8617.299 
+[1'031] ...................................... -- risk: 8585.141 
+[1'071] ...................................... -- risk: 8554.374 
+[1'111] ...................................... -- risk: 8524.921 
+[1'151] ...................................... -- risk: 8496.709 
+[1'191] ...................................... -- risk: 8469.672 
+[1'231] ...................................... -- risk: 8443.745 
+[1'271] ...................................... -- risk: 8418.87 
+[1'311] ...................................... -- risk: 8394.99 
+[1'351] ...................................... -- risk: 8372.054 
+[1'391] ...................................... -- risk: 8350.013 
+[1'431] ...................................... -- risk: 8328.82 
+[1'471] ...................................... -- risk: 8308.431 
 [1'511] .....................................
-Final risk: 8289.302 
+Final risk: 8289.288 
 $`bbs(speed, df = dfbase)`
- [1] -36.995016 -35.596203 -34.085118 -32.349487 -30.277039 -27.732665
- [7] -24.322707 -20.863456 -21.899775 -19.121759  -6.090496   2.438362
-[13]  -4.941562  -7.667407   2.660116  16.107860  12.731676   6.129820
-[19]   7.150962  15.682258  30.314977  47.848817  52.733340  46.576861
+         1          2          3          4          5          6          7 
+-36.995014 -35.596207 -34.085126 -32.349499 -30.277051 -27.732673 -24.322691 
+         8          9         10         11         12         13         14 
+-20.863408 -21.899798 -19.121835  -6.090471   2.438464  -4.941604  -7.667532 
+        15         16         17         18         19         20         21 
+  2.660072  16.107960  12.731713   6.129780   7.150886  15.682172  30.314925 
+        22         23         24 
+ 47.848885  52.733403  46.576792 
 
 attr(,"offset")
 [1] 42.98
@@ -1353,59 +1532,1152 @@ attr(,"offset")
 > 
 >   coef(model) # standard output (only selected base-learners)
 $`bols(int, intercept = FALSE)`
-[1] 6.267132
+     int 
+6.267132 
 
 $`bbs(x1, df = 1, center = TRUE)`
- [1] -0.02478711 -0.01925254  0.07735510  0.24268927  0.39127892  0.49333021
- [7]  0.58205157  0.65523850  0.67973447  0.64955713  0.60211202  0.54410925
-[13]  0.44971270  0.34981919  0.33270628  0.36324091  0.37184588  0.37876602
-[19]  0.39836919  0.42301404  0.36842328  0.22804990
+ [1] -0.02478725 -0.01925279  0.07735492  0.24268927  0.39127901  0.49333025
+ [7]  0.58205156  0.65523852  0.67973446  0.64955704  0.60211196  0.54410924
+[13]  0.44971260  0.34981894  0.33270613  0.36324101  0.37184615  0.37876648
+[19]  0.39836988  0.42301499  0.36842422  0.22805053
 
 $`bols(x1, intercept = FALSE)`
-[1] 3.775258
+      x1 
+3.775259 
 
 $`bols(x2, intercept = FALSE)`
-[1] -0.3592216
+        x2 
+-0.3592216 
 
 attr(,"offset")
 [1] 4.431516
 >   coef(model,
 +        which = 1:length(variable.names(model))) # all base-learners
 $`bols(int, intercept = FALSE)`
-[1] 6.267132
+     int 
+6.267132 
 
 $`bbs(x1, df = 1, center = TRUE)`
- [1] -0.02478711 -0.01925254  0.07735510  0.24268927  0.39127892  0.49333021
- [7]  0.58205157  0.65523850  0.67973447  0.64955713  0.60211202  0.54410925
-[13]  0.44971270  0.34981919  0.33270628  0.36324091  0.37184588  0.37876602
-[19]  0.39836919  0.42301404  0.36842328  0.22804990
+ [1] -0.02478725 -0.01925279  0.07735492  0.24268927  0.39127901  0.49333025
+ [7]  0.58205156  0.65523852  0.67973446  0.64955704  0.60211196  0.54410924
+[13]  0.44971260  0.34981894  0.33270613  0.36324101  0.37184615  0.37876648
+[19]  0.39836988  0.42301499  0.36842422  0.22805053
 
 $`bols(x1, intercept = FALSE)`
-[1] 3.775258
+      x1 
+3.775259 
 
 $`bols(x2, intercept = FALSE)`
-[1] -0.3592216
+        x2 
+-0.3592216 
 
 $`bols(x3, intercept = FALSE)`
-[1] 0
+x3 
+ 0 
 
 $`bols(x4, intercept = FALSE)`
-[1] 0
+x4 
+ 0 
 
 attr(,"offset")
 [1] 4.431516
 >   coef(model, which = "x1") # shows all base-learners for x1
 $`bbs(x1, df = 1, center = TRUE)`
- [1] -0.02478711 -0.01925254  0.07735510  0.24268927  0.39127892  0.49333021
- [7]  0.58205157  0.65523850  0.67973447  0.64955713  0.60211202  0.54410925
-[13]  0.44971270  0.34981919  0.33270628  0.36324091  0.37184588  0.37876602
-[19]  0.39836919  0.42301404  0.36842328  0.22804990
+ [1] -0.02478725 -0.01925279  0.07735492  0.24268927  0.39127901  0.49333025
+ [7]  0.58205156  0.65523852  0.67973446  0.64955704  0.60211196  0.54410924
+[13]  0.44971260  0.34981894  0.33270613  0.36324101  0.37184615  0.37876648
+[19]  0.39836988  0.42301499  0.36842422  0.22805053
 
 $`bols(x1, intercept = FALSE)`
-[1] 3.775258
+      x1 
+3.775259 
 
 attr(,"offset")
 [1] 4.431516
+> 
+>   cf1 <- coef(model, which = c(1,3,4), aggregate = "cumsum")
+>   tmp <- sapply(cf1, function(x) x)
+>   matplot(tmp, type = "l", main = "Coefficient Paths")
+> 
+>   cf1_all <- coef(model, aggregate = "cumsum")
+>   cf1_all <- lapply(cf1_all, function(x) x[, ncol(x)]) # last element
+>   ## same as coef(model)
+> 
+>   cf2 <- coef(model, aggregate = "none")
+>   cf2 <- lapply(cf2, rowSums) # same as coef(model)
+> 
+>   ### example continued for extraction of predictions
+> 
+>   yhat <- predict(model) # standard prediction; here same as fitted(model)
+>   p1 <- predict(model, which = "x1") # marginal effects of x1
+>   orderX <- order(data$x1)
+>   ## rowSums needed as p1 is a matrix
+>   plot(data$x1[orderX], rowSums(p1)[orderX], type = "b")
+> 
+>   ## better: predictions on a equidistant grid
+>   new_data <- data.frame(x1 = seq(min(data$x1), max(data$x1), length = 100))
+>   p2 <- predict(model, newdata = new_data, which = "x1")
+>   lines(new_data$x1, rowSums(p2), col = "red")
+> 
+>   ### extraction of model characteristics
+>   extract(model, which = "x1")  # design matrices for x1
+$`bbs(x1, df = 1, center = TRUE)`
+               [,1]        [,2]        [,3]        [,4]        [,5]        [,6]
+  [1,] -0.095440772  0.21159100  0.76683552  1.24931778  1.62434879  1.90069983
+  [2,] -0.094332059 -0.27841658 -0.54767396 -0.89752460 -1.32338890 -1.74561976
+  [3,] -0.058298240 -0.17344850 -0.34400454 -0.56852016 -0.84554912 -1.17364521
+  [4,] -0.058909111 -0.17522799 -0.34745730 -0.57409768 -0.85364981 -1.18461433
+  [5,] -0.065562925 -0.19461084 -0.38506581 -0.63484989 -0.94188516 -1.30409368
+  [6,] -0.115708082 -0.34068586 -0.66849495 -0.96951194 -0.70256524 -0.30038477
+  [7,] -0.073011447 -0.21630871 -0.42716615 -0.70285814 -1.04065905 -1.43784324
+  [8,] -0.057609386 -0.17144183 -0.34011102 -0.56223062 -0.83641432 -1.16127578
+  [9,] -0.131837136 -0.35523668 -0.22254872  0.27708463  0.69630806  1.02289890
+ [10,] -0.061546753 -0.18291156 -0.36236571 -0.59818050 -0.88862723 -1.23197720
+ [11,] -0.124655722 -0.36675073 -0.63408498 -0.37413191  0.07339853  0.43371079
+ [12,] -0.123276701 -0.36273358 -0.66313923 -0.49430549 -0.04621659  0.32057108
+ [13,] -0.037509414 -0.11288974 -0.22650248 -0.37870914 -0.56987121 -0.80035020
+ [14,] -0.079992502 -0.23664483 -0.46662429 -0.76659821 -1.13323391 -1.56319870
+ [15,] -0.017966609 -0.05596070 -0.11604315 -0.20027484 -0.31071663 -0.44942940
+ [16,] -0.055523505 -0.16536557 -0.32832126 -0.54318563 -0.80875373 -1.12382063
+ [17,] -0.098819591 -0.29148895 -0.57303827 -0.93849772 -1.38123431 -1.60544258
+ [18,] -0.120026585 -0.35326585 -0.68658217 -0.74734066 -0.32812882  0.05392026
+ [19,] -0.056250690 -0.16748389 -0.33243144 -0.54982514 -0.81839683 -1.13687833
+ [20,] -0.039631368 -0.11907109 -0.23849614 -0.39808350 -0.59801016 -0.83845311
+ [21,] -0.111993463 -0.32986502 -0.64749928 -1.03358980 -1.00790528 -0.60514501
+ [22,] -0.057247688 -0.17038819 -0.33806665 -0.55892817 -0.83161790 -1.15478096
+ [23,] -0.052052949 -0.15525569 -0.30870508 -0.51149794 -0.76273114 -1.06150151
+ [24,] -0.091117845 -0.26905343 -0.52950666 -0.86817742 -1.28076562 -1.74827263
+ [25,] -0.015277015 -0.04812580 -0.10084110 -0.17571768 -0.27505028 -0.40113365
+ [26,] -0.048389555 -0.14458406 -0.28799893 -0.47804956 -0.71415134 -0.99571968
+ [27,] -0.049418912 -0.14758263 -0.29381704 -0.48744804 -0.72780152 -1.01420337
+ [28,] -0.018945513 -0.05881229 -0.12157609 -0.20921265 -0.32369774 -0.46700710
+ [29,] -0.064212629 -0.19067737 -0.37743370 -0.62252110 -0.92397906 -1.27984706
+ [30,] -0.052295908 -0.15596344 -0.31007832 -0.51371627 -0.76595299 -1.06586421
+ [31,] -0.058858786 -0.17508139 -0.34717285 -0.57363819 -0.85298245 -1.18371066
+ [32,] -0.094747335 -0.27962629 -0.55002117 -0.90131625 -1.32889582 -1.74020334
+ [33,] -0.029948979 -0.09086587 -0.18376959 -0.30967908 -0.46961327 -0.66459108
+ [34,] -0.060703617 -0.18045547 -0.35760016 -0.59048230 -0.87744652 -1.21683742
+ [35,] -0.056819309 -0.16914031 -0.33564537 -0.55501688 -0.82593721 -1.14708875
+ [36,] -0.029851298  0.39537085  0.96567044  1.44082238  1.80714863  2.07360374
+ [37,] -0.065572901 -0.19463990 -0.38512219 -0.63494098 -0.94201745 -1.30427281
+ [38,] -0.002051834 -0.00960027 -0.02609008 -0.05496602 -0.09967287 -0.16365539
+ [39,] -0.011892474 -0.03826648 -0.08171108 -0.14481534 -0.23016831 -0.34035906
+ [40,]  0.012810975  0.03369574  0.05791711  0.08073789  0.09742090  0.10322896
+ [41,] -0.020049689 -0.06202880 -0.12781708 -0.21929426 -0.33834008 -0.48683427
+ [42,] -0.042524514 -0.12749895 -0.25484870 -0.42449918 -0.63637580 -0.89040395
+ [43,] -0.092953411 -0.27440052 -0.53988160 -0.88493694 -1.30510683 -1.75451955
+ [44,] -0.051726112 -0.15430360 -0.30685773 -0.50851378 -0.75839699 -1.05563265
+ [45,] -0.008574254 -0.02860036 -0.06295593 -0.11451855 -0.18616584 -0.28077538
+ [46,] -0.029640452 -0.08996711 -0.18202574 -0.30686210 -0.46552194 -0.65905102
+ [47,] -0.105671340 -0.31144840 -0.61176554 -1.00105716 -1.35206827 -1.12366966
+ [48,] -0.056152286 -0.16719724 -0.33187524 -0.54892666 -0.81709190 -1.13511133
+ [49,] -0.136114586 -0.22584402  0.16119828  0.66577469  1.06733038  1.37383581
+ [50,] -0.102498231 -0.30220499 -0.59383058 -0.97208529 -1.39862697 -1.37209522
+ [51,] -0.033239309 -0.10045074 -0.20236711 -0.33972123 -0.51324591 -0.72367397
+ [52,] -0.077385495 -0.22905050 -0.45188903 -0.74279510 -1.09866272 -1.51638591
+ [53,] -0.127302800 -0.37439749 -0.53356716 -0.13494845  0.30300375  0.65088625
+ [54,] -0.054143462 -0.16134545 -0.32052101 -0.53058523 -0.79045315 -1.09903984
+ [55,] -0.081717133 -0.24166875 -0.47637220 -0.78234484 -1.15610401 -1.59416707
+ [56,] -0.059667121 -0.17743610 -0.35174170 -0.58101864 -0.86370167 -1.19822554
+ [57,] -0.066826537 -0.19829180 -0.39220797 -0.64638723 -0.95864176 -1.32678377
+ [58,] -0.062758478 -0.18644136 -0.36921459 -0.60924408 -0.90469576 -1.25373557
+ [59,] -0.027761614 -0.08449398 -0.17140622 -0.28970749 -0.44060691 -0.62531361
+ [60,] -0.087830271 -0.25947659 -0.51092472 -0.83816044 -1.23716953 -1.70367518
+ [61,] -0.065183327 -0.19350505 -0.38292025 -0.63138400 -0.93685136 -1.29727742
+ [62,] -0.049225872 -0.14702030 -0.29272595 -0.48568550 -0.72524164 -1.01073704
+ [63,] -0.080508782 -0.23814877 -0.46954239 -0.77131207 -1.14008023 -1.57246929
+ [64,] -0.064423071 -0.19129039 -0.37862315 -0.62444253 -0.92676970 -1.28362586
+ [65,] -0.079453093 -0.23507350 -0.46357545 -0.76167317 -1.12608087 -1.55351278
+ [66,] -0.046528775 -0.13916353 -0.27748148 -0.46105983 -0.68947579 -0.96230656
+ [67,] -0.087225812 -0.25771577 -0.50750821 -0.83264147 -1.22915389 -1.69305465
+ [68,] -0.081724342 -0.24168975 -0.47641295 -0.78241066 -1.15619960 -1.59429651
+ [69,] -0.060353604 -0.17943586 -0.35562182 -0.58728653 -0.87280504 -1.21055240
+ [70,] -0.017707713 -0.05520653 -0.11457983 -0.19791100 -0.30728344 -0.44478052
+ [71,] -0.046575500 -0.13929965 -0.27774558 -0.46148645 -0.69009540 -0.96314558
+ [72,] -0.023100863 -0.07091701 -0.14506285 -0.24715281 -0.37880130 -0.54162274
+ [73,] -0.091731628 -0.27084141 -0.53297587 -0.87378153 -1.28890492 -1.75233662
+ [74,] -0.062646984 -0.18611658 -0.36858440 -0.60822608 -0.90321725 -1.25173352
+ [75,] -0.007898816 -0.02663278 -0.05913824 -0.10835151 -0.17720894 -0.26864686
+ [76,] -0.057184413 -0.17020387 -0.33770900 -0.55835044 -0.83077881 -1.15364475
+ [77,] -0.085932842 -0.25394929 -0.50020012 -0.82083609 -1.21200797 -1.66986653
+ [78,] -0.024606267 -0.07530232 -0.15357166 -0.26089780 -0.39876427 -0.56865457
+ [79,] -0.039881302 -0.11979916 -0.23990881 -0.40036551 -0.60132451 -0.84294106
+ [80,] -0.058581659 -0.17427411 -0.34560648 -0.57110790 -0.84930750 -1.17873442
+ [81,] -0.128402822 -0.37636766 -0.47242654 -0.03498994  0.39841870  0.74113588
+ [82,] -0.088176340 -0.26048470 -0.51288076 -0.84132020 -1.24175871 -1.70957851
+ [83,] -0.040980512 -0.12300120 -0.24612173 -0.41040178 -0.61590099 -0.86267905
+ [84,] -0.058021881 -0.17264345 -0.34244252 -0.56599689 -0.84188437 -1.16868277
+ [85,]  0.028792866  0.08025168  0.14824953  0.22665950  0.30935467  0.39020813
+ [86,] -0.069742984 -0.20678753 -0.40869223 -0.67301565 -0.99731639 -1.37915301
+ [87,] -0.044172085 -0.13229839 -0.26416106 -0.43954223 -0.65822403 -0.91998860
+ [88,] -0.130849927 -0.36725018 -0.30195288  0.18737744  0.61067846  0.94190489
+ [89,] -0.040567750 -0.12179881 -0.24378873 -0.40663308 -0.61042741 -0.85526728
+ [90,] -0.131999729 -0.35268950 -0.20901084  0.29185943  0.71041127  1.03623863
+ [91,] -0.083929511 -0.24811350 -0.48887694 -0.80254481 -1.18544206 -1.63389368
+ [92,] -0.012641021 -0.04044703 -0.08594200 -0.15164990 -0.24009469 -0.35380036
+ [93,]  0.843333333  1.54000000  2.10000000  2.53333333  2.85000000  3.06000000
+ [94,]  0.073333333  0.21000000  0.40000000  0.63333333  0.90000000  1.19000000
+ [95,] -0.056629132 -0.16858631 -0.33457046 -0.55328048 -0.82341530 -1.14367384
+ [96,] -0.017486715 -0.05456275 -0.11333071 -0.19589320 -0.30435282 -0.44081218
+ [97,] -0.137286435 -0.16618308  0.27151815  0.77226015  1.16897559  1.46997842
+ [98,] -0.121876363  0.09490872  0.63213308  1.11958132  1.50050944  1.78356457
+ [99,] -0.088632919 -0.26181473 -0.51546142 -0.84548897 -1.24781334 -1.71708356
+[100,] -0.095472989 -0.28174016 -0.55412269 -0.90794178 -1.33851862 -1.72735076
+              [,7]        [,8]         [,9]        [,10]       [,11]
+  [1,]  2.08714218  2.19244712  2.225385928  2.194729873  2.10925024
+  [2,] -1.61618007 -1.24472852 -0.928851475 -0.666090098 -0.45186479
+  [3,] -1.55136219 -1.97725384 -2.449150064 -2.706944671 -2.36635728
+  [4,] -1.56549191 -1.99478320 -2.469109474 -2.690557210 -2.33390141
+  [5,] -1.71939751 -2.18571871 -2.583632658 -2.373251583 -1.98038141
+  [6,]  0.02486472  0.27947481  0.469883898  0.602530357  0.68385257
+  [7,] -1.89168507 -2.35688942 -2.315821752 -1.931422074 -1.58463817
+  [8,] -1.53542869 -1.95748672 -2.425923910 -2.721666277 -2.40295641
+  [9,]  1.26469807  1.42954647  1.525285027  1.559754637  1.54079621
+ [10,] -1.62650171 -2.07047205 -2.542789435 -2.589458266 -2.19376236
+ [11,]  0.71266597  0.91748050  1.055370824  1.133553383  1.15924462
+ [12,]  0.60666119  0.81915027  0.965134855  1.051711458  1.08597661
+ [13,] -1.07050760 -1.38070492 -1.731303657 -2.122665307 -2.55505162
+ [14,] -2.04702863 -2.21765177 -1.867157276 -1.517111638 -1.21373169
+ [15,] -0.61847403 -0.81991140 -1.055802363 -1.328207810 -1.63918861
+ [16,] -1.48718137 -1.89763102 -2.353964642 -2.739183577 -2.51353115
+ [17,] -1.27334620 -0.92474798 -0.635210798 -0.399764832 -0.21344026
+ [18,]  0.35682619  0.58740288  0.752464224  0.858824141  0.91329653
+ [19,] -1.50400147 -1.91849806 -2.379099935 -2.737817900 -2.47513251
+ [20,] -1.11958931 -1.44159577 -1.804649446 -2.208927336 -2.65026340
+ [21,] -0.26067640  0.01460635  0.226818635  0.382075817  0.48649327
+ [22,] -1.52706248 -1.94710758 -2.413528716 -2.727696077 -2.42217354
+ [23,] -1.40690590 -1.79804115 -2.234004116 -2.687847126 -2.68180406
+ [24,] -1.83690195 -1.47391601 -1.139172925 -0.856846761 -0.62263742
+ [25,] -0.55626256 -0.74273174 -0.962835963 -1.218869970 -1.51312851
+ [26,] -1.32216999 -1.69291765 -2.107378081 -2.564114320 -2.79829841
+ [27,] -1.34597948 -1.72245575 -2.142958057 -2.603337662 -2.77466580
+ [28,] -0.64111650 -0.84800167 -1.089638372 -1.368002362 -1.68506939
+ [29,] -1.68816457 -2.14697109 -2.582692959 -2.451149667 -2.05212323
+ [30,] -1.41252565 -1.80501302 -2.242402051 -2.694038208 -2.67134761
+ [31,] -1.56432785 -1.99333906 -2.467493665 -2.692019798 -2.33657525
+ [32,] -1.58520035 -1.21511756 -0.901678001 -0.641444388 -0.42980101
+ [33,] -0.89563145 -1.16375330 -1.469975565 -1.815317174 -2.20079706
+ [34,] -1.60699961 -2.04627772 -2.522051329 -2.626526051 -2.23855853
+ [35,] -1.51715387 -1.93481495 -2.398753773 -2.733239832 -2.44493354
+ [36,]  2.24914225  2.34271868  2.363287565  2.319803451  2.22122087
+ [37,] -1.71962825 -2.18600497 -2.583582272 -2.372665572 -1.97985140
+ [38,] -0.25035836 -0.36322654 -0.505704694 -0.681237596 -0.89327001
+ [39,] -0.47797664 -0.64561012 -0.845848551 -1.081281000 -1.35449653
+ [40,]  0.09342488  0.06327147  0.008031538 -0.077032091 -0.19665661
+ [41,] -0.66665658 -0.87968673 -1.127804469 -1.412889532 -1.73682166
+ [42,] -1.18650904 -1.52461648 -1.904651669 -2.326540014 -2.75670553
+ [43,] -1.71574370 -1.34303214 -1.019063033 -0.747909883 -0.52511297
+ [44,] -1.39934601 -1.78866234 -2.222706914 -2.679019718 -2.69543823
+ [45,] -0.40122478 -0.55039164 -0.731153570 -0.946388161 -1.19897302
+ [46,] -0.88849510 -1.15489993 -1.459311282 -1.802774904 -2.18633656
+ [47,] -0.74665528 -0.43618853 -0.186868137  0.006871535  0.15059610
+ [48,] -1.50172533 -1.91567428 -2.375698565 -2.738290698 -2.48035009
+ [49,]  1.59350382  1.73454728  1.805179061  1.813612017  1.76805901
+ [50,] -0.99057080 -0.66244501 -0.394499840 -0.181445591 -0.01799256
+ [51,] -0.97173822 -1.25817148 -1.583706556 -1.949076264 -2.35501342
+ [52,] -1.99279679 -2.31984533 -2.037746245 -1.671831865 -1.35224313
+ [53,]  0.91614568  1.10622865  1.228581777  1.290651689  1.29988500
+ [54,] -1.45526036 -1.85802977 -2.306263129 -2.729213629 -2.58442510
+ [55,] -2.07158081 -2.12401877 -1.754306449 -1.414758562 -1.12210132
+ [56,] -1.58302499 -2.01653477 -2.492687561 -2.666223311 -2.29362806
+ [57,] -1.74862542 -2.22197822 -2.569869085 -2.298483031 -1.91324513
+ [58,] -1.65452944 -2.10524328 -2.566365025 -2.529964604 -2.12938289
+ [59,] -0.84503675 -1.10098544 -1.394368822 -1.726396036 -2.09827621
+ [60,] -2.00309674 -1.70833432 -1.354294604 -1.051957121 -0.79730765
+ [61,] -1.71061724 -2.17482590 -2.584901275 -2.395460043 -2.00054962
+ [62,] -1.34151438 -1.71691634 -2.136285592 -2.596171214 -2.77971566
+ [63,] -2.05564890 -2.19147092 -1.833374613 -1.486471549 -1.18630151
+ [64,] -1.69303218 -2.15300985 -2.583806842 -2.439241294 -2.04094237
+ [65,] -2.03707742 -2.24310303 -1.902453425 -1.549124424 -1.24239075
+ [66,] -1.27912936 -1.63952138 -2.043059849 -2.489321960 -2.81801819
+ [67,] -2.02431148 -1.75143483 -1.393847208 -1.087830414 -0.82942278
+ [68,] -2.07165549 -2.12359293 -1.753834746 -1.414330739 -1.12171831
+ [69,] -1.59890365 -2.03623386 -2.512564986 -2.640703290 -2.25715489
+ [70,] -0.61248564 -0.81248219 -1.046853545 -1.317683100 -1.62705424
+ [71,] -1.28021012 -1.64086218 -2.044674901 -2.491221424 -2.81792512
+ [72,] -0.73723156 -0.96724216 -1.233268962 -1.536926389 -1.87982886
+ [73,] -1.79816307 -1.43015062 -1.099010169 -0.820420076 -0.59002686
+ [74,] -1.65195053 -2.10204389 -2.564542355 -2.535705544 -2.13530662
+ [75,] -0.38560161 -0.53100951 -0.707806911 -0.918930141 -1.16731553
+ [76,] -1.52559889 -1.94529186 -2.411351152 -2.728625628 -2.42553538
+ [77,] -2.05796049 -1.84356341 -1.478452469 -1.164565418 -0.89811888
+ [78,] -0.77205221 -1.01044072 -1.285303590 -1.598124348 -1.95038650
+ [79,] -1.12537041 -1.44876780 -1.813288487 -2.219087718 -2.66078413
+ [80,] -1.55791779 -1.98538673 -2.458499936 -2.699716065 -2.35129912
+ [81,]  1.00070389  1.18466499  1.300561473  1.355935599  1.35832965
+ [82,] -1.98948319 -1.68365808 -1.331649644 -1.031418669 -0.77892084
+ [83,] -1.15079561 -1.48031034 -1.851282914 -2.263772987 -2.70446065
+ [84,] -1.54496989 -1.96932355 -2.439906713 -2.713346100 -2.38104034
+ [85,]  0.46309296  0.52188224  0.560449066  0.572666511  0.55240766
+ [86,] -1.81608410 -2.30081601 -2.482515062 -2.125398248 -1.75829304
+ [87,] -1.22461809 -1.57189462 -1.961600338 -2.393517379 -2.79696287
+ [88,]  1.18881179  1.35915422  1.460687261  1.501165966  1.48834540
+ [89,] -1.14124825 -1.46846588 -1.837015716 -2.246993327 -2.68859952
+ [90,]  1.27719655  1.44114009  1.535924291  1.569404202  1.54943487
+ [91,] -2.08037345 -1.98305766 -1.609539989 -1.283458750 -1.00455672
+ [92,] -0.49529085 -0.66709016 -0.871722235 -1.111711056 -1.38958059
+ [93,]  3.17333333  3.20000000  3.150000000  3.033333333  2.86000000
+ [94,]  1.49333333  1.80000000  2.100000000  2.383333333  2.64000000
+ [95,] -1.51275500 -1.92935770 -2.392180872 -2.735126440 -2.45503770
+ [96,] -0.60737388 -0.80614053 -1.039214725 -1.308699079 -1.61669619
+ [97,]  1.68358338  1.81810525  1.881858781  1.883158740  1.83031989
+ [98,]  1.97739383  2.09064435  2.131963263  2.109997688  2.03339476
+ [99,] -1.96997346 -1.65110203 -1.301773508 -1.004321709 -0.75466261
+[100,] -1.53031460 -1.16337529 -0.854195005 -0.598378415 -0.39124671
+             [,12]       [,13]       [,14]       [,15]        [,16]       [,17]
+  [1,]  1.97771829  1.80890532  1.61158260  1.39452140  1.166493010  0.93626870
+  [2,] -0.28159594 -0.15070396 -0.05460925  0.01126779  0.051506765  0.07068727
+  [3,] -1.97048539 -1.61555706 -1.30012605 -1.02274616 -0.781971145 -0.57635479
+  [4,] -1.94185411 -1.59072380 -1.27901115 -1.00521680 -0.767841423 -0.56538567
+  [5,] -1.62999277 -1.32023182 -1.04902064 -0.81428129 -0.613935824 -0.44590632
+  [6,]  0.72028893  0.71827781  0.68425761  0.62466669  0.545943455  0.45452628
+  [7,] -1.28088376 -1.01743319 -0.79156084 -0.60054108 -0.441648261 -0.31215676
+  [8,] -2.00277170 -1.64356048 -1.32393645 -1.04251328 -0.797904646 -0.58872422
+  [9,]  1.47625067  1.37395891  1.24176186  1.08750041  0.919015482  0.74414798
+ [10,] -1.81822899 -1.48349794 -1.18784049 -0.92952795 -0.706831624 -0.51802280
+ [11,]  1.13966096  1.08201886  0.99353475  0.88142508  0.752906276  0.61519478
+ [12,]  1.07502683  1.02595864  0.94586858  0.84185316  0.721008910  0.59043236
+ [13,] -2.81686797 -2.46066803 -2.01869634 -1.61929508 -1.262825729 -0.94964980
+ [14,] -0.95368475 -0.73363813 -0.55025916 -0.40021515 -0.280173425 -0.18680130
+ [15,] -1.99080564 -2.38475366 -2.58444496 -2.18008860 -1.714859299 -1.30057060
+ [16,] -2.10053599 -1.72835605 -1.39603536 -1.10236898 -0.846151963 -0.62617937
+ [17,] -0.07126727  0.03172397  0.10050327  0.14004045  0.155305330  0.15126773
+ [18,]  0.92269530  0.89383436  0.83352761  0.74858896  0.645832315  0.53207158
+ [19,] -2.06645317 -1.69879442 -1.37090006 -1.08150194 -0.829331867 -0.61312167
+ [20,] -2.78735772 -2.37440600 -1.94535055 -1.55840423 -1.213744018 -0.91154689
+ [21,]  0.54618637  0.56727049  0.55586101  0.51807329  0.460022711  0.38782465
+ [22,] -2.01972428 -1.65826426 -1.33643859 -1.05289242 -0.806270857 -0.59521904
+ [23,] -2.26319945 -1.86944170 -1.51599588 -1.20195885 -0.926427434 -0.68849849
+ [24,] -0.43224479 -0.28136878 -0.16570929 -0.08096620 -0.022839422  0.01297115
+ [25,] -1.84790635 -2.22549823 -2.54180641 -2.25682099 -1.777070777 -1.34886635
+ [26,] -2.43490117 -2.01836666 -1.64262192 -1.30708235 -1.011163347 -0.75428032
+ [27,] -2.38665562 -1.97652103 -1.60704194 -1.27754425 -0.987353854 -0.73579663
+ [28,] -2.04281521 -2.44124317 -2.58364396 -2.15199833 -1.692216838 -1.28299290
+ [29,] -1.69328056 -1.37512429 -1.09569392 -0.85302891 -0.645168760 -0.47015294
+ [30,] -2.25181206 -1.85956488 -1.50759795 -1.19498698 -0.920807684 -0.68413579
+ [31,] -1.94421286 -1.59276966 -1.28075067 -1.00666094 -0.769005481 -0.56628934
+ [32,] -0.26213215 -0.13382210 -0.04025516  0.02318440  0.061112273  0.07814418
+ [33,] -2.62154043 -2.71749094 -2.28002444 -1.83624670 -1.437701886 -1.08540892
+ [34,] -1.85774640 -1.51777324 -1.21698366 -0.95372228 -0.726333720 -0.53316258
+ [35,] -2.03980226 -1.67567883 -1.35124563 -1.06518505 -0.816179468 -0.60291125
+ [36,]  2.07649435  1.89457843  1.68442765  1.45499654  1.215239635  0.97411147
+ [37,] -1.62952521 -1.31982629 -1.04867583 -0.81399503 -0.613705083 -0.44572719
+ [38,] -1.14524671 -1.44061246 -1.78281203 -2.14926185 -2.066594868 -1.58634461
+ [39,] -1.66808419 -2.02463305 -2.40294685 -2.33625358 -1.855356693 -1.40964094
+ [40,] -0.35557920 -0.55853704 -0.81026734 -1.11550727 -1.478970259 -1.71133966
+ [41,] -2.10148058 -2.50229301 -2.57390881 -2.12031327 -1.666676758 -1.26316573
+ [42,] -2.69794830 -2.25679332 -1.84534833 -1.47538352 -1.146824292 -0.85959605
+ [43,] -0.34621259 -0.20674902 -0.10226253 -0.02829342  0.019618029  0.04593154
+ [44,] -2.27851817 -1.88272835 -1.52729309 -1.21133766 -0.933987323 -0.69436735
+ [45,] -1.49178574 -1.82770393 -2.20844827 -2.36128353 -1.932108554 -1.46922462
+ [46,] -2.60665893 -2.72274710 -2.29068872 -1.84510007 -1.444838236 -1.09094898
+ [47,]  0.24987119  0.31026243  0.33733544  0.33665583  0.313789248  0.27430130
+ [48,] -2.07106534 -1.70279477 -1.37430144 -1.08432572 -0.831608005 -0.61488867
+ [49,]  1.67673291  1.54784657  1.38961286  1.21024464  1.017954769  0.82095611
+ [50,]  0.10114895  0.18126865  0.22765623  0.24560140  0.240393855  0.21732330
+ [51,] -2.75492821 -2.62754700 -2.16629344 -1.74182852 -1.361595110 -1.02632603
+ [52,] -1.07587405 -0.83961865 -0.64037094 -0.47502493 -0.340474642 -0.23361409
+ [53,]  1.26372834  1.18962832  1.08503157  0.95738470  0.814134333  0.66272709
+ [54,] -2.16521805 -1.78445783 -1.44373687 -1.14197023 -0.878072975 -0.65096016
+ [55,] -0.87285206 -0.66352815 -0.49064693 -0.35072575 -0.240281970 -0.15583293
+ [56,] -1.90632655 -1.55990908 -1.25281040 -0.98346523 -0.750308341 -0.55177446
+ [57,] -1.57076780 -1.26886322 -1.00534360 -0.77802110 -0.584707916 -0.42321623
+ [58,] -1.76143597 -1.43423868 -1.14595695 -0.89475672 -0.678803898 -0.49626443
+ [59,] -2.51099970 -2.73924223 -2.35563118 -1.89901456 -1.488296587 -1.12468639
+ [60,] -0.58633195 -0.41501581 -0.27934499 -0.17530527 -0.098882434 -0.04606224
+ [61,] -1.64778436 -1.33566331 -1.06214153 -0.82517410 -0.622716092 -0.45272258
+ [62,] -2.39570331 -1.98436852 -1.61371441 -1.28308366 -0.991818950 -0.73926296
+ [63,] -0.92948693 -0.71265023 -0.53241383 -0.38540016 -0.268231646 -0.17753071
+ [64,] -1.68341725 -1.36656938 -1.08841995 -0.84699015 -0.640301151 -0.46637414
+ [65,] -0.97896664 -0.75556630 -0.56890397 -0.41569386 -0.292650203 -0.19648722
+ [66,] -2.52211464 -2.09401137 -1.70694015 -1.36047862 -1.054203975 -0.78769344
+ [67,] -0.61466265 -0.43958835 -0.30023823 -0.19265060 -0.112863819 -0.05691621
+ [68,] -0.87251419 -0.66323510 -0.49039776 -0.35051889 -0.240115228 -0.15570349
+ [69,] -1.87415137 -1.53200204 -1.22908195 -0.96376614 -0.734429679 -0.53944760
+ [70,] -1.97705036 -2.36956679 -2.58330125 -2.18751781 -1.720847690 -1.30521948
+ [71,] -2.51992498 -2.09211191 -1.70532510 -1.35913782 -1.053123211 -0.78685442
+ [72,] -2.26359078 -2.64543183 -2.50917453 -2.03275784 -1.596101776 -1.20837726
+ [73,] -0.40347705 -0.25641717 -0.14449374 -0.06335330 -0.008642354  0.02399256
+ [74,] -1.76666165 -1.43877116 -1.14981077 -0.89795611 -0.681382807 -0.49826648
+ [75,] -1.45589943 -1.78761816 -2.16509628 -2.35665211 -1.947731728 -1.48135314
+ [76,] -2.02268997 -1.66083653 -1.33862572 -1.05470814 -0.807734442 -0.59635525
+ [77,] -0.67526363 -0.49215043 -0.34493004 -0.22975324 -0.142770795 -0.08013347
+ [78,] -2.34357357 -2.69575395 -2.46323859 -1.98955928 -1.561281120 -1.18134543
+ [79,] -2.78161157 -2.36424562 -1.93671151 -1.55123220 -1.207962924 -0.90705894
+ [80,] -1.95720168 -1.60403547 -1.29032962 -1.01461327 -0.775415546 -0.57126558
+ [81,]  1.31528589  1.23434661  1.12305407  0.98895055  0.839578319  0.68247966
+ [82,] -0.57011184 -0.40094734 -0.26738303 -0.16537459 -0.090877703 -0.03984804
+ [83,] -2.75151864 -2.31956035 -1.89871709 -1.51968966 -1.182537723 -0.88732095
+ [84,] -1.98343821 -1.62679164 -1.30967845 -1.03067645 -0.788363444 -0.58131723
+ [85,]  0.49354561  0.38995343  0.23550421  0.02407103 -0.250473021 -0.59425486
+ [86,] -1.43407520 -1.15030332 -0.90453598 -0.69433175 -0.517249232 -0.37084699
+ [87,] -2.62998485 -2.18981595 -1.78839966 -1.42810538 -1.108715245 -0.83001140
+ [88,]  1.42998064  1.33382675  1.20763879  1.05917182  0.896180923  0.72642116
+ [89,] -2.76369572 -2.33634001 -1.91298428 -1.53153412 -1.192085080 -0.89473272
+ [90,]  1.48387135  1.38056869  1.24738193  1.09216613  0.922776339  0.74706760
+ [91,] -0.76915888 -0.57359018 -0.41417561 -0.28724013 -0.189108709 -0.11610632
+ [92,] -1.70785481 -2.06905767 -2.44017282 -2.32203669 -1.838042479 -1.39619964
+ [93,]  2.64000000  2.38333333  2.10000000  1.80000000  1.493333333  1.19000000
+ [94,]  2.86000000  3.03333333  3.15000000  3.20000000  3.173333333  3.06000000
+ [95,] -2.04871575 -1.68340992 -1.35781913 -1.07064230 -0.820578335 -0.60632616
+ [96,] -1.96530867 -2.35654721 -2.58185055 -2.19385947 -1.725959455 -1.30918782
+ [97,]  1.73165699  1.59548480  1.43011809  1.24387163  1.045060158  0.84199846
+ [98,]  1.91080159  1.75086533  1.56223309  1.35355200  1.133469185  0.91063178
+ [99,] -0.54871219 -0.38238642 -0.25160129 -0.15227277 -0.080316837 -0.03164947
+[100,] -0.22812107 -0.10432270 -0.01517278  0.04400751  0.077896960  0.09117439
+              [,18]         [,19]        [,20]        [,21]         [,22]
+  [1,]  0.712619740  0.5043174163  0.320133004  0.168837779  0.0592030186
+  [2,]  0.073388904  0.0641912670  0.047673959  0.028416579  0.0109987261
+  [3,] -0.404450876 -0.2648131713 -0.155995455 -0.076551504 -0.0250350934
+  [4,] -0.396350189 -0.2592356494 -0.152542704 -0.074772009 -0.0244242219
+  [5,] -0.308114836 -0.1984834392 -0.114934193 -0.055389161 -0.0177704084
+  [6,]  0.356853547  0.2593636447  0.168494955  0.090685861  0.0323747484
+  [7,] -0.209340952 -0.1304751909 -0.072833848 -0.033691291 -0.0103218860
+  [8,] -0.413585684 -0.2711027112 -0.159888980 -0.078558167 -0.0257239477
+  [9,]  0.570738826  0.4066289185  0.259659172  0.137670496  0.0485038022
+ [10,] -0.361372767 -0.2351528340 -0.137634294 -0.067088444 -0.0217865802
+ [11,]  0.475507044  0.3410594948  0.219068576  0.116750728  0.0413223891
+ [12,]  0.457220021  0.3284684294  0.211274107  0.112733578  0.0399433677
+ [13,] -0.680128786 -0.4546241914 -0.273497515 -0.137110258 -0.0458239194
+ [14,] -0.116766092 -0.0667351238 -0.033375712 -0.013355174 -0.0033408310
+ [15,] -0.939283370 -0.6330584954 -0.383956846 -0.194039298 -0.0653667241
+ [16,] -0.441246269 -0.2901477046 -0.171678738 -0.084634426 -0.0278098280
+ [17,]  0.132897479  0.1051643848  0.073038270  0.041488955  0.0154862580
+ [18,]  0.414120657  0.2987934576  0.192903886  0.103265849  0.0366932517
+ [19,] -0.431603169 -0.2835081932 -0.167568564 -0.082516106 -0.0270826434
+ [20,] -0.651989835 -0.4352498318 -0.261503864 -0.130928915 -0.0437019657
+ [21,]  0.307594474  0.2254475615  0.147499284  0.079865016  0.0286601298
+ [22,] -0.418382102 -0.2744051630 -0.161933355 -0.079611806 -0.0260856448
+ [23,] -0.487268861 -0.3218353906 -0.191294924 -0.094744307 -0.0312803841
+ [24,]  0.030765620  0.0348440880  0.029506658  0.019053431  0.0077845112
+ [25,] -0.974949725 -0.6576156575 -0.399158899 -0.201874202 -0.0680563180
+ [26,] -0.535848661 -0.3552837774 -0.212001069 -0.105415935 -0.0349437788
+ [27,] -0.522198481 -0.3458852931 -0.206182959 -0.102417371 -0.0339144210
+ [28,] -0.926302260 -0.6241206817 -0.378423914 -0.191187710 -0.0643878207
+ [29,] -0.326020937 -0.2108122297 -0.122566301 -0.059322632 -0.0191207045
+ [30,] -0.484047012 -0.3196170682 -0.189921677 -0.094036557 -0.0310374249
+ [31,] -0.397017553 -0.2596951461 -0.152827154 -0.074918610 -0.0244745477
+ [32,]  0.078895820  0.0679829146  0.050021169  0.029626295  0.0114140018
+ [33,] -0.780386733 -0.5236542533 -0.316230411 -0.159134135 -0.0533843547
+ [34,] -0.372553480 -0.2428510297 -0.142399844 -0.069544535 -0.0226297159
+ [35,] -0.424062790 -0.2783164567 -0.164354632 -0.080859695 -0.0265140246
+ [36,]  0.740566583  0.5235595052  0.332044773  0.174976922  0.0613104855
+ [37,] -0.307982551 -0.1983923573 -0.114877808 -0.055360101 -0.0177604328
+ [38,] -1.150327130 -0.7783673136 -0.473909924 -0.240399730 -0.0812814994
+ [39,] -1.019831688 -0.6885179928 -0.418288916 -0.211733518 -0.0714408595
+ [40,] -1.347420905 -0.9140712239 -0.557917107 -0.283695740 -0.0961443086
+ [41,] -0.911659921 -0.6140390712 -0.372182917 -0.187971196 -0.0632836443
+ [42,] -0.613624202 -0.4088341503 -0.245151299 -0.122501054 -0.0408088196
+ [43,]  0.055106827  0.0516036078  0.039881598  0.024400516  0.0096200777
+ [44,] -0.491603008 -0.3248195573 -0.193142266 -0.095696398 -0.0316072214
+ [45,] -1.063834165 -0.7188147802 -0.437044070 -0.221399636 -0.0747590791
+ [46,] -0.784478062 -0.5264712336 -0.317974256 -0.160032886 -0.0536928811
+ [47,]  0.223757620  0.1677238259  0.111765543  0.061448395  0.0223380063
+ [48,] -0.432908098 -0.2844066685 -0.168124763 -0.082802762 -0.0271810478
+ [49,]  0.627461537  0.4456839000  0.283836065  0.150130895  0.0527812525
+ [50,]  0.181679434  0.1387519604  0.093830579  0.052204991  0.0191648972
+ [51,] -0.736754089 -0.4936121047 -0.297632890 -0.149549259 -0.0500940242
+ [52,] -0.151337279 -0.0905382357 -0.048110971 -0.020949501 -0.0059478385
+ [53,]  0.510609596  0.3652284650  0.234030320  0.124461780  0.0439694668
+ [54,] -0.459546850 -0.3027481042 -0.179478985 -0.088654554 -0.0291898717
+ [55,] -0.093895991 -0.0509884968 -0.023627800 -0.008331251 -0.0016162004
+ [56,] -0.386298328 -0.2523146959 -0.148258304 -0.072563895 -0.0236662127
+ [57,] -0.291358235 -0.1869461074 -0.107792035 -0.051708203 -0.0165067959
+ [58,] -0.345304240 -0.2240892578 -0.130785414 -0.063558636 -0.0205748552
+ [59,] -0.809393093 -0.5436258457 -0.328593778 -0.165506024 -0.0555717196
+ [60,] -0.012830468  0.0048271095  0.010924719  0.009476586  0.0044969374
+ [61,] -0.313148637 -0.2019493344 -0.117079747 -0.056494946 -0.0181500065
+ [62,] -0.524758358 -0.3476478312 -0.207274054 -0.102979705 -0.0341074609
+ [63,] -0.109919772 -0.0620212639 -0.030457608 -0.011851229 -0.0028245511
+ [64,] -0.323230297 -0.2088908053 -0.121376848 -0.058709606 -0.0189102628
+ [65,] -0.123919133 -0.0716601679 -0.036424548 -0.014926498 -0.0038802406
+ [66,] -0.560524209 -0.3722734991 -0.222518515 -0.110836466 -0.0368045578
+ [67,] -0.020846112 -0.0006918585  0.007508215  0.007715772  0.0038924790
+ [68,] -0.093800397 -0.0509226777 -0.023587054 -0.008310251 -0.0016089917
+ [69,] -0.377194960 -0.2460468032 -0.144378180 -0.070564139 -0.0229797292
+ [70,] -0.942716564 -0.6354223340 -0.385420175 -0.194793475 -0.0656256207
+ [71,] -0.559904598 -0.3718468815 -0.222254419 -0.110700354 -0.0367578331
+ [72,] -0.871198700 -0.5861805258 -0.354937151 -0.179082993 -0.0602324703
+ [73,]  0.038904916  0.0404481935  0.032975866  0.020841408  0.0083982942
+ [74,] -0.346782750 -0.2251072485 -0.131415598 -0.063883424 -0.0206863494
+ [75,] -1.072791059 -0.7249818223 -0.440861763 -0.223367216 -0.0754345170
+ [76,] -0.419221187 -0.2749828937 -0.162290998 -0.079796130 -0.0261489201
+ [77,] -0.037992029 -0.0124972437  0.000200119  0.003949292  0.0025995082
+ [78,] -0.851235730 -0.5724355297 -0.346428344 -0.174697685 -0.0587270659
+ [79,] -0.648675486 -0.4329678209 -0.260091191 -0.130200844 -0.0434520312
+ [80,] -0.400692497 -0.2622254349 -0.154393523 -0.075725893 -0.0247516746
+ [81,]  0.525196843  0.3752721435  0.240247835  0.127666192  0.0450694887
+ [82,] -0.008241290  0.0079868714  0.012880762  0.010484700  0.0048430066
+ [83,] -0.634099008 -0.4229315573 -0.253878266 -0.126998798 -0.0423528214
+ [84,] -0.408115633 -0.2673364471 -0.157557483 -0.077356549 -0.0253114521
+ [85,] -0.997800474 -1.0328712435 -0.648249533 -0.330251682 -0.1121261994
+ [86,] -0.252683614 -0.1603176793 -0.091307770 -0.043212466 -0.0135903490
+ [87,] -0.591775971 -0.3937911056 -0.235838938 -0.117701607 -0.0391612481
+ [88,]  0.557647585  0.3976152768  0.254079298  0.134794715  0.0475165938
+ [89,] -0.639572587 -0.4267002511 -0.256211267 -0.128201191 -0.0427655831
+ [90,]  0.572894956  0.4081134670  0.260578178  0.138144138  0.0486663956
+ [91,] -0.064557938 -0.0307885256 -0.011123056 -0.001886498  0.0005961774
+ [92,] -1.009905306 -0.6816834347 -0.414057999 -0.209552969 -0.0706923127
+ [93,]  0.900000000  0.6333333333  0.400000000  0.210000000  0.0733333333
+ [94,]  2.850000000  2.5333333333  2.100000000  1.540000000  0.8433333333
+ [95,] -0.426584697 -0.2800528515 -0.165429543 -0.081413688 -0.0267042012
+ [96,] -0.945647181 -0.6374401356 -0.386669290 -0.195437250 -0.0658466180
+ [97,]  0.643001281  0.4563833959  0.290459563  0.153544544  0.0539531021
+ [98,]  0.693686907  0.4912816957  0.312063272  0.164678763  0.0577752968
+ [99,] -0.002186658  0.0121556345  0.015461425  0.011814734  0.0052995854
+[100,]  0.088518620  0.0746084490  0.054122691  0.031740156  0.0121396555
+attr(,"degree")
+[1] 3
+attr(,"knots")
+ [1] -2.18632212 -1.87956002 -1.57279792 -1.26603582 -0.95927372 -0.65251162
+ [7] -0.34574952 -0.03898742  0.26777468  0.57453678  0.88129888  1.18806098
+[13]  1.49482308  1.80158518  2.10834728  2.41510938  2.72187148  3.02863358
+[19]  3.33539568  3.64215778
+attr(,"Boundary.knots")
+[1] -2.493084  3.948920
+
+$`bols(x1, intercept = FALSE)`
+              x1
+1   -2.297102222
+2   -0.887656819
+3    0.217724194
+4    0.198984973
+5   -0.005128807
+6   -1.543392168
+7   -0.233621246
+8    0.238855635
+9   -2.034853921
+10   0.118072123
+11  -1.817871874
+12  -1.775568723
+13   0.855446586
+14  -0.447773554
+15   1.454945768
+16   0.302842535
+17  -1.025317291
+18  -1.675867483
+19   0.280535268
+20   0.790353090
+21  -1.429441747
+22   0.249951131
+23   0.409306042
+24  -0.789056889
+25   1.537452317
+26   0.521685109
+27   0.490108313
+28   1.424916722
+29   0.036293159
+30   0.401852977
+31   0.200528779
+32  -0.900395903
+33   1.087372089
+34   0.143936331
+35   0.263092200
+36  -2.335409050
+37  -0.005434822
+38   1.943150758
+39   1.641277222
+40   2.399085415
+41   1.391044775
+42   0.701602333
+43  -0.845365111
+44   0.419332172
+45   1.743067623
+46   1.096836510
+47  -1.235502961
+48   0.283553943
+49  -2.151564839
+50  -1.138164001
+51   0.986437217
+52  -0.367800445
+53  -1.899067611
+54   0.345177048
+55  -0.500678684
+56   0.175732124
+57  -0.043891651
+58   0.080900992
+59   1.154472153
+60  -0.688206584
+61   0.006515822
+62   0.496030045
+63  -0.463611064
+64   0.029837605
+65  -0.431226512
+66   0.578766757
+67  -0.669664091
+68  -0.500899821
+69   0.154673412
+70   1.462887735
+71   0.577333418
+72   1.297446320
+73  -0.807885425
+74   0.084321212
+75   1.763787499
+76   0.251892177
+77  -0.630000648
+78   1.251266220
+79   0.782686046
+80   0.209029981
+81  -1.932685909
+82  -0.698822674
+83   0.748966454
+84   0.226201834
+85   2.889349252
+86  -0.133357188
+87   0.651061082
+88  -2.006092598
+89   0.761628419
+90  -2.039532780
+91  -0.568546050
+92   1.618314642
+93  -2.493084222
+94   3.948919880
+95   0.268926096
+96   1.469667095
+97  -2.181063112
+98  -2.268510774
+99  -0.712828782
+100 -0.922656210
+attr(,"assign")
+[1] 1
+
+>   extract(model, what = "penalty", which = "x1") # penalty matrices for x1
+$`bbs(x1, df = 1, center = TRUE)`
+      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
+ [1,]    1    0    0    0    0    0    0    0    0     0     0     0     0
+ [2,]    0    1    0    0    0    0    0    0    0     0     0     0     0
+ [3,]    0    0    1    0    0    0    0    0    0     0     0     0     0
+ [4,]    0    0    0    1    0    0    0    0    0     0     0     0     0
+ [5,]    0    0    0    0    1    0    0    0    0     0     0     0     0
+ [6,]    0    0    0    0    0    1    0    0    0     0     0     0     0
+ [7,]    0    0    0    0    0    0    1    0    0     0     0     0     0
+ [8,]    0    0    0    0    0    0    0    1    0     0     0     0     0
+ [9,]    0    0    0    0    0    0    0    0    1     0     0     0     0
+[10,]    0    0    0    0    0    0    0    0    0     1     0     0     0
+[11,]    0    0    0    0    0    0    0    0    0     0     1     0     0
+[12,]    0    0    0    0    0    0    0    0    0     0     0     1     0
+[13,]    0    0    0    0    0    0    0    0    0     0     0     0     1
+[14,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[15,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[16,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[17,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[18,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[19,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[20,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[21,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[22,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+      [,14] [,15] [,16] [,17] [,18] [,19] [,20] [,21] [,22]
+ [1,]     0     0     0     0     0     0     0     0     0
+ [2,]     0     0     0     0     0     0     0     0     0
+ [3,]     0     0     0     0     0     0     0     0     0
+ [4,]     0     0     0     0     0     0     0     0     0
+ [5,]     0     0     0     0     0     0     0     0     0
+ [6,]     0     0     0     0     0     0     0     0     0
+ [7,]     0     0     0     0     0     0     0     0     0
+ [8,]     0     0     0     0     0     0     0     0     0
+ [9,]     0     0     0     0     0     0     0     0     0
+[10,]     0     0     0     0     0     0     0     0     0
+[11,]     0     0     0     0     0     0     0     0     0
+[12,]     0     0     0     0     0     0     0     0     0
+[13,]     0     0     0     0     0     0     0     0     0
+[14,]     1     0     0     0     0     0     0     0     0
+[15,]     0     1     0     0     0     0     0     0     0
+[16,]     0     0     1     0     0     0     0     0     0
+[17,]     0     0     0     1     0     0     0     0     0
+[18,]     0     0     0     0     1     0     0     0     0
+[19,]     0     0     0     0     0     1     0     0     0
+[20,]     0     0     0     0     0     0     1     0     0
+[21,]     0     0     0     0     0     0     0     1     0
+[22,]     0     0     0     0     0     0     0     0     1
+
+$`bols(x1, intercept = FALSE)`
+     [,1]
+[1,]    1
+
+>   extract(model, what = "lambda", which = "x1") # df and corresponding lambda for x1
+$`bbs(x1, df = 1, center = TRUE)`
+  lambda 
+1093.545 
+
+$`bols(x1, intercept = FALSE)`
+lambda 
+     0 
+
+>        ## note that bols(x1, intercept = FALSE) is unpenalized
+> 
+>   ### extract from base-learners
+>   extract(bbs(x1), what = "design")
+                1            2           3          4            5            6
+  [1,] 0.04709558 5.362376e-01 0.373206557 0.04346025 0.000000e+00 0.000000e+00
+  [2,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 7.506751e-02
+  [3,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+  [4,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+  [5,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+  [6,] 0.00000000 0.000000e+00 0.000000000 0.12318504 6.579182e-01 2.187499e-01
+  [7,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+  [8,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+  [9,] 0.00000000 3.243382e-02 0.472242809 0.47525981 2.006356e-02 0.000000e+00
+ [10,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [11,] 0.00000000 0.000000e+00 0.084983597 0.63029373 2.833673e-01 1.355342e-03
+ [12,] 0.00000000 0.000000e+00 0.048134880 0.57122651 3.741458e-01 6.492839e-03
+ [13,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [14,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [15,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [16,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [17,] 0.00000000 0.000000e+00 0.000000000 0.00000000 1.663165e-03 2.924988e-01
+ [18,] 0.00000000 0.000000e+00 0.006321715 0.37214270 5.727413e-01 4.879429e-02
+ [19,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [20,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [21,] 0.00000000 0.000000e+00 0.000000000 0.02519110 4.993070e-01 4.584924e-01
+ [22,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [23,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [24,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 1.469852e-02
+ [25,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [26,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [27,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [28,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [29,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [30,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [31,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [32,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 8.794084e-02
+ [33,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [34,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [35,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [36,] 0.11479252 5.907627e-01 0.271812195 0.02263255 0.000000e+00 0.000000e+00
+ [37,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [38,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [39,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [40,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [41,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [42,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [43,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 4.141199e-02
+ [44,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [45,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [46,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [47,] 0.00000000 0.000000e+00 0.000000000 0.00000000 1.216894e-01 6.572529e-01
+ [48,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [49,] 0.00000000 1.742869e-01 0.596460592 0.22901010 2.424271e-04 0.000000e+00
+ [50,] 0.00000000 0.000000e+00 0.000000000 0.00000000 3.305247e-02 5.291232e-01
+ [51,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [52,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [53,] 0.00000000 6.429034e-05 0.200334580 0.66275132 1.368498e-01 0.000000e+00
+ [54,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [55,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [56,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [57,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [58,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [59,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [60,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 2.625817e-04
+ [61,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [62,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [63,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [64,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [65,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [66,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [67,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 2.913558e-05
+ [68,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [69,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [70,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [71,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [72,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [73,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 2.165594e-02
+ [74,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [75,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [76,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [77,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [78,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [79,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [80,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [81,] 0.00000000 1.298534e-03 0.265224223 0.63927149 9.420575e-02 0.000000e+00
+ [82,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 5.734527e-04
+ [83,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [84,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [85,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [86,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [87,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [88,] 0.00000000 1.754454e-02 0.417037338 0.53161775 3.380037e-02 0.000000e+00
+ [89,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [90,] 0.00000000 3.545463e-02 0.480658070 0.46562618 1.826111e-02 0.000000e+00
+ [91,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [92,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [93,] 1.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [94,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [95,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [96,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 0.000000e+00
+ [97,] 0.00000000 2.373615e-01 0.587254796 0.17538290 8.397609e-07 0.000000e+00
+ [98,] 0.01923227 4.711229e-01 0.444253652 0.06539113 0.000000e+00 0.000000e+00
+ [99,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 1.266970e-03
+[100,] 0.00000000 0.000000e+00 0.000000000 0.00000000 0.000000e+00 1.138236e-01
+                  7            8            9           10           11
+  [1,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+  [2,] 6.185250e-01 3.042867e-01 2.120754e-03 0.000000e+00 0.000000e+00
+  [3,] 0.000000e+00 0.000000e+00 7.238832e-04 2.593838e-01 6.422180e-01
+  [4,] 0.000000e+00 0.000000e+00 1.879377e-03 2.982936e-01 6.220192e-01
+  [5,] 0.000000e+00 0.000000e+00 1.173467e-01 6.551565e-01 2.272727e-01
+  [6,] 1.468049e-04 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+  [7,] 0.000000e+00 4.256950e-02 5.574784e-01 3.918128e-01 8.139338e-03
+  [8,] 0.000000e+00 0.000000e+00 1.396354e-04 2.178273e-01 6.581984e-01
+  [9,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [10,] 0.000000e+00 0.000000e+00 1.937007e-02 4.716370e-01 4.866245e-01
+ [11,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [12,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [13,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 9.975642e-05
+ [14,] 6.131279e-03 3.698705e-01 5.744487e-01 4.954952e-02 0.000000e+00
+ [15,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [16,] 0.000000e+00 0.000000e+00 0.000000e+00 1.157937e-01 6.543454e-01
+ [17,] 6.253053e-01 8.053269e-02 0.000000e+00 0.000000e+00 0.000000e+00
+ [18,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [19,] 0.000000e+00 0.000000e+00 0.000000e+00 1.467210e-01 6.649723e-01
+ [20,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 4.343016e-03
+ [21,] 1.700955e-02 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [22,] 0.000000e+00 0.000000e+00 3.269084e-05 1.973076e-01 6.633889e-01
+ [23,] 0.000000e+00 0.000000e+00 0.000000e+00 2.604451e-02 5.029075e-01
+ [24,] 4.441949e-01 5.126324e-01 2.847418e-02 0.000000e+00 0.000000e+00
+ [25,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [26,] 0.000000e+00 0.000000e+00 0.000000e+00 8.523536e-04 2.650957e-01
+ [27,] 0.000000e+00 0.000000e+00 0.000000e+00 3.474644e-03 3.317293e-01
+ [28,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [29,] 0.000000e+00 0.000000e+00 7.161312e-02 6.138331e-01 3.120906e-01
+ [30,] 0.000000e+00 0.000000e+00 0.000000e+00 2.973024e-02 5.173798e-01
+ [31,] 0.000000e+00 0.000000e+00 1.755663e-03 2.950326e-01 6.238798e-01
+ [32,] 6.333636e-01 2.775172e-01 1.178416e-03 0.000000e+00 0.000000e+00
+ [33,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [34,] 0.000000e+00 0.000000e+00 1.096501e-02 4.171040e-01 5.365920e-01
+ [35,] 0.000000e+00 0.000000e+00 5.927496e-07 1.744135e-01 6.664354e-01
+ [36,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [37,] 0.000000e+00 0.000000e+00 1.177419e-01 6.553577e-01 2.266823e-01
+ [38,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [39,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [40,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [41,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [42,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 3.350139e-02
+ [43,] 5.543837e-01 3.956711e-01 8.533227e-03 0.000000e+00 0.000000e+00
+ [44,] 0.000000e+00 0.000000e+00 0.000000e+00 2.158527e-02 4.828731e-01
+ [45,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [46,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [47,] 2.208934e-01 1.643411e-04 0.000000e+00 0.000000e+00 0.000000e+00
+ [48,] 0.000000e+00 0.000000e+00 0.000000e+00 1.422479e-01 6.640888e-01
+ [49,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [50,] 4.257527e-01 1.207169e-02 0.000000e+00 0.000000e+00 0.000000e+00
+ [51,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [52,] 6.190475e-05 2.050059e-01 6.616852e-01 1.332469e-01 0.000000e+00
+ [53,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [54,] 0.000000e+00 0.000000e+00 0.000000e+00 6.966187e-02 6.110331e-01
+ [55,] 2.147055e-02 4.823144e-01 4.760062e-01 2.020885e-02 0.000000e+00
+ [56,] 0.000000e+00 0.000000e+00 4.502043e-03 3.481969e-01 5.901456e-01
+ [57,] 0.000000e+00 6.810140e-07 1.747860e-01 6.664131e-01 1.588002e-01
+ [58,] 0.000000e+00 0.000000e+00 3.767802e-02 5.437740e-01 4.085991e-01
+ [59,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [60,] 2.308290e-01 6.539147e-01 1.149938e-01 0.000000e+00 0.000000e+00
+ [61,] 0.000000e+00 0.000000e+00 1.029572e-01 6.462956e-01 2.502032e-01
+ [62,] 0.000000e+00 0.000000e+00 0.000000e+00 2.793601e-03 3.189938e-01
+ [63,] 9.452790e-03 4.042233e-01 5.474065e-01 3.891736e-02 0.000000e+00
+ [64,] 0.000000e+00 0.000000e+00 7.777320e-02 6.219763e-01 2.983683e-01
+ [65,] 3.605714e-03 3.339917e-01 5.998421e-01 6.256050e-02 0.000000e+00
+ [66,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 1.598667e-01
+ [67,] 1.960998e-01 6.636276e-01 1.402435e-01 0.000000e+00 0.000000e+00
+ [68,] 2.156262e-02 4.827629e-01 4.755538e-01 2.012068e-02 0.000000e+00
+ [69,] 0.000000e+00 0.000000e+00 8.353069e-03 3.939219e-01 5.557908e-01
+ [70,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [71,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 1.621498e-01
+ [72,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [73,] 4.832160e-01 4.750962e-01 2.003183e-02 0.000000e+00 0.000000e+00
+ [74,] 0.000000e+00 0.000000e+00 3.564687e-02 5.375629e-01 4.159653e-01
+ [75,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [76,] 0.000000e+00 0.000000e+00 2.313132e-05 1.938249e-01 6.640554e-01
+ [77,] 1.326020e-01 6.614793e-01 2.058528e-01 6.586072e-05 0.000000e+00
+ [78,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [79,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 5.536610e-03
+ [80,] 0.000000e+00 0.000000e+00 1.170441e-03 2.772409e-01 6.335060e-01
+ [81,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [82,] 2.518255e-01 6.455959e-01 1.020051e-01 0.000000e+00 0.000000e+00
+ [83,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 1.337958e-02
+ [84,] 0.000000e+00 0.000000e+00 4.148326e-04 2.423659e-01 6.495451e-01
+ [85,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [86,] 0.000000e+00 4.852240e-03 3.532445e-01 5.865861e-01 5.531720e-02
+ [87,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 7.046501e-02
+ [88,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [89,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 9.894743e-03
+ [90,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [91,] 6.385118e-02 6.019999e-01 3.307312e-01 3.417806e-03 0.000000e+00
+ [92,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [93,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [94,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [95,] 0.000000e+00 0.000000e+00 0.000000e+00 1.647970e-01 6.666526e-01
+ [96,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [97,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [98,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+ [99,] 2.805091e-01 6.318061e-01 8.641783e-02 0.000000e+00 0.000000e+00
+[100,] 6.532684e-01 2.326245e-01 2.834720e-04 0.000000e+00 0.000000e+00
+                 12           13           14          15           16
+  [1,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+  [2,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+  [3,] 0.0976742754 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+  [4,] 0.0778078442 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+  [5,] 0.0002241048 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+  [6,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+  [7,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+  [8,] 0.1238346796 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+  [9,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [10,] 0.0223684885 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [11,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [12,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [13,] 0.2120558772 6.598637e-01 1.279807e-01 0.000000000 0.000000e+00
+ [14,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [15,] 0.0000000000 3.661181e-04 2.390147e-01 0.650866514 1.097527e-01
+ [16,] 0.2296118689 2.489839e-04 0.000000e+00 0.000000000 0.000000e+00
+ [17,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [18,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [19,] 0.1882946957 1.199653e-05 0.000000e+00 0.000000000 0.000000e+00
+ [20,] 0.3458199253 5.918012e-01 5.803586e-02 0.000000000 0.000000e+00
+ [21,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [22,] 0.1392708163 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [23,] 0.4546797871 1.636823e-02 0.000000e+00 0.000000000 0.000000e+00
+ [24,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [25,] 0.0000000000 0.000000e+00 1.063925e-01 0.648697157 2.444631e-01
+ [26,] 0.6395403012 9.451163e-02 0.000000e+00 0.000000000 0.000000e+00
+ [27,] 0.6013420368 6.345402e-02 0.000000e+00 0.000000000 0.000000e+00
+ [28,] 0.0000000000 1.972394e-03 3.006575e-01 0.620652459 7.671767e-02
+ [29,] 0.0024631594 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [30,] 0.4389737676 1.391615e-02 0.000000e+00 0.000000000 0.000000e+00
+ [31,] 0.0793319847 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [32,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [33,] 0.0058937038 3.669690e-01 5.766121e-01 0.050525224 0.000000e+00
+ [34,] 0.0353389747 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [35,] 0.1591504699 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [36,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [37,] 0.0002180832 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [38,] 0.0000000000 0.000000e+00 0.000000e+00 0.026028332 5.028402e-01
+ [39,] 0.0000000000 0.000000e+00 2.378531e-02 0.493146384 4.649320e-01
+ [40,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 2.375492e-05
+ [41,] 0.0000000000 6.453025e-03 3.736829e-01 0.571577339 4.828672e-02
+ [42,] 0.5306267070 4.240271e-01 1.184478e-02 0.000000000 0.000000e+00
+ [43,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [44,] 0.4754426052 2.009907e-02 0.000000e+00 0.000000000 0.000000e+00
+ [45,] 0.0000000000 0.000000e+00 1.156917e-03 0.276769745 6.337485e-01
+ [46,] 0.0043830626 3.464238e-01 5.913819e-01 0.057811330 0.000000e+00
+ [47,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [48,] 0.1936406145 2.268318e-05 0.000000e+00 0.000000000 0.000000e+00
+ [49,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [50,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [51,] 0.0473226201 5.693291e-01 3.766382e-01 0.006710069 0.000000e+00
+ [52,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [53,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [54,] 0.3166276661 2.677358e-03 0.000000e+00 0.000000000 0.000000e+00
+ [55,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [56,] 0.0571555459 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [57,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [58,] 0.0099489048 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [59,] 0.0002187903 2.267522e-01 6.553339e-01 0.117695069 0.000000e+00
+ [60,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [61,] 0.0005439647 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [62,] 0.6095521268 6.866045e-02 0.000000e+00 0.000000000 0.000000e+00
+ [63,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [64,] 0.0018822738 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [65,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [66,] 0.6664778379 1.736550e-01 4.369765e-07 0.000000000 0.000000e+00
+ [67,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [68,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [69,] 0.0419342647 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [70,] 0.0000000000 1.880436e-04 2.235737e-01 0.656393030 1.198452e-01
+ [71,] 0.6665839324 1.712662e-01 1.262854e-07 0.000000000 0.000000e+00
+ [72,] 0.0000000000 4.439476e-02 5.621866e-01 0.385862108 7.556506e-03
+ [73,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [74,] 0.0108249049 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [75,] 0.0000000000 0.000000e+00 3.117734e-04 0.234929791 6.524201e-01
+ [76,] 0.1420965146 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [77,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [78,] 0.0000000000 8.341511e-02 6.285877e-01 0.286539407 1.457817e-03
+ [79,] 0.3624580166 5.799377e-01 5.206769e-02 0.000000000 0.000000e+00
+ [80,] 0.0880825956 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [81,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [82,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [83,] 0.4352665016 5.207128e-01 3.064113e-02 0.000000000 0.000000e+00
+ [84,] 0.1076741399 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [85,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [86,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [87,] 0.6121991134 3.147486e-01 2.587270e-03 0.000000000 0.000000e+00
+ [88,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [89,] 0.4081288846 5.441664e-01 3.781001e-02 0.000000000 0.000000e+00
+ [90,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [91,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [92,] 0.0000000000 0.000000e+00 3.554034e-02 0.537227867 4.163586e-01
+ [93,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [94,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [95,] 0.1685504109 8.813363e-09 0.000000e+00 0.000000000 0.000000e+00
+ [96,] 0.0000000000 9.191102e-05 2.107558e-01 0.660217602 1.289347e-01
+ [97,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [98,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+ [99,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+[100,] 0.0000000000 0.000000e+00 0.000000e+00 0.000000000 0.000000e+00
+                 17         18        19       20         21 22 23 24
+  [1,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+  [2,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+  [3,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+  [4,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+  [5,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+  [6,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+  [7,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+  [8,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+  [9,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [10,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [11,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [12,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [13,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [14,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [15,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [16,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [17,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [18,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [19,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [20,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [21,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [22,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [23,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [24,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [25,] 0.0004472665 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [26,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [27,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [28,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [29,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [30,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [31,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [32,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [33,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [34,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [35,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [36,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [37,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [38,] 0.4547513999 0.01638010 0.0000000 0.000000 0.00000000  0  0  0
+ [39,] 0.0181362973 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [40,] 0.1940775925 0.66400935 0.1418893 0.000000 0.00000000  0  0  0
+ [41,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [42,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [43,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [44,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [45,] 0.0883248231 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [46,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [47,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [48,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [49,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [50,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [51,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [52,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [53,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [54,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [55,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [56,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [57,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [58,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [59,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [60,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [61,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [62,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [63,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [64,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [65,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [66,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [67,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [68,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [69,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [70,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [71,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [72,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [73,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [74,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [75,] 0.1123383755 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [76,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [77,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [78,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [79,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [80,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [81,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [82,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [83,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [84,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [85,] 0.0000000000 0.01560093 0.4499665 0.507311 0.02712159  0  0  0
+ [86,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [87,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [88,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [89,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [90,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [91,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [92,] 0.0108731531 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [93,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [94,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  1
+ [95,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [96,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [97,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [98,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+ [99,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+[100,] 0.0000000000 0.00000000 0.0000000 0.000000 0.00000000  0  0  0
+attr(,"degree")
+[1] 3
+attr(,"knots")
+ [1] -2.18632212 -1.87956002 -1.57279792 -1.26603582 -0.95927372 -0.65251162
+ [7] -0.34574952 -0.03898742  0.26777468  0.57453678  0.88129888  1.18806098
+[13]  1.49482308  1.80158518  2.10834728  2.41510938  2.72187148  3.02863358
+[19]  3.33539568  3.64215778
+attr(,"Boundary.knots")
+[1] -2.493084  3.948920
+attr(,"intercept")
+[1] TRUE
+>   extract(bbs(x1), what = "penalty")
+      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
+ [1,]    1   -2    1    0    0    0    0    0    0     0     0     0     0
+ [2,]   -2    5   -4    1    0    0    0    0    0     0     0     0     0
+ [3,]    1   -4    6   -4    1    0    0    0    0     0     0     0     0
+ [4,]    0    1   -4    6   -4    1    0    0    0     0     0     0     0
+ [5,]    0    0    1   -4    6   -4    1    0    0     0     0     0     0
+ [6,]    0    0    0    1   -4    6   -4    1    0     0     0     0     0
+ [7,]    0    0    0    0    1   -4    6   -4    1     0     0     0     0
+ [8,]    0    0    0    0    0    1   -4    6   -4     1     0     0     0
+ [9,]    0    0    0    0    0    0    1   -4    6    -4     1     0     0
+[10,]    0    0    0    0    0    0    0    1   -4     6    -4     1     0
+[11,]    0    0    0    0    0    0    0    0    1    -4     6    -4     1
+[12,]    0    0    0    0    0    0    0    0    0     1    -4     6    -4
+[13,]    0    0    0    0    0    0    0    0    0     0     1    -4     6
+[14,]    0    0    0    0    0    0    0    0    0     0     0     1    -4
+[15,]    0    0    0    0    0    0    0    0    0     0     0     0     1
+[16,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[17,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[18,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[19,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[20,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[21,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[22,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[23,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[24,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+      [,14] [,15] [,16] [,17] [,18] [,19] [,20] [,21] [,22] [,23] [,24]
+ [1,]     0     0     0     0     0     0     0     0     0     0     0
+ [2,]     0     0     0     0     0     0     0     0     0     0     0
+ [3,]     0     0     0     0     0     0     0     0     0     0     0
+ [4,]     0     0     0     0     0     0     0     0     0     0     0
+ [5,]     0     0     0     0     0     0     0     0     0     0     0
+ [6,]     0     0     0     0     0     0     0     0     0     0     0
+ [7,]     0     0     0     0     0     0     0     0     0     0     0
+ [8,]     0     0     0     0     0     0     0     0     0     0     0
+ [9,]     0     0     0     0     0     0     0     0     0     0     0
+[10,]     0     0     0     0     0     0     0     0     0     0     0
+[11,]     0     0     0     0     0     0     0     0     0     0     0
+[12,]     1     0     0     0     0     0     0     0     0     0     0
+[13,]    -4     1     0     0     0     0     0     0     0     0     0
+[14,]     6    -4     1     0     0     0     0     0     0     0     0
+[15,]    -4     6    -4     1     0     0     0     0     0     0     0
+[16,]     1    -4     6    -4     1     0     0     0     0     0     0
+[17,]     0     1    -4     6    -4     1     0     0     0     0     0
+[18,]     0     0     1    -4     6    -4     1     0     0     0     0
+[19,]     0     0     0     1    -4     6    -4     1     0     0     0
+[20,]     0     0     0     0     1    -4     6    -4     1     0     0
+[21,]     0     0     0     0     0     1    -4     6    -4     1     0
+[22,]     0     0     0     0     0     0     1    -4     6    -4     1
+[23,]     0     0     0     0     0     0     0     1    -4     5    -2
+[24,]     0     0     0     0     0     0     0     0     1    -2     1
+>   ## weights and lambda can only be extracted after using dpp
+>   weights <- rep(1, length(x1))
+>   extract(bbs(x1)$dpp(weights), what = "lambda")
+  lambda 
+140.4455 
 > 
 > 
 > 
@@ -1425,18 +2697,18 @@ attr(,"offset")
 > 
 > 
 >   ### (too) low-dimensional example    
->   sbody <- stabsel(glmboost(DEXfat ~ ., data = bodyfat), q = 3)
-Loading required package: multicore
+>   sbody <- stabsel(glmboost(DEXfat ~ ., data = bodyfat), q = 3,
++                    papply = lapply)
 >   sbody
 	Stability Selection
 
 Selected base-learners:
-(Intercept)   waistcirc 
-          1           3 
+waistcirc   hipcirc 
+        3         4 
 
 Selection probabilities:
-(Intercept)   waistcirc    anthro3c 
-       1.00        0.96        0.04 
+waistcirc   hipcirc  anthro3a  anthro3b  anthro3c   anthro4 
+     1.00      0.96      0.48      0.08      0.28      0.20 
 
 Cutoff: 0.9; q:  3 
 
@@ -1475,18 +2747,18 @@ Warning in optimize(risk, interval = c(0, max(y[, 1], na.rm = TRUE)), y = y,  :
 > S1
 $surv
            [,1]
- [1,] 0.9658532
- [2,] 0.9301833
- [3,] 0.8925100
- [4,] 0.8535429
- [5,] 0.8119403
- [6,] 0.7708223
- [7,] 0.7297132
- [8,] 0.6826960
- [9,] 0.6325709
-[10,] 0.5820681
-[11,] 0.5218497
-[12,] 0.4633558
+ [1,] 0.9888125
+ [2,] 0.9756645
+ [3,] 0.9584447
+ [4,] 0.9381549
+ [5,] 0.8948703
+ [6,] 0.8528505
+ [7,] 0.8105376
+ [8,] 0.7628548
+ [9,] 0.7115465
+[10,] 0.6595893
+[11,] 0.5635126
+[12,] 0.4760903
 
 $time
   1   2   3  22  23  24  25   5   7   8  10  11 
@@ -1501,19 +2773,19 @@ attr(,"class")
 > S2 <- survFit(fit, newdata = newdata)
 > S2
 $surv
-              1         3        12
- [1,] 0.9261555 0.9398046 0.9786631
- [2,] 0.8523142 0.8786884 0.9560666
- [3,] 0.7779547 0.8161129 0.9318412
- [4,] 0.7049307 0.7535397 0.9063720
- [5,] 0.6312922 0.6891727 0.8786885
- [6,] 0.5628548 0.6280552 0.8507935
- [7,] 0.4987027 0.5694634 0.8223344
- [8,] 0.4305029 0.5055683 0.7890285
- [9,] 0.3637907 0.4411647 0.7525473
-[10,] 0.3027367 0.3802158 0.7146640
-[11,] 0.2378723 0.3128096 0.6678203
-[12,] 0.1829547 0.2529419 0.6203097
+                 1            3        12
+ [1,] 8.525410e-01 0.8994196163 0.9981712
+ [2,] 7.051462e-01 0.7928408604 0.9959995
+ [3,] 5.477953e-01 0.6703778052 0.9931180
+ [4,] 4.044353e-01 0.5479776705 0.9896666
+ [5,] 2.069906e-01 0.3511312775 0.9820896
+ [6,] 1.046567e-01 0.2231846179 0.9744345
+ [7,] 5.086153e-02 0.1381764992 0.9663999
+ [8,] 2.152818e-02 0.0780427982 0.9569134
+ [9,] 8.020833e-03 0.0404963688 0.9461340
+[10,] 2.736977e-03 0.0198217864 0.9345333
+[11,] 2.936125e-04 0.0044971885 0.9108998
+[12,] 2.688962e-05 0.0009185331 0.8862541
 
 $time
   1   2   3  22  23  24  25   5   7   8  10  11 
@@ -1530,6 +2802,9 @@ attr(,"class")
 > 
 > 
 > cleanEx()
+
+detaching ‘package:survival’, ‘package:splines’
+
 > nameEx("wpbc")
 > ### * wpbc
 > 
@@ -1548,10 +2823,12 @@ attr(,"class")
 >     ### fit logistic regression model with 100 boosting iterations
 >     coef(glmboost(status ~ ., data = wpbc[,colnames(wpbc) != "time"], 
 +                   family = Binomial()))
-    mean_texture       SE_texture          SE_area     SE_concavity 
-   -0.0006008601    -0.0885905098     0.0006354682    -1.7311449167 
-SE_concavepoints       worst_area            tsize           pnodes 
-   -3.7137850359     0.0000968127     0.0057306264     0.0222476787 
+     (Intercept)     mean_texture    mean_symmetry  mean_fractaldim 
+   -1.498492e-01    -1.884622e-02    -2.459159e+00    -9.692265e+00 
+    SE_perimeter SE_concavepoints     worst_radius  worst_perimeter 
+    2.147472e-02    -1.054597e+01     1.778602e-02     1.065506e-03 
+      worst_area worst_smoothness            tsize           pnodes 
+    1.585303e-04     5.677908e+00     3.078694e-02     2.126638e-02 
 attr(,"offset")
 [1] -0.5835661
 > 
@@ -1561,7 +2838,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  57.583 3.196 70.012 11.22 11.22 
+Time elapsed:  61.93 2.14 64.332 0 0 
 > grDevices::dev.off()
 null device 
           1 

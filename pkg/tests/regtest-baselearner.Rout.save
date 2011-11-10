@@ -1,7 +1,8 @@
 
-R version 2.10.1 (2009-12-14)
-Copyright (C) 2009 The R Foundation for Statistical Computing
+R version 2.14.0 (2011-10-31)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -18,21 +19,24 @@ Type 'q()' to quit R.
 > 
 > library("mboost")
 > attach(asNamespace("mboost"))
+The following object(s) are masked from 'package:mboost':
 
-	The following object(s) are masked from package:mboost :
-
-	 %+% %X% AdaExp bbs Binomial blackboost bns bols boost_control brandom bspatial bss btree CoxPH cv cvrisk ExpectReg Family FP gamboost GaussClass Gaussian GaussReg glmboost Huber IPCweights Laplace Loglog Lognormal mboost mboost_fit mstop NBinomial nuisance Poisson PropOdds QuantReg selected stabsel survFit Weibull 
-
+    %+%, %O%, %X%, AUC, AdaExp, Binomial, CoxPH, ExpectReg, FP, Family,
+    GammaReg, GaussClass, GaussReg, Gaussian, Huber, IPCweights,
+    Laplace, Loglog, Lognormal, NBinomial, Poisson, PropOdds, QuantReg,
+    Weibull, bbs, blackboost, bmono, bmrf, bns, bols, boost_control,
+    brad, brandom, bspatial, bss, btree, buser, cv, cvrisk, extract,
+    gamboost, glmboost, mboost, mboost_fit, mstop, nuisance, selected,
+    stabsel, survFit
 > library("MASS")
 > library("Matrix")
 Loading required package: lattice
 
 Attaching package: 'Matrix'
 
+The following object(s) are masked from 'package:base':
 
-	The following object(s) are masked from package:base :
-
-	 det 
+    det
 
 > 
 > set.seed(290875)
@@ -66,6 +70,9 @@ Attaching package: 'Matrix'
 > ### numeric x without intercept
 > m1 <- lm(y ~ xn - 1, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(xn, intercept = FALSE), w), y)
+Warning message:
+In bols(xn, intercept = FALSE) :
+  covariates should be (mean-) centered if 'intercept = FALSE'
 > testfun(m1, m2)
 > 
 > ### factor x with intercept
@@ -92,11 +99,17 @@ Attaching package: 'Matrix'
 > xtmp <- (z1 == "2") * xn
 > m1 <- lm(y ~ xtmp - 1, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(xn, by = z1, intercept = FALSE), w), y)
+Warning message:
+In bols(xn, by = z1, intercept = FALSE) :
+  covariates should be (mean-) centered if 'intercept = FALSE'
 > testfun(m1, m2)
 > 
 > ### interaction with numeric variable
 > m1 <- lm(y ~ z2:xn - 1, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(z2, by = xn, intercept = FALSE), w), y)
+Warning message:
+In bols(z2, by = xn, intercept = FALSE) :
+  covariates should be (mean-) centered if 'intercept = FALSE'
 > testfun(m1, m2)
 > 
 > ### ridge
@@ -229,6 +242,11 @@ Attaching package: 'Matrix'
 > stopifnot(all.equal(get_index(data.frame(x, x)), get_index(X)))
 > stopifnot(all.equal(get_index(data.frame(x)), get_index(X)))
 > 
+> ### check handling of missings for cyclic effects
+> h <- hyper_bbs(data.frame(x = x), vary = "", cyclic = TRUE)
+> X <- X_bbs(data.frame(x = x), vary = "", h)$X
+> stopifnot(all(is.na(X[is.na(x),])))
+> stopifnot(all(!is.na(X[!is.na(x),])))
 > 
 > ### combinations and tensor products of base-learners
 > 
@@ -243,9 +261,15 @@ Attaching package: 'Matrix'
 > 
 > ### spatial
 > m1 <- gamboost(y ~ bbs(x1) %X% bbs(x2))
+Note: Method with signature "sparseMatrix#ANY" chosen for function "kronecker",
+ target signature "dgCMatrix#dgeMatrix".
+ "ANY#Matrix" would also be valid
 Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
  target signature "dgCMatrix#dgTMatrix".
  "sparseMatrix#TsparseMatrix" would also be valid
+Note: Method with signature "ANY#sparseMatrix" chosen for function "kronecker",
+ target signature "dgeMatrix#dgCMatrix".
+ "Matrix#ANY" would also be valid
 Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
  target signature "dgTMatrix#dgCMatrix".
  "TsparseMatrix#sparseMatrix" would also be valid
@@ -255,9 +279,6 @@ Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "k
 Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
  target signature "dgTMatrix#dsCMatrix".
  "TsparseMatrix#sparseMatrix" would also be valid
-Warning message:
-In asMethod(object) :
-  as(.,"dsCMatrix") is deprecated; do use as(., "symmetricMatrix")
 > m2 <- gamboost(y ~ bspatial(x1, x2, df = 16))
 Note: Method with signature "Matrix#diagonalMatrix" chosen for function "kronecker",
  target signature "dsCMatrix#ddiMatrix".
@@ -280,6 +301,15 @@ Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "k
 > 
 > ### varying numeric
 > m1 <- gamboost(y ~ bbs(x1) %X% bols(x2, intercept = FALSE, lambda = 0))
+Note: Method with signature "sparseMatrix#ANY" chosen for function "kronecker",
+ target signature "dgCMatrix#dtrMatrix".
+ "ANY#Matrix" would also be valid
+Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
+ target signature "dgCMatrix#dtTMatrix".
+ "sparseMatrix#TsparseMatrix" would also be valid
+Note: Method with signature "Matrix#ANY" chosen for function "kronecker",
+ target signature "dgeMatrix#dgeMatrix".
+ "ANY#Matrix" would also be valid
 > m2 <- gamboost(y ~ bbs(x1, by = x2, df = 4))
 > stopifnot(max(abs(predict(m1) - predict(m2))) < sqrt(.Machine$double.eps))
 > stopifnot(max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < sqrt(.Machine$double.eps))
@@ -291,25 +321,25 @@ In data.frame(..., check.names = FALSE) :
   row names were found from a short variable and have been discarded
 > coef(m1)
 $`"bbs(x1) %X% bols(f, intercept = FALSE, df = 5)"`
- [1]  0.730895171  0.038870922 -0.005399569 -0.148991281 -0.329031840
- [6] -0.220643444  0.154919020 -0.300950311 -0.873054991 -0.519028732
-[11]  0.320637179 -0.303918059 -0.610811537 -0.686367706  0.342235456
-[16]  0.015554696 -0.135101120 -0.315273962 -0.092935904  0.357645322
-[21]  0.403799615  0.601384744 -0.296924404  0.084490869  0.416705690
-[26]  0.448347137  0.462026108 -0.277978035 -0.008355033 -0.223355153
-[31]  0.100481865 -0.072720712 -0.172365196 -0.347188904 -0.542295914
-[36] -0.091497556 -0.110402447 -0.062103717 -0.042659116 -0.315372175
-[41] -0.037990696  0.207814428  0.200650463  0.012818782  0.038118949
+ [1]  0.730895170  0.038870922 -0.005399569 -0.148991281 -0.329031839
+ [6] -0.220643444  0.154919020 -0.300950310 -0.873054989 -0.519028732
+[11]  0.320637178 -0.303918057 -0.610811536 -0.686367706  0.342235455
+[16]  0.015554696 -0.135101119 -0.315273961 -0.092935903  0.357645321
+[21]  0.403799615  0.601384744 -0.296924402  0.084490869  0.416705690
+[26]  0.448347137  0.462026107 -0.277978034 -0.008355033 -0.223355153
+[31]  0.100481865 -0.072720712 -0.172365196 -0.347188904 -0.542295913
+[36] -0.091497556 -0.110402447 -0.062103717 -0.042659116 -0.315372174
+[41] -0.037990696  0.207814428  0.200650463  0.012818782  0.038118948
 [46]  0.093509262  0.113732497  0.280359393 -0.037694530 -0.148325380
-[51] -0.026317909 -0.006505122  0.063325194 -0.152492547  0.051858835
-[56]  0.052133940  0.023312796  0.310295070 -0.133932734  0.119637727
-[61] -0.371533883  0.042400169  0.125771268 -0.689991471 -0.022849336
+[51] -0.026317909 -0.006505122  0.063325194 -0.152492546  0.051858834
+[56]  0.052133940  0.023312796  0.310295069 -0.133932733  0.119637727
+[61] -0.371533883  0.042400169  0.125771267 -0.689991470 -0.022849336
 [66] -0.109987692  0.071981650 -0.054482987  0.019664720  0.458025083
-[71]  0.347018048  0.154893844 -0.104385886  0.829366071  0.433741504
-[76]  0.219947980 -0.012472865  0.378273519  0.385671821  0.105267425
-[81] -0.332167839 -0.332316112  0.664484861 -0.063076836 -0.368592581
-[86] -0.935470908  0.587630225 -0.036879027 -0.193482916 -1.010237013
-[91]  0.429416563 -0.011876975 -0.009186625 -0.599968165  0.438317733
+[71]  0.347018048  0.154893844 -0.104385886  0.829366071  0.433741503
+[76]  0.219947980 -0.012472866  0.378273519  0.385671821  0.105267425
+[81] -0.332167838 -0.332316111  0.664484860 -0.063076836 -0.368592580
+[86] -0.935470906  0.587630224 -0.036879027 -0.193482915 -1.010237011
+[91]  0.429416562 -0.011876975 -0.009186625 -0.599968164  0.438317732
 [96]  0.006562539
 
 attr(,"offset")
@@ -325,7 +355,7 @@ attr(,"offset")
  [7,] -0.010560163
  [8,] -0.098703524
  [9,]  0.077330699
-[10,] -0.190650493
+[10,] -0.190650492
 > 
 > ### cbind
 > m1 <- gamboost(y ~ bols(x1, intercept = FALSE, df = 1) %+%
@@ -341,5 +371,156 @@ attr(,"offset")
 Warning message:
 In data.frame(..., check.names = FALSE) :
   row names were found from a short variable and have been discarded
+> 
+> 
+> ### test bmono with categorical covariates
+> set.seed(781)
+> x <- as.ordered(gl(4, 50))
+> y <- rnorm(200, mean = rep(c(1,3,2,4), each = 50), sd = 1)
+> mod1 <- gamboost(y ~ bols(x))
+> diff(coef(mod1)[[1]])
+       x2        x3        x4 
+ 3.773862 -1.313469  1.937386 
+> mod2 <- gamboost(y ~ bmono(x, lambda2 = 10^15))
+> stopifnot(abs(coef(mod1)[[1]] - coef(mod2)[[1]])[c(1,4)] < 1e-5)
+> stopifnot(all(diff(coef(mod2)[[1]]) > - sqrt(.Machine$double.eps)))
+> 
+> ### test bmono for tensor-product splines
+> x1 <- runif(100, min = -2, max = 3)
+> x2 <- runif(100, min = -2, max = 3)
+> f <- function(x1, x2)
++     0.5 + x1^2 * (x2 + 3)
+> y <- rnorm(100, mean = f(x1, x2), sd = 0.5)
+> mod1 <- mboost(y ~ bspatial(x1, x2, df = 6, knots = list(x1 = 10, x2 = 5)),
++                control = boost_control(mstop = 50))
+> mod21 <- mboost(y ~ bmono(x1, x2, df = 6, knots = list(x1 = 10, x2 = 5),
++                           lambda2 = list(x1 = 10e6, x2 = 0)),
++                 control = boost_control(mstop = 50))
+> mod22 <- mboost(y ~ bmono(x1, x2, df = 6, knots = list(x1 = 10, x2 = 5),
++                           lambda2 = list(x1 = 0, x2 = 10e6)),
++                 control = boost_control(mstop = 50))
+> 
+> diff_order <- 1
+> D1 <- kronecker(diff(diag(10 + 3 + 1), differences = diff_order),
++                 diag(5 + 3 + 1))
+> D2 <- kronecker(diag(10 + 3 + 1), diff(diag(5 + 3 + 1),
++                               differences = diff_order))
+> 
+> beta <- coef(mod1)[[1]]
+> sum((D1 %*% beta)[D1 %*% beta <= 0])
+[1] -118.1251
+> sum((D2 %*% beta)[D2 %*% beta <= 0])
+[1] 0
+> 
+> beta <- coef(mod21)[[1]]
+> sum((D1 %*% beta)[D1 %*% beta <= 0])
+[1] -0.0001569556
+> sum((D2 %*% beta)[D2 %*% beta <= 0])
+[1] -0.9167353
+> stopifnot(all(D1 %*% beta > - 2e-05))
+> 
+> beta <- coef(mod22)[[1]]
+> sum((D1 %*% beta)[D1 %*% beta <= 0])
+[1] -117.2788
+> sum((D2 %*% beta)[D2 %*% beta <= 0])
+[1] 0
+> stopifnot(all(D2 %*% beta > - 2e-05))
+> 
+> #nd <- expand.grid(sort(x1), sort(x2))
+> #names(nd) <- c("x1", "x2")
+> #contour(sort(x1), sort(x2),
+> #        z = matrix(predict(mod1, newdata = nd), ncol = length(x1)))
+> #contour(sort(x1), sort(x2),
+> #        z = matrix(predict(mod21, newdata = nd), ncol = length(x1)),
+> #        col = "red", add = TRUE)
+> #contour(sort(x1), sort(x2),
+> #        z = matrix(predict(mod22, newdata = nd), ncol = length(x1)),
+> #        col = "green", add = TRUE)
+> 
+> ### %O%: kronecker product of baselearners for matrix-valued
+> ### responses
+> x1 <- 1:10/10
+> x2 <- 11:17/17
+> 
+> X1 <- cbind(1, x1, x1^2)
+> colnames(X1) <- paste("X1", 1:ncol(X1), sep = "_")
+> X2 <- cbind(1, x2, x2^2, x2^3)
+> colnames(X2) <- paste("X2", 1:ncol(X2), sep = "_")
+> 
+> x <- expand.grid(x1, x2)
+> colnames(x) <- c("x1", "x2")
+> B1 <- with(x, cbind(1, x1, x1^2))
+> colnames(B1) <- paste("B1", 1:ncol(B1), sep = "_")
+> B2 <- with(x, cbind(1, x2, x2^2, x2^3))
+> colnames(B2) <- paste("B2", 1:ncol(B2), sep = "_")
+> 
+> X <- kronecker(X2, X1)
+> w <- rep(1, nrow(X))
+> 
+> B <- kronecker(matrix(1, ncol = ncol(B2)), B1) *
++      kronecker(B2, matrix(1, ncol = ncol(B1)))
+> 
+> tol <- 1 / 10000
+> stopifnot(max(abs(X - B)) < tol)
+> 
+> K1 <- diag(ncol(B1))
+> K2 <- crossprod(diff(diag(ncol(B2)), diff = 2))
+> 
+> b1 <- buser(B2, K = diag(ncol(B2))) %X%
++             buser(B1, K = diag(ncol(B1)))
+> 
+> stopifnot(max(abs(extract(b1, "design") - B)) < tol)
+> b1d <- b1$dpp(w)
+> 
+> b2 <- buser(X1, K = diag(ncol(X1))) %O%
++       buser(X2, K = diag(ncol(X2)))
+> b2d <- b2$dpp(w)
+Warning message:
+In ans * length(l) + if1 :
+  longer object length is not a multiple of shorter object length
+> 
+> stopifnot(max(abs(get("XtX", environment(b1d$fit)) -
++         get("XtX", environment(b2d$fit)))) < tol)
+> 
+> y <- runif(nrow(X))
+> 
+> stopifnot(max(abs(b1d$fit(y)$model - as.vector(b2d$fit(y)$model))) < 1/1000)
+> 
+> m1 <- b1d$fit(y)
+> p1 <- b1d$predict(list(m1, m1))
+> 
+> m2 <- b2d$fit(y)
+> p2 <- b2d$predict(list(m2, m2))
+> 
+> stopifnot(max(abs(p1 - p2)) < tol)
+> 
+> 
+> x1 <- runif(200)
+> x2 <- runif(60)
+> y <- rnorm(length(x1) * length(x2))
+> d <- expand.grid(x1, x2)
+> d$y <- y
+> w <- as.vector(rmultinom(1, length(y), rep(1 / length(y), length(y))))
+> 
+> m1 <- mboost(y ~ bbs(Var2, df = 3, knots = 5) %X%
++                      bbs(Var1, df = 3, knots = 7),
++                      data = d, weights = w)
+> m2 <- mboost(y ~ bbs(x1, df = 3, knots = 7)%O%
++                  bbs(x2, df = 3, knots = 5),
++                  weights = w)
+Warning message:
+In ans * length(l) + if1 :
+  longer object length is not a multiple of shorter object length
+> 
+> stopifnot(max(abs(fitted(m1) - fitted(m2))) < tol)
+> 
+> stopifnot(max(abs(coef(m1)[[1]] - coef(m2)[[1]])) < tol)
+> 
+> stopifnot(max(abs(m1$predict() - m2$predict())) < tol)
+> 
+> p1 <- predict(m1, newdata = expand.grid(Var1 = c(0.2, 0.5), Var2 = c(0.7, 0.3)))
+> p2 <- predict(m2, newdata = data.frame(x1 = c(0.2, 0.5), x2 = c(0.7, 0.3)))
+> 
+> stopifnot(max(abs(p1 - p2)) < tol)
 > 
 > 

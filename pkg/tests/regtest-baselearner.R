@@ -188,6 +188,11 @@ stopifnot(max(abs(coef(f1) - coef(f2))) < sqrt(.Machine$double.eps))
 stopifnot(all.equal(get_index(data.frame(x, x)), get_index(X)))
 stopifnot(all.equal(get_index(data.frame(x)), get_index(X)))
 
+### check handling of missings for cyclic effects
+h <- hyper_bbs(data.frame(x = x), vary = "", cyclic = TRUE)
+X <- X_bbs(data.frame(x = x), vary = "", h)$X
+stopifnot(all(is.na(X[is.na(x),])))
+stopifnot(all(!is.na(X[!is.na(x),])))
 
 ### combinations and tensor products of base-learners
 
