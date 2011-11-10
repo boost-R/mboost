@@ -30,7 +30,7 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
     if (is.null(dmat)) {
         if(is(XtX, "Matrix")) diag <- Diagonal
         dmat <- diag(ncol(XtX))
-    } 
+    }
     A <- XtX + dmat * 10e-10
     Rm <- solve(chol(A))
     decomp <- svd(crossprod(Rm, dmat) %*% Rm)
@@ -152,7 +152,8 @@ hyper_bbs <- function(mf, vary, knots = 20, boundary.knots = NULL, degree = 3,
         if (is.null(boundary.knots))
             boundary.knots <- range(x, na.rm = TRUE)
         if ((length(boundary.knots) != 2) || !boundary.knots[1] < boundary.knots[2])
-            stop("boundary.knots must be a vector (or a list of vectors) of length 2 in increasing order")
+            stop("boundary.knots must be a vector (or a list of vectors) ",
+                 "of length 2 in increasing order")
         if (length(knots) == 1) {
             knots <- seq(from = boundary.knots[1],
                          to = boundary.knots[2], length = knots + 2)
@@ -492,8 +493,13 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
 cbs <- function (x, knots, boundary.knots, degree = 3) {
     # require(splines)
     nx <- names(x)
-    knots <- c(boundary.knots[1], knots, boundary.knots[2])
+    x <- as.vector(x)
+    ## handling of NAs
+    nax <- is.na(x)
+    if (nas <- any(nax))
+        x <- x[!nax]
 
+    knots <- c(boundary.knots[1], knots, boundary.knots[2])
     nKnots <- length(knots)
     ord <- degree + 1
     xc <- knots[nKnots - ord + 1]
@@ -507,6 +513,16 @@ cbs <- function (x, knots, boundary.knots, degree = 3) {
         Xtmp <- splineDesign(knots, x[ind], ord, outer.ok = TRUE)
         X[ind, ] <- X[ind, ] + Xtmp
     }
+    ## handling of NAs
+    if (nas) {
+        tmp <- matrix(NA, length(nax), ncol(X))
+        tmp[!nax, ] <- X
+        X <- tmp
+    }
+    ## add attributes
+    attr(X, "degree") <- degree
+    attr(X,"knots") <- knots
+    attr(X,"boundary.knots") <- boundary.knots
     dimnames(X) <- list(nx, 1L:ncol(X))
     return(X)
 }
@@ -520,9 +536,12 @@ bl_lin <- function(blg, Xfun, args) {
 
     newX <- function(newdata = NULL) {
         if (!is.null(newdata)) {
-            stopifnot(all(names(newdata) == names(blg)))
+            stopifnot(all(names(blg) %in% names(newdata)))
             stopifnot(all(class(newdata) == class(mf)))
-            mf <- newdata[,names(blg),drop = FALSE]
+            nm <- names(blg)
+            if (any(duplicated(nm)))  ## removes duplicates
+                nm <- unique(nm)
+            mf <- newdata[, nm, drop = FALSE]
         }
         return(Xfun(mf, vary, args))
     }
@@ -596,6 +615,8 @@ bl_lin <- function(blg, Xfun, args) {
             if(!is.null(newdata)) {
                 index <- NULL
                 nm <- names(blg)
+                if (any(duplicated(nm)))  ## removes duplicates
+                    nm <- unique(nm)
                 newdata <- newdata[,nm, drop = FALSE]
                 ### option
                 if (nrow(newdata) > options("mboost_indexmin")[[1]]) {
@@ -797,7 +818,7 @@ fit.bl <- function(object, y)
     stopifnot(inherits(bl1, "blg"))
     stopifnot(inherits(bl2, "blg"))
 
-    stopifnot(!any(colnames(model.frame(bl1)) %in% 
+    stopifnot(!any(colnames(model.frame(bl1)) %in%
                    colnames(model.frame(bl2))))
     mf <- cbind(model.frame(bl1), model.frame(bl2))
     index1 <- bl1$get_index()
@@ -878,7 +899,7 @@ fit.bl <- function(object, y)
                                   dimnames = list("", colnames(X2))),
                        make.dimnames = TRUE) *
              kronecker(Matrix(1, ncol = ncol(X1),
-                              dimnames = list("", colnames(X1))), 
+                              dimnames = list("", colnames(X1))),
                        X2, make.dimnames = TRUE)
 
         K <- kronecker(K1, diag(ncol(X2))) +

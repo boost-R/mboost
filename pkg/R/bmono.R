@@ -137,14 +137,14 @@ bl_mono <- function(blg, Xfun, args) {
             diff_order <- 2
         }
         D <- V <- lambda2 <- vector(mode = "list", length =2)
-        if (is.factor(mf[[1]]) && args$intercept){
+        if (is.factor(mf[[1]]) && args$intercept) {
             D[[1]] <- diff(diag(ncol(X)), differences = diff_order)
             D[[1]][1,1] <- 0
         } else {
             D[[1]] <- diff(diag(ncol(X)), differences = diff_order)
         }
-        V[[1]] <- matrix(0, ncol = ncol(X) - diff_order,
-                         nrow =  ncol(X) - diff_order)
+        V[[1]] <- matrix(0, ncol = nrow(D[[1]]),
+                         nrow =  nrow(D[[1]]))
 
         lambda2[[1]] <- args$lambda2
         lambda2[[2]] <- 0
@@ -263,7 +263,16 @@ bl_mono <- function(blg, Xfun, args) {
         }
 
         hatvalues <- function() {
-            stop("not possible for monotonic base-learners")
+            warning("hatvalues might be a very poor approximation",
+                    "for monotonic base-learners.")
+            if(lambda2[[2]] == 0)
+                pen2 <- lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]])
+            else
+                pen2 <- lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]]) +
+                        lambda2[[2]] * crossprod(D[[2]], V[[2]] %*% D[[2]])
+            ret <- as.matrix(tcrossprod(X %*% solve(XtX + pen2), X * w))
+            if (is.null(index)) return(ret)
+            return(ret[index,index])
         }
 
         ### actually used degrees of freedom (trace of hat matrix)

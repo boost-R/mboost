@@ -358,7 +358,7 @@ bl1 \%O\% bl2
 
   B. Hofner, J. Mueller, and T. Hothorn (2011),
   Monotonicity-Constrained Species Distribution Models, 
-  \emph{Ecology}, in press. doi:10.1890/10-2276.1
+  \emph{Ecology}, 92:1895-1901.
 
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable selection and
   model choice in geoadditive regression models, \emph{Biometrics}, \bold{65}(2),
@@ -402,7 +402,7 @@ bl1 \%O\% bl2
   ### more convenient formula interface
   mod2 <- mboost(y ~ bbs(x1, knots = 20, df = 4) +
                      bbs(x2, knots = knots.x2, df = 5) +
-                     bols(x3) + bols(x4))
+                     bols(x3) + bols(x4), weights = weights)
   all.equal(coef(mod1), coef(mod2))
 
 

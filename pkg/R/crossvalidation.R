@@ -32,6 +32,7 @@ cvrisk <- function (object, folds = cv(model.weights(object)), grid = 1:mstop(ob
         dummyfct <- function(weights, oobweights) {
             mod <- fitfct(weights = weights, oobweights = oobweights)
             mod[max(grid)]
+            ### make sure dispatch works correctly
             class(mod) <- class(object)
             fun(mod)
         }

@@ -1,5 +1,5 @@
 
-                CHANGES in `mboost' VERSION 2.1-0 (2011-0x-xx)
+                CHANGES in `mboost' VERSION 2.1-0 (2011-11-xx)
 
   o  add Binomial(link = "probit") and general cdf's as link
      functions (experimental)
@@ -67,12 +67,6 @@
 
   o  new experimental baselearner %O% for smoothing 
      matrix-values responses
-
-
-		CHANGES in `mboost' VERSION 2.0-13 (2011-XX-XX, rXXX)
-
-  o  updated references in manuals
-
 
 
 		CHANGES in `mboost' VERSION 2.0-12 (2011-08-22, r586)
