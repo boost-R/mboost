@@ -67,9 +67,9 @@
 
     Merge changes to patch/
        cd patch
-       svn merge (--dry-run) -r400:HEAD svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/pkg
+       svn merge (--dry-run) -r601:HEAD svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/pkg
 
-       where 400 is the version of the last merge (2.0-0, here)
+       where 601 is the version of the last merge (2.1-0, here)
 
     After a minor release, pkg/ and patch/ are identical.
 

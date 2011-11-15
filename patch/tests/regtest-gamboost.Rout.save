@@ -1,5 +1,5 @@
 
-R version 2.13.1 (2011-07-08)
+R version 2.14.0 (2011-10-31)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -126,10 +126,15 @@ Degrees of freedom (for mstop = 34): 5.056199
 > df <- data.frame(y = 3 * x[,2] + (1:4)[xf], x = x)
 > ga <- gamboost(y ~ xf + x.2, data = df,
 +                control = boost_control(mstop = 500, nu = 1))
+Warning message:
+In bbs(as.data.frame(list(...)), df = dfbase) :
+  cannot compute 'bbs' for non-numeric variables; used 'bols' instead.
 > stopin(fitted(lm(y ~ xf + x.2 - 1, data = df)), fitted(ga))
 > ga <- gamboost(y ~ xf + sin(x.1) + x.2, data = df,
-+                dfbase = 1,
 +                control = boost_control(mstop = 500, nu = 1))
+Warning message:
+In bbs(as.data.frame(list(...)), df = dfbase) :
+  cannot compute 'bbs' for non-numeric variables; used 'bols' instead.
 > stopin(fitted(lm(y ~ xf + sin(x.1) + x.2, data = df)), fitted(ga))
 > 
 > ### check centering
@@ -138,7 +143,13 @@ Degrees of freedom (for mstop = 34): 5.056199
 > xnm <- xn - mean(xn)
 > xf <- gl(2, 100)
 > gc <- gamboost(y ~ xn + xf)
+Warning message:
+In bbs(as.data.frame(list(...)), df = dfbase) :
+  cannot compute 'bbs' for non-numeric variables; used 'bols' instead.
 > g <- gamboost(y ~ xnm + xf)
+Warning message:
+In bbs(as.data.frame(list(...)), df = dfbase) :
+  cannot compute 'bbs' for non-numeric variables; used 'bols' instead.
 > stopifnot(max(abs(fitted(gc) - fitted(g))) < 1 / 10000)
 > 
 > pc1 <- predict(gc)
@@ -190,7 +201,7 @@ Attaching package: 'zoo'
 
 The following object(s) are masked from 'package:base':
 
-    as.Date
+    as.Date, as.Date.numeric
 
 Loading required package: sandwich
 Loading required package: strucchange
@@ -216,7 +227,7 @@ $surv
            [,1]
  [1,] 0.9983186
  [2,] 0.9930606
- [3,] 0.9867088
+ [3,] 0.9867089
  [4,] 0.9766845
  [5,] 0.9158358
  [6,] 0.8576859
@@ -224,8 +235,8 @@ $surv
  [8,] 0.7225968
  [9,] 0.6427971
 [10,] 0.5623798
-[11,] 0.4490300
-[12,] 0.3426994
+[11,] 0.4490299
+[12,] 0.3426993
 
 $time
  [1]  59 115 156 268 329 353 365 431 464 475 563 638
@@ -241,18 +252,18 @@ attr(,"class")
 > A2
 $surv
                   1            3        12
- [1,]  5.059376e-01 9.071417e-01 0.9992658
- [2,]  5.963566e-02 6.681175e-01 0.9969654
- [3,]  4.438032e-03 4.607472e-01 0.9941774
- [4,]  7.105776e-05 2.550526e-01 0.9897566
- [5,]  3.469900e-16 6.147570e-03 0.9623562
- [6,]  1.012167e-27 1.376480e-04 0.9351947
- [7,]  2.348901e-40 2.145821e-06 0.9063236
- [8,]  7.385232e-58 6.731314e-09 0.8677950
- [9,]  1.954190e-78 7.669803e-12 0.8245871
-[10,] 6.157995e-102 3.335890e-15 0.7778646
-[11,] 1.620365e-141 7.275422e-21 0.7050833
-[12,] 4.907617e-189 1.161318e-27 0.6266419
+ [1,]  5.059374e-01 9.071417e-01 0.9992658
+ [2,]  5.963542e-02 6.681175e-01 0.9969654
+ [3,]  4.437993e-03 4.607471e-01 0.9941774
+ [4,]  7.105658e-05 2.550524e-01 0.9897566
+ [5,]  3.469611e-16 6.147540e-03 0.9623562
+ [6,]  1.012013e-27 1.376467e-04 0.9351947
+ [7,]  2.348370e-40 2.145790e-06 0.9063236
+ [8,]  7.382807e-58 6.731171e-09 0.8677950
+ [9,]  1.953311e-78 7.669578e-12 0.8245871
+[10,] 6.154361e-102 3.335760e-15 0.7778646
+[11,] 1.619033e-141 7.275027e-21 0.7050833
+[12,] 4.902193e-189 1.161233e-27 0.6266419
 
 $time
  [1]  59 115 156 268 329 353 365 431 464 475 563 638
@@ -267,6 +278,9 @@ attr(,"class")
 > df <- data.frame(x = 1:100, y = rnorm(1:100), int = rep(1, 100))
 > mod <- gamboost(y ~ bols(int, intercept = FALSE) + bols(x, intercept = FALSE), data = df,
 +                 control = boost_control(mstop = 2500))
+Warning message:
+In bols(x, intercept = FALSE) :
+  covariates should be (mean-) centered if 'intercept = FALSE'
 > cf <- unlist(coef(mod))
 > cf[1] <- cf[1] + mod$offset
 > tmp <- max(abs(cf - coef(lm(y ~ x, data = df))))
@@ -321,6 +335,9 @@ Warning message:
 > 
 > # use which to extract all effects for one covariate e.g. for plotting purposes
 > amod <- gamboost(DEXfat ~ bols(hipcirc, intercept=FALSE) + bbs(hipcirc, df = 1, center=TRUE), data = bodyfat)
+Warning message:
+In bols(hipcirc, intercept = FALSE) :
+  covariates should be (mean-) centered if 'intercept = FALSE'
 > stopifnot(ncol(predict(amod, which="hip")) == 2 && all(rowSums(predict(amod, which="hip")) + attr(coef(amod), "offset") - predict(amod) < sqrt(.Machine$double.eps)))
 > 
 > amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth,
@@ -331,6 +348,13 @@ Warning message:
 > pr2 <- predict(amod, aggre = "sum", newdata=foo)
 > stopifnot(all(diff(rowSums(pr1) - pr2) < sqrt(.Machine$double.eps))) # changes in level are ok
 > newData <- as.data.frame(rbind(mean(bodyfat)[-2], mean(bodyfat)[-2]+1*sd(bodyfat)[-2]))
+Warning messages:
+1: mean(<data.frame>) is deprecated.
+ Use colMeans() or sapply(*, mean) instead. 
+2: mean(<data.frame>) is deprecated.
+ Use colMeans() or sapply(*, mean) instead. 
+3: sd(<data.frame>) is deprecated.
+ Use sapply(*, sd) instead. 
 > if (!is.list(pr <- predict(amod, newdata=newData, which=1:2)))
 +     warning("predict(amod, newdata=newData, which=1:2) does not return a list") # no list but a matrix is returned!
 Warning message:
@@ -425,4 +449,65 @@ Number of baselearners:  3
 
 > stopifnot(length(coef(amod)) == 2)
 > stopifnot(length(coef(amod, which=1:3)) == 3)
+> 
+> ### cyclic covariates
+> x <- seq(from = 0, to = 2*pi, length = 100)
+> y <- sin(x) + rnorm(length(x), sd = 0.5)
+> mod <- gamboost(y ~ bbs(x, cyclic = TRUE))
+> stopifnot(diff(fitted(mod)[c(1, 100)]) == 0)
+> 
+> ### buser
+> set.seed(1907)
+> x <- rnorm(100)
+> y <- rnorm(100, mean = x^2, sd = 0.1)
+> mod1 <- gamboost(y ~ bbs(x))
+> X <- extract(bbs(x))
+> K <- extract(bbs(x), "penalty")
+> mod2 <- gamboost(y ~ buser(X, K))
+> stopifnot(max(abs(predict(mod1) - predict(mod2))) < sqrt(.Machine$double.eps))
+> 
+> z <- sample(1:2, 100, replace=TRUE)
+> y[z == 2] <- rnorm(100, mean = - x^2, sd = 0.1)[z == 2]
+> z <- as.factor(z)
+> mod3 <- gamboost(y ~ bbs(x) + bbs(x, by = z),
++                  control = boost_control(mstop = 1000))
+> X <- extract(bbs(x))
+> K <- extract(bbs(x), "penalty")
+> mod4 <- gamboost(y ~  buser(X, K) + buser(X, K, by = z),
++                  control = boost_control(mstop = 1000))
+> stopifnot(max(abs(predict(mod3) - predict(mod4))) < sqrt(.Machine$double.eps))
+> 
+> y <- rnorm(100, mean = as.numeric(z), sd = 0.1)
+> mod5 <- gamboost(y ~ bols(z))
+> X <- extract(bols(z))
+> K <- extract(bols(z), "penalty")
+> index <- extract(bols(z), "index")
+> mod6 <- gamboost(y ~  buser(X, K, lambda = 0, index = index))
+> mod6a <- gamboost(y ~  buser(X, index = index))
+> stopifnot(max(abs(predict(mod5) - predict(mod6))) < sqrt(.Machine$double.eps))
+> stopifnot(max(abs(predict(mod5) - predict(mod6a))) < sqrt(.Machine$double.eps))
+> 
+> z <- sample(1:3, 100, replace = TRUE)
+> y <- rnorm(100, mean = z, sd = 0.1)
+> z <- as.ordered(z)
+> mod7 <- gamboost(y ~ bols(z))
+> X <- extract(bols(z))
+> K <- extract(bols(z), "penalty")
+> index <- extract(bols(z), "index")
+> mod8 <- gamboost(y ~  buser(X, K, lambda = 0, index = index))
+> stopifnot(max(abs(predict(mod7) - predict(mod8))) < sqrt(.Machine$double.eps))
+> 
+> y[z == 1] <- rnorm(100, mean = x^2, sd = 0.1)[z == 1]
+> y[z == 2] <- rnorm(100, mean = - x^2, sd = 0.1)[z == 2]
+> y[z == 3] <- rnorm(100, mean = x, sd = 0.1)[z == 3]
+> mod9 <- gamboost(y ~ bbs(x) + bbs(x, by = z),
++                  control = boost_control(mstop = 1000))
+Warning in Xfun(mf, vary, args) :
+  'df' equal to rank of null space (unpenalized part of P-spline);
+  Consider larger value for 'df' or set 'center = TRUE'.
+> X <- extract(bbs(x))
+> K <- extract(bbs(x), "penalty")
+> mod10 <- gamboost(y ~  buser(X, K) + buser(X, K, by = z),
++                  control = boost_control(mstop = 1000))
+> stopifnot(max(abs(predict(mod9) - predict(mod10))) < sqrt(.Machine$double.eps))
 > 

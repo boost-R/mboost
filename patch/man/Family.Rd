@@ -8,6 +8,7 @@
 \alias{Huber}
 \alias{Laplace}
 \alias{Poisson}
+\alias{GammaReg}
 \alias{CoxPH}
 \alias{QuantReg}
 \alias{ExpectReg}
@@ -16,6 +17,7 @@
 \alias{Weibull}
 \alias{Loglog}
 \alias{Lognormal}
+\alias{AUC}
 \title{ Gradient Boosting Families }
 \description{
     \code{boost_family} objects provide a convenient way to specify loss functions
@@ -31,15 +33,18 @@ Family(ngradient, loss = NULL, risk = NULL,
        weights = c("any", "none", "zeroone", "case"),
        nuisance = function() return(NA),
        name = "user-specified", fW = NULL,
-       response = function(f) NA)
+       response = function(f) NA,
+       rclass = function(f) NA)
 AdaExp()
-Binomial()
+AUC()
+Binomial(link = c("logit", "probit"), ...)
 GaussClass()
 GaussReg()
 Gaussian()
 Huber(d = NULL)
 Laplace()
 Poisson()
+GammaReg(nuirange = c(0, 100))
 CoxPH()
 QuantReg(tau = 0.5, qoffset = 0.5)
 ExpectReg(tau = 0.5)
@@ -62,11 +67,17 @@ Lognormal(nuirange = c(0, 100))
              squared error.}
   \item{response}{ inverse link function of a GLM or any other transformation
                    on the scale of the response.}
+  \item{rclass}{ function to derive class predictions from conditional class
+                   probabilities (for models with factor response variable).}
   \item{check_y}{ a function for checking and transforming
                   the class / mode of a response variable.}
   \item{nuisance}{ a function for extracting nuisance parameters from the family.}
   \item{weights}{ a character indicating if weights are allowed. }
   \item{name}{ a character giving the name of the loss function for pretty printing. }
+  \item{link}{ link function for binomial family. Alternatively,
+               one may supply the name of a distribution (for example
+               \code{link = "norm"}), parameters of which may
+               be specified via the \dots argument.}
   \item{d}{ delta parameter for Huber loss function. If omitted, it is chosen adaptively.}
   \item{tau}{ the quantile or expectile to be estimated, a number strictly between 0 and 1.}
   \item{qoffset}{ quantile of response distribution to be used as offset.}
@@ -75,6 +86,7 @@ Lognormal(nuirange = c(0, 100))
 	  In case of \code{PropOdds}, the starting values for
 	  the nuisance parameters. }
   \item{offrange}{ interval to search for offset in.}
+  \item{\dots}{ additional arguments to link functions.}
 }
 \details{
   The boosting algorithm implemented in \code{\link{mboost}} minimizes the
@@ -86,28 +98,40 @@ Lognormal(nuirange = c(0, 100))
   Pre-fabricated functions for the most commonly used loss functions are
   available as well. Buehlmann and Hothorn (2007) give a detailed
   overview of the available loss functions. The \code{offset} function
-  returns the population minimisers evaluated at the response, i.e.,
+  returns the population minimizers evaluated at the response, i.e.,
   \eqn{1/2 \log(p / (1 - p))} for \code{Binomial()} or \code{AdaExp()}
   and \eqn{(\sum w_i)^{-1} \sum w_i y_i} for \code{Gaussian()} and the
   median for \code{Huber()} and \code{Laplace()}. A short summary of the
   available families is given in the following paragraphs:
 
-  \code{AdaExp()} and \code{Binomial()} implement
-  families for binary classification. \code{AdaExp()} uses the
-  exponential loss, which essentially leads to the AdaBoost algorithm
-  of Freund and Schapire (1996). \code{Binomial()} implements the
-  negative binomial log-likelihood of a logistic regression model
-  as loss function. Thus, using \code{Binomial} family closely corresponds
-  to fitting a logistic model.
-  However, the coefficients resulting from boosting with family
-  \code{Binomial} are \eqn{1/2} of the coefficients of a logit model
-  obtained via \code{\link{glm}}. This is due to the internal recoding
-  of the response to \eqn{-1} and \eqn{+1} (see below).
+\code{AdaExp()}, \code{Binomial()} and \code{AUC()} implement
+families for binary classification. \code{AdaExp()} uses the
+exponential loss, which essentially leads to the AdaBoost algorithm
+of Freund and Schapire (1996). \code{Binomial()} implements the
+negative binomial log-likelihood of a logistic regression model
+as loss function. Thus, using \code{Binomial} family closely corresponds
+to fitting a logistic model. Alternative link functions
+can be specified via the name of the corresponding distribution, for
+example \code{link = "cauchy"} lead to \code{\link{pcauchy}}
+used as link function. This feature is still experimental and
+not well tested.
+
+However, the coefficients resulting from boosting with family
+\code{Binomial(link = "logit")} are \eqn{1/2} of the coefficients of a logit model
+obtained via \code{\link{glm}}. This is due to the internal recoding
+of the response to \eqn{-1} and \eqn{+1} (see below).
   However, Buehlmann and Hothorn (2007) argue that the
-  family \code{Binomial} is the preferred choice for binary
-  classification. For binary classification problems the response
-  \code{y} has to be a \code{factor}. Internally \code{y} is re-coded
-  to \eqn{-1} and \eqn{+1} (Buehlmann and Hothorn 2007).
+family \code{Binomial} is the preferred choice for binary
+classification. For binary classification problems the response
+\code{y} has to be a \code{factor}. Internally \code{y} is re-coded
+to \eqn{-1} and \eqn{+1} (Buehlmann and Hothorn 2007).
+\code{AUC()} uses \eqn{1-AUC(y, f)} as the loss function.
+The area under the ROC curve (AUC) is defined as
+\eqn{AUC = (n_{-1} n_1)^{-1} \sum_{i: y_i = 1} \sum_{j: y_j = -1} I(f_i > f_j)}.
+Since this is not differentiable in \code{f}, we approximate the jump function
+\eqn{I((f_i - f_j) > 0)} by the distribution function of the triangular
+distribution on \eqn{[-1, 1]} with mean \eqn{0}, similar to the logistic
+distribution approximation used in Ma and Huang (2005).
 
   \code{Gaussian()} is the default family in \code{\link{mboost}}. It
   implements \eqn{L_2}Boosting for continuous response. Note
@@ -125,6 +149,11 @@ Lognormal(nuirange = c(0, 100))
   \eqn{\log(\mu) = \eta} is assumed. The default step-site \code{nu = 0.1}
   is probably too large for this family (leading to
   infinite residuals) and smaller values are more appropriate.
+
+  \code{GammaReg()} implements a family for fitting nonnegative response
+  variables. The implemented loss function is the negative Gamma
+  log-likelihood with logarithmic link function (instead of the natural
+  link).
 
   \code{CoxPH()} implements the negative partial log-likelihood for Cox
   models. Hence, survival models can be boosted using this family.
@@ -151,6 +180,9 @@ Lognormal(nuirange = c(0, 100))
   \code{Binomial} are \eqn{1/2} of the coefficients of a logit model
   obtained via \code{\link{glm}}. This is due to the internal recoding
   of the response to \eqn{-1} and \eqn{+1} (see above).
+
+  For \code{AUC()}, variables should be centered and scaled and observations with weight > 0 must not contain missing values.
+  The estimated coefficients for \code{AUC()} have no probabilistic interpretation.
 }
 \value{
   An object of class \code{boost_family}.
@@ -170,6 +202,10 @@ Lognormal(nuirange = c(0, 100))
     In \emph{Machine Learning: Proc. Thirteenth International Conference},
     148--156.
 
+    Shuangge Ma and Jian Huang (2005), Regularized ROC method for
+    disease classification and biomarker selection with microarray
+    data. \emph{Bioinformatics}, \bold{21}(24), 4356--4362.
+
     Whitney K. Newey and James L. Powell (1987),
     Asymmetric least squares estimation and testing.
     \emph{Econometrika}, \bold{55}, 819--847.
@@ -188,6 +224,7 @@ Lognormal(nuirange = c(0, 100))
     \code{\link{boost_family-class}} for objects resulting from a call to \code{Family}. }
 \author{
     \code{ExpectReg()} was donated by Fabian Sobotka.
+    \code{AUC()} was donated by Fabian Scheipl.
 }
 \examples{
 
@@ -195,8 +232,8 @@ Lognormal(nuirange = c(0, 100))
 
     MyGaussian <- function(){
            Family(ngradient = function(y, f, w = 1) y - f,
-                  loss = function(y, f) (y - f)^2,
-                  name = "My Gauss Variant")
+           loss = function(y, f) (y - f)^2,
+           name = "My Gauss Variant")
     }
 
 }

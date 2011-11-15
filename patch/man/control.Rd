@@ -6,14 +6,14 @@
   and other hyper-parameters for boosting algorithms.
 }
 \usage{
-boost_control(mstop = 100, nu = 0.1, 
+boost_control(mstop = 100, nu = 0.1,
               risk = c("inbag", "oobag", "none"),
-              center = FALSE, trace = FALSE)
+              center = TRUE, trace = FALSE)
 }
 \arguments{
   \item{mstop}{ an integer giving the number of initial boosting iterations. }
-  \item{nu}{ a double (between 0 and 1) defining the step size or shrinkage parameter. 
-             The default is probably too large for many applications 
+  \item{nu}{ a double (between 0 and 1) defining the step size or shrinkage parameter.
+             The default is probably too large for many applications
              with \code{family = Poisson()} and a smaller value is better.}
   \item{risk}{ a character indicating how the empirical risk should be
                computed for each boosting iteration. \code{inbag} leads to
@@ -28,7 +28,7 @@ boost_control(mstop = 100, nu = 0.1,
 		 base-learners are specified without intercept. In this
 		 case centering of the covariates is essential and should be done
 		 manually (at the moment). Will be removed in favour of
-                 a corresponding argument in \code{glmboost} in the future 
+                 a corresponding argument in \code{glmboost} in the future
                  (and gives a warning).}
   \item{trace}{ a logical triggering printout of status information during
                 the fitting process.}

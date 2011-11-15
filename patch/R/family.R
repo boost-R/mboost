@@ -7,6 +7,7 @@ setClass("boost_family", representation = representation(
     weights    = "function",
     nuisance   = "function",
     response   = "function",
+    rclass     = "function",
     name       = "character",
     charloss   = "character"
 ))
@@ -27,7 +28,9 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
                    check_y = function(y) y,
                    weights = c("any", "none", "zeroone", "case"),
                    nuisance = function() return(NA),
-                   name = "user-specified", fW = NULL, response = function(f) NA)
+                   name = "user-specified", fW = NULL,
+                   response = function(f) NA,
+                   rclass = function(f) NA)
 {
 
     if (is.null(loss)) {
@@ -49,13 +52,14 @@ Family <- function(ngradient, loss = NULL, risk = NULL,
             "case" = isTRUE(all.equal(unique(w - floor(w)), 0)))
     }
     RET <- new("boost_family", ngradient = ngradient, nuisance = nuisance,
-               risk = risk, offset = offset, check_y = check_y, response = response,
-               weights = check_w, name = name, charloss = charloss)
+               risk = risk, offset = offset, check_y = check_y,
+               response = response, rclass = rclass, weights = check_w,
+               name = name, charloss = charloss)
     if (!is.null(fW))
         RET <- new("boost_family_glm", ngradient = ngradient, nuisance = nuisance,
                    risk = risk, offset = offset, fW = fW, check_y = check_y,
                    weights = check_w, name = name, response = response,
-                   charloss= charloss)
+                   rclass = rclass, charloss= charloss)
     RET
 }
 
@@ -90,12 +94,38 @@ Laplace <- function()
                         sQuote("family = Laplace()"))
                y
            },
-           name = "Absolute Error")
+           name = "Absolute Error",
+           response = function(f) f)
 
+link2dist <- function(link, choices = c("logit", "probit"), ...) {                
+    i <- pmatch(link, choices, nomatch = 0L, duplicates.ok = TRUE)
+    if (i[1] == 1) return("logit")
+    if (i[1] == 2) return(list(p = pnorm, d = dnorm, q = qnorm))
+    p <- get(paste("p", link, sep = ""))
+    d <- get(paste("d", link, sep = ""))
+    q <- get(paste("q", link, sep = ""))
+    ret <- list(p = function(x) p(x, ...),
+                d = function(x) d(x, ...),
+                q = function(x) q(x, ...))
+    attr(ret, "link") <- link
+    ret
+}
+    
 ### Binomial
 # lfinv <- binomial()$linkinv
-Binomial <- function()
-    Family(ngradient = function(y, f, w = 1) {
+Binomial <- function(link = c("logit", "probit"), ...) {
+    link <- link2dist(link, ...)
+    biny <- function(y) {
+        if (!is.factor(y))
+            stop("response is not a factor but ",
+                  sQuote("family = Binomial()"))
+            if (nlevels(y) != 2)
+                stop("response is not a factor at two levels but ",
+                      sQuote("family = Binomial()"))
+        return(c(-1, 1)[as.integer(y)])
+    }
+    if (isTRUE(all.equal(link, "logit")))
+    return(Family(ngradient = function(y, f, w = 1) {
                exp2yf <- exp(-2 * y * f)
                -(-2 * y * exp2yf) / (log(2) * (1 + exp2yf))
            },
@@ -119,16 +149,39 @@ Binomial <- function()
                p <- exp(f) / (exp(f) + exp(-f))
                return(p)
            },
-           check_y = function(y) {
-               if (!is.factor(y))
-                   stop("response is not a factor but ",
-                           sQuote("family = Binomial()"))
-               if (nlevels(y) != 2)
-                   stop("response is not a factor at two levels but ",
-                           sQuote("family = Binomial()"))
-               c(-1, 1)[as.integer(y)]
+           rclass = function(f) (f > 0) + 1 ,
+           check_y = biny,
+           name = "Negative Binomial Likelihood"))
+
+    trf <- function(f) {
+        thresh <- -link$q(.Machine$double.eps)
+        pmin(pmax(f, -thresh), thresh)
+    }
+
+    return(Family(ngradient = function(y, f, w = 1) {
+               y <- (y + 1) / 2
+               p <- link$p(trf(f))
+               d <- link$d(trf(f))
+               d * (y / p - (1 - y) / (1 - p))
            },
-           name = "Negative Binomial Likelihood")
+           loss = function(y, f) {
+               p <- link$p(trf(f))
+               y <- (y + 1) / 2
+               -y * log(p) - (1 - y) * log(1 - p)
+           },
+           offset = function(y, w) {
+               p <- weighted.mean(y > 0, w)
+               link$q(p)
+           },
+           response = function(f) {
+               p <- link$p(trf(f))
+               return(p)
+           },
+           rclass = function(f) (f > 0) + 1 ,
+           check_y = biny,
+           name = paste("Negative Binomial Likelihood --", 
+                        attr(link, "link"), "Link")))
+}
 
 ### Poisson
 Poisson <- function()
@@ -170,7 +223,8 @@ Huber <- function(d = NULL) {
            },
            name = paste("Huber Error",
                ifelse(is.null(d), "(with adaptive d)",
-                                  paste("(with d = ", dtxt, ")", sep = ""))))
+                                  paste("(with d = ", dtxt, ")", sep = ""))),
+           response = function(f) f)
 }
 
 ### Adaboost
@@ -190,6 +244,7 @@ AdaExp <- function()
                            sQuote("family = AdaExp()"))
                c(-1, 1)[as.integer(y)]
            },
+           rclass = function(f) (f > 0) + 1 ,
            name = "Adaboost Exponential Error")
 
 ### Cox proportional hazards model (partial likelihood)
@@ -344,6 +399,17 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
         optimize(risk, interval = offrange, y = y, w = w)$minimum
     }
 
+    response <- function(f) {
+        ret <- sapply(1:(length(sigma) + 1), function(i) {
+            if (i == 1) return(1 / (1 + exp(f - sigma[i])))
+            if (i == (length(sigma) + 1))
+            return(1 - 1/(1 + exp(f - sigma[i - 1])))
+            return(1 / (1 + exp(f - sigma[i])) -
+               1 / (1 + exp(f - sigma[i - 1])))
+            })
+            ret
+        }
+
     Family(ngradient = ngradient,
            risk = risk, offset = offset,
            check_y = function(y) {
@@ -351,16 +417,8 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
                y
            },
            nuisance = function() return(sigma),
-           response = function(f) {
-               ret <- sapply(1:(length(sigma) + 1), function(i) {
-                   if (i == 1) return(1 / (1 + exp(f - sigma[i])))
-                   if (i == (length(sigma) + 1))
-                       return(1 - 1/(1 + exp(f - sigma[i - 1])))
-                   return(1 / (1 + exp(f - sigma[i])) -
-                       1 / (1 + exp(f - sigma[i - 1])))
-                   })
-               ret
-               })
+           response = response,
+           rclass = function(f) apply(response(f), 1, which.max))
 }
 
 Weibull <- function(nuirange = c(0, 100)) {
@@ -373,7 +431,10 @@ Weibull <- function(nuirange = c(0, 100)) {
         Sw <- function(pred){
             exp(-exp(pred))
             }
-        lnt <- log(y[,1])
+        time <- y[,1]
+        ### log(0) won't fly
+        time[time == 0] <- sort(unique(time))[2] / 10
+        lnt <- log(time)
         Sevent <- y[,2]
         eta <- (lnt - f) / sigma
         - Sevent * log(fw(eta) / sigma) - (1 - Sevent) * log(Sw(eta))
@@ -387,7 +448,11 @@ Weibull <- function(nuirange = c(0, 100)) {
     ngradient <- function(y, f, w = 1) {
         sigma <<- optimize(riskS, interval = nuirange,
                            y = y, fit = f, w = w)$minimum
-        lnt <- log(y[,1])
+
+        time <- y[,1]
+        ### log(0) won't fly
+        time[time == 0] <- sort(unique(time))[2] / 10
+        lnt <- log(time)
         event <- y[,2]
         eta <- (lnt - f) / sigma
         (event * (exp(eta) - 1) + (1 - event) * exp(eta)) / sigma
@@ -418,7 +483,11 @@ Loglog <- function(nuirange = c(0, 100)) {
         Sw <- function(pred){
             1 / (1 + exp(pred))
             }
-        lnt <- log(y[,1])
+
+        time <- y[,1]
+        ### log(0) won't fly
+        time[time == 0] <- sort(time)[2] / 10
+        lnt <- log(time)
         Sevent <- y[,2]
         eta <- (lnt - f) / sigma
         - Sevent * log(fw(eta) / sigma) - (1 - Sevent) * log(Sw(eta))
@@ -432,7 +501,10 @@ Loglog <- function(nuirange = c(0, 100)) {
     ngradient <- function(y, f, w = 1) {
         sigma <<- optimize(riskS, interval = nuirange,
                            y = y, fit = f, w = w)$minimum
-        lnt <- log(y[,1])
+        time <- y[,1]
+        ### log(0) won't fly
+        time[time == 0] <- sort(unique(time))[2] / 10
+        lnt <- log(time)
         event <- y[,2]
         eta <- (lnt - f) / sigma
         nom <- (exp(-eta) + 1)
@@ -464,7 +536,10 @@ Lognormal <- function(nuirange = c(0, 100)) {
         Sw <- function(pred){
             1 - pnorm(pred)
             }
-        lnt <- log(y[,1])
+        time <- y[,1]
+        ### log(0) won't fly
+        time[time == 0] <- sort(time)[2] / 10
+        lnt <- log(time)
         Sevent <- y[,2]
         eta <- (lnt - f) / sigma
         - Sevent * log(fw(eta) / sigma) - (1 - Sevent) * log(Sw(eta))
@@ -478,7 +553,10 @@ Lognormal <- function(nuirange = c(0, 100)) {
     ngradient <- function(y, f, w = 1) {
         sigma <<- optimize(riskS, interval = nuirange,
                            y = y, fit = f, w = w)$minimum
-        lnt <- log(y[,1])
+        time <- y[,1]
+        ### log(0) won't fly
+        time[time == 0] <- sort(unique(time))[2] / 10
+        lnt <- log(time)
         event <- y[,2]
         eta <- (lnt - f) / sigma
         (event * eta + (1 - event) * dnorm(eta) / (1 - pnorm(eta))) / sigma
@@ -516,4 +594,170 @@ ExpectReg <- function (tau = 0.5) {
             y
         },
         name = "Expectile Regression")
+}
+
+## (1 - AUC)-Loss
+AUC <- function() {
+
+	approxGrad <- function(x) {
+		ifelse(abs(x) >= 1, 0, ifelse(x >= 0, (1 - x), (x + 1)))
+	}
+	approxLoss <- function(x) {
+		ret <- ifelse(x >= 0, 1 - (1 - x)^2/2, (x + 1)^2/2)
+		ifelse(x < -1, 0, ifelse(x > 1, 1, ret))
+	}
+
+	ind1 <- 0
+	ind0 <- 0
+	n0 <- 0
+	n1 <- 0
+	M0 <- matrix(0,0,0)
+
+
+	Family(ngradient = function(y, f, w = 1) {
+				# if there are weights!=1, observations have to be
+				# repeated/omitted accordingly
+				if (any(w != 1)) {
+					ind1 <- which(rep(y, w) == 1)
+					ind0 <- which(rep(y, w) == -1)
+					n1 <- length(ind1)
+					n0 <- length(ind0)
+				}
+				#need this for first iteration
+				if (length(f) == 1) {
+					f <- rep(f, n1 + n0)
+				} else {
+					# scale scores s.t. a gradient of zero makes sense for
+					# differences in f that are bigger than +/-1
+					f <- f/sd(f)
+				}
+
+				M0 <<- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) -
+							f[ind0])
+				M1 <- approxGrad(M0)
+				ng <- vector(n1 + n0, mode = "numeric")
+				ng[ind1] <- colSums(M1)
+				ng[ind0] <- rowSums(-M1)
+				return(ng)
+			}, loss = function(y, f, w = 1) {
+				# if there are weights!=1, observations have to be
+				# repeated/omitted accordingly and M0 must be recomputed
+				if (any(w != 1)) {
+					ind1 <- which(rep(y, w) == 1)
+					ind0 <- which(rep(y, w) == -1)
+					n1 <- length(ind1)
+					n0 <- length(ind0)
+					if (length(f) == 1) {
+						f <- rep(f, n1 + n0)
+					} else f <- f/sd(f)
+					M0 <- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) -
+								f[ind0])
+				}
+				# 1 - approxAUC
+				1 - (sum(approxLoss(M0)))/(n1 * n0)
+			}, risk = function(y, f, w = 1) {
+				# if there are weights!=1, observations have to be
+				# repeated/omitted accordingly and M0 must be recomputed
+				if (any(w != 1)) {
+					ind1 <- which(rep(y, w) == 1)
+					ind0 <- which(rep(y, w) == -1)
+					n1 <- length(ind1)
+					n0 <- length(ind0)
+					if (any(c(n0, n1) == 0)) {
+						warning("response is constant - AUC is 1.")
+						return(0)
+					}
+					if (length(f) == 1)
+						f <- rep(f, n1 + n0)
+					M0 <- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) -
+								f[ind0])
+				}
+				# 1 - AUC
+				return(1 - (sum(as.numeric(M0 > 0)))/(n1 * n0))
+			}, weights = "case",
+			offset = function(y, w) {
+				0
+			}, check_y = function(y) {
+				if (!is.factor(y))
+					stop("response is not a factor but ", sQuote("family = AUC()"))
+				if (nlevels(y) != 2)
+					stop("response is not a factor at two levels but ",
+							sQuote("family = AUC()"))
+				if (length(unique(y)) != 2)
+					stop("only one class is present in response.")
+				# precompute to speed up ngradient (and warn about conflicting assignments)
+				ind1 <<- which(y == levels(y)[2])
+				ind0 <<- which(y == levels(y)[1])
+				n1 <<- length(ind1)
+				n0 <<- length(ind0)
+				c(-1, 1)[as.integer(y)]
+			},
+      rclass = function(f) (f > 0) + 1,
+      name = paste("(1 - AUC)-Loss") )
+}
+
+
+
+GammaReg <- function(nuirange = c(0, 100)) {
+    sigma <- 1
+    plloss <- function(sigma, y, f){
+        lgamma(sigma) + sigma * y * exp(-f) - sigma * log(y) -
+              sigma * log(sigma) + sigma * f
+    }
+    riskS <- function(sigma, y, fit, w = 1)
+        sum(w * plloss(y = y, f = fit, sigma = sigma))
+    risk <- function(y, f, w = 1)
+       sum(w * plloss(y = y, f = f, sigma = sigma))
+    ngradient <- function(y, f, w = 1) {
+        sigma <<- optimize(riskS, interval = nuirange,
+                           y = y, fit = f, w = w)$minimum
+        sigma * y * exp(-f) - sigma
+    }
+    Family(ngradient = ngradient,
+           risk = risk,
+           offset = function(y, w){
+               optimize(risk, interval = c(0, max(y^2, na.rm = TRUE)),
+                        y = y, w = w)$minimum
+           },
+           check_y = function(y){
+               if (!is.numeric(y) || !is.null(dim(y)))
+                   stop("response is not a numeric vector but ",
+                        sQuote("family = GammaReg()"))
+               if (any(y < 0))
+                   stop("response is not positive but ",
+                        sQuote("family = GammaReg()"))
+               y
+           },
+           nuisance = function() return(sigma),
+           name = "Negative Gamma Likelihood",
+           response = function(f) exp(f))
+}
+
+### Hinge Loss
+HingeLoss <- function(alphaCost = 0.5) {
+    if (alphaCost <= 0 | alphaCost >= 1 | !is.numeric(alphaCost) |
+        length(alphaCost) != 1)
+        stop("cost parameter must be a number within the range (0, 1)")
+    Family(ngradient = function(y, f, w = 1){
+               ngr <- ifelse(y > 0, 1 - alphaCost, alphaCost) * y
+               ngr[(1 - y * f) < 0] <- 0
+               return(ngr)
+               },
+           loss = function(y, f) ifelse(y > 0, 1 - alphaCost, alphaCost) *
+               pmax(0, 1 - y * f),
+           offset = function(y, w) {
+               p <- weighted.mean(y > 0, w)
+               1/2 * log(p / (1 - p))
+           },
+           check_y = function(y) {
+               if (!is.factor(y))
+                   stop("response is not a factor but ",
+                           sQuote("family = HingeLoss()"))
+               if (nlevels(y) != 2)
+                   stop("response is not a factor at two levels but ",
+                           sQuote("family = HingeLoss()"))
+               c(-1, 1)[as.integer(y)]
+           },
+           rclass = function(f) (f > (2 * alphaCost - 1)) + 1,
+           name = "Hinge Loss")
 }

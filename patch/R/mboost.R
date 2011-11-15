@@ -1,6 +1,7 @@
 
-mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
-                       family = Gaussian(), control = boost_control()) {
+mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
+                       offset = NULL, family = Gaussian(), control =
+                       boost_control(), oobweights = as.numeric(weights == 0)) {
 
     ### hyper parameters
     mstop <- 0
@@ -30,6 +31,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
     ### rescale weights (because of the AIC criterion)
     ### <FIXME> is this correct with zero weights??? </FIXME>
     weights <- rescale_weights(weights)
+    if (is.null(oobweights))
     oobweights <- as.numeric(weights == 0)
     if (control$risk == "oobag") {
         triskfct <- function(y, f) riskfct(y, f, oobweights)
@@ -113,7 +115,7 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
             ### happened for family = Poisson() with nu = 0.1
             if (any(!is.finite(u[!is.na(u)])))
-                stop("Infinite residuals: please decrease step-size nu in ", 
+                stop("Infinite residuals: please decrease step-size nu in ",
                      sQuote("boost_control"))
 
             ### evaluate risk, either for the learning sample (inbag)
@@ -144,20 +146,22 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 control = control,          ### control parameters
                 family = family,            ### family object
                 response = response,        ### the response variable
-                rownames = bnames,          ### rownames of learning data
+                rownames =                  ### rownames of learning data
+                    paste("obs", 1:length(weights), sep = ""),
                 "(weights)" = weights,      ### weights used for fitting
                 nuisance =
                     function() nuisance     ### list of nuisance parameters
     )
 
     ### update to new weights; just a fresh start
-    RET$update <- function(weights = NULL, risk = "oobag") {
+    RET$update <- function(weights = NULL, oobweights = NULL, risk = "oobag") {
         control$mstop <- mstop
         control$risk <- risk
         ### use user specified offset only (since it depends on weights otherwise)
         if (!is.null(offsetarg)) offsetarg <- offset
         mboost_fit(blg = blg, response = response, weights = weights,
-                   offset = offsetarg, family = family, control = control)
+                   offset = offsetarg, family = family, control = control,
+                   oobweights = oobweights)
     }
 
     ### number of iterations performed so far
@@ -213,37 +217,41 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
 
         aggregate <- match.arg(aggregate)
 
-        n <- ifelse(!is.null(newdata), nrow(newdata), length(y))
         pfun <- function(w, agg) {
             ix <- xselect == w & indx
-            m <- Matrix(0, nrow = n, ncol = sum(indx))
-            if (!any(ix)) {
-                if (agg == "sum") return(rep.int(0, n))
-                return(m)
-            }
+            if (!any(ix))
+                return(0)
             if (cwlin) w <- 1
             ret <- nu * bl[[w]]$predict(ens[ix],
                    newdata = newdata, aggregate = agg)
             if (agg == "sum") return(ret)
+            m <- Matrix(0, nrow = nrow(ret), ncol = sum(indx))
             m[, which(ix)] <- ret
             m
         }
 
         pr <- switch(aggregate, "sum" = {
-            pr <- sapply(which, pfun, agg = "sum")
-            if (!nw) return(pr)
-            ### only if no selection of baselearners
-            ### was made via the `which' argument
-            if (!is.matrix(pr)) pr <- matrix(pr, nrow = 1)
-            return(offset + matrix(rowSums(pr), ncol = 1))
+            pr <- do.call("cbind", lapply(which, pfun, agg = "sum"))
+            if (!nw){
+                colnames(pr) <- bnames[which]
+                attr(pr, "offset") <- offset
+                return(pr)
+            } else {
+                ## only if no selection of baselearners
+                ## was made via the `which' argument
+                return(offset + matrix(rowSums(pr), ncol = 1))
+            }
         }, "cumsum" = {
             if (!nw) {
                 pr <- lapply(which, pfun, agg = "none")
-                pr <- lapply(pr, function(x) .Call("R_mcumsum", as(x, "matrix")))
+                pr <- lapply(pr, function(x) {
+                    .Call("R_mcumsum", as(x, "matrix"))
+                })
                 names(pr) <- bnames[which]
+                attr(pr, "offset") <- offset
                 return(pr)
             } else {
-                ret <- Matrix(0, nrow = n, ncol = sum(indx))
+                ret <- 0
                 for (i in 1:max(xselect)) ret <- ret + pfun(i, agg = "none")
                 return(.Call("R_mcumsum", as(ret, "matrix")) + offset)
             }
@@ -252,11 +260,14 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
                 pr <- lapply(which, pfun, agg = "none")
                 for (i in 1:length(pr)) pr[[i]] <- as(pr[[i]], "matrix")
                 names(pr) <- bnames[which]
+                attr(pr, "offset") <- offset
                 return(pr)
             } else {
-                ret <- Matrix(0, nrow = n, ncol = sum(indx))
+                ret <- 0
                 for (i in 1:max(xselect)) ret <- ret + pfun(i, agg = "none")
-                return(as(ret, "matrix"))
+                ret <- as(ret, "matrix")
+                attr(ret, "offset") <- offset
+                return(ret)
             }
          })
          return(pr)
@@ -281,6 +292,11 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             fit <<- RET$predict()
             u <<- ngradient(y, fit, weights)
         } else {
+            ## first increase to "old" mstop
+            mstop <<- length(xselect)
+            fit <<- RET$predict()
+            u <<- ngradient(y, fit, weights)
+            ## now fit the rest
             tmp <- boost(i - mstop)
         }
     }
@@ -300,23 +316,44 @@ mboost_fit <- function(blg, response, weights = NULL, offset = NULL,
             ix <- (xselect == w & indx)
             cf <- numeric(mstop)
             if (!any(ix)) {
-                if (!cwlin)
-                    cf <- matrix(0, nrow = length(bl[[w]]$Xnames), ncol = mstop)
+                if (!cwlin) {
+                    nm <- bl[[w]]$Xnames
+                    cf <- matrix(0, nrow = length(nm), ncol = mstop)
+                }
             } else {
-                cftmp <- sapply(ens[ix], coef)
+                if (inherits(ens[ix][[1]], "bm_cwlin") && !cwlin) {
+                    cftmp <- sapply(ens[ix], coef, all = TRUE)
+                } else {
+                    cftmp <- sapply(ens[ix], coef)
+                }
                 nr <- NROW(cftmp)
                 if (!is.matrix(cftmp)) nr <- 1
                 cf <- matrix(0, nrow = nr, ncol = mstop)
                 cf[, which(ix)] <- cftmp
             }
             if (!is.matrix(cf)) cf <- matrix(cf, nrow = 1)
-            ret <- switch(aggregate,
-                "sum" = rowSums(cf) * nu,
-                "cumsum" = {
-                    .Call("R_mcumsum", as(cf, "matrix") * nu)
-                },
-                "none" = nu * cf
-            )
+            ## check if base-learner has coefficients
+            if(any(sapply(cf, is.null))){
+                ret <- NULL
+            } else {
+                ret <- switch(aggregate,
+                              "sum" = rowSums(cf) * nu,
+                              "cumsum" = {
+                                  .Call("R_mcumsum", as(cf, "matrix") * nu)
+                              },
+                              "none" = nu * cf
+                              )
+            }
+            ### set names, but not for bolscw base-learner
+            if (!cwlin) {
+                nm <- bl[[w]]$Xnames
+                if (is.matrix(ret)) {
+                    rownames(ret) <- nm
+                } else {
+                   names(ret) <- nm
+               }
+            }
+            ret
         }
         ret <- lapply(which, cfun)
         names(ret) <- bnames[which]
@@ -380,14 +417,14 @@ mboost <- function(formula, data = list(),
         ### a single variable; compute baselearner
         if (!is.list(a)) {
             a <- list(baselearner(a))
-            a[[1]]$set_name(deparse(cl[[2]]))
+            a[[1]]$set_names(deparse(cl[[2]]))
         }
         ### got baselearner, fine!
         if (inherits(b, "blg")) b <- list(b)
         ### a single variable, compute baselearner
         if (!is.list(b)) {
             b <- list(baselearner(b))
-            b[[1]]$set_name(deparse(cl[[3]]))
+            b[[1]]$set_names(deparse(cl[[3]]))
         }
         ### join both baselearners in a list
         c(a, b)
@@ -401,7 +438,7 @@ mboost <- function(formula, data = list(),
     ### rhs was one single variable
     if (!is.list(bl)) {
         bl <- list(baselearner(bl))
-        bl[[1]]$set_name(as.character(formula[[3]]))
+        bl[[1]]$set_names(as.character(formula[[3]]))
     }
 
     ### just a check
@@ -450,7 +487,7 @@ blackboost <- function(formula, data = list(),
     tree_controls = ctree_control(teststat = "max",
                                testtype = "Teststatistic",
                                mincriterion = 0,
-                               maxdepth = 2),
+                               maxdepth = 2, savesplitstats = FALSE),
     ...) {
 
     ### get the model frame first
@@ -477,7 +514,7 @@ glmboost <- function(x, ...) UseMethod("glmboost", x)
 
 glmboost.formula <- function(formula, data = list(), weights = NULL,
                              na.action = na.pass, contrasts.arg = NULL,
-                             center = FALSE, control = boost_control(), ...) {
+                             center = TRUE, control = boost_control(), ...) {
 
     ### get the model frame first
     cl <- match.call()
@@ -489,9 +526,9 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     mf[[1L]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
     ### center argument moved to this function
-    if (control$center) {
-        center <- TRUE
-        warning("boost_control(center = TRUE) is deprecated, use glmboost(..., center = TRUE)")
+    if (!control$center) {
+        center <- FALSE
+        warning("boost_control(center = FALSE) is deprecated, use glmboost(..., center = FALSE)")
     }
     ### set up the model.matrix and center (if requested)
     X <- model.matrix(attr(mf, "terms"), data = mf,
@@ -537,23 +574,26 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     return(ret)
 }
 
-glmboost.matrix <- function(x, y, center = FALSE,
+glmboost.matrix <- function(x, y, center = TRUE,
                             control = boost_control(), ...) {
 
     X <- x
-    if (is.null(colnames(X))) 
+    if (nrow(X) != NROW(y))
+        stop("dimensions of ", sQuote("x"), " and ", sQuote("y"),
+             " do not match")
+    if (is.null(colnames(X)))
         colnames(X) <- paste("V", 1:ncol(X), sep = "")
-    if (control$center) {
-        center <- TRUE
-        warning("boost_control center deprecated")
+    if (!control$center) {
+        center <- FALSE
+        warning("boost_control(center = FALSE) is deprecated, use glmboost(..., center = FALSE)")
     }
-        assign <- numeric(ncol(X))
-    cm <- colMeans(X, na.rm = TRUE)
+    assign <- numeric(ncol(X))
+    cm <- numeric(ncol(X))
     ### guess intercept
-    intercept <- which(colSums(abs(scale(X, center = cm, scale = FALSE))) 
+    intercept <- which(colSums(abs(scale(X, center = TRUE, scale = FALSE)), na.rm=TRUE)
                                    < .Machine$double.eps)
     if (length(intercept) > 0)
-        intercept <- intercept[colSums(abs(X[, intercept, drop = FALSE])) 
+        intercept <- intercept[colSums(abs(X[, intercept, drop = FALSE]), na.rm=TRUE)
                                > .Machine$double.eps]
     INTERCEPT <- length(intercept) == 1
     if (INTERCEPT) {
@@ -562,20 +602,19 @@ glmboost.matrix <- function(x, y, center = FALSE,
         assign <- 1:ncol(X)
     }
     if (center) {
+        cm <- colMeans(X, na.rm = TRUE)
         if (!INTERCEPT)
             warning("model with centered covariates does not contain intercept")
         cm[assign == 0] <- 0
         X <- scale(X, center = cm, scale = FALSE)
-    } else {
-        cm <- numeric(ncol(X))
     }
     newX <- function(newdata) {
         if (isMATRIX(newdata)) {
             if (all(colnames(X) == colnames(newdata)))
-                return(newdata)
+                return(scale(newdata, center=cm, scale=FALSE))
         }
         stop(sQuote("newdata"), " is not a matrix with the same variables as ",
-              sQuote("x"))
+             sQuote("x"))
         return(NULL)
     }
     bl <- list(bolscw(X))

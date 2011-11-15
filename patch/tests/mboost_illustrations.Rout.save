@@ -1,5 +1,5 @@
 
-R version 2.13.1 (2011-07-08)
+R version 2.14.0 (2011-10-31)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -73,9 +73,6 @@ R> ###################################################
 R> ### chunk number 3: bodyfat-glmboost-fit
 R> ###################################################
 R> bf_glm <- glmboost(DEXfat ~ ., data = bodyfat, control = boost_control(center = TRUE))
-Warning message:
-In glmboost.formula(DEXfat ~ ., data = bodyfat, control = boost_control(center = TRUE)) :
-  boost_control(center = TRUE) is deprecated, use glmboost(..., center = TRUE)
 R> 
 R> 
 R> ###################################################
@@ -230,7 +227,7 @@ R> ###################################################
 R> ctrl <- boost_control(mstop = 5000)
 R> bf_bs <- glmboost(bsfm, data = bodyfat, control = ctrl)
 R> mstop(aic <- AIC(bf_bs))
-[1] 2891
+[1] 136
 R> 
 R> 
 R> ###################################################
@@ -285,9 +282,6 @@ R> ### fit logistic regression model via gradient boosting
 R> ctrl <- boost_control(mstop = 500, center = TRUE)
 R> wpbc_glm <- glmboost(status ~ ., data = wpbc2, family = Binomial(),
                           control = ctrl)
-Warning message:
-In glmboost.formula(status ~ ., data = wpbc2, family = Binomial(),  :
-  boost_control(center = TRUE) is deprecated, use glmboost(..., center = TRUE)
 R> 
 R> 
 R> ###################################################
@@ -362,9 +356,6 @@ R> ###################################################
 R> ctrl <- boost_control(mstop = 500, center = TRUE)
 R> wpbc_surv <- glmboost(log(time) ~ ., data = wpbc3,
                        control = ctrl, weights = iw)
-Warning message:
-In glmboost.formula(log(time) ~ ., data = wpbc3, control = ctrl,  :
-  boost_control(center = TRUE) is deprecated, use glmboost(..., center = TRUE)
 R> mstop(aic <- AIC(wpbc_surv))
 [1] 111
 R> wpbc_surv <- wpbc_surv[mstop(aic)]

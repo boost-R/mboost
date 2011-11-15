@@ -22,6 +22,8 @@ Objects can be created by calls of the form \code{\link{Family}(...)}
     \item{\code{nuisance}:}{ a function for extracting nuisance parameters.}
     \item{\code{response}:}{inverse link function of a GLM or any other transformation
                    on the scale of the response.}
+    \item{\code{rclass}:}{function to derive class predictions from conditional class
+                   probabilities (for models with factor response variable).}
     \item{\code{name}:}{ a character giving the name of the loss function
                          for pretty printing. }
     \item{\code{charloss}:}{ a character, the deparsed loss function.}

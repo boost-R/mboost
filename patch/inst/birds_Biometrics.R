@@ -49,7 +49,7 @@ coef(sp, which=1:6)
 
 # Geoadditive regression model without centering
 fm <- SG5 ~ bbs(GST) + bbs(DBH) + bbs(AOT) + bbs(AFS) + bbs(DWC) +
-            bbs(LOG) + bspatial(x_gk, y_gk, differences=1, knots=c(12,12))
+            bbs(LOG) + bspatial(x_gk, y_gk, df=4, differences=1, knots=c(12,12))
 sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
 plot(sp)
 
@@ -90,4 +90,9 @@ fm <- SG5 ~ bols(GST) + bspatial(x_gk, y_gk, by = GST, df=1, differences=1,
             bspatial(x_gk, y_gk, df=1, differences=1, knots=c(12, 12),
               center=TRUE)
 sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
-plot(sp)
+plot(sp, which = "GST")
+plot(sp, which = "AOT")
+plot(sp, which = "AFS")
+plot(sp, which = "DWC")
+plot(sp, which = "LOG")
+

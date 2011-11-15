@@ -8,6 +8,7 @@
 }
 \usage{
 stabsel(object, FWER = 0.05, cutoff, q, 
+        folds = cv(model.weights(object), type = "subsampling"),
         papply = if (require("multicore")) mclapply else lapply, ...)
 }
 \arguments{
@@ -15,6 +16,8 @@ stabsel(object, FWER = 0.05, cutoff, q,
   \item{FWER}{family-wise error rate to be controlled by the selection procedure.}
   \item{cutoff}{cutoff between 0.5 and 1.}
   \item{q}{average number of selected variables.}
+  \item{folds}{ a weight matrix with number of rows equal to the number
+                of observations, see \code{\link{cvrisk}}.}
   \item{papply}{ (parallel) apply function. In the absence of package \code{multicore} sequential
     computations via \code{\link{lapply}} are performed. Alternatively,
     parallel computing via \code{\link[multicore]{mclapply}} (package \code{multicore}),

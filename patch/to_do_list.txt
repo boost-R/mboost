@@ -1,12 +1,14 @@
 
 future
 
+    o  bols(x, center = FALSE) removes intercept by accident
+
     o  Poisson() with some extremely large values in the response
 
-    o  predict.glmboost via coef.glmboost. 
+    o  predict.glmboost via coef.glmboost.
        Remove special code in bolscw (TH, later)
 
-    o  new base-learners (by example, brad, bmrf)
+    o  new base-learners
 
     o  check status == "N" in wpbc
 

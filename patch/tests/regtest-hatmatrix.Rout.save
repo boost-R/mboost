@@ -1,7 +1,8 @@
 
-R version 2.11.1 (2010-05-31)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.14.0 (2011-10-31)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -29,7 +30,7 @@ Type 'q()' to quit R.
 > mydf <- df()
 > 
 > w <- c(rep(0, 50), rep(1, 50))
-> mod1 <- glmboost(y ~ ., data = mydf, weights = w)
+> mod1 <- glmboost(y ~ ., data = mydf, weights = w, center = FALSE)
 > cf1 <- coef(mod1)
 > 
 > ### hat matrix: fast for linear models
@@ -41,6 +42,27 @@ Type 'q()' to quit R.
 > mydf$int <- rep(1, nrow(mydf))
 > ## used to be: mod2 <- gamboost(y ~ ., data = mydf, weights = w, baselearner = mb) ## but doesn't work as .mboost functions deprecated.
 > mod2 <- gamboost(y ~ ., data = mydf, weights = w, baselearner = mb)
+Warning messages:
+1: In bols(x, intercept = FALSE) :
+  covariates should be (mean-) centered if 'intercept = FALSE'
+2: In bols(x, intercept = FALSE) :
+  covariates should be (mean-) centered if 'intercept = FALSE'
+3: In bols(x, intercept = FALSE) :
+  covariates should be (mean-) centered if 'intercept = FALSE'
+4: In bols(x, intercept = FALSE) :
+  covariates should be (mean-) centered if 'intercept = FALSE'
+5: In bols(x, intercept = FALSE) :
+  covariates should be (mean-) centered if 'intercept = FALSE'
+6: In bols(x, intercept = FALSE) :
+  covariates should be (mean-) centered if 'intercept = FALSE'
+7: In bols(x, intercept = FALSE) :
+  covariates should be (mean-) centered if 'intercept = FALSE'
+8: In bols(x, intercept = FALSE) :
+  covariates should be (mean-) centered if 'intercept = FALSE'
+9: In bols(x, intercept = FALSE) :
+  covariates should be (mean-) centered if 'intercept = FALSE'
+10: In bols(x, intercept = FALSE) :
+  covariates should be (mean-) centered if 'intercept = FALSE'
 > cf2 <- coef(mod2)
 > stopifnot(all(round(unlist(cf2), 5) %in% round(cf1, 5)))
 > 

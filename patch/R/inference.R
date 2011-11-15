@@ -1,5 +1,6 @@
 
 stabsel <- function(object, FWER = 0.05, cutoff, q, 
+                    folds = cv(model.weights(object), type = "subsampling"),
                     papply = if (require("multicore")) mclapply else lapply, ...) {
 
     p <- length(variable.names(object))
@@ -8,7 +9,10 @@ stabsel <- function(object, FWER = 0.05, cutoff, q,
     stopifnot(FWER > 0 && FWER < 0.5)
     stopifnot(xor(missing(cutoff), missing(q)))
     if (missing(cutoff)) cutoff <- min(0.9, (q^2 / (FWER * p) + 1) / 2)
-    if (missing(q)) q <- ceiling(sqrt(FWER * (2 * cutoff - 1) * p))
+    if (missing(q)){
+		stopifnot(cutoff >= 0.5)
+		q <- ceiling(sqrt(FWER * (2 * cutoff - 1) * p))
+	} 
 
     fun <- function(model) {
         xs <- selected(model)
@@ -17,7 +21,7 @@ stabsel <- function(object, FWER = 0.05, cutoff, q,
         xs
     }
     ss <- cvrisk(object, fun  = fun, 
-                 folds = cv(model.weights(object), type = "subsampling", ...),
+                 folds = folds,
                  papply = papply)
     ret <- matrix(0, nrow = length(ibase), ncol = m <- mstop(object))
     for (i in 1:length(ss)) {

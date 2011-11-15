@@ -4,21 +4,35 @@
 
 \alias{summary.mboost}
 
+\alias{coef.mboost}
 \alias{coef.glmboost}
-\alias{coef.gamboost}
 
 \alias{[.mboost}
 
 \alias{AIC.mboost}
-\alias{predict.mboost}
-\alias{predict.glmboost}
 
 \alias{mstop}
 \alias{mstop.gbAIC}
 \alias{mstop.mboost}
 \alias{mstop.cvrisk}
 
+\alias{predict.mboost}
+\alias{predict.gamboost}
+\alias{predict.blackboost}
+\alias{predict.glmboost}
 \alias{fitted.mboost}
+\alias{residuals.mboost}
+\alias{resid.mboost}
+
+\alias{extract}
+\alias{extract.mboost}
+\alias{extract.gamboost}
+\alias{extract.glmboost}
+\alias{extract.blackboost}
+\alias{extract.blg}
+\alias{extract.bl_lin}
+\alias{extract.bl_tree}
+
 \alias{logLik.mboost}
 \alias{hatvalues.gamboost}
 \alias{hatvalues.glmboost}
@@ -41,10 +55,10 @@
 
 \method{summary}{mboost}(object, ...)
 
+\method{coef}{mboost}(object, which = NULL,
+    aggregate = c("sum", "cumsum", "none"), ...)
 \method{coef}{glmboost}(object, which = NULL,
     aggregate = c("sum", "cumsum", "none"), off2int = FALSE, ...)
-\method{coef}{gamboost}(object, which = NULL,
-    aggregate = c("sum", "cumsum", "none"), ...)
 
 \method{[}{mboost}(x, i, return = TRUE, ...)
 
@@ -63,6 +77,21 @@
     aggregate = c("sum", "cumsum", "none"), ...)
 
 \method{fitted}{mboost}(object, ...)
+
+\method{residuals}{mboost}(object, ...)
+\method{resid}{mboost}(object, ...)
+
+\method{extract}{mboost}(object, what = c("design", "penalty", "lambda", "df",
+                                   "coefficients", "residuals", "bnames", "offset",
+                                   "nuisance", "weights", "index", "control"),
+                         which = NULL, ...)
+\method{extract}{glmboost}(object, what = c("design", "coefficients", "residuals",
+                                     "bnames", "offset", "nuisance",
+                                     "weights", "control"),
+                           which = NULL, asmatrix = FALSE, ...)
+\method{extract}{blg}(object, what = c("design", "penalty", "index"),
+                      asmatrix = FALSE, expand = FALSE, ...)
+
 \method{logLik}{mboost}(object, ...)
 \method{hatvalues}{gamboost}(model, ...)
 \method{hatvalues}{glmboost}(model, ...)
@@ -120,7 +149,32 @@
              boosting hat matrix and \code{actset} uses the number of
              non-zero coefficients for each boosting iteration.}
   \item{k}{  numeric, the \emph{penalty} per parameter to be used; the default
-             \code{k = 2} is the classical AIC. Only used when \code{method = "classical"}.}
+             \code{k = 2} is the classical AIC. Only used when
+             \code{method = "classical"}.}
+  \item{what}{ a character specifying the quantities to \code{extract}.
+               Depending on \code{object} this can be a subset of
+               \code{"design"} (default; design matrix),
+               \code{"penalty"} (penalty matrix),
+               \code{"lambda"} (smoothing parameter), \code{"df"}
+               (degrees of freedom), \code{"coefficients"},
+               \code{"residuals"}, \code{"bnames"} (names of the base-learners),
+               \code{"offset"}, \code{"nuisance"}, \code{"weights"},
+               \code{"index"} (index of ties used to expand the design
+               matrix) and \code{"control"}. In future versions additional
+               extractors might be specified.}
+  \item{asmatrix}{ a logical indicating whether the the returned
+        matrix should be coerced to a matrix (default) or if the
+        returned object stays as it is (i.e., potentially a
+        \emph{sparse} matrix). This option is only applicable if
+        \code{extract} returns matrices, i.e., \code{what = "design"} or
+        \code{what = "penalty"}. }
+  \item{expand}{ a logical indicating whether the design matrix should
+        be expanded (default: \code{FALSE}). This is useful if  ties
+        where taken into account either manually (via argument
+        \code{index} in a base-learner) or automatically for data sets
+        with many observations. \code{expand = TRUE} is equivalent to
+        \code{extract(B)[extract(B, what = "index"),]} for a
+        base-learner \code{B}.}
   \item{\dots}{ additional arguments passed to callies. }
 }
 \details{
@@ -146,39 +200,78 @@
   intercept is always returned except \code{which} is specified such
   that the intercept is not selected. See examples below.
 
-  The \code{predict} function can be used to predict the status of the response variable
-  for new observations whereas \code{fitted} extracts the regression fit for the observations
-  in the learning sample.
+  The \code{predict} function can be used to predict the status of the
+  response variable for new observations whereas \code{fitted} extracts
+  the regression fit for the observations in the learning sample. For
+  \code{predict} \code{newdata} can be specified, otherwise the fitted
+  values are returned. If \code{which} is specified, marginal effects of
+  the corresponding base-learner(s) are returned. The argument
+  \code{type} can be used to make predictions on the scale of the
+  \code{link} (i.e., the linear predictor \eqn{X\beta}{X * beta}),
+  the \code{response} (i.e. \eqn{h(X\beta)}{h(X * beta)}, where h is the
+  response function) or the \code{class} (in case of
+  classification). Furthermore, the predictions can be aggregated
+  analogously to \code{coef} by setting \code{aggregate} to either
+  \code{sum} (default; predictions of the final iteration are given),
+  \code{cumsum} (predictions of all iterations are returned
+  simultaniously) or \code{none} (change of prediction in each
+  iteration). If applicable the \code{offset} is added to the predictions.
+  If marginal predictions are requested the \code{offset} is attached
+  to the object via \code{attr(..., "offset")} as adding the offset to
+  one of the marginal predictions doesn't make much sense.
+
+  The \code{residuals} function can be used to extract the residuals
+  (i.e., the negative gradient of the current iteration). \code{resid}
+  is is an alias for \code{residuals}.
 
   The \code{[.mboost} function can be used to enhance or restrict a given
   boosting model to the specified boosting iteration \code{i}. Note that
   in both cases the original \code{x} will be changed to reduce the
   memory footprint. If the boosting model is enhanced by specifying an
   index that is larger than the initial \code{mstop}, only the missing
-  \code{i - mstop} steps are fitted. If the model is restricted,
-  the spare steps are not dropped, i.e., if we increase \code{i} again,
+  \code{i - mstop} steps are fitted. If the model is restricted, the
+  spare steps are not dropped, i.e., if we increase \code{i} again,
   these boosting steps are immediately available.
 
-  The ids of base-learners selected during the fitting process
-  can be extracted using \code{selected()}. The \code{nuisance()} method
+  The generic \code{extract} function can be used to extract various
+  characteristics of a fitted model or a base-learner. Note that the
+  sometimes a penalty function is returned (e.g. by
+  \code{extract(bols(x), what = "penalty")}) even if the estimation is
+  unpenalized. However, in this case the penalty paramter \code{lambda}
+  is set to zero. If a matrix is returned by \code{extract} one can to
+  set \code{asmatrix = TRUE} if the returned matrix should be coerced to
+  class \code{matrix}. If \code{asmatrix = FALSE} one might get a sparse
+  matrix as implemented in package \code{Matrix}. If one requests the
+  design matrix (\code{what = "design"}) \code{expand = TRUE} expands
+  the resulting matrix by taking the duplicates handeled via
+  \code{index} into account.
+
+  The ids of base-learners selected during the fitting process can be
+  extracted using \code{selected()}. The \code{nuisance()} method
   extracts nuisance parameters from the fit that are handled internally
-  by the corresponding family object, see \code{"\linkS4class{boost_family}"}.
+  by the corresponding family object, see
+  \code{"\linkS4class{boost_family}"}.
 
-  For (generalized) linear and additive models, the \code{AIC} function can be used
-  to compute both the classical and corrected AIC (Hurvich et al., 1998, only available
-  when \code{family = GaussReg()} was used), which is useful for the determination
-  of the optimal number of boosting iterations to be applied (which can be extracted via
-  \code{mstop}). The degrees of freedom are either computed via the trace of the
-  boosting hat matrix (which is rather slow even for moderate sample sizes)
-  or the number of variables (non-zero coefficients) that entered the model so far
-  (faster but only meaningful for linear models fitted via \code{\link{gamboost}}
-  (see Hastie, 2007)).
+  For (generalized) linear and additive models, the \code{AIC} function
+  can be used to compute both the classical AIC (only available for
+  \code{familiy = Binomial()} and \code{familiy = Poisson()}) and
+  corrected AIC (Hurvich et al., 1998, only available when \code{family
+  = Gaussian()} was used). Details on the used approximations for the
+  hat matrix can be found in Buehlmann and Hothorn (2007). The AIC is
+  useful for the determination of the optimal number of boosting
+  iterations to be applied (which can be extracted via \code{mstop}).
+  The degrees of freedom are either computed via the trace of the
+  boosting hat matrix (which is rather slow even for moderate sample
+  sizes) or the number of variables (non-zero coefficients) that entered
+  the model so far (faster but only meaningful for linear models fitted
+  via \code{\link{gamboost}} (see Hastie, 2007)).
 
-  In addition, the general Minimum Description Length criterion (Buehlmann and Yu, 2006)
-  can be computed using function \code{AIC}.
+  In addition, the general Minimum Description Length criterion
+  (Buehlmann and Yu, 2006) can be computed using function \code{AIC}.
 
-  Note that \code{logLik} and \code{AIC} only make sense when the corresponding
-  \code{\link{Family}} implements the appropriate loss function.
+  Note that \code{logLik} and \code{AIC} only make sense when the
+  corresponding \code{\link{Family}} implements the appropriate loss
+  function.
 
 }
 \note{
@@ -187,9 +280,10 @@
 }
 \section{Warning}{
   The coefficients resulting from boosting with family
-  \code{\link{Binomial}} are \eqn{1/2} of the coefficients of a logit model
-  obtained via \code{\link{glm}}. This is due to the internal recoding
-  of the response to \eqn{-1} and \eqn{+1} (see \code{\link{Binomial}}).
+  \code{\link{Binomial}} are \eqn{1/2} of the coefficients of a logit
+  model obtained via \code{\link{glm}}. This is due to the internal
+  recoding of the response to \eqn{-1} and \eqn{+1} (see
+  \code{\link{Binomial}}).
 }
 \references{
 
@@ -203,11 +297,12 @@
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 
-  Trevor Hastie (2007), Discussion of ``Boosting algorithms: Regularization, prediction and model fitting''
-  by Peter Buehlmann and Torsten Hothorn. \emph{Statistical Science}, \bold{22}(4), 505.
+  Trevor Hastie (2007), Discussion of ``Boosting algorithms:
+  Regularization, prediction and model fitting'' by Peter Buehlmann and
+  Torsten Hothorn. \emph{Statistical Science}, \bold{22}(4), 505.
 
-  Peter Buehlmann and Bin Yu (2006),
-  Sparse boosting. \emph{Journal of Machine Learning Research}, \bold{7}, 1001--1024.
+  Peter Buehlmann and Bin Yu (2006), Sparse boosting. \emph{Journal of
+  Machine Learning Research}, \bold{7}, 1001--1024.
 
 }
 \seealso{ \code{\link{gamboost}}, \code{\link{glmboost}} and
@@ -239,7 +334,7 @@
   coef(cars.gb_centered)               # intercept implicitly estimated
                                        # and thus returned
   ## intercept is internally corrected for mean-centering
-  - mean(cars$speed) * coef(cars.gb_centered, which="speed")
+  - mean(cars$speed) * coef(cars.gb_centered, which="speed") # = intercept
   # not asked for intercept thus not returned
   coef(cars.gb_centered, which="speed")
   # explicitly asked for intercept
@@ -282,5 +377,42 @@
   coef(model,
        which = 1:length(variable.names(model))) # all base-learners
   coef(model, which = "x1") # shows all base-learners for x1
+
+  cf1 <- coef(model, which = c(1,3,4), aggregate = "cumsum")
+  tmp <- sapply(cf1, function(x) x)
+  matplot(tmp, type = "l", main = "Coefficient Paths")
+
+  cf1_all <- coef(model, aggregate = "cumsum")
+  cf1_all <- lapply(cf1_all, function(x) x[, ncol(x)]) # last element
+  ## same as coef(model)
+
+  cf2 <- coef(model, aggregate = "none")
+  cf2 <- lapply(cf2, rowSums) # same as coef(model)
+
+  ### example continued for extraction of predictions
+
+  yhat <- predict(model) # standard prediction; here same as fitted(model)
+  p1 <- predict(model, which = "x1") # marginal effects of x1
+  orderX <- order(data$x1)
+  ## rowSums needed as p1 is a matrix
+  plot(data$x1[orderX], rowSums(p1)[orderX], type = "b")
+
+  ## better: predictions on a equidistant grid
+  new_data <- data.frame(x1 = seq(min(data$x1), max(data$x1), length = 100))
+  p2 <- predict(model, newdata = new_data, which = "x1")
+  lines(new_data$x1, rowSums(p2), col = "red")
+
+  ### extraction of model characteristics
+  extract(model, which = "x1")  # design matrices for x1
+  extract(model, what = "penalty", which = "x1") # penalty matrices for x1
+  extract(model, what = "lambda", which = "x1") # df and corresponding lambda for x1
+       ## note that bols(x1, intercept = FALSE) is unpenalized
+
+  ### extract from base-learners
+  extract(bbs(x1), what = "design")
+  extract(bbs(x1), what = "penalty")
+  ## weights and lambda can only be extracted after using dpp
+  weights <- rep(1, length(x1))
+  extract(bbs(x1)$dpp(weights), what = "lambda")
 }
 \keyword{methods}

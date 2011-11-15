@@ -12,8 +12,8 @@
 \usage{
 \method{glmboost}{formula}(formula, data = list(), weights = NULL,
           na.action = na.pass, contrasts.arg = NULL,
-          center = FALSE, control = boost_control(), ...)
-\method{glmboost}{matrix}(x, y, center = FALSE, control = boost_control(), ...)
+          center = TRUE, control = boost_control(), ...)
+\method{glmboost}{matrix}(x, y, center = TRUE, control = boost_control(), ...)
 \method{glmboost}{default}(x,  ...)
 \method{plot}{glmboost}(x, main = deparse(x$call), col = NULL,
                         off2int = FALSE, ...)
@@ -36,7 +36,7 @@
   \item{y}{ vector of responses. }
   \item{main}{ a title for the plot.}
   \item{col}{ (a vector of) colors for plotting the lines representing
-             the coefficient paths.}
+    the coefficient paths.}
   \item{off2int}{ logical indicating whether the offset should be
     added to the intercept (if there is any) or if the offset is
     neglected for plotting (default).}

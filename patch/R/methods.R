@@ -10,20 +10,15 @@
     if (is.list(pr)) {
         rownames(pr) <- nm
         if (type != "link")
-            warning("argument link is ignored")
+            warning("argument", sQuote("type"), " is ignored")
         return(pr)
     }
     if (type == "link") ret <- pr
     if (type == "response") ret <- family@response(pr)
     if (type == "class") {
         if (!is.factor(y)) stop("response is not a factor")
-        if (nlevels(y) == 2) {
-            ret <- factor(levels(y)[(pr > 0) + 1], levels = levels(y))
-        } else {
-            ret <- factor(levels(y)[apply(family@response(pr), 1, which.max)],
-                          levels = levels(y))
+            ret <- factor(levels(y)[family@rclass(pr)], levels = levels(y))
         }
-    }
     names(ret) <- names(pr)
     return(ret)
 }
@@ -40,15 +35,20 @@ predict.mboost <- function(object, newdata = NULL,
                          which = which, aggregate = aggregate)
     nm <- rownames(newdata)
     if (is.null(newdata)) nm <- object$rownames
-    if (is.list(pr))
-        return(lapply(pr, .predictmboost, y = object$response,
-                      type = type, nm = nm, family = object$family))
-    .predictmboost(object$response, pr, type = type, nm = nm,
-                   family = object$family)
+    if (is.list(pr)){
+        RET <- lapply(pr, .predictmboost, y = object$response,
+                      type = type, nm = nm, family = object$family)
+        if (type == "link") attr(RET, "offset") <- attr(pr, "offset")
+        return(RET)
+    }
+    RET <- .predictmboost(object$response, pr, type = type, nm = nm,
+                          family = object$family)
+    if (type != "link") attr(RET, "offset") <- NULL
+    return(RET)
 }
 
 ### extract coefficients
-coef.gamboost <- function(object, which = NULL,
+coef.mboost <- function(object, which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...) {
 
     args <- list(...)
@@ -82,6 +82,12 @@ hatvalues.gamboost <- function(model, ...) {
     attr(RET, "hatmatrix") <- op[[1]]
     attr(RET, "trace") <- op[[2]]
     RET
+}
+
+hatvalues.mboost <- function(model, ...) {
+    stop("hatvalues are not implemented for models fitted via function ",
+         sQuote("mboost"), ".\n Please use functions ", sQuote("gamboost"),
+         " or ", sQuote("glmboost"), " instead.")
 }
 
 AIC.mboost <- function(object, method = c("corrected", "classical", "gMDL"),
@@ -308,6 +314,9 @@ coef.glmboost <- function(object, which = NULL,
         if (off2int & length(offset) == 1) {
             cf[[1]] <- cf[[1]] + offset
         } else {
+            if (off2int)
+                warning(sQuote("off2int = TRUE"),
+                        " ignored for non-scalar offset")
             attr(cf, "offset") <- offset
         }
     }
@@ -429,3 +438,136 @@ nuisance <- function(object)
 
 nuisance.mboost <- function(object)
     object$nuisance()[[mstop(object)]]
+
+
+
+extract <- function(object, ...)
+    UseMethod("extract")
+
+extract.mboost <- function(object, what = c("design", "penalty", "lambda", "df",
+                                   "coefficients", "residuals", "bnames", "offset",
+                                   "nuisance", "weights", "index", "control"),
+                           which = NULL, ...){
+    what <- match.arg(what)
+    which <- object$which(which, usedonly = is.null(which))
+    if (what %in% c("design", "penalty", "lambda", "df", "index")){
+        fun <- function(which)
+            extract(object$basemodel[[which]], what = what, ...)
+        ret <- lapply(which, fun)
+        names(ret) <- extract(object, what = "bnames", which = which)
+        return(ret)
+    }
+    if (what == "coefficients")
+        return(coef(object, which = which))
+    if (what == "residuals")
+        return(residuals(object))
+    if (what == "bnames")
+        return(get("bnames", envir = environment(object$update))[which])
+    if (what == "offset")
+        return(object$offset)
+    if (what == "nuisance")
+        return(nuisance(object))
+    if (what == "weights")
+        return(model.weights(object))
+    if (what == "control")
+        return(object$control)
+}
+
+extract.glmboost <- function(object, what = c("design", "coefficients", "residuals",
+                                     "bnames", "offset", "nuisance", "weights",
+                                     "control"),
+                             which = NULL, asmatrix = FALSE, ...){
+    what <- match.arg(what)
+    center <- get("center", envir = environment(object$newX))
+    if (is.null(which)) {
+        which <- object$which(usedonly = TRUE)
+        ## if center = TRUE for model fitting intercept is implicitly selected
+        if (center){
+            intercept <- which(object$assign == 0)
+            INTERCEPT <- sum(object$assign == 0) == 1
+            if (INTERCEPT && !intercept %in% which)
+                which <- c(intercept, which)
+        }
+    } else {
+        which <- object$which(which)
+    }
+    if (what == "design"){
+        mat <- object$baselearner[[1]]$get_data()[,which]
+        if (asmatrix)
+            mat <- as.matrix(mat)
+        return(mat)
+    }
+    if (what == "coefficients")
+        return(coef(object, which = which))
+    if (what == "residuals")
+        return(residuals(object))
+    if (what == "bnames")
+        return(get("bnames", envir = environment(object$update))[which])
+    if (what == "offset")
+        return(object$offset)
+    if (what == "nuisance")
+        return(nuisance(object))
+    if (what == "weights")
+        return(model.weights(object))
+    ## index doensn't store the index as base-learners in gamboost do
+    #if (what == "index")
+    #    return(object$baselearner[[1]]$get_index())
+    if (what == "control")
+        return(object$control)
+}
+
+extract.blackboost <- function(object, ...)
+    stop("function not yet implemented")
+
+extract.blg <- function(object, what = c("design", "penalty", "index"),
+                        asmatrix = FALSE, expand = FALSE, ...){
+    what <- match.arg(what)
+    object <- object$dpp(rep(1, nrow(object$model.frame())))
+    return(extract(object, what = what,
+                   asmatrix = asmatrix, expand = expand))
+}
+
+extract.bl_lin <- function(object, what = c("design", "penalty", "lambda", "df",
+                                   "weights", "index"),
+                           asmatrix = FALSE, expand = FALSE,  ...){
+    what <- match.arg(what)
+    if (what == "design")
+        mat <- get("X", envir = environment(object$fit))
+    if (what == "penalty")
+        mat <- get("K", envir = environment(object$fit))
+    if (what %in% c("lambda", "df"))
+        return(object$df()[what])
+    if (what %in% c("weights", "index"))
+        return(get(what, envir = environment(object$fit)))
+    ## only applicable for design and penalty matrix
+    if (asmatrix){
+        mat <- as.matrix(mat)
+    }
+    if (expand && !is.null(indx <- extract(object, what = "index"))){
+        a <- attributes(mat)
+        mat <- mat[indx,]
+        a[c("dim", "dimnames")] <- attributes(mat)[c("dim", "dimnames")]
+        attributes(mat) <- a
+    }
+    return(mat)
+}
+
+extract.bl_tree <- function(object, what = c("design", "penalty", "lambda", "df",
+                                    "weights", "index"),
+                            ...){
+    what <- match.arg(what)
+    if (what == "weights"){
+        return(get("weights", envir = environment(object$fit)))
+    } else {
+        warning(paste("model matrix, penalty matrix, lambda and index",
+                      "do not exist for tree base-learners"))
+        invisible(NULL)
+    }
+}
+
+residuals.mboost <- function(object, ...){
+    if(object$family@name == "Squared Error (Regression)")
+        return(object$resid())
+    stop(sQuote("residuals()"), " only implemented for ",
+         sQuote("family = Gaussian()"))
+}

@@ -25,19 +25,27 @@ bolscw <- function(X) {
     ret$dpp <- function(weights) {
 
         weights <- weights[cc]
-        xw <- t(X * weights)
         xtx <- colSums(X^2 * weights, na.rm = TRUE)
         ### some columns may be zero
         xtx[xtx < .Machine$double.eps] <- 1
         sxtx <- sqrt(xtx)
-        MPinvS <- (1 / sxtx) * xw
         p <- ncol(X)
+        ### use crossprod for estimation but not for Matrix objects
+        ### since S4 dispatch is way to slow
+        if (is(X, "Matrix")) {
+            MPinvS <- t(X * weights) / sxtx
+            est <- function(y) MPinvS %*% y
+        } else {
+            MPinvS <- NULL
+            storage.mode(X) <- "double" ### crossprod is doing this anyway
+            est <- function(y) crossprod(X, y * weights) / sxtx
+        }
 
         fit <- function(y) {
             if (!is.null(index))
                 y <- y[cc]
 
-            mmu <- max(amu <- abs(mu <- MPinvS %*% y))
+            mmu <- max(amu <- abs(mu <- est(y)))
             xselect <- which(as.logical(mmu == amu))[1]
             coef <- mu[xselect] / sxtx[xselect]
             ret <- list(model = c(coef = coef, xselect = xselect, p = p),
@@ -90,8 +98,14 @@ bolscw <- function(X) {
         }
 
         ret <- list(fit = fit, predict = predict, Xnames = colnames(X), 
-                    MPinv = function() MPinvS / sxtx,
-                    hatvalues = function() X %*% (MPinvS / sxtx))
+                    MPinv = function() {
+                        if (is.null(MPinvS)) MPinvS <<- t(X * weights) / sxtx
+                        return(MPinvS / sxtx)
+                    },
+                    hatvalues = function() {
+                        if (is.null(MPinvS)) MPinvS <<- t(X * weights) / sxtx
+                        X %*% (MPinvS / sxtx)
+                    })
         class(ret) <- c("bl_cwlin", "bl")
         return(ret)
     }
