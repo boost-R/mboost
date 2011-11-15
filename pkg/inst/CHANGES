@@ -1,13 +1,8 @@
 
-                CHANGES in `mboost' VERSION 2.1-0 (2011-11-xx)
+                CHANGES in `mboost' VERSION 2.1-0 (2011-11-15, r601)
 
-  o  add Binomial(link = "probit") and general cdf's as link
-     functions (experimental)
 
-  o  bolscw can be mixed with other base-learners (although
-     not yet exported and not via the formula interface)
-
-  o  speed up glmboost() a little bit
+  Base-learners
 
   o  added base-learners for smooth monotonic (or convex/concave)
      functions of one or two variables (bmono())
@@ -16,36 +11,12 @@
 
   o  added base-learners for Markov random fields (bmrf())
 
-  o  bols(x, intercept = FALSE) only reasonable if x is centered
-
   o  bbs(x, cyclic = TRUE) for cyclic covariates ensures that
      predictions at the boundaries coincide and that the resulting
      function estimate is smoothly joined
 
-  o  added extract() methods for base-learners and fitted models
-
-  o  added residuals() function to extract residuals from the
-     model
-
-  o  added new families:
-       - AUC() for AUC loss function
-       - GammaReg() for gamma regression models
-
-  o  changed behavior of cvrisk() if weights are used:
-     out-of-bag-risk now weighted according to "weights" as
-     specified in call to mboost
-
-  o  improved predict.mboost(): added names where missing and the
-     offset as attribute where applicable.
-
-  o  changed default in glmboost() to center = TRUE
-
-  o  fixed bug in predict() with glmboost.matrix(..., center = TRUE)
-
-  o  coef now also works with tree base-learners
-     (returns NULL in this case)
-
-  o  changed coef.gamboost to coef.mboost
+  o  bols(x, intercept = FALSE) only reasonable if x is centered.
+     A warning is now issued if x is not centered.
 
   o  changed default for degrees of freedom in bspatial()
      to df = 6
@@ -54,19 +25,61 @@
      degrees of freedom are greater than the range of the (unpenalized)
      null space
 
+  o  bolscw can be mixed with other base-learners (although
+     not yet exported and not via the formula interface)
+
+  o  new experimental baselearner %O% for smoothing
+     matrix-values responses
+
+
+  Families
+
+  o  add Binomial(link = "probit") and general cdf's as link
+     functions (experimental)
+
+  o  added new families:
+       - AUC() for AUC loss function
+       - GammaReg() for gamma regression models
+
+
+  Methods
+
+  o  added extract() methods for base-learners and fitted models
+
+  o  added residuals() function to extract residuals from the
+     model
+
+  o  improved predict.mboost(): added names where missing and the
+     offset as attribute where applicable.
+
+  o  fixed bug in predict() with glmboost.matrix(..., center = TRUE)
+
+  o  coef now also works with tree base-learners
+     (returns NULL in this case)
+
+  o  changed coef.gamboost to coef.mboost
+
   o  various improvements in plot.mboost function
+
+
+  Miscellaneous
+
+  o  changed default in glmboost() to center = TRUE
+
+  o  speed up glmboost() a little bit
+
+  o  changed behavior of cvrisk() if weights are used:
+     out-of-bag-risk now weighted according to "weights" as
+     specified in call to mboost
 
   o  added warning if df2lambda is likely to become numerically
      instable (i.e. in the case of large entries in the design matrix)
 
-  o  improved storage, speed and stability using Matrix technology for 
-     bols() for factors with many levels and brandom(); 
+  o  improved storage, speed and stability using Matrix technology for
+     bols() for factors with many levels and brandom();
      further improvements in base-learners that are combined via %+%.
 
   o  various improvements and fixes in manuals
-
-  o  new experimental baselearner %O% for smoothing 
-     matrix-values responses
 
 
 		CHANGES in `mboost' VERSION 2.0-12 (2011-08-22, r586)
@@ -104,7 +117,7 @@
 
   o  vignette "mboost" updated
 
-  o  remove problem with R CMD check that occured on some 64bit systems
+  o  remove problem with R CMD check that occurred on some 64bit systems
 
 
                 CHANGES in `mboost' VERSION 2.0-6 (2010-05-22, r510)
@@ -127,7 +140,7 @@
   o  added (missing) response functions to families Weibull(),
      Loglog(), Lognormal() and NBinomial()
 
-  o  fixed bug in family CoxPH which occured with NAs
+  o  fixed bug in family CoxPH which occurred with NAs
 
   o  improvements and corrections in documentation
 
