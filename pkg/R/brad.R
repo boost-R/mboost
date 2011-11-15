@@ -110,7 +110,7 @@ hyper_brad <- function(mf, vary, knots = 100, df = 4, lambda = NULL,
     ## first we need to build a correct matrix of mf
     x <- as.matrix(mf[which(colnames(mf) != vary)])
     if (length(knots) == 1) {
-        knots <- cover.design(R = x, nd = knots)$design
+        knots <- cover.design(R = unique(x), nd = knots)$design
     }
     if ("theta" %in% names(args) && is.null(args$theta)){
         ## (try to) compute effective range
