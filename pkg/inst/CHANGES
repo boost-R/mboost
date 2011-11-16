@@ -1,3 +1,19 @@
+                CHANGES in `mboost' VERSION 2.2-0 (2012-xx-xx)
+
+  o  changed behavior of bols(x, intercept = FALSE) when x is a factor:
+     now the intercept is simply dropped from the design matrix; 
+     coding can be specified as usually for factors.
+
+  o  changed default for options("mboost_dftraceS") to FALSE, i.e., 
+     degrees of freedom are now computed from smoothing parameter 
+     as described in B. Hofner, T. Hothorn, T. Kneib, M. Schmid (2011).
+
+  o  changed computation of B-spline basis at the boundaries: 
+     now also use equidistant knots in the boundaries (per default)
+
+  o  bmono() now implements an experimental version of constraints at the
+     boundaries of (monotonic) P-splines
+
 
                 CHANGES in `mboost' VERSION 2.1-0 (2011-11-15, r601)
 

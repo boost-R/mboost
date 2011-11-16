@@ -1,10 +1,13 @@
 ### P-spline base-learner with (monotonicity) constraints
 bmono <- function(..., constraint = c("increasing", "decreasing",
-                                      "convex", "concave"),
+                                      "convex", "concave", "none"),
                   by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
                   degree = 3, differences = 2, df = 4,
                   lambda = NULL, lambda2 = 1e6, niter = 10,
-                  intercept = TRUE, contrasts.arg = "contr.treatment") {
+                  intercept = TRUE, contrasts.arg = "contr.treatment",
+                  boundary.constraints = FALSE,
+                  cons.arg = list(n = NULL, diff_order = NULL)){
+                                  #type = c("none", "constant", "linear"))) {
 
     if (!is.null(lambda)) df <- NULL
 
@@ -98,6 +101,26 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
         args$constraint <- constraint
         args$lambda2 <- lambda2
         args$niter <- niter
+        args$boundary.constraints <- boundary.constraints
+        if(is.null(cons.arg$n)){
+            ## use 10% of the knots on each side per default
+            cons.arg$n <- sapply(args$knots,
+                                 function(x) rep(length(x$knots), 2)) * 0.1
+        } else {
+            if(length(cons.arg$n) != 2 && !is.list(cons.arg$n)){
+                cons.arg$n <- rep(cons.arg$n, 2)
+            }
+            ## <fixme> was passiert bei bivariatem bmono? </fixme>
+        }
+        if(is.null(cons.arg$diff_order)){
+            ## use same difference order as defined by "constraint":
+            if (args$constraint %in% c("increasing", "decreasing")){
+                cons.arg$diff_order <- 1
+            } else { # i.e. args$constraint %in% c("convex", "concave")
+                cons.arg$diff_order <- 2
+            }
+        }
+        args$cons.arg <- cons.arg
         ret$dpp <- bl_mono(ret, Xfun = X_bbs,
                            args = args)
     } else {
@@ -107,6 +130,8 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
         args$constraint <- constraint
         args$lambda2 <- lambda2
         args$niter <- niter
+        args$boundary.constraints <- boundary.constraints
+        args$cons.arg$n <- cons.arg$n
         ret$dpp <- bl_mono(ret, Xfun = X_ols,
                            args = args)
     }
@@ -142,9 +167,30 @@ bl_mono <- function(blg, Xfun, args) {
             D[[1]][1,1] <- 0
         } else {
             D[[1]] <- diff(diag(ncol(X)), differences = diff_order)
+            if (args$boundary.constraints){
+                cons.arg <- args$cons.arg
+                idx <- rep(0, ncol(X) - cons.arg$diff_order)
+                if (cons.arg$n[1] == 0) lower <- 0 else lower <- 1:cons.arg$n[1]
+                if (cons.arg$n[2] == length(idx)) upper <- 0
+                else upper <- length(idx) - 1:cons.arg$n[2] + 1
+                idx[c(lower, upper)] <- 1
+                idxM <- diag(idx)
+                dM <- diff(diag(ncol(X)), differences = cons.arg$diff_order)
+                #if (cons.arg$diff_order == 2){
+                #    dM[c(1, nrow(dM)),] <- 0
+                #    dM[1,c(1,2)] <- c(1, -1)
+                #    dM[nrow(dM), ncol(dM) - 1:0] <- c(1, -1)
+                #}
+                D[[1]] <- rbind(D[[1]], idxM %*% dM)
+            }
         }
         V[[1]] <- matrix(0, ncol = nrow(D[[1]]),
                          nrow =  nrow(D[[1]]))
+        if (args$boundary.constraints){
+            idxFlat <- (nrow(V[[1]]) - length(idx) + 1):nrow(V[[1]])
+            idxFlat <- idxFlat[as.logical(idx)]
+            V[[1]][idxFlat, idxFlat] <- diag(rep(1, length(idxFlat)))
+        }
 
         lambda2[[1]] <- args$lambda2
         lambda2[[2]] <- 0
@@ -244,6 +290,9 @@ bl_mono <- function(blg, Xfun, args) {
                     ( lambda2[[2]] == 0 || all( V[[2]] == tmp2 ) ) )
                     break    # if both are equal: done!
                 V[[1]] <- tmp1
+                if (args$boundary.constraints){
+                    V[[1]][idxFlat, idxFlat] <- diag(rep(1, length(idxFlat)))
+                }
                 if (lambda2[[2]] != 0)
                     V[[2]] <- tmp2
                 if (i == args$niter)
@@ -315,6 +364,9 @@ bl_mono <- function(blg, Xfun, args) {
     }
     return(dpp)
 }
+
+none <- function(diffs)
+    diag(rep(0,length(diffs)))
 
 increasing <- function(diffs)
     diag(c(as.numeric(diffs)) <= 0)

@@ -91,6 +91,7 @@ ty <- rnorm(100)
 tw <- rep(1, 100)
 
 ### compute & check df
+op <- options(mboost_dftraceS = TRUE)
 la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
 truedf <- sum(diag(tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*% t(tX * tw)))
 stopifnot(abs(truedf - 2) < sqrt(.Machine$double.eps))
@@ -102,6 +103,7 @@ max(abs(cf1 - cf2))
 # I think bols is better and thus right
 sum((ty - tX %*% cf1)^2) + la * sum(cf1^2)
 sum((ty - tX %*% cf2)^2) + la * sum(cf2^2)
+options(op)
 
 ### now with other df-definition:
 op <- options(mboost_dftraceS = FALSE)
@@ -112,6 +114,7 @@ stopifnot(abs(truedf - 2) < sqrt(.Machine$double.eps))
 options(op)
 
 # check df with weights
+op <- options(mboost_dftraceS = TRUE)
 tw <- rpois(100, 2)
 la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
 truedf <- sum(diag(tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*% t(tX * tw)))
@@ -139,6 +142,7 @@ for (i in 3:10){
     }
 }
 stopifnot(all(diff_df < sqrt(.Machine$double.eps)))
+options(op)
 
 ### componentwise
 cf2 <- coef(fit(dpp(bolscw(cbind(1, xn)), weights = w), y))

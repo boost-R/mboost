@@ -89,7 +89,6 @@ X_ols <- function(mf, vary, args) {
         ### set up model matrix
         fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary],
                     collapse = "+"), sep = "")
-        if (!args$intercept) fm <- paste(fm, "-1")
         fac <- sapply(mf[colnames(mf) != vary], is.factor)
         if (any(fac)){
             if (!is.list(args$contrasts.arg)){
@@ -102,6 +101,8 @@ X_ols <- function(mf, vary, args) {
         }
         X <- model.matrix(as.formula(fm), data = mf, contrasts.arg = args$contrasts.arg)
         contr <- attr(X, "contrasts")
+        if (!args$intercept)
+            X <- X[ , -1, drop = FALSE]
         MATRIX <- any(dim(X) > c(500, 50)) && any(fac)
         MATRIX <- MATRIX && options("mboost_useMatrix")$mboost_useMatrix
         if (MATRIX) {
@@ -151,6 +152,8 @@ hyper_bbs <- function(mf, vary, knots = 20, boundary.knots = NULL, degree = 3,
     knotf <- function(x, knots, boundary.knots) {
         if (is.null(boundary.knots))
             boundary.knots <- range(x, na.rm = TRUE)
+        ## <fixme> At the moment only NULL or 2 boundary knots can be specified.
+        ## Knot expansion is done automatically on an equidistand grid.</fixme>
         if ((length(boundary.knots) != 2) || !boundary.knots[1] < boundary.knots[2])
             stop("boundary.knots must be a vector (or a list of vectors) ",
                  "of length 2 in increasing order")
@@ -183,8 +186,10 @@ X_bbs <- function(mf, vary, args) {
 
     stopifnot(is.data.frame(mf))
     mm <- lapply(which(colnames(mf) != vary), function(i) {
-        X <- bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,
-           Boundary.knots = args$knots[[i]]$boundary.knots, intercept = TRUE)
+        X <- bsplines(mf[[i]],
+                      knots = args$knots[[i]]$knots,
+                      boundary.knots = args$knots[[i]]$boundary.knots,
+                      degree = args$degree)
         if (args$cyclic) {
             X <- cbs(mf[[i]],
                      knots = args$knots[[i]]$knots,
@@ -523,6 +528,37 @@ cbs <- function (x, knots, boundary.knots, degree = 3) {
     attr(X, "degree") <- degree
     attr(X,"knots") <- knots
     attr(X,"boundary.knots") <- boundary.knots
+    dimnames(X) <- list(nx, 1L:ncol(X))
+    return(X)
+}
+
+bsplines <- function(x, knots, boundary.knots, degree){
+    nx <- names(x)
+    x <- as.vector(x)
+    ## handling of NAs
+    nax <- is.na(x)
+    if (nas <- any(nax))
+        x <- x[!nax]
+    ## use equidistant boundary knots
+    dx <- diff(boundary.knots)/(length(knots) + 1)
+    bk_lower <- seq(boundary.knots[1] - degree * dx, boundary.knots[1],
+                    length = degree + 1)
+    bk_upper <- seq(boundary.knots[2], boundary.knots[2] + degree * dx,
+                    length = degree + 1)
+    ## complete knot mesh
+    k <- c(bk_lower, knots, bk_upper)
+    ## construct design matrix
+    X <- splineDesign(k, x, degree + 1, outer.ok = TRUE)
+    ## handling of NAs
+    if (nas) {
+        tmp <- matrix(NA, length(nax), ncol(X))
+        tmp[!nax, ] <- X
+        X <- tmp
+    }
+    ## add attributes
+    attr(X, "degree") <- degree
+    attr(X,"knots") <- knots
+    attr(X,"boundary.knots") <- list(lower = bk_lower, upper = bk_upper)
     dimnames(X) <- list(nx, 1L:ncol(X))
     return(X)
 }

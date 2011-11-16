@@ -32,11 +32,14 @@ brandom(..., df = 4)
 btree(..., tree_controls = ctree_control(stump = TRUE,
                                          mincriterion = 0,
                                          savesplitstats = FALSE))
-bmono(..., constraint = c("increasing", "decreasing", "convex", "concave"),
+bmono(...,
+      constraint = c("increasing", "decreasing", "convex", "concave", "none"),
       by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
       degree = 3, differences = 2, df = 4, lambda = NULL,
       lambda2 = 1e6, niter=10, intercept = TRUE,
-      contrasts.arg = "contr.treatment")
+      contrasts.arg = "contr.treatment",
+      boundary.constraints = FALSE,
+      cons.arg = list(n = NULL, diff_order = NULL))
 bmrf(..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
     center = FALSE)
 buser(X, K = NULL, by = NULL, index = NULL, df = 4, lambda = NULL)
@@ -109,10 +112,22 @@ bl1 \%O\% bl2
                   stumps are fitted by default.}
   \item{constraint}{ type of constraint to be used. The constraint can
     be either monotonic "increasing" (default), "decreasing" or "convex"
-    or "concave". }
+    or "concave". Additionally, "none" can be used to specify
+    unconstrained P-splines. This is especially of interest in
+    conjunction with \code{boundary.constraints = TRUE}.}
   \item{lambda2}{ penalty parameter for the (monotonicity) constraint. }
   \item{niter}{ maximum number of iterations used to compute constraint
     estimates. Increase this number if a warning is displayed. }
+  \item{boundary.constraints}{ a logical indicating whether additional
+    constraints on the boundaries of the spline should be applied
+    (default: FALSE). This is still experimental.}
+  \item{cons.arg}{ a named list. The element \code{n} specifies the
+    number of knots to be used for additional boundary constraints and
+    can be either a scalar (use same number of constrained knots on each
+    side) or a vector. Per default 10\% of the knots on each side are
+    used. The element \code{diff_order} can be used to specify the order
+    of the boundary penalty: 1 (constant; default for monotonically
+    constrained effects) or 2 (linear; default for all other effects).}
   \item{bnd}{
     Object of class \code{bnd}, in which the boundaries of a map are defined and from which neighborhood
     relations can be construed. See \code{\link[BayesX]{read.bnd}}. If a boundary object is not available,
@@ -296,7 +311,7 @@ bl1 \%O\% bl2
   Smooth estimates with constraints can be computed using the base-learner
   \code{bmono()} which specifies P-spline base-learners with an
   additional asymmetric penalty enforcing monotonicity or
-  convexity/concavity (see and Eilers, 2005). For more details in the boosting 
+  convexity/concavity (see and Eilers, 2005). For more details in the boosting
   context and monotonic effects of ordinal factors see Hofner, Mueller and Hothorn (2011).
 
   Two or more linear base-learners can be joined using \code{\%+\%}. A
@@ -330,7 +345,7 @@ bl1 \%O\% bl2
 \references{
 
   Iain D. Currie, Maria Durban, and Paul H. C. Eilers (2006),
-  Generalized linear array models with applications to 
+  Generalized linear array models with applications to
   multidimensional smoothing. \emph{Journal of the Royal
   Statistical Society, Series B--Statistical Methodology},
   \bold{68}(2), 259--280.
@@ -357,7 +372,7 @@ bl1 \%O\% bl2
   72, LMU Muenchen. \url{http://epub.ub.uni-muenchen.de/11243/}
 
   B. Hofner, J. Mueller, and T. Hothorn (2011),
-  Monotonicity-Constrained Species Distribution Models, 
+  Monotonicity-Constrained Species Distribution Models,
   \emph{Ecology}, 92:1895-1901.
 
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable selection and
@@ -598,7 +613,7 @@ bl1 \%O\% bl2
 
   vol <- as.vector(volcano)
   mod <- mboost(vol ~ bbs(x1, df = 3, knots = 10)\%O\%
-                      bbs(x2, df = 3, knots = 10), 
+                      bbs(x2, df = 3, knots = 10),
                       control = boost_control(nu = 0.25))
   mod[250]
 
