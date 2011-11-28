@@ -31,7 +31,7 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
         if(is(XtX, "Matrix")) diag <- Diagonal
         dmat <- diag(ncol(XtX))
     }
-    A <- XtX + dmat * 10e-10
+    A <- XtX + dmat * options("mboost_eps")[[1]]
     Rm <- solve(chol(A))
     decomp <- svd(crossprod(Rm, dmat) %*% Rm)
     d <- decomp$d
