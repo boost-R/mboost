@@ -241,7 +241,7 @@ foo <- DF
 foo$x2 <- 0
 pr2 <- predict(amod, aggre = "sum", newdata=foo)
 stopifnot(rowSums(pr1) + attr(coef(amod),"offset") - pr2 < sqrt(.Machine$double.eps))
-newData <- as.data.frame(rbind(mean(DF)[-1], mean(DF)[-2]+1*sd(DF)[-1]))
+newData <- as.data.frame(rbind(colMeans(DF)[-1], colMeans(DF)[-2]+1*sapply(DF, sd)[-1]))
 if (!is.list(pr <- predict(amod, newdata=newData, which=1:2)))
     warning("predict(amod, newdata=newData, which=1:2) does not return a list") # no list but a matrix is returned!
 stopifnot(is.list(pr <- predict(amod, newdata=newData, aggregate="cumsum", which=1:2)))
