@@ -29,6 +29,11 @@ function (..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
         colnames(mf)[ncol(mf)] <- vary <- deparse(substitute(by))
     }
     CC <- all(complete.cases(mf))
+    if (!CC)
+        warning("base-learner contains missing values;\n",
+                "missing values are excluded per base-learner, ",
+                "i.e., base-learners may depend on different",
+                " numbers of observations.")
     DOINDEX <- (nrow(mf) > 10000)
     if (is.null(index)) {
         if (!CC || DOINDEX) {

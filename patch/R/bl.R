@@ -371,6 +371,11 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
     }
 
     CC <- all(Complete.cases(mf))
+    if (!CC)
+        warning("base-learner contains missing values;\n",
+                "missing values are excluded per base-learner, ",
+                "i.e., base-learners may depend on different",
+                " numbers of observations.")
     ### option
     DOINDEX <- is.data.frame(mf) &&
         (nrow(mf) > options("mboost_indexmin")[[1]] || is.factor(mf[[1]]))
@@ -448,6 +453,11 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
     }
 
     CC <- all(Complete.cases(mf))
+    if (!CC)
+        warning("base-learner contains missing values;\n",
+                "missing values are excluded per base-learner, ",
+                "i.e., base-learners may depend on different",
+                " numbers of observations.")
     ### option
     DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]])
     if (is.null(index)) {
@@ -730,6 +740,11 @@ fit.bl <- function(object, y)
     index <- NULL
 
     CC <- all(Complete.cases(mf))
+    if (!CC)
+        warning("base-learner contains missing values;\n",
+                "missing values are excluded per base-learner, ",
+                "i.e., base-learners may depend on different",
+                " numbers of observations.")
     ### option
     DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]])
     if (is.null(index)) {
@@ -830,6 +845,11 @@ fit.bl <- function(object, y)
     index <- NULL
 
     CC <- all(Complete.cases(mf))
+    if (!CC)
+        warning("base-learner contains missing values;\n",
+                "missing values are excluded per base-learner, ",
+                "i.e., base-learners may depend on different",
+                " numbers of observations.")
     ### option
     DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]])
     if (is.null(index)) {

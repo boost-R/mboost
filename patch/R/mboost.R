@@ -19,9 +19,12 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     y <- response
     if (any(yna)) {
         weights[yna] <- 0
-        y[is.na(y)] <- y[1]
+        y[is.na(y)] <- y[!yna][1] # use first non-missing value
+        warning("response contains missing values;\n",
+                " weights of corresponding observations are set to zero",
+                " and thus these observations are not used for fitting")
     }
-    y <- check_y_family(response, family)
+    y <- check_y_family(y, family)
 
     ### unweighted problem
     if (is.null(weights)) weights <- rep.int(1, NROW(y))

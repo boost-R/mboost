@@ -20,8 +20,13 @@ buser <- function(X, K = NULL,  by = NULL, index = NULL, df = 4, lambda = NULL){
     }
 
     CC <- all(Complete.cases(mf))
+    if (!CC)
+        warning("base-learner contains missing values;\n",
+                "missing values are excluded per base-learner, ",
+                "i.e., base-learners may depend on different",
+                " numbers of observations.")
     ### option
-    DOINDEX <- (nrow(mf) > 10000)
+    DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]])
     if (is.null(index)) {
         if (!CC || DOINDEX) {
             index <- get_index(mf)

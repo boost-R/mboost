@@ -54,6 +54,11 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
     }
 
     CC <- all(Complete.cases(mf))
+    if (!CC)
+        warning("base-learner contains missing values;\n",
+                "missing values are excluded per base-learner, ",
+                "i.e., base-learners may depend on different",
+                " numbers of observations.")
     ### option
     DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]] ||
                 is.factor(mf[[1]]))

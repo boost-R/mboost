@@ -15,6 +15,19 @@
      boundaries of (monotonic) P-splines
 
 
+                CHANGES in `mboost' VERSION 2.1-2 (2011-12-XX, rXXX)
+
+  o  improved handling of missing values 
+     (throws warnings and fixed a bug that occured for missings in the response)
+
+  o  improved manual for the handling of contrasts in bols
+
+
+                CHANGES in `mboost' VERSION 2.1-1 (2011-11-28, r606)
+
+  o  new option "mboost_eps" for factor in Demmler-Reinsch orthogonalization
+
+
                 CHANGES in `mboost' VERSION 2.1-0 (2011-11-15, r601)
 
 
