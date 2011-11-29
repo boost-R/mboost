@@ -144,9 +144,10 @@ bl_lin_matrix <- function(blg, Xfun, args) {
             return(pr)
         }
 
+        Xnames <- outer(colnames(X$X1), colnames(X$X2), paste, sep = "_")
         ret <- list(fit = fit, hatvalues = hatvalues,
                     predict = predict, df = df,
-                    Xnames = c(interaction(colnames(X$X1), colnames(X$X2))))
+                    Xnames = as.vector(Xnames))
         class(ret) <- c("bl_lin", "bl")
         return(ret)
 
