@@ -102,22 +102,25 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
         args$lambda2 <- lambda2
         args$niter <- niter
         args$boundary.constraints <- boundary.constraints
-        if(is.null(cons.arg$n)){
-            ## use 10% of the knots on each side per default
-            cons.arg$n <- sapply(args$knots,
-                                 function(x) rep(length(x$knots), 2)) * 0.1
-        } else {
-            if(length(cons.arg$n) != 2 && !is.list(cons.arg$n)){
-                cons.arg$n <- rep(cons.arg$n, 2)
+        if(boundary.constraints){
+            if (is.null(cons.arg$n)){
+                ## use 10% of the knots on each side per default
+                cons.arg$n <- sapply(args$knots,
+                                     function(x) rep(length(x$knots), 2)) * 0.1
+            } else {
+                if(length(cons.arg$n) != 2 && !is.list(cons.arg$n)){
+                    cons.arg$n <- rep(cons.arg$n, 2)
+                }
+                ## <fixme> was passiert bei bivariatem bmono? </fixme>
             }
-            ## <fixme> was passiert bei bivariatem bmono? </fixme>
-        }
-        if(is.null(cons.arg$diff_order)){
-            ## use same difference order as defined by "constraint":
-            if (args$constraint %in% c("increasing", "decreasing")){
-                cons.arg$diff_order <- 1
-            } else { # i.e. args$constraint %in% c("convex", "concave")
-                cons.arg$diff_order <- 2
+            if(is.null(cons.arg$diff_order)){
+                ## use same difference order as defined by "constraint":
+                ## <FIXME> args$constraint may be a list of length 2 for spatial effects
+                if (args$constraint %in% c("increasing", "decreasing")){
+                    cons.arg$diff_order <- 1
+                } else { # i.e. args$constraint %in% c("convex", "concave")
+                    cons.arg$diff_order <- 2
+                }
             }
         }
         args$cons.arg <- cons.arg
@@ -130,6 +133,7 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
         args$constraint <- constraint
         args$lambda2 <- lambda2
         args$niter <- niter
+        ## <FIXME> Was machen wir bei cat. Effekten? Da müsste das doch auch gehen!
         args$boundary.constraints <- boundary.constraints
         args$cons.arg$n <- cons.arg$n
         ret$dpp <- bl_mono(ret, Xfun = X_ols,

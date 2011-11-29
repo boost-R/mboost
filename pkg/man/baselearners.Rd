@@ -101,11 +101,14 @@ bl1 \%O\% bl2
                \code{cov.function}. Thus strongly dependent on the
            specified \code{cov.function}. }
   \item{contrasts.arg}{ a named list of characters suitable for input to the
-                        \code{\link{contrasts}} replacement function, see
+                        \code{\link{contrasts}} replacement function or
+			the contrast matrix itself, see
                         \code{\link{model.matrix}}, or a single
-			character which is then used as contrasts for
+			character string (or contrast matrix)
+			which is then used as contrasts for
 			all factors in this base-learner (with the
-			exception of factors in \code{by}). }
+			exception of factors in \code{by}). See also
+			example below for setting contrasts. }
   \item{tree_controls}{ an object of class \code{"TreeControl"}, which can be
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners,
@@ -629,6 +632,28 @@ bl1 \%O\% bl2
 
   max(abs(fitted(mod) - fitted(modx)))
 
+
+  ### setting contrasts via contrasts.arg
+  x <- as.factor(sample(1:4, 100, replace = TRUE))
+
+  ## compute base-learners with different reference categories
+  BL1 <- bols(x, contrasts.arg = contr.treatment(4, base = 1)) # default
+  BL2 <- bols(x, contrasts.arg = contr.treatment(4, base = 2))
+  ## compute 'sum to zero contrasts' using character string
+  BL3 <- bols(x, contrasts.arg = "contr.sum")
+
+  ## extract model matrices to check if it works
+  extract(BL1)
+  extract(BL2)
+  extract(BL3)
+
+  ### setting contrasts using named lists in contrasts.arg
+  x2 <- as.factor(sample(1:4, 100, replace = TRUE))
+
+  BL4 <- bols(x, x2,
+              contrasts.arg = list(x = contr.treatment(4, base = 2),
+                                   x2 = "contr.helmert"))
+  extract(BL4)
 
 }
 \keyword{models}
