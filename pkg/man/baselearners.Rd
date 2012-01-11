@@ -28,7 +28,7 @@ bspatial(..., df = 6)
 brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
      covFun = stationary.cov,
      args = list(Covariance="Matern", smoothness = 1.5, theta=NULL))
-brandom(..., df = 4)
+brandom(..., contrasts.arg = "contr.dummy", df = 4)
 btree(..., tree_controls = ctree_control(stump = TRUE,
                                          mincriterion = 0,
                                          savesplitstats = FALSE))
@@ -99,16 +99,19 @@ bl1 \%O\% bl2
                  (package \code{fields}) is used. }
   \item{args}{ a named list of arguments to be passed to
                \code{cov.function}. Thus strongly dependent on the
-           specified \code{cov.function}. }
-  \item{contrasts.arg}{ a named list of characters suitable for input to the
-                        \code{\link{contrasts}} replacement function or
-			the contrast matrix itself, see
-                        \code{\link{model.matrix}}, or a single
-			character string (or contrast matrix)
-			which is then used as contrasts for
-			all factors in this base-learner (with the
-			exception of factors in \code{by}). See also
-			example below for setting contrasts. }
+               specified \code{cov.function}. }
+  \item{contrasts.arg}{ a named list of characters suitable for input to
+    the \code{\link{contrasts}} replacement function, or the contrast
+    matrix itself, see \code{\link{model.matrix}}, or a single character
+    string (or contrast matrix) which is then used as contrasts for all
+    factors in this base-learner (with the exception of factors in
+    \code{by}). See also example below for setting contrasts. Note that
+    a special \code{contrasts.arg} exists in package \code{mboost},
+    namely "contr.dummy". This contrast is used per default in
+    \code{brandom} and can also be used in \code{bols}. It leads to a
+    dummy coding as returned by \code{model.matrix(~ x - 1)} were the
+    intercept is implicitly included but each factor level gets a
+    seperate effect estimate (see example below).}
   \item{tree_controls}{ an object of class \code{"TreeControl"}, which can be
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners,
@@ -655,5 +658,7 @@ bl1 \%O\% bl2
                                    x2 = "contr.helmert"))
   extract(BL4)
 
+  ### using special contrast: "contr.dummy":
+  BL5 <- bols(x, contrasts.arg = "contr.dummy")
 }
 \keyword{models}
