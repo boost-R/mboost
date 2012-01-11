@@ -441,7 +441,7 @@ mboost <- function(formula, data = list(),
     ### rhs was one single variable
     if (!is.list(bl)) {
         bl <- list(baselearner(bl))
-        bl[[1]]$set_names(as.character(formula[[3]]))
+        bl[[1]]$set_names(deparse(formula[[3]]))
     }
 
     ### just a check
