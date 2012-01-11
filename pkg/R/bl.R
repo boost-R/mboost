@@ -92,9 +92,14 @@ X_ols <- function(mf, vary, args) {
         fac <- sapply(mf[colnames(mf) != vary], is.factor)
         if (any(fac)){
             if (!is.list(args$contrasts.arg)){
-                txt <- paste("list(", paste(colnames(mf)[colnames(mf) != vary][fac],
-                                            "= args$contrasts.arg", collapse = ", "),")")
-                args$contrasts.arg <- eval(parse(text=txt))
+                if (args$contrasts.arg == "contr.dummy") {
+                    stopifnot(isTRUE(args$intercept))
+                    fm <- paste(fm, "-1")
+                } else {
+                    txt <- paste("list(", paste(colnames(mf)[colnames(mf) != vary][fac],
+                                                "= args$contrasts.arg", collapse = ", "),")")
+                    args$contrasts.arg <- eval(parse(text=txt))
+                }
             }
         } else {
             args$contrasts.arg <- NULL
