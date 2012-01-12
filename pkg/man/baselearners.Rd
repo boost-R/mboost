@@ -660,5 +660,6 @@ bl1 \%O\% bl2
 
   ### using special contrast: "contr.dummy":
   BL5 <- bols(x, contrasts.arg = "contr.dummy")
+  extract(BL5)
 }
 \keyword{models}
