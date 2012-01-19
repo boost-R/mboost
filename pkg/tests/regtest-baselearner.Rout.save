@@ -1,5 +1,5 @@
 
-R version 2.14.0 (2011-10-31)
+R version 2.14.1 (2011-12-22)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -18,6 +18,10 @@ Type 'q()' to quit R.
 
 > 
 > library("mboost")
+This is mboost 2.2-0.
+  See NEWS for a complete list of changes.
+  Note: The default for the computation of the degrees of freedom has been changed!
+
 > attach(asNamespace("mboost"))
 The following object(s) are masked from 'package:mboost':
 
@@ -65,63 +69,102 @@ The following object(s) are masked from 'package:base':
 > ### numeric x with intercept
 > m1 <- lm(y ~ xn, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(xn), w), y)
+Warning message:
+In bols(xn) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
 > 
 > ### numeric x without intercept
 > m1 <- lm(y ~ xn - 1, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(xn, intercept = FALSE), w), y)
-Warning message:
-In bols(xn, intercept = FALSE) :
+Warning messages:
+1: In bols(xn, intercept = FALSE) :
   covariates should be (mean-) centered if 'intercept = FALSE'
+2: In bols(xn, intercept = FALSE) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
 > 
 > ### factor x with intercept
 > m1 <- lm(y ~ xf, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(xf), w), y)
+Warning message:
+In bols(xf) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
 > 
 > ### factor x without intercept
 > m1 <- lm(y ~ xf - 1, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(xf, intercept = FALSE), w), y)
+Warning message:
+In bols(xf, intercept = FALSE) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
+[1] 0.0376829 0.9668475
+Warning message:
+In coef(m1) - coef(m2) :
+  longer object length is not a multiple of shorter object length
 > 
 > ### contrasts
 > m1 <- lm(y ~ xf, weights = w, contrasts = list(xf = "contr.sum"), na.action = na.exclude)
 > m2 <- fit(dpp(bols(xf, contrasts.arg = list(xf = "contr.sum")), w), y)
+Warning message:
+In bols(xf, contrasts.arg = list(xf = "contr.sum")) :
+  base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
 > 
 > ### multiple x
 > m1 <- lm(y ~ xn + xf, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(xn, xf), w), y)
+Warning message:
+In bols(xn, xf) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
 > 
 > ### interaction with binary factor
 > xtmp <- (z1 == "2") * xn
 > m1 <- lm(y ~ xtmp - 1, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(xn, by = z1, intercept = FALSE), w), y)
-Warning message:
-In bols(xn, by = z1, intercept = FALSE) :
+Warning messages:
+1: In bols(xn, by = z1, intercept = FALSE) :
   covariates should be (mean-) centered if 'intercept = FALSE'
+2: In bols(xn, by = z1, intercept = FALSE) :
+  base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
 > 
 > ### interaction with numeric variable
 > m1 <- lm(y ~ z2:xn - 1, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(z2, by = xn, intercept = FALSE), w), y)
-Warning message:
-In bols(z2, by = xn, intercept = FALSE) :
+Warning messages:
+1: In bols(z2, by = xn, intercept = FALSE) :
   covariates should be (mean-) centered if 'intercept = FALSE'
+2: In bols(z2, by = xn, intercept = FALSE) :
+  base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
 > 
 > ### ridge
 > one <- rep(1, n)
 > cf1 <- coef(lm.ridge(y ~ one + xn - 1, lambda = 2))
 > cf2 <- coef(fit(dpp(bols(one, xn, lambda = 2, intercept = FALSE), rep(1, n)), y))
+Warning message:
+In bols(one, xn, lambda = 2, intercept = FALSE) :
+  base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > max(abs(cf1 - cf2))
 [1] 0.001606092
 > cf1 <- coef(lm.ridge(y ~ xf - 1, lambda = 2))
 > cf2 <- coef(fit(dpp(bols(xf, lambda = 2, intercept = FALSE), rep(1, n)), y))
+Warning message:
+In bols(xf, lambda = 2, intercept = FALSE) :
+  base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > max(abs(cf1 - cf2))
-[1] 0.000302863
+[1] 0.02597228
+Warning message:
+In cf1 - cf2 :
+  longer object length is not a multiple of shorter object length
 > 
 > ### matrix (here with missing values)
 > cf1 <- coef(mod <- lm(y ~ xn + xf * z1 - 1, weights = w, y = TRUE, x = TRUE))
@@ -137,6 +180,7 @@ In bols(z2, by = xn, intercept = FALSE) :
 > tw <- rep(1, 100)
 > 
 > ### compute & check df
+> op <- options(mboost_dftraceS = TRUE)
 > la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
 > truedf <- sum(diag(tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*% t(tX * tw)))
 > stopifnot(abs(truedf - 2) < sqrt(.Machine$double.eps))
@@ -153,6 +197,7 @@ In bols(z2, by = xn, intercept = FALSE) :
 > sum((ty - tX %*% cf2)^2) + la * sum(cf2^2)
   lambda 
 78.29787 
+> options(op)
 > 
 > ### now with other df-definition:
 > op <- options(mboost_dftraceS = FALSE)
@@ -163,6 +208,7 @@ In bols(z2, by = xn, intercept = FALSE) :
 > options(op)
 > 
 > # check df with weights
+> op <- options(mboost_dftraceS = TRUE)
 > tw <- rpois(100, 2)
 > la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
 > truedf <- sum(diag(tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*% t(tX * tw)))
@@ -190,6 +236,7 @@ In bols(z2, by = xn, intercept = FALSE) :
 +     }
 + }
 > stopifnot(all(diff_df < sqrt(.Machine$double.eps)))
+> options(op)
 > 
 > ### componentwise
 > cf2 <- coef(fit(dpp(bolscw(cbind(1, xn)), weights = w), y))
@@ -225,7 +272,7 @@ In bols(z2, by = xn, intercept = FALSE) :
 > f2 <- d$predict(list(f), newdata = data.frame(x1 = 1, x2 = x2))
 > 
 > max(abs(sin(x2) - f2))
-[1] 0.5399721
+[1] 0.7891727
 > 
 > ### bols and bbs; matrix interfaces
 > n <- 10000
@@ -236,7 +283,13 @@ In bols(z2, by = xn, intercept = FALSE) :
 > h <- hyper_bbs(data.frame(x = x), vary = "")
 > X <- X_bbs(data.frame(x = x), vary = "", h)$X
 > f1 <- fit(dpp(bbs(x, df = ncol(X)), w), y)
+Warning message:
+In bbs(x, df = ncol(X)) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > f2 <- fit(dpp(bols(X, df = ncol(X)), w), y)
+Warning message:
+In bols(X, df = ncol(X)) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > stopifnot(max(abs(coef(f1) - coef(f2))) < sqrt(.Machine$double.eps))
 > 
 > stopifnot(all.equal(get_index(data.frame(x, x)), get_index(X)))
@@ -321,41 +374,36 @@ In data.frame(..., check.names = FALSE) :
   row names were found from a short variable and have been discarded
 > coef(m1)
 $`"bbs(x1) %X% bols(f, intercept = FALSE, df = 5)"`
- [1]  0.730895170  0.038870922 -0.005399569 -0.148991281 -0.329031839
- [6] -0.220643444  0.154919020 -0.300950310 -0.873054989 -0.519028732
-[11]  0.320637178 -0.303918057 -0.610811536 -0.686367706  0.342235455
-[16]  0.015554696 -0.135101119 -0.315273961 -0.092935903  0.357645321
-[21]  0.403799615  0.601384744 -0.296924402  0.084490869  0.416705690
-[26]  0.448347137  0.462026107 -0.277978034 -0.008355033 -0.223355153
-[31]  0.100481865 -0.072720712 -0.172365196 -0.347188904 -0.542295913
-[36] -0.091497556 -0.110402447 -0.062103717 -0.042659116 -0.315372174
-[41] -0.037990696  0.207814428  0.200650463  0.012818782  0.038118948
-[46]  0.093509262  0.113732497  0.280359393 -0.037694530 -0.148325380
-[51] -0.026317909 -0.006505122  0.063325194 -0.152492546  0.051858834
-[56]  0.052133940  0.023312796  0.310295069 -0.133932733  0.119637727
-[61] -0.371533883  0.042400169  0.125771267 -0.689991470 -0.022849336
-[66] -0.109987692  0.071981650 -0.054482987  0.019664720  0.458025083
-[71]  0.347018048  0.154893844 -0.104385886  0.829366071  0.433741503
-[76]  0.219947980 -0.012472866  0.378273519  0.385671821  0.105267425
-[81] -0.332167838 -0.332316111  0.664484860 -0.063076836 -0.368592580
-[86] -0.935470906  0.587630224 -0.036879027 -0.193482915 -1.010237011
-[91]  0.429416562 -0.011876975 -0.009186625 -0.599968164  0.438317732
-[96]  0.006562539
+ [1]  0.036903202 -0.003690066 -0.110218476 -0.217631763  0.128506672
+ [6] -0.241142489 -0.509069931  0.264393476 -0.261848025 -0.665175239
+[11]  0.279153742  0.021699928 -0.288802257 -0.083329189  0.323415348
+[16]  0.570048880 -0.233008378  0.080256026  0.440328464  0.420094108
+[21] -0.246871614 -0.208069203  0.084630121 -0.081080347 -0.350027693
+[26] -0.502445802 -0.103693785 -0.064017368 -0.057527748 -0.297775465
+[31]  0.206825382  0.196610509  0.012097308  0.092806755  0.117639218
+[36]  0.266995753 -0.150042226 -0.019131663  0.011118544 -0.138117084
+[41]  0.039516694  0.055159114  0.287430697 -0.118978103  0.083109822
+[46]  0.046480446  0.110470106 -0.640273257 -0.084022807  0.087965077
+[51] -0.079824358  0.449081647  0.338254730  0.154519779  0.786715155
+[56]  0.423853792  0.221334660  0.346426952  0.395452499  0.107242229
+[61] -0.357313710  0.649976890 -0.050506082 -0.923570089  0.607049427
+[66] -0.034773285 -0.841850874  0.406506357 -0.013446308 -0.388754013
+[71]  0.147685699  0.003940335
 
 attr(,"offset")
 [1] 0.03826691
 > predict(m1, newdata = ndf)
-              [,1]
- [1,] -0.005303688
- [2,] -0.019047316
- [3,]  0.040104417
- [4,] -0.180068706
- [5,] -0.067037647
- [6,] -0.023484754
- [7,] -0.010560163
- [8,] -0.098703524
- [9,]  0.077330699
-[10,] -0.190650492
+            [,1]
+ [1,] 0.03826691
+ [2,] 0.03826691
+ [3,] 0.03826691
+ [4,] 0.03826691
+ [5,] 0.03826691
+ [6,] 0.03826691
+ [7,] 0.03826691
+ [8,] 0.03826691
+ [9,] 0.03826691
+[10,] 0.03826691
 > 
 > ### cbind
 > m1 <- gamboost(y ~ bols(x1, intercept = FALSE, df = 1) %+%
@@ -408,20 +456,20 @@ In data.frame(..., check.names = FALSE) :
 > 
 > beta <- coef(mod1)[[1]]
 > sum((D1 %*% beta)[D1 %*% beta <= 0])
-[1] -118.1251
+[1] -117.1438
 > sum((D2 %*% beta)[D2 %*% beta <= 0])
 [1] 0
 > 
 > beta <- coef(mod21)[[1]]
 > sum((D1 %*% beta)[D1 %*% beta <= 0])
-[1] -0.0001569556
+[1] -0.0001055744
 > sum((D2 %*% beta)[D2 %*% beta <= 0])
-[1] -0.9167353
+[1] -0.003965627
 > stopifnot(all(D1 %*% beta > - 2e-05))
 > 
 > beta <- coef(mod22)[[1]]
 > sum((D1 %*% beta)[D1 %*% beta <= 0])
-[1] -117.2788
+[1] -117.4581
 > sum((D2 %*% beta)[D2 %*% beta <= 0])
 [1] 0
 > stopifnot(all(D2 %*% beta > - 2e-05))
@@ -475,9 +523,6 @@ In data.frame(..., check.names = FALSE) :
 > b2 <- buser(X1, K = diag(ncol(X1))) %O%
 +       buser(X2, K = diag(ncol(X2)))
 > b2d <- b2$dpp(w)
-Warning message:
-In ans * length(l) + if1 :
-  longer object length is not a multiple of shorter object length
 > 
 > stopifnot(max(abs(get("XtX", environment(b1d$fit)) -
 +         get("XtX", environment(b2d$fit)))) < tol)
@@ -508,9 +553,6 @@ In ans * length(l) + if1 :
 > m2 <- mboost(y ~ bbs(x1, df = 3, knots = 7)%O%
 +                  bbs(x2, df = 3, knots = 5),
 +                  weights = w)
-Warning message:
-In ans * length(l) + if1 :
-  longer object length is not a multiple of shorter object length
 > 
 > stopifnot(max(abs(fitted(m1) - fitted(m2))) < tol)
 > 

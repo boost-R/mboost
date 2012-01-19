@@ -1,5 +1,5 @@
 
-R version 2.14.0 (2011-10-31)
+R version 2.14.1 (2011-12-22)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -23,6 +23,10 @@ Type 'q()' to quit R.
 > cex <- 1
 > sink("tmpfile")
 > library("mboost")
+This is mboost 2.2-0.
+  See NEWS for a complete list of changes.
+  Note: The default for the computation of the degrees of freedom has been changed!
+
 > sink()
 > file.remove("tmpfile")
 [1] TRUE
@@ -189,7 +193,7 @@ R> ###################################################
 R> ### chunk number 11: bodyfat-gamboost-prune
 R> ###################################################
 R> mstop(aic <- AIC(bf_gam))
-[1] 50
+[1] 51
 R> 
 R> 
 R> ###################################################
@@ -320,9 +324,9 @@ R> ###################################################
 R> wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial())
 R> mopt <- mstop(aic <- AIC(wpbc_gam, "classical"))
 R> aic
-[1] 196.39
-Optimal number of boosting iterations: 98 
-Degrees of freedom (for mstop = 98): 15.025 
+[1] 196.16
+Optimal number of boosting iterations: 86 
+Degrees of freedom (for mstop = 86): 11.348 
 R> 
 R> 
 R> ###################################################

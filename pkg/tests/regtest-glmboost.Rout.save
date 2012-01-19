@@ -1,5 +1,5 @@
 
-R version 2.14.0 (2011-10-31)
+R version 2.14.1 (2011-12-22)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -19,6 +19,10 @@ Type 'q()' to quit R.
 > 
 > require("mboost")
 Loading required package: mboost
+This is mboost 2.2-0.
+  See NEWS for a complete list of changes.
+  Note: The default for the computation of the degrees of freedom has been changed!
+
 > 
 > set.seed(290875)
 > 
@@ -316,14 +320,7 @@ Warning message:
 > foo$x2 <- 0
 > pr2 <- predict(amod, aggre = "sum", newdata=foo)
 > stopifnot(rowSums(pr1) + attr(coef(amod),"offset") - pr2 < sqrt(.Machine$double.eps))
-> newData <- as.data.frame(rbind(mean(DF)[-1], mean(DF)[-2]+1*sd(DF)[-1]))
-Warning messages:
-1: mean(<data.frame>) is deprecated.
- Use colMeans() or sapply(*, mean) instead. 
-2: mean(<data.frame>) is deprecated.
- Use colMeans() or sapply(*, mean) instead. 
-3: sd(<data.frame>) is deprecated.
- Use sapply(*, sd) instead. 
+> newData <- as.data.frame(rbind(colMeans(DF)[-1], colMeans(DF)[-2]+1*sapply(DF, sd)[-1]))
 > if (!is.list(pr <- predict(amod, newdata=newData, which=1:2)))
 +     warning("predict(amod, newdata=newData, which=1:2) does not return a list") # no list but a matrix is returned!
 Warning message:
