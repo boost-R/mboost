@@ -92,19 +92,31 @@ X_ols <- function(mf, vary, args) {
         fac <- sapply(mf[colnames(mf) != vary], is.factor)
         if (any(fac)){
             if (!is.list(args$contrasts.arg)){
-                if (args$contrasts.arg == "contr.dummy") {
-                    stopifnot(isTRUE(args$intercept))
+                if (args$contrasts.arg == "contr.dummy"){
+                    if (!args$intercept)
+                        stop('"contr.dummy" can only be used with ',
+                             sQuote("intercept = TRUE"))
                     fm <- paste(fm, "-1")
                 } else {
                     txt <- paste("list(", paste(colnames(mf)[colnames(mf) != vary][fac],
                                                 "= args$contrasts.arg", collapse = ", "),")")
                     args$contrasts.arg <- eval(parse(text=txt))
                 }
+            } else {
+                ## if contrasts are given as list check if "contr.dummy" is specified
+                if (any(args$contrasts.arg == "contr.dummy"))
+                    stop('"contr.dummy"',
+                         " can only be used for all factors at the same time.\n",
+                         "Use ", sQuote('contrasts.arg = "contr.dummy"'),
+                         " to achieve this.")
             }
         } else {
             args$contrasts.arg <- NULL
         }
         X <- model.matrix(as.formula(fm), data = mf, contrasts.arg = args$contrasts.arg)
+        if (!is.null(args$contrasts.arg) && args$contrasts.arg == "contr.dummy")
+            attr(X, "contrasts") <- lapply(attr(X, "contrasts"),
+                                           function(x) x <- "contr.dummy")
         contr <- attr(X, "contrasts")
         if (!args$intercept)
             X <- X[ , -1, drop = FALSE]

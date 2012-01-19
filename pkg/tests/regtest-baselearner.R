@@ -43,8 +43,16 @@ m2 <- fit(dpp(bols(xf), w), y)
 testfun(m1, m2)
 
 ### factor x without intercept
-m1 <- lm(y ~ xf - 1, weights = w, na.action = na.exclude)
+tmp <- model.matrix(~ xf)[,-1] ## build model matrix without first row
+mm <- matrix(NA, ncol = ncol(tmp), nrow = length(y))
+mm[!is.na(xf),] <- tmp ## build model matrix with missings
+m1 <- lm(y ~ mm - 1, weights = w, na.action = na.exclude)
 m2 <- fit(dpp(bols(xf, intercept = FALSE), w), y)
+testfun(m1, m2)
+
+### factor x with "contr.dummy"
+m1 <- lm(y ~ xf - 1, weights = w, na.action = na.exclude)
+m2 <- fit(dpp(bols(xf, contrasts.arg = "contr.dummy"), w), y)
 testfun(m1, m2)
 
 ### contrasts
@@ -226,7 +234,7 @@ stopifnot(max(abs(predict(m1) - predict(m2))) < sqrt(.Machine$double.eps))
 stopifnot(max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < sqrt(.Machine$double.eps))
 
 ### varying factor
-m1 <- gamboost(y ~ bbs(x1) %X% bols(f, intercept = FALSE, df = 5))
+m1 <- gamboost(y ~ bbs(x1) %X% bols(f, df = 5, contrasts.arg = "contr.dummy"))
 coef(m1)
 predict(m1, newdata = ndf)
 
