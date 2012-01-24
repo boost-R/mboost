@@ -34,9 +34,11 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         W <- matrix(weights, nrow = n1, ncol = n2)
 
         ### X = kronecker(X2, X1)
-        XtX <- as(crossprod(G(X$X1), W) %*% G(X$X2), "matrix")
+        XtX <- crossprod(G(X$X1), W) %*% G(X$X2)
+        mymatrix <- matrix
+        if (is(XtX, "Matrix")) mymatrix <- Matrix
         XtX <- array(XtX, c(c1, c1, c2, c2))
-        XtX <- matrix(aperm(XtX, c(1, 3, 2, 4)), nrow = c1 * c2)
+        XtX <- mymatrix(aperm(XtX, c(1, 3, 2, 4)), nrow = c1 * c2)
 
         ### <FIXME> This does not happen in bl_lin / df2lambda.
         ### For one base learner only, it makes sense to allow
