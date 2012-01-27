@@ -78,6 +78,12 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                 }
             }
             if (ncol(data) == 2) {
+                if (is.null(newdata)){
+                    tmp <- expand.grid(unique(data[,1]), unique(data[,2]))
+                    colnames(tmp) <- colnames(data)
+                    data <- tmp
+                    pr <- predict(x, newdata = data, which = w)
+                }
                 fm <- as.formula(paste("pr ~ ", paste(colnames(data), collapse = "*"), sep = ""))
                 RET[[w]] <<- levelplot(fm, data = data, ...)
             }

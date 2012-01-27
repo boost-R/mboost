@@ -14,6 +14,9 @@
   o  bmono() now implements an experimental version of constraints at the
      boundaries of (monotonic) P-splines
 
+  o  improved plot function when dealing with spatial plots
+     (now builds suitable grid based on the observations if no newdata is given)
+
 
                 CHANGES in `mboost' VERSION 2.1-2 (2011-12-XX, rXXX)
 
