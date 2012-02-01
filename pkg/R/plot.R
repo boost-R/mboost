@@ -4,6 +4,10 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                         xlab = NULL, ylab = expression(f[partial]), add = FALSE,
                         ...) {
 
+    if (inherits(x, "blackboost"))
+        stop("partial dependency plots for ", sQuote("blackboost"), " not yet implemented.",
+             "See ?blackboost.")
+
     which <- x$which(which, usedonly = is.null(which))
 
     pr <- predict(x, which = which, newdata = newdata)
