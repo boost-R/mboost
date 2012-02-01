@@ -42,6 +42,9 @@ blackboost(formula, data = list(),
   The regression fit is a black box prediction machine and thus
   hardly interpretable.
 
+  Partial dependency plots are not yet available; see example section for 
+  plotting of additive tree models.
+
 }
 \value{
   An object of class \code{mboost} with \code{\link{print}}
@@ -87,6 +90,18 @@ blackboost(formula, data = list(),
     ### plot fit
     plot(dist ~ speed, data = cars)
     lines(cars$speed, predict(cars.gb), col = "red")
+
+    ### set up and plot additive tree model
+    ctrl <- ctree_control(maxdepth = 3)
+    viris <- subset(iris, Species != "setosa")
+    viris$Species <- viris$Species[, drop = TRUE]
+    imod <- mboost(Species ~ btree(Sepal.Length, tree_controls = ctrl) +
+                             btree(Sepal.Width, tree_controls = ctrl) +
+                             btree(Petal.Length, tree_controls = ctrl) + 
+                             btree(Petal.Width, tree_controls = ctrl),
+                   data = viris, family = Binomial())[500]
+    layout(matrix(1:4, ncol = 2))
+    plot(imod)
 
 }
 \keyword{models}
