@@ -1,5 +1,7 @@
                 CHANGES in `mboost' VERSION 2.2-0 (2012-xx-xx)
 
+  o  switch from packages `multicore' and `snow' to `parallel'
+
   o  changed behavior of bols(x, intercept = FALSE) when x is a factor:
      now the intercept is simply dropped from the design matrix; 
      coding can be specified as usually for factors.
