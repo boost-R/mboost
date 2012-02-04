@@ -8,7 +8,7 @@
 \usage{
 cvrisk(object, folds = cv(model.weights(object)), 
        grid = 1:mstop(object),
-       papply = if (require("multicore")) mclapply else lapply, 
+       papply = mclapply, 
        fun = NULL, ...)
 cv(weights, type = c("bootstrap", "kfold", "subsampling"),
    B = ifelse(type == "kfold", 10, 25), prob = 0.5, strata = NULL)
@@ -21,10 +21,8 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
                 using function \code{cv} and defaults to 25 bootstrap samples.}
   \item{grid}{ a vector of stopping parameters the empirical risk
                 is to be evaluated for. }
-  \item{papply}{ (parallel) apply function. In the absence of package \code{multicore} sequential
-    computations via \code{\link{lapply}} are performed. Alternatively,
-    parallel computing via \code{\link[multicore]{mclapply}} (package \code{multicore}),
-    or \code{clusterApplyLB} (package \code{snow}) can be used. In the
+  \item{papply}{ (parallel) apply function, defaults to  \code{\link[parallel]{mclapply}}. 
+    Alternatively, \code{parLapply} can be used. In the
     latter case, usually more setup is needed (see example for some details).}
   \item{fun}{ if \code{fun} is NULL, the out-of-sample risk is returned. \code{fun},
               as a function of \code{object}, may extract any other characteristic
@@ -38,7 +36,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   \item{prob}{ percentage of observations to be included in the learning samples
                for subsampling.}
   \item{strata}{ a factor of the same length as \code{weights} for stratification.}
-  \item{...}{additional arguments passed to \code{\link[multicore]{mclapply}}
+  \item{...}{additional arguments passed to \code{\link[parallel]{mclapply}}
              eventually.}
 }
 \details{
@@ -54,11 +52,11 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   10-fold cross-validation or bootstrapping. The weights (zero weights
   correspond to test cases) are defined via the \code{folds} matrix.
 
-  If package \code{multicore} is available, \code{cvrisk} can be easily
-  used in parallel on cores/processors available by specifying
-  \code{papply = mcapply}. The scheduling
+  \code{cvrisk} runs in parallel on OSes where forking is possible 
+  (i.e., not on Windows) and multiple cores/processors are available.
+  The scheduling
   can be changed by the corresponding arguments of
-  \code{\link[multicore]{mclapply}} (via the dot arguments).
+  \code{\link[parallel]{mclapply}} (via the dot arguments).
 
   The function \code{cv} can be used to build an appropriate
   weight matrix to be used with \code{cvrisk}. If \code{strata} is defined
@@ -131,20 +129,21 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
 
   ### cvrisk in parallel modes:
 
-  \dontrun{## multicore only runs properly on unix systems
-    library("multicore")
+  \dontrun{## parallel:::mclapply only runs properly on unix systems
     cvrisk(model)
   }
 
   \dontrun{## infrastructure needs to be set up in advance
-    library("snow")
-    cl <- makePVMcluster(25) # e.g. to run cvrisk on 25 nodes via PVM
-    myApply <- function(X, FUN, cl, ...) {
-      clusterEvalQ(cl, library("mboost")) # load mboost on nodes
+    cl <- makeCluster(25) # e.g. to run cvrisk on 25 nodes via PVM
+    myApply <- function(X, FUN, ...) {
+      myFun <- function(...) {
+          library("mboost") # load mboost on nodes
+          FUN(...)
+      }
       ## further set up steps as required
-      clusterApplyLB(cl = cl, X, FUN, ...)
+      parLapply(cl = cl, X, myFun, ...)
     }
-    cvrisk(model, papply = myApply, cl = cl)
+    cvrisk(model, papply = myApply)
     stopCluster(cl)
   }
 

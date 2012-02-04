@@ -179,7 +179,7 @@ facilitated by memory efficient implementations of the base-learners, mostly
 by applying sparse matrix techniques \citep[package
 \pkg{Matrix},][]{PKG:Matrix} and parallelization for a
 cross-validation-based choice of the number of boosting iterations
-\citep[per default via package \pkg{multicore},][]{PKG:multicore}. A more
+per default via package \pkg{parallel}. A more
 elaborate description of \pkg{mboost} 2.0 features is available
 from the \texttt{mboost} vignette\footnote{Accessible via \code{vignette("mboost", package = "mboost")}.}.
 
@@ -403,7 +403,7 @@ increase \code{i} again, these boosting steps are immediately available.
 The newly introduced function \code{selected()} allows to inspect the path
 of selected base-learners and is the basis for stability selection
 \citep[in function \code{stabsel()}, cf.][]{mebu10}.
-Secondly, an interface for parallel computing (based on \pkg{multicore}) is
+Secondly, an interface for parallel computing (based on \pkg{parallel}) is
 automatically used (if available) for cross-validation-based stopping of the
 algorithm in \code{cvrisk()}. With some extra work, other parallelization packages
 such as \pkg{snow} \citep{PKG:snow} can immediately be integrated.

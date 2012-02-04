@@ -9,7 +9,7 @@
 \usage{
 stabsel(object, FWER = 0.05, cutoff, q, 
         folds = cv(model.weights(object), type = "subsampling"),
-        papply = if (require("multicore")) mclapply else lapply, ...)
+        papply = mclapply, ...)
 }
 \arguments{
   \item{object}{an \code{mboost} object.}
@@ -18,10 +18,8 @@ stabsel(object, FWER = 0.05, cutoff, q,
   \item{q}{average number of selected variables.}
   \item{folds}{ a weight matrix with number of rows equal to the number
                 of observations, see \code{\link{cvrisk}}.}
-  \item{papply}{ (parallel) apply function. In the absence of package \code{multicore} sequential
-    computations via \code{\link{lapply}} are performed. Alternatively,
-    parallel computing via \code{\link[multicore]{mclapply}} (package \code{multicore}),
-    or \code{clusterApplyLB} (package \code{snow}) can be used. In the
+  \item{papply}{ (parallel) apply function, defaults to  \code{\link[parallel]{mclapply}}.
+    Alternatively, \code{parLapply} can be used. In the
     latter case, usually more setup is needed (see example for some details).}
   \item{\dots}{additional arguments to \code{\link{cvrisk}}.}
 }
@@ -55,9 +53,7 @@ stabsel(object, FWER = 0.05, cutoff, q,
 
 
   ### (too) low-dimensional example    
-  sbody <- stabsel(glmboost(DEXfat ~ ., data = bodyfat), q = 3,
-                   papply = lapply)
-  sbody
+  (sbody <- stabsel(glmboost(DEXfat ~ ., data = bodyfat), q = 3))
   opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
   plot(sbody)
   par(opar)

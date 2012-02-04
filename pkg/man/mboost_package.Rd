@@ -69,7 +69,7 @@ LazyData: \tab yes\cr
   The memory consumption could be reduced considerably, 
   thanks to sparse matrix technology in package \code{Matrix}.
   Resampling procedures run automatically in parallel 
-  if package \code{multicore} is available.
+  on OSes where parallelization via package \code{parallel} is available.
 
   The most important advancement is a generic implementation
   of the optimizer in function \code{\link{mboost_fit}}.
