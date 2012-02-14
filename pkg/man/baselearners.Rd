@@ -324,7 +324,7 @@ bl1 \%O\% bl2
   tensor product of two or more linear base-learners is returned by
   \code{\%X\%}. When the design matrix can be written as the
   Kronecker product of two matrices \code{X = kronecker(X2, X1)},
-  then \code{bl1 \%X\% bl2} with design matrices X1 and X2, respectively,
+  then \code{bl1 \%O\% bl2} with design matrices X1 and X2, respectively,
   can be used to efficiently compute Ridge-estimates
   following Currie, Durban, Eilers (2006). In cases the overall degrees of freedom of the
   combined base-learner increase (additive or multiplicative,
