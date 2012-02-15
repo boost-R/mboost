@@ -242,6 +242,12 @@ bl_mono <- function(blg, Xfun, args) {
         } else {
             lambda2 <- args$lambda2
         }
+        ## <FIXME> Boundary constraints for bivariate smooths are currently not
+        ## implemented
+        if (args$boundary.constraints)
+            warning("Boundary constraints for bivariate smooths",
+                    "are currently not implemented")
+        lambda3 <- 0
     }
 
     dpp <- function(weights) {

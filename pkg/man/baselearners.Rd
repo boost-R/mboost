@@ -39,7 +39,7 @@ bmono(...,
       lambda2 = 1e6, niter=10, intercept = TRUE,
       contrasts.arg = "contr.treatment",
       boundary.constraints = FALSE,
-      cons.arg = list(n = NULL, diff_order = NULL))
+      cons.arg = list(lambda = 1e+06, n = NULL, diff_order = NULL))
 bmrf(..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
     center = FALSE)
 buser(X, K = NULL, by = NULL, index = NULL, df = 4, lambda = NULL)
@@ -127,13 +127,16 @@ bl1 \%O\% bl2
   \item{boundary.constraints}{ a logical indicating whether additional
     constraints on the boundaries of the spline should be applied
     (default: FALSE). This is still experimental.}
-  \item{cons.arg}{ a named list. The element \code{n} specifies the
-    number of knots to be used for additional boundary constraints and
-    can be either a scalar (use same number of constrained knots on each
-    side) or a vector. Per default 10\% of the knots on each side are
-    used. The element \code{diff_order} can be used to specify the order
-    of the boundary penalty: 1 (constant; default for monotonically
-    constrained effects) or 2 (linear; default for all other effects).}
+  \item{cons.arg}{ a named list with additional arguments for boundary
+    constraints. The element \code{lambda} specifies the
+    penalty parameter that is used for the additional boundary
+    constraint. The element \code{n} specifies the number of knots to be
+    subject to the constraint and  can be either a scalar (use same
+    number of constrained knots on each side) or a vector. Per default
+    10\% of the knots on each side are used. The element
+    \code{diff_order} can be used to specify the order of the boundary
+    penalty: 1 (constant; default for monotonically constrained effects)
+    or 2 (linear; default for all other effects).}
   \item{bnd}{
     Object of class \code{bnd}, in which the boundaries of a map are defined and from which neighborhood
     relations can be construed. See \code{\link[BayesX]{read.bnd}}. If a boundary object is not available,
