@@ -1,0 +1,153 @@
+
+R version 2.14.1 (2011-12-22)
+Copyright (C) 2011 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: i686-pc-linux-gnu (32-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> tools:::.run_one_vignette("mboost.Rnw", docDir = ".");
+
+> options(prompt = "R> ", continue = "+  ", digits = 4)
+
+> set.seed(290875)
+
+> if (!require("mboost")) install.packages("mboost", 
++     dependencies = TRUE)
+
+> library("mboost")
+
+> if (!require("party")) install.packages("party", dependencies = TRUE)
+
+> library("party")
+
+> if (file.exists("model.Rda")) {
++     load("model.Rda")
++     mboost <- function(...) return(model)
++     cvrisk <- function(...) return(cvm)
++ }
+
+> features <- names(bodyfat)[-2]
+
+> fml <- paste("bols(", features, ")", collapse = " + ")
+
+> fms <- paste("bbs(", features, ", center = TRUE, df = 1)", 
++     collapse = " + ")
+
+> fmt <- "btree(hipcirc, waistcirc, tree_controls = ctree_control(maxdepth = 2, mincriterion = 0))"
+
+> fm <- as.formula(paste("DEXfat", paste(fml, fms, fmt, 
++     sep = "+"), sep = "~"))
+
+> library("mboost")
+
+> print(fm)
+DEXfat ~ bols(age) + bols(waistcirc) + bols(hipcirc) + bols(elbowbreadth) + 
+    bols(kneebreadth) + bols(anthro3a) + bols(anthro3b) + bols(anthro3c) + 
+    bols(anthro4) + bbs(age, center = TRUE, df = 1) + bbs(waistcirc, 
+    center = TRUE, df = 1) + bbs(hipcirc, center = TRUE, df = 1) + 
+    bbs(elbowbreadth, center = TRUE, df = 1) + bbs(kneebreadth, 
+    center = TRUE, df = 1) + bbs(anthro3a, center = TRUE, df = 1) + 
+    bbs(anthro3b, center = TRUE, df = 1) + bbs(anthro3c, center = TRUE, 
+    df = 1) + bbs(anthro4, center = TRUE, df = 1) + btree(hipcirc, 
+    waistcirc, tree_controls = ctree_control(maxdepth = 2, mincriterion = 0))
+
+> model <- mboost(fm, data = bodyfat, family = QuantReg(tau = 0.5))
+
+> model[1000]
+
+	 Model-based Boosting
+
+Call:
+mboost(formula = fm, data = bodyfat, family = QuantReg(tau = 0.5))
+
+
+	 Quantile Regression 
+
+Loss function: tau * (y - f) * ((y - f) >= 0) - (1 - tau) * (y - f) * ((y -  
+     f) < 0) 
+ 
+
+Number of boosting iterations: mstop = 1000 
+Step size:  0.1 
+Offset:  29.63 
+Number of baselearners:  19 
+
+
+> cvm <- cvrisk(model, grid = 1:100 * 10)
+
+> model[mstop(cvm)]
+
+	 Model-based Boosting
+
+Call:
+mboost(formula = fm, data = bodyfat, family = QuantReg(tau = 0.5))
+
+
+	 Quantile Regression 
+
+Loss function: tau * (y - f) * ((y - f) >= 0) - (1 - tau) * (y - f) * ((y -  
+     f) < 0) 
+ 
+
+Number of boosting iterations: mstop = 500 
+Step size:  0.1 
+Offset:  29.63 
+Number of baselearners:  19 
+
+
+> cex <- 1.3
+
+> layout(matrix(c(1, 2, 1, 3), nr = 2))
+
+> par(mai = par("mai") * c(0.8, 1.1, 0.8, 0.8))
+
+> plot(cvm, cex.lab = cex)
+
+> mtext(text = "(A)", side = 3, 1, adj = 1)
+
+> plot(model, which = "bols(anthro3b", cex.lab = cex)
+
+> mtext(text = "(B)", side = 3, 1, adj = 1)
+
+> plot(model, which = "bbs(anthro3b", ylim = range(predict(model, 
++     which = "bols(anthro3b")), cex.lab = cex)
+
+> mtext(text = "(C)", side = 3, 1, adj = 1)
+
+> nd <- with(bodyfat, expand.grid(hipcirc = h <- seq(from = min(hipcirc), 
++     to = max(hipcirc), length = 100), waistcirc = w <- seq(from = min(wai .... [TRUNCATED] 
+
+
+> print(plot(model, which = "btree", newdata = nd, col.regions = col, 
++     at = seq(from = -16, to = 16, length = 100)))
+
+> save(model, cvm, file = "model.Rda")
+
+> nd <- with(bodyfat, data.frame(anthro3b = seq(min(anthro3b), 
++     max(anthro3b), length = 100)))
+
+> pr <- predict(model, which = "anthro3b", newdata = nd)
+
+> pr <- rowSums(pr)
+
+> plot(nd$anthro3b, pr, type = "l", xlab = "anthro3b", 
++     ylab = "f(anthro3b)")
+
+> lines(nd$anthro3b, predict(model, which = "bols(anthro3b", 
++     newdata = nd), type = "l", lty = "dashed")
+
+ *** Run successfully completed ***
+R> 
