@@ -199,7 +199,7 @@ coef(bf_glm[mstop(aic)])
 @
 <<bodyfat-glmboost-coef-count, echo = FALSE>>=
 cf <- coef(bf_glm[mopt])
-nsel <- sum(abs(cf) > 0)
+nsel <- length(cf)
 @
 and thus \Sexpr{nsel} covariates have been selected for the final
 model (intercept equal to zero occurs here for mean centered response and
@@ -442,7 +442,7 @@ aic <- AIC(west_glm, method = "classical")
 mstop(aic)
 @
 <<west-glmboost-cf, echo = FALSE>>=
-cf <- coef(west_glm[mstop(aic)])
+cf <- coef(west_glm[mstop(aic)], which = 1:ncol(x))
 ps <- length(cf[abs(cf) > 0])
 @
 where the AIC is computed as -2(log-likelihood) + 2(degrees of freedom) = 2
