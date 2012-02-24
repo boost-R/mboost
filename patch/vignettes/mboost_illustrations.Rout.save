@@ -198,7 +198,7 @@ DEXfat ~ bs(age) + bs(waistcirc) + bs(hipcirc) + bs(elbowbreadth) +
 > mstop(aic)
 [1] 100
 
-> cf <- coef(west_glm[mstop(aic)])
+> cf <- coef(west_glm[mstop(aic)], which = 1:ncol(x))
 
 > ps <- length(cf[abs(cf) > 0])
 
