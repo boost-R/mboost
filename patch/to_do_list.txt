@@ -1,6 +1,9 @@
 
 future
 
+    o  implement partial dependency plots for blackboost, see
+       party:::partialPlot.party
+
     o  bols(x, center = FALSE) removes intercept by accident
 
     o  Poisson() with some extremely large values in the response

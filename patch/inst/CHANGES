@@ -1,5 +1,5 @@
 
-                CHANGES in `mboost' VERSION 2.1-2 (2011-12-XX, rXXX)
+                CHANGES in `mboost' VERSION 2.1-2 (2012-02-XX, rXXX)
 
   o  improved handling of missing values 
      (throws warnings and fixed a bug that occured for missings in the response)

@@ -335,7 +335,9 @@ bl1 \%O\% bl2
   only.
 
   \code{btree} fits a stump to one or more variables. Note that
-  \code{\link{blackboost}} is more efficient for boosting stumps.
+  \code{\link{blackboost}} is more efficient for boosting stumps. For
+  further references see Hothorn, Hornik, Zeileis (2006) and Hothorn et
+  al. (2010).
 
   Note that the base-learners \code{bns} and \code{bss} are deprecated
   (and no longer available). Please use \code{bbs} instead, which
@@ -374,22 +376,29 @@ bl1 \%O\% bl2
 
   Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011),
   A framework for unbiased model selection based on boosting.
-  \emph{Journal of Computational and Graphical Statistics}, in press.
-  doi:10.1198/jcgs.2011.09220
+  \emph{Journal of Computational and Graphical Statistics}, \bold{20}, 956--971.
 
-  Preliminary version: Department of Statistics, Technical Report Nr.
-  72, LMU Muenchen. \url{http://epub.ub.uni-muenchen.de/11243/}
-
-  B. Hofner, J. Mueller, and T. Hothorn (2011),
+  Benjamin Hofner, Joerg Mueller, and Torsten Hothorn (2011),
   Monotonicity-Constrained Species Distribution Models,
   \emph{Ecology}, 92:1895-1901.
 
-  Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable selection and
-  model choice in geoadditive regression models, \emph{Biometrics}, \bold{65}(2),
-  626--634.
+  Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable
+  selection and model choice in geoadditive regression models,
+  \emph{Biometrics}, \bold{65}(2), 626--634.
+
+  Torsten Hothorn, Kurt Hornik, Achim Zeileis (2006), Unbiased recursive
+  partitioning: A conditional inference framework. \emph{Journal of
+    Computational and Graphical Statistics}, \bold{15}, 651--674.
+
+  Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Matthias Schmid and
+  Benjamin Hofner (2010), Model-based Boosting 2.0, \emph{Journal of
+    Machine Learning Research}, \bold{11}, 2109--2113.
+
 
 }
+
 \seealso{\code{\link{mboost}}}
+
 \examples{
 
   set.seed(290875)
