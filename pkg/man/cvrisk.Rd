@@ -75,6 +75,11 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   The design and analysis of benchmark experiments.
   \emph{Journal of Computational and Graphical Statistics}, \bold{14}(3),
   675--699.
+
+  Andreas Mayr, Benjamin Hofner, and Matthias Schmid (2012). The
+  importance of knowing when to stop - a sequential stopping rule for
+  component-wise gradient boosting. \emph{Methods of Information in
+  Medicine}, DOI: \url{http://dx.doi.org/10.3414/ME11-02-0030}
 }
 \seealso{\code{\link{AIC.mboost}} for
   \code{AIC} based selection of the stopping iteration. Use \code{mstop}

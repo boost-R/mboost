@@ -264,7 +264,8 @@
   boosting hat matrix (which is rather slow even for moderate sample
   sizes) or the number of variables (non-zero coefficients) that entered
   the model so far (faster but only meaningful for linear models fitted
-  via \code{\link{gamboost}} (see Hastie, 2007)).
+  via \code{\link{gamboost}} (see Hastie, 2007)). For a discussion of
+  the use of AIC based stopping see also Mayr, Hofner and Schmid (2012).
 
   In addition, the general Minimum Description Length criterion
   (Buehlmann and Yu, 2006) can be computed using function \code{AIC}.
@@ -303,6 +304,11 @@
 
   Peter Buehlmann and Bin Yu (2006), Sparse boosting. \emph{Journal of
   Machine Learning Research}, \bold{7}, 1001--1024.
+
+  Andreas Mayr, Benjamin Hofner, and Matthias Schmid (2012). The
+  importance of knowing when to stop - a sequential stopping rule for
+  component-wise gradient boosting. \emph{Methods of Information in
+  Medicine}, DOI: \url{http://dx.doi.org/10.3414/ME11-02-0030}
 
 }
 \seealso{ \code{\link{gamboost}}, \code{\link{glmboost}} and

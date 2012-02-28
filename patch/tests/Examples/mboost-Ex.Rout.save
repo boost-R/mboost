@@ -2943,7 +2943,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  65.59 2.34 68.955 0 0 
+Time elapsed:  63.78 2.55 67.634 0 0 
 > grDevices::dev.off()
 null device 
           1 

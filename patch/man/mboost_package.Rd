@@ -90,12 +90,12 @@ LazyData: \tab yes\cr
   Benjamin Hofner (2010), Model-based Boosting 2.0. \emph{Journal of
   Machine Learning Research}, \bold{11}, 2109--2113.
 
-  Tutorial:
-
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
   (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
   Package mboost. \emph{Department of Statistics, Technical Report No. 120}.\cr
   \url{http://epub.ub.uni-muenchen.de/12754/}
+
+  Available as vignette via: vignette(package = "mboost", "mboost_tutorial")
 
 }
 

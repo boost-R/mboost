@@ -1,35 +1,36 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
-Platform: i686-pc-linux-gnu (32-bit)
-
-R is free software and comes with ABSOLUTELY NO WARRANTY.
-You are welcome to redistribute it under certain conditions.
-Type 'license()' or 'licence()' for distribution details.
-
-  Natural language support but running in an English locale
-
-R is a collaborative project with many contributors.
-Type 'contributors()' for more information and
-'citation()' on how to cite R or R packages in publications.
-
-Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for an HTML browser interface to help.
-Type 'q()' to quit R.
-
-> tools:::.run_one_vignette("mboost.Rnw", docDir = ".");
-
 > options(prompt = "R> ", continue = "+  ", digits = 4)
 
 > set.seed(290875)
 
 > if (!require("mboost")) install.packages("mboost", 
 +     dependencies = TRUE)
+Loading required package: mboost
 
 > library("mboost")
 
 > if (!require("party")) install.packages("party", dependencies = TRUE)
+Loading required package: party
+Loading required package: survival
+Loading required package: splines
+Loading required package: grid
+Loading required package: modeltools
+Loading required package: stats4
+Loading required package: coin
+Loading required package: mvtnorm
+Loading required package: zoo
+
+Attaching package: ‘zoo’
+
+The following object(s) are masked from ‘package:base’:
+
+    as.Date, as.Date.numeric
+
+Loading required package: sandwich
+Loading required package: strucchange
+Loading required package: vcd
+Loading required package: MASS
+Loading required package: colorspace
 
 > library("party")
 
@@ -87,6 +88,7 @@ Number of baselearners:  19
 
 
 > cvm <- cvrisk(model, grid = 1:100 * 10)
+Loading required package: multicore
 
 > model[mstop(cvm)]
 
@@ -102,7 +104,7 @@ Loss function: tau * (y - f) * ((y - f) >= 0) - (1 - tau) * (y - f) * ((y -
      f) < 0) 
  
 
-Number of boosting iterations: mstop = 500 
+Number of boosting iterations: mstop = 480 
 Step size:  0.1 
 Offset:  29.63 
 Number of baselearners:  19 
@@ -130,6 +132,9 @@ Number of baselearners:  19
 > nd <- with(bodyfat, expand.grid(hipcirc = h <- seq(from = min(hipcirc), 
 +     to = max(hipcirc), length = 100), waistcirc = w <- seq(from = min(wai .... [TRUNCATED] 
 
+> col <- c("#023FA5", "#1141A4", "#1A44A4", "#2146A4", 
++     "#2749A4", "#2C4BA4", "#304DA4", "#3550A5", "#3852A5", "#3C54A6", 
++     "#4056A6", "#43 ..." ... [TRUNCATED] 
 
 > print(plot(model, which = "btree", newdata = nd, col.regions = col, 
 +     at = seq(from = -16, to = 16, length = 100)))
@@ -150,4 +155,3 @@ Number of baselearners:  19
 +     newdata = nd), type = "l", lty = "dashed")
 
  *** Run successfully completed ***
-R> 

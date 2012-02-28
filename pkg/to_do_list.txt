@@ -1,6 +1,8 @@
 
 future
 
+    o  remove dependency on pkg spam
+
     o  implement partial dependency plots for blackboost, see
        party:::partialPlot.party
 

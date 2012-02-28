@@ -104,12 +104,12 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   Greedy function approximation: A gradient boosting machine.
   \emph{The Annals of Statistics}, \bold{29}, 1189--1232.
 
-  Tutorial:
-    
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
   (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
   Package mboost. \emph{Department of Statistics, Technical Report No. 120}.\cr
   \url{http://epub.ub.uni-muenchen.de/12754/}
+
+  Available as vignette via: vignette(package = "mboost", "mboost_tutorial")
 
 }
 \seealso{\code{\link{glmboost}} for boosted linear models and

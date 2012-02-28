@@ -8,7 +8,7 @@
 }
 \usage{
 stabsel(object, FWER = 0.05, cutoff, q, 
-        folds = cv(model.weights(object), type = "subsampling"),
+        folds = cv(model.weights(object), type = "subsampling", B = 100),
         papply = mclapply, ...)
 }
 \arguments{
@@ -53,7 +53,8 @@ stabsel(object, FWER = 0.05, cutoff, q,
 
 
   ### (too) low-dimensional example    
-  (sbody <- stabsel(glmboost(DEXfat ~ ., data = bodyfat), q = 3))
+  (sbody <- stabsel(glmboost(DEXfat ~ ., data = bodyfat), q = 3,
+                    folds = cv(model.weights(object), type = "subsampling", B = 25)))
   opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
   plot(sbody)
   par(opar)
