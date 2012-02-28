@@ -19,8 +19,10 @@
   o  improved plot function when dealing with spatial plots
      (now builds suitable grid based on the observations if no newdata is given)
 
+  o  increased default number of subsampling replicates in stabsel to 100
 
-                CHANGES in `mboost' VERSION 2.1-2 (2012-02-XX, rXXX)
+
+                CHANGES in `mboost' VERSION 2.1-2 (2012-02-28, rXXX)
 
   o  improved handling of missing values 
      (throws warnings and fixed a bug that occured for missings in the response)

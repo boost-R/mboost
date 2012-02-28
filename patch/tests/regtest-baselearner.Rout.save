@@ -1,5 +1,5 @@
 
-R version 2.14.0 (2011-10-31)
+R version 2.14.1 (2011-12-22)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -65,61 +65,93 @@ The following object(s) are masked from 'package:base':
 > ### numeric x with intercept
 > m1 <- lm(y ~ xn, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(xn), w), y)
+Warning message:
+In bols(xn) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
 > 
 > ### numeric x without intercept
 > m1 <- lm(y ~ xn - 1, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(xn, intercept = FALSE), w), y)
-Warning message:
-In bols(xn, intercept = FALSE) :
+Warning messages:
+1: In bols(xn, intercept = FALSE) :
   covariates should be (mean-) centered if 'intercept = FALSE'
+2: In bols(xn, intercept = FALSE) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
 > 
 > ### factor x with intercept
 > m1 <- lm(y ~ xf, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(xf), w), y)
+Warning message:
+In bols(xf) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
 > 
 > ### factor x without intercept
 > m1 <- lm(y ~ xf - 1, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(xf, intercept = FALSE), w), y)
+Warning message:
+In bols(xf, intercept = FALSE) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
 > 
 > ### contrasts
 > m1 <- lm(y ~ xf, weights = w, contrasts = list(xf = "contr.sum"), na.action = na.exclude)
 > m2 <- fit(dpp(bols(xf, contrasts.arg = list(xf = "contr.sum")), w), y)
+Warning message:
+In bols(xf, contrasts.arg = list(xf = "contr.sum")) :
+  base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
 > 
 > ### multiple x
 > m1 <- lm(y ~ xn + xf, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(xn, xf), w), y)
+Warning message:
+In bols(xn, xf) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
 > 
 > ### interaction with binary factor
 > xtmp <- (z1 == "2") * xn
 > m1 <- lm(y ~ xtmp - 1, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(xn, by = z1, intercept = FALSE), w), y)
-Warning message:
-In bols(xn, by = z1, intercept = FALSE) :
+Warning messages:
+1: In bols(xn, by = z1, intercept = FALSE) :
   covariates should be (mean-) centered if 'intercept = FALSE'
+2: In bols(xn, by = z1, intercept = FALSE) :
+  base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
 > 
 > ### interaction with numeric variable
 > m1 <- lm(y ~ z2:xn - 1, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(z2, by = xn, intercept = FALSE), w), y)
-Warning message:
-In bols(z2, by = xn, intercept = FALSE) :
+Warning messages:
+1: In bols(z2, by = xn, intercept = FALSE) :
   covariates should be (mean-) centered if 'intercept = FALSE'
+2: In bols(z2, by = xn, intercept = FALSE) :
+  base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
 > 
 > ### ridge
 > one <- rep(1, n)
 > cf1 <- coef(lm.ridge(y ~ one + xn - 1, lambda = 2))
 > cf2 <- coef(fit(dpp(bols(one, xn, lambda = 2, intercept = FALSE), rep(1, n)), y))
+Warning message:
+In bols(one, xn, lambda = 2, intercept = FALSE) :
+  base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > max(abs(cf1 - cf2))
 [1] 0.001606092
 > cf1 <- coef(lm.ridge(y ~ xf - 1, lambda = 2))
 > cf2 <- coef(fit(dpp(bols(xf, lambda = 2, intercept = FALSE), rep(1, n)), y))
+Warning message:
+In bols(xf, lambda = 2, intercept = FALSE) :
+  base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > max(abs(cf1 - cf2))
 [1] 0.000302863
 > 
@@ -236,7 +268,13 @@ In bols(z2, by = xn, intercept = FALSE) :
 > h <- hyper_bbs(data.frame(x = x), vary = "")
 > X <- X_bbs(data.frame(x = x), vary = "", h)$X
 > f1 <- fit(dpp(bbs(x, df = ncol(X)), w), y)
+Warning message:
+In bbs(x, df = ncol(X)) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > f2 <- fit(dpp(bols(X, df = ncol(X)), w), y)
+Warning message:
+In bols(X, df = ncol(X)) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > stopifnot(max(abs(coef(f1) - coef(f2))) < sqrt(.Machine$double.eps))
 > 
 > stopifnot(all.equal(get_index(data.frame(x, x)), get_index(X)))
@@ -475,9 +513,6 @@ In data.frame(..., check.names = FALSE) :
 > b2 <- buser(X1, K = diag(ncol(X1))) %O%
 +       buser(X2, K = diag(ncol(X2)))
 > b2d <- b2$dpp(w)
-Warning message:
-In ans * length(l) + if1 :
-  longer object length is not a multiple of shorter object length
 > 
 > stopifnot(max(abs(get("XtX", environment(b1d$fit)) -
 +         get("XtX", environment(b2d$fit)))) < tol)
@@ -508,9 +543,6 @@ In ans * length(l) + if1 :
 > m2 <- mboost(y ~ bbs(x1, df = 3, knots = 7)%O%
 +                  bbs(x2, df = 3, knots = 5),
 +                  weights = w)
-Warning message:
-In ans * length(l) + if1 :
-  longer object length is not a multiple of shorter object length
 > 
 > stopifnot(max(abs(fitted(m1) - fitted(m2))) < tol)
 > 

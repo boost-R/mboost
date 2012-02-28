@@ -1,5 +1,5 @@
 
-R version 2.14.0 (2011-10-31)
+R version 2.14.1 (2011-12-22)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -614,6 +614,99 @@ Number of baselearners:  1
 [1] 2.006573e-11
 > 
 > 
+>   ### setting contrasts via contrasts.arg
+>   x <- as.factor(sample(1:4, 100, replace = TRUE))
+> 
+>   ## compute base-learners with different reference categories
+>   BL1 <- bols(x, contrasts.arg = contr.treatment(4, base = 1)) # default
+>   BL2 <- bols(x, contrasts.arg = contr.treatment(4, base = 2))
+>   ## compute 'sum to zero contrasts' using character string
+>   BL3 <- bols(x, contrasts.arg = "contr.sum")
+> 
+>   ## extract model matrices to check if it works
+>   extract(BL1)
+  (Intercept) x2 x3 x4
+1           1  0  1  0
+2           1  0  0  1
+3           1  1  0  0
+5           1  0  0  0
+attr(,"assign")
+[1] 0 1 1 1
+attr(,"contrasts")
+attr(,"contrasts")$x
+  2 3 4
+1 0 0 0
+2 1 0 0
+3 0 1 0
+4 0 0 1
+
+>   extract(BL2)
+  (Intercept) x1 x3 x4
+1           1  0  1  0
+2           1  0  0  1
+3           1  0  0  0
+5           1  1  0  0
+attr(,"assign")
+[1] 0 1 1 1
+attr(,"contrasts")
+attr(,"contrasts")$x
+  1 3 4
+1 1 0 0
+2 0 0 0
+3 0 1 0
+4 0 0 1
+
+>   extract(BL3)
+  (Intercept) x1 x2 x3
+1           1  0  0  1
+2           1 -1 -1 -1
+3           1  0  1  0
+5           1  1  0  0
+attr(,"assign")
+[1] 0 1 1 1
+attr(,"contrasts")
+attr(,"contrasts")$x
+[1] "contr.sum"
+
+> 
+>   ### setting contrasts using named lists in contrasts.arg
+>   x2 <- as.factor(sample(1:4, 100, replace = TRUE))
+> 
+>   BL4 <- bols(x, x2,
++               contrasts.arg = list(x = contr.treatment(4, base = 2),
++                                    x2 = "contr.helmert"))
+>   extract(BL4)
+   (Intercept) x1 x3 x4 x21 x22 x23
+1            1  0  1  0   0   0   3
+2            1  0  0  1  -1  -1  -1
+3            1  0  0  0   0   2  -1
+4            1  0  0  1   0   0   3
+5            1  1  0  0   1  -1  -1
+10           1  0  0  0   0   0   3
+11           1  0  1  0   1  -1  -1
+13           1  0  0  0  -1  -1  -1
+14           1  1  0  0  -1  -1  -1
+15           1  0  0  1   1  -1  -1
+16           1  0  1  0   0   2  -1
+20           1  0  0  0   1  -1  -1
+22           1  0  0  1   0   2  -1
+26           1  1  0  0   0   2  -1
+30           1  0  1  0  -1  -1  -1
+53           1  1  0  0   0   0   3
+attr(,"assign")
+[1] 0 1 1 1 2 2 2
+attr(,"contrasts")
+attr(,"contrasts")$x
+  1 3 4
+1 1 0 0
+2 0 0 0
+3 0 1 0
+4 0 0 1
+
+attr(,"contrasts")$x2
+[1] "contr.helmert"
+
+> 
 > 
 > 
 > 
@@ -678,6 +771,18 @@ Number of baselearners:  1
 >     ### plot fit
 >     plot(dist ~ speed, data = cars)
 >     lines(cars$speed, predict(cars.gb), col = "red")
+> 
+>     ### set up and plot additive tree model
+>     ctrl <- ctree_control(maxdepth = 3)
+>     viris <- subset(iris, Species != "setosa")
+>     viris$Species <- viris$Species[, drop = TRUE]
+>     imod <- mboost(Species ~ btree(Sepal.Length, tree_controls = ctrl) +
++                              btree(Sepal.Width, tree_controls = ctrl) +
++                              btree(Petal.Length, tree_controls = ctrl) + 
++                              btree(Petal.Width, tree_controls = ctrl),
++                    data = viris, family = Binomial())[500]
+>     layout(matrix(1:4, ncol = 2))
+>     plot(imod)
 > 
 > 
 > 
@@ -2838,7 +2943,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  61.93 2.14 64.332 0 0 
+Time elapsed:  65.59 2.34 68.955 0 0 
 > grDevices::dev.off()
 null device 
           1 

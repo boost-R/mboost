@@ -1,5 +1,5 @@
 
-R version 2.14.0 (2011-10-31)
+R version 2.14.1 (2011-12-22)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -347,14 +347,7 @@ In bols(hipcirc, intercept = FALSE) :
 > foo$kneebreadth <- mean(bodyfat$kneebreadth)
 > pr2 <- predict(amod, aggre = "sum", newdata=foo)
 > stopifnot(all(diff(rowSums(pr1) - pr2) < sqrt(.Machine$double.eps))) # changes in level are ok
-> newData <- as.data.frame(rbind(mean(bodyfat)[-2], mean(bodyfat)[-2]+1*sd(bodyfat)[-2]))
-Warning messages:
-1: mean(<data.frame>) is deprecated.
- Use colMeans() or sapply(*, mean) instead. 
-2: mean(<data.frame>) is deprecated.
- Use colMeans() or sapply(*, mean) instead. 
-3: sd(<data.frame>) is deprecated.
- Use sapply(*, sd) instead. 
+> newData <- as.data.frame(rbind(colMeans(bodyfat)[-2], colMeans(bodyfat)[-2]+1*sapply(bodyfat, sd)[-2]))
 > if (!is.list(pr <- predict(amod, newdata=newData, which=1:2)))
 +     warning("predict(amod, newdata=newData, which=1:2) does not return a list") # no list but a matrix is returned!
 Warning message:

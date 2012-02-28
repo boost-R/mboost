@@ -1,5 +1,5 @@
 
-R version 2.14.0 (2011-10-31)
+R version 2.14.1 (2011-12-22)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -590,4 +590,98 @@ Neighbor search finished.
 > for (i in 1:length(regions))
 +     Xold[i, which(districts == regions[i])] <- 1
 > stopifnot(all(X == Xold))
+> 
+> 
+> ## check handling of missing values
+> y <- yNa <- rnorm(100)
+> x1 <- rnorm(100)
+> x2 <- rnorm(100)
+> 
+> yNa[1] <- NA
+> coef(mboost(yNa ~ x1))
+$`bbs(x1)`
+          1           2           3           4           5           6 
+-0.34771184 -0.19743862 -0.07959129 -0.02839018 -0.04104477 -0.05769355 
+          7           8           9          10          11          12 
+-0.05363022 -0.03052514  0.02572840  0.10907331  0.15431750  0.13275544 
+         13          14          15          16          17          18 
+ 0.07187557  0.01605701 -0.08320985 -0.17662206 -0.15904570 -0.04435279 
+         19          20          21          22          23          24 
+ 0.06539451  0.12399518  0.12854097  0.10792826  0.07844944  0.03401135 
+
+attr(,"offset")
+[1] 0.008050138
+Warning message:
+In mboost_fit(bl, response = response, ...) :
+  response contains missing values;
+ weights of corresponding observations are set to zero and thus these observations are not used for fitting
+> 
+> yNa <- y
+> yNa[2] <- NaN
+> coef(mboost(yNa ~ x1))
+$`bbs(x1)`
+           1            2            3            4            5            6 
+-0.369224437 -0.210871475 -0.084639019 -0.024466580 -0.027671391 -0.035556554 
+           7            8            9           10           11           12 
+-0.027152623 -0.007992924  0.041449972  0.119335793  0.159389510  0.131207898 
+          13           14           15           16           17           18 
+ 0.065636475  0.008011045 -0.091802356 -0.185239468 -0.166830544 -0.050840919 
+          19           20           21           22           23           24 
+ 0.059728516  0.118380576  0.122323976  0.100864774  0.070493616  0.025033546 
+
+attr(,"offset")
+[1] 0.01532354
+Warning message:
+In mboost_fit(bl, response = response, ...) :
+  response contains missing values;
+ weights of corresponding observations are set to zero and thus these observations are not used for fitting
+> 
+> x1[1] <- NA
+> mod <- mboost(y ~ bols(x1) + bbs(x1) + brandom(x1) +
++                   bspatial(x1, x2) + brad(x1, x2, knots = 20) +
++                   bmono(x1) +  buser(x1, K = 1, lambda = 0) + x2)
+Loading required package: fields
+Loading required package: spam
+Package 'spam' is loaded. Spam version 0.27-0 (2011-08-17).
+Type demo( spam) for some demos, help( Spam) for an overview
+of this package.
+Help for individual functions is optained by adding the
+suffix '.spam' to the function name, e.g. 'help(chol.spam)'.
+
+Attaching package: 'spam'
+
+The following object(s) are masked _by_ '.GlobalEnv':
+
+    germany
+
+The following object(s) are masked from 'package:stats4':
+
+    mle
+
+The following object(s) are masked from 'package:Matrix':
+
+    norm
+
+The following object(s) are masked from 'package:base':
+
+    backsolve, forwardsolve, norm
+
+Warning messages:
+1: In bols(x1) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
+2: In bbs(x1) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
+3: In bols(x1, df = 4, intercept = FALSE) :
+  base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
+4: In bbs(x1, x2, df = 6) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
+5: In brad(x1, x2, knots = 20) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
+6: In cover.design(R = unique(x), nd = knots) :
+  Number of nearst neighbors (nn) reduced to the actual number of candidates
+7: In bmono(x1) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
+8: In buser(x1, K = 1, lambda = 0) : base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > 
