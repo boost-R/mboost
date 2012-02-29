@@ -75,7 +75,7 @@ attr(,"offset")
 
 \setkeys{Gin}{width = 0.95\textwidth}
 > bf_gam <- gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss")
-Warnung in gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss") :
+Warning in gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss") :
   bss and bns are deprecated, bbs is used instead
 
 > mstop(aic <- AIC(bf_gam))
@@ -171,13 +171,13 @@ DEXfat ~ bs(age) + bs(waistcirc) + bs(hipcirc) + bs(elbowbreadth) +
 
 > time <- system.time(west_glm <- glmboost(x, yfit, 
 +     family = L2fm, control = boost_control(mstop = 200, center = TRUE)))[1]
-Warnung in glmboost.matrix(x, yfit, family = L2fm, control = boost_control(mstop = 200,  :
+Warning in glmboost.matrix(x, yfit, family = L2fm, control = boost_control(mstop = 200,  :
   model with centered covariates does not contain intercept
 
 > x <- t(exprs(westbc) - rowMeans(exprs(westbc)))
 
 > aic <- AIC(west_glm, method = "classical")
-Warnung in hatvalues.gamboost(model) :
+Warning in hatvalues.gamboost(model) :
   AIC might not be reasonable for family user-specified
 
 > mstop(aic)
@@ -253,7 +253,7 @@ Degrees of freedom (for mstop = 260): 7.0319
 
 > wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial(), 
 +     baselearner = "bss")
-Warnung in gamboost(status ~ ., data = wpbc2, family = Binomial(), baselearner = "bss") :
+Warning in gamboost(status ~ ., data = wpbc2, family = Binomial(), baselearner = "bss") :
   bss and bns are deprecated, bbs is used instead
 
 > mopt <- mstop(aic <- AIC(wpbc_gam, "classical"))
