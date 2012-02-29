@@ -3,7 +3,7 @@
 
 > pd <- packageDescription("mboost")
 
-> if (is.na(pd)) {
+> if (any(is.na(pd))) {
 +     install.packages("mboost", repos = "http://cran.at.r-project.org")
 +     pd <- packageDescription("mboost")
 + }
