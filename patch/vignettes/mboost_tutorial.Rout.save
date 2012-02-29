@@ -7,8 +7,6 @@
 +     install.packages("mboost", repos = "http://cran.at.r-project.org")
 +     pd <- packageDescription("mboost")
 + }
-Warnung in if (is.na(pd)) { :
-  Bedingung hat Länge > 1 und nur das erste Element wird benutzt
 
 > if (compareVersion(pd$Version, "2.1-0") < 0) {
 +     warning("Current version of mboost is installed!")
@@ -480,12 +478,12 @@ Loss function: tau * (y - f) * ((y - f) >= 0) + (tau - 1) * (y - f) * ((y -
 
 > lines(newX, predict(mod, data.frame(x = newX)), col = "black", 
 +     lwd = 2)
-Warnung in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
+Warning in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
   some 'x' values beyond boundary knots may cause ill-conditioned bases
 
 > lines(newX + 2 * pi, predict(mod, data.frame(x = newX)), 
 +     col = "black", lwd = 2)
-Warnung in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
+Warning in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
   some 'x' values beyond boundary knots may cause ill-conditioned bases
 
 > legend("bottomleft", c("cyclic = FALSE"), lty = c(1), 
@@ -556,9 +554,9 @@ The following object(s) are masked from ‘package:multicore’:
 +     x2 = seq(-pi, pi, length = 100))
 
 > preds <- predict(modspa, newdata = nd)
-Warnung in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
+Warning in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
   some 'x' values beyond boundary knots may cause ill-conditioned bases
-Warnung in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
+Warning in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
   some 'x' values beyond boundary knots may cause ill-conditioned bases
 
 > breaks <- seq(min(preds), max(preds), length = nCols + 
@@ -573,9 +571,9 @@ Warnung in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
 > nd <- expand.grid(x1 = x1, x2 = x2)
 
 > preds <- predict(modspa, newdata = nd)
-Warnung in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
+Warning in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
   some 'x' values beyond boundary knots may cause ill-conditioned bases
-Warnung in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
+Warning in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
   some 'x' values beyond boundary knots may cause ill-conditioned bases
 
 > z <- matrix(preds, ncol = length(x1))
