@@ -1,10 +1,15 @@
 Package: mboost
 Title: Model-Based Boosting
 Version: 2.1-2
-Date: 2012-02-28
-Author: Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Matthias Schmid and
-  Benjamin Hofner
-Maintainer: Torsten Hothorn <Torsten.Hothorn@R-project.org>
+Date: 2012-02-29
+Authors@R: c(person("Torsten", "Hothorn", role = c("aut", "cre"),
+                    email = "Torsten.Hothorn@R-project.org"),
+             person("Peter", "Buehlmann", role = "aut"),
+             person("Thomas", "Kneib", role = "aut"),
+             person("Matthias", "Schmid", role = "aut"),
+             person("Benjamin", "Hofner", role = "aut"),
+             person("Fabian", "Sobotka", role = "ctr"),
+             person("Fabian", "Scheipl", role = "ctr"))
 Description: Functional gradient descent algorithm
   (boosting) for optimizing general risk functions utilizing
   component-wise (penalised) least squares estimates or regression
@@ -17,4 +22,3 @@ Suggests: multicore, party (>= 0.9-9993), ipred, MASS, fields,
 LazyLoad: yes
 LazyData: yes
 License: GPL-2
-URL: http://r-forge.r-project.org/projects/mboost/
