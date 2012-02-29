@@ -51,10 +51,10 @@ stabsel(object, FWER = 0.05, cutoff, q,
 }
 \examples{
 
-
-  ### (too) low-dimensional example    
-  (sbody <- stabsel(glmboost(DEXfat ~ ., data = bodyfat), q = 3,
-                    folds = cv(model.weights(object), type = "subsampling", B = 25)))
+  ### (too) low-dimensional example
+  mod <- glmboost(DEXfat ~ ., data = bodyfat)
+  (sbody <- stabsel(mod, q = 3,
+                    folds = cv(model.weights(mod), type = "subsampling", B = 25)))
   opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
   plot(sbody)
   par(opar)

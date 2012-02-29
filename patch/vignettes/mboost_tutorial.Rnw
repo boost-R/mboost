@@ -2,7 +2,7 @@
 
 \documentclass[10pt]{scrartcl}
 
-%%\VignetteIndexEntry{mboost}
+%%\VignetteIndexEntry{mboost Tutorial}
 %%\VignetteDepends{mboost,lattice,RColorBrewer}
 
 \usepackage[utf8]{inputenc}
