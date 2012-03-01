@@ -2,7 +2,7 @@
      citHeader("To cite package 'mboost' in publications use:")
      
      desc <- packageDescription("mboost")
-     year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", desc$Date)
+     year <- sub("(2[[:digit:]]{3})-.*-.*", "\\1", desc$Date)
      vers <- paste("R package version", desc$Version)
      
      citEntry(entry="Manual",
