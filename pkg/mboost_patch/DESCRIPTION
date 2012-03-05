@@ -19,6 +19,6 @@ Depends: R (>= 2.10.0), methods, stats
 Imports: Matrix, survival, splines, lattice
 Suggests: multicore, party (>= 0.9-9993), ipred, MASS, fields, 
   BayesX, gbm, mlbench, RColorBrewer
-LazyLoad: yes
+LazyData: yes
 License: GPL-2
 URL: http://r-forge.r-project.org/projects/mboost/

@@ -53,6 +53,7 @@ stabsel(object, FWER = 0.05, cutoff, q,
 }
 \examples{
 
+  data(bodyfat)
 
   ### (too) low-dimensional example    
   sbody <- stabsel(glmboost(DEXfat ~ ., data = bodyfat), q = 3,
