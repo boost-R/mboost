@@ -620,7 +620,7 @@ bl_lin <- function(blg, Xfun, args) {
             w <- .Call("R_ysum", as.double(weights), as.integer(index), PACKAGE = "mboost")
         XtX <- crossprod(X * w, X)
         lambdadf <- df2lambda(X, df = args$df, lambda = args$lambda,
-                              dmat = K, weights = w)
+                              dmat = K, weights = w, XtX = XtX)
         lambda <- lambdadf["lambda"]
         XtX <- XtX + lambda * K
 
