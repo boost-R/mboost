@@ -4,10 +4,10 @@
 
   Structure of the repository
 
-    pkg/    current development version
+    pkg/mboost/    current development version
             add bug fixes and new functionality
 
-    patch/  current version on CRAN
+    pkg/mboost_patch/  current version on CRAN
             add bug fixes only
 
     devel/  next generation development version; experimental stuff
@@ -17,65 +17,66 @@
 
   Making a patch release
 
-    A bug was fixed in patch/.
+    A bug was fixed in pkg/mboost_patch/.
 
     Increase patch level in DESCRIPTION
     Update Date: field in DESCRIPTION
+    Rename mboost_patch to mboost in DESCRIPTION (but only locally)
     Update NEWS
     Update Date and Version in /man/mboost_package.Rd
 
-    R CMD build --resave-data --compact-vignettes patch
+    R CMD build --resave-data --compact-vignettes pkg/mboost_patch
     R CMD check mboost_XXX
 
     gives no warnings / errors.
 
-    Commit changes to patch/
+    Commit changes to pkg/mboost_patch/
 
     Add latest svn LATEST version to NEWS
 
     Ftp source package to CRAN.
 
-    Merge changes to R code or documentation to pkg/
-        cd pkg/R
+    Merge changes to R code or documentation to pkg/mboost/
+        cd pkg/mboost/R
         svn merge -r(LATEST letzte Version):HEAD --dry-run
-            svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/patch/R .
+            svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/pkg/mboost_patch/R .
         cd ../man
         svn merge -r(LATEST letzte Version)
-           svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/patch/man
+           svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/pkg/mboost_patch/man
         probabily only *R files in tests
-    Make sure not to modify version numbers etc. in pkg
-    and to add recents NEWS to pkg/NEWS
+    Make sure not to modify version numbers etc. in pkg/mboost
+    and to add recents NEWS to pkg/mboost/NEWS
 
 
   Making a minor release
 
-    Several new tools have been added to pkg/.
+    Several new tools have been added to pkg/mboost/.
 
     Increase minor level in DESCRIPTION (patch level 0)
     Update Date: field in DESCRIPTION
     Update NEWS
     Update Date and Version in /man/mboost_package.Rd
 
-    R CMD build --resave-data --compact-vignettes pkg
+    R CMD build --resave-data --compact-vignettes pkg/mboost
     R CMD check mboost_XXX
 
     gives no warnings / errors.
 
-    Commit changes to pkg/
+    Commit changes to pkg/mboost/
 
     Ftp source package to CRAN.
 
-    Merge changes to patch/
-       cd patch
-       svn merge (--dry-run) -r601:HEAD svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/pkg
+    Merge changes to pkg/mboost_patch/
+       cd pkg/mboost_patch
+       svn merge (--dry-run) -r601:HEAD svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/pkg/mboost
 
        where 601 is the version of the last merge (2.1-0, here)
 
-    After a minor release, pkg/ and patch/ are identical.
+    After a minor release, pkg/mboost/ and pkg/mboost_patch/ are identical.
 
 
   Starting a new experimental version
 
     cd mboost
-    svn copy pkg ng/mboost_XXX
+    svn copy pkg/mboost ng/mboost_XXX
 
