@@ -45,8 +45,17 @@ bl1 \%X\% bl2
 bl1 \%O\% bl2
 }
 \arguments{
-  \item{...}{ one or more predictor variables or one data frame of
-              predictor variables.}
+  \item{...}{ one or more predictor variables or one matrix or data
+              frame of predictor variables. For smooth base-learners,
+	      the number of predictor variables and the number of
+	      columns in the data frame / matrix must be less than or
+	      equal to 2. If a data frame or matrix (with at least 2
+	      columns) is given to \code{bols} or \code{brandom}, it
+	      is directly used as the design matrix. Especially, no
+	      intercept term is added reagrdless of argument
+	      \code{intercept}. If the argument has only one column, it
+	      is simplified to a vector and an intercept is added or not
+	      according to the argmuent \code{intercept}.}
   \item{by}{ an optional variable defining varying coefficients,
              either a factor or numeric variable.
 	     If \code{by} is a factor, the coding is determined by
@@ -443,7 +452,7 @@ bl1 \%O\% bl2
 
   ## decompose spatial effect into parametric part and
   ## deviation with one df
-  form2 <- y ~ bols(x1) + bols(x2) + bols(x1*x2) +
+  form2 <- y ~ bols(x1) + bols(x2) + bols(x1, by = x2, intercept = FALSE) +
                bspatial(x1, x2, knots = 12, center = TRUE, df = 1)
 
 

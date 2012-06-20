@@ -1,3 +1,9 @@
+			    CHANGES in `mboost' VERSION 2.1-2 (2012-XX-XX, rXXX)
+
+  o  matrizes with one column are now handled as vectors in base-learners
+
+  o  improved manual
+
 
                 CHANGES in `mboost' VERSION 2.1-2 (2012-02-29, r647)
 

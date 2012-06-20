@@ -343,12 +343,17 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
     cll[[1]] <- as.name("bols")
 
     mf <- list(...)
-    if (length(mf) == 1 && (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]))) {
+    if (length(mf) == 1 && ((isMATRIX(mf[[1]]) || is.data.frame(mf[[1]])) &&
+                            ncol(mf[[1]]) > 1 )) {
         mf <- mf[[1]]
         ### spline bases should be matrices
         if (isMATRIX(mf) && !is(mf, "Matrix"))
             class(mf) <- "matrix"
     } else {
+        if (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]) && ncol(mf[[1]]) == 1 )
+            warning("Matrix or data frame with 1 column was simplified to vector.\n",
+                    "See manual on base-learners for more information (argument ",
+                    sQuote("..."), ").")
         mf <- as.data.frame(mf)
         cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
         colnames(mf) <- sapply(cl, function(x) as.character(x))
@@ -429,9 +434,14 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
     cll[[1]] <- as.name("bbs")
 
     mf <- list(...)
-    if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
+    if (length(mf) == 1 && ((is.matrix(mf[[1]]) || is.data.frame(mf[[1]])) &&
+                            ncol(mf[[1]]) > 1 )) {
         mf <- as.data.frame(mf[[1]])
     } else {
+        if (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]) && ncol(mf[[1]]) == 1 )
+            warning("Matrix or data frame with 1 column was simplified to vector.\n",
+                    "See manual on base-learners for more information (argument ",
+                    sQuote("..."), ").")
         mf <- as.data.frame(mf)
         cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
         colnames(mf) <- sapply(cl, function(x) deparse(x))

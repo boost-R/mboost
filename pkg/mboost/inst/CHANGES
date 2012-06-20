@@ -21,8 +21,19 @@
 
   o  increased default number of subsampling replicates in stabsel to 100
 
+  o  [experimental] added family Gehan() for rank-based estimation of survival models
+	   in an accelerated failure time framework (contributed by Brent Johnson 
+       <bajohn3@emory.edu>)
 
-                CHANGES in `mboost' VERSION 2.1-2 (2012-02-28, r641)
+
+			    CHANGES in `mboost' VERSION 2.1-2 (2012-XX-XX, rXXX)
+
+  o  matrices with one column are now handled as vectors in base-learners
+
+  o  improved manual
+
+
+                CHANGES in `mboost' VERSION 2.1-2 (2012-02-29, r647)
 
   o  improved handling of missing values 
      (throws warnings and fixed a bug that occured for missings in the response)

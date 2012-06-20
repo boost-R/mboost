@@ -53,6 +53,7 @@ PropOdds(nuirange = c(-0.5, -1), offrange = c(-5, 5))
 Weibull(nuirange = c(0, 100))
 Loglog(nuirange = c(0, 100))
 Lognormal(nuirange = c(0, 100))
+Gehan()
 }
 \arguments{
   \item{ngradient}{ a function with arguments \code{y}, \code{f} and \code{w} implementing the
@@ -178,6 +179,13 @@ distribution approximation used in Ma and Huang (2005).
   models can be boosted using these families. For details see Schmid and
   Hothorn (2008) and Schmid et al. (2010).
 
+  \code{Gehan()} implements rank-based estimation of survival data in an  
+  accelerated failure time model. The loss function is defined as the sum 
+  of the pairwise absolute differences of residuals. The response needs to 
+  be defined as \code{Surv(y, delta)}, where \code{y} is the observed survial
+  time (subject to censoring) and \code{delta} is the non-censoring indicator 
+  (see \code{\link{Surv}} for details). For details on \code{Gehan()} see 
+  Johnson and Long (2011). 
 }
 \section{Warning}{
   The coefficients resulting from boosting with family
@@ -229,6 +237,10 @@ distribution approximation used in Ma and Huang (2005).
     \url{http://epub.ub.uni-muenchen.de/12754/}
 
   Available as vignette via: vignette(package = "mboost", "mboost_tutorial")
+
+    Brent A. Johnson and Qi Long (2011) Survival ensembles by the sum of pairwise 
+    differences with application to lung cancer microarray studies.
+    \emph{Annals of Applied Statistics}, \bold{5}, 1081--1101.
   
   }
 \seealso{\code{\link{mboost}} for the usage of \code{Family}s. See
