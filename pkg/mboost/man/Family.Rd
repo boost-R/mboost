@@ -18,6 +18,7 @@
 \alias{Loglog}
 \alias{Lognormal}
 \alias{AUC}
+\alias{Gehan}
 \title{ Gradient Boosting Families }
 \description{
     \code{boost_family} objects provide a convenient way to specify loss functions
