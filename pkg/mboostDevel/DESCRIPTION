@@ -1,0 +1,23 @@
+Package: mboostDevel
+Title: Model-Based Boosting
+Version: 2.2-0
+Date: 2012-xx-xx
+Authors@R: c(person("Torsten", "Hothorn", role = c("aut", "cre"),
+                    email = "Torsten.Hothorn@R-project.org"),
+             person("Peter", "Buehlmann", role = "aut"),
+             person("Thomas", "Kneib", role = "aut"),
+             person("Matthias", "Schmid", role = "aut"),
+             person("Benjamin", "Hofner", role = "aut"),
+             person("Fabian", "Sobotka", role = "ctr"),
+             person("Fabian", "Scheipl", role = "ctr"))
+Description: Functional gradient descent algorithm
+  (boosting) for optimizing general risk functions utilizing
+  component-wise (penalised) least squares estimates or regression
+  trees as base-learners for fitting generalized linear, additive
+  and interaction models to potentially high-dimensional data.
+Depends: R (>= 2.14.0), methods, stats, parallel
+Imports: Matrix, survival, splines, lattice
+Suggests: party (>= 0.9-9997), ipred, MASS, fields, BayesX, gbm, mlbench, RColorBrewer
+LazyData: yes
+License: GPL-2
+URL: http://r-forge.r-project.org/projects/mboost/

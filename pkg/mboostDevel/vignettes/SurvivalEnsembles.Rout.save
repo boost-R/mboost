@@ -1,0 +1,316 @@
+
+R version 2.14.1 (2011-12-22)
+Copyright (C) 2011 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: i686-pc-linux-gnu (32-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> tools:::.run_one_vignette("SurvivalEnsembles.Rnw", docDir = ".");
+
+> source("setup.R")
+
+
+	%%%% DON'T EDIT THIS FILE
+
+\setkeys{Gin}{width = 0.95\textwidth}
+> if (!require("ipred")) stop("cannot attach package ", 
++     sQuote("ipred"))
+
+> require("party")
+
+> set.seed(290875)
+
+> CEX <- 0.85
+
+> mdplot <- function(obs, pred, main = "", ...) {
++     m <- (obs + pred)/2
++     d <- obs - pred
++     plot(m, d, xlab = "(Observed + Predicted) / 2" .... [TRUNCATED] 
+
+> handle <- try(url("http://www.stat.uni-muenchen.de/~hothorn/data/AML_Bullinger.rda", 
++     open = "r"))
+
+> if (inherits(handle, "try-error")) cat("Cannot download data from the net. This vignette needs a working internet connection. \n \\end{document} \n" .... [TRUNCATED] 
+
+> load(handle)
+
+> AMLw <- IPCweights(Surv(clinical$time, clinical$event))
+
+> risk <- rep(0, nrow(clinical))
+
+> rlev <- levels(clinical[, "Cytogenetic.group"])
+
+> risk[clinical[, "Cytogenetic.group"] %in% rlev[c(7, 
++     8, 4)]] <- "low"
+
+> risk[clinical[, "Cytogenetic.group"] %in% rlev[c(5, 
++     9)]] <- "intermediate"
+
+> risk[clinical[, "Cytogenetic.group"] %in% rlev[-c(4, 
++     5, 7, 8, 9)]] <- "high"
+
+> risk <- as.factor(risk)
+
+> AMLlearn <- cbind(clinical[, c("time", "Sex", "Age", 
++     "LDH", "WBC", "FLT3.aberration.", "MLL.PTD", "Tx.Group.")], 
++     risk = risk, iexpress .... [TRUNCATED] 
+
+> cc <- complete.cases(AMLlearn)
+
+> AMLlearn <- AMLlearn[AMLw > 0 & cc, ]
+
+> AMLw <- AMLw[AMLw > 0 & cc]
+
+> ctrl <- cforest_control(mincriterion = 0.1, mtry = 5, 
++     minsplit = 5, ntree = 250)
+
+> AMLrf <- cforest(I(log(time)) ~ ., data = AMLlearn, 
++     control = ctrl, weights = AMLw)
+
+> AMLl2b <- glmboost(I(log(time)) ~ ., data = AMLlearn, 
++     weights = AMLw, control = boost_control(mstop = 5000))
+
+> plot(aic <- AIC(AMLl2b))
+
+> AMLl2b <- AMLl2b[mstop(aic)]
+
+> cAML <- coef(AMLl2b)
+
+> cAML[abs(cAML) > 0]
+    (Intercept)             Age             WBC 
+      0.5642932       0.0059785      -0.0056200 
+     MLL.PTDyes   Tx.Group.AUTO    Tx.Group.Ind 
+     -0.3153912       0.4542954      -2.1216104 
+ `IMAGE:145643`  `IMAGE:345601`  `IMAGE:377560` 
+      0.1062577       0.0043043       0.0275653 
+`IMAGE:2043415` `IMAGE:1584563`  `IMAGE:347035` 
+      0.0550938      -0.0025929      -0.0084766 
+ `IMAGE:262695`   `IMAGE:26418`  `IMAGE:950479` 
+      0.0269555       0.0080214       0.0371741 
+`IMAGE:1534700` `IMAGE:1472689` `IMAGE:1526826` 
+      0.0283645       0.0225640      -0.0278373 
+ `IMAGE:786302`  `IMAGE:243614`  `IMAGE:417884` 
+      0.0449326      -0.0566722      -0.0248869 
+`IMAGE:1592006`  `IMAGE:884333`  `IMAGE:133273` 
+     -0.0355121       0.0128054       0.0257924 
+ `IMAGE:950888`  `IMAGE:809533`   `IMAGE:49389` 
+      0.0348510      -0.0583489       0.1210483 
+ `IMAGE:856174`  `IMAGE:435036`  `IMAGE:491751` 
+      0.0205370       0.0620215       0.1155506 
+ `IMAGE:782835`   `IMAGE:52930` `IMAGE:2545705` 
+     -0.1108508      -0.0245246      -0.0788422 
+ `IMAGE:756405`  `IMAGE:129032` `IMAGE:1610168` 
+      0.0085293      -0.1158217       0.0137998 
+  `IMAGE:69002` `IMAGE:2019101` `IMAGE:1456160` 
+     -0.2793326      -0.0966590      -0.1041466 
+`IMAGE:2566064`  `IMAGE:565083`  `IMAGE:843028` 
+      0.0154665       0.1875592       0.0698328 
+  `IMAGE:68794`  `IMAGE:488505`  `IMAGE:291756` 
+      0.0761390       0.2784632       0.0994879 
+ `IMAGE:810801` `IMAGE:1702742`  `IMAGE:380462` 
+      0.0465851      -0.0104549      -0.0957299 
+ `IMAGE:154472`  `IMAGE:302540`  `IMAGE:135221` 
+     -0.1454724       0.0188789      -0.0366827 
+`IMAGE:1567220` 
+      0.0485058 
+
+> AMLprf <- predict(AMLrf, newdata = AMLlearn)
+
+> AMLpb <- predict(AMLl2b, newdata = AMLlearn)
+
+> Mmod <- sum(AMLw * log(AMLlearn$time))/sum(AMLw)
+
+> par(mai = par("mai") * c(0.7, 0.8, 0.7, 0.6))
+
+> layout(matrix(1:4, ncol = 2))
+
+> mdplot(log(AMLlearn$time), AMLprf, main = "Random Forest", 
++     cex = AMLw/4, ylim = c(-4, 4), xlim = c(0, 7))
+
+> plot(log(AMLlearn$time), AMLprf, cex = AMLw/4, ylim = range(log(AMLlearn$time)), 
++     ylab = "Predicted", xlab = "Observed", main = "Random Forest ..." ... [TRUNCATED] 
+
+> abline(h = Mmod, lty = 2)
+
+> mdplot(log(AMLlearn$time), AMLpb, cex = AMLw/4, main = "Boosting", 
++     ylim = c(-4, 4), xlim = c(0, 7))
+
+> plot(log(AMLlearn$time), AMLpb, cex = AMLw/4, ylim = range(log(AMLlearn$time)), 
++     ylab = "Predicted", xlab = "Observed", main = "Boosting", 
++  .... [TRUNCATED] 
+
+> abline(h = Mmod, lty = 2)
+
+> data("GBSG2", package = "ipred")
+
+> GBSG2w <- IPCweights(Surv(GBSG2$time, GBSG2$cens))
+
+> GBSG2learn <- cbind(GBSG2[, -which(names(GBSG2) %in% 
++     c("time", "cens"))], ltime = log(GBSG2$time))
+
+> n <- nrow(GBSG2learn)
+
+> LMmod <- lm(ltime ~ ., data = GBSG2learn, weights = GBSG2w)
+
+> LMerisk <- sum((GBSG2learn$ltime - predict(LMmod))^2 * 
++     GBSG2w)/n
+
+> TRmod <- rpart(ltime ~ ., data = GBSG2learn, weights = GBSG2w)
+
+> TRerisk <- sum((GBSG2learn$ltime - predict(TRmod))^2 * 
++     GBSG2w)/n
+
+> ctrl <- cforest_control(mincriterion = qnorm(0.95), 
++     mtry = 5, minsplit = 5, ntree = 100)
+
+> RFmod <- cforest(ltime ~ ., data = GBSG2learn, weights = GBSG2w, 
++     control = ctrl)
+
+> L2Bmod <- glmboost(ltime ~ ., data = GBSG2learn, weights = GBSG2w, 
++     control = boost_control(mstop = 250))
+
+> L2BHubermod <- glmboost(ltime ~ ., data = GBSG2learn, 
++     weights = GBSG2w, family = Huber(d = log(2)))
+
+> plot(aic <- AIC(L2Bmod))
+
+> GBSG2Hp <- predict(L2BHubermod, newdata = GBSG2learn)
+
+> L2Berisk <- sum((GBSG2learn$ltime - predict(L2Bmod, 
++     newdata = GBSG2learn))^2 * GBSG2w)/n
+
+> RFerisk <- sum((GBSG2learn$ltime - predict(RFmod, 
++     newdata = GBSG2learn))^2 * GBSG2w)/n
+
+> lim <- c(4, 9)
+
+> mylwd <- 0.5
+
+> par(mai = par("mai") * c(0.7, 0.8, 0.7, 0.6))
+
+> layout(matrix(1:4, ncol = 2))
+
+> Mmod <- sum(GBSG2w * GBSG2learn$ltime)/sum(GBSG2w)
+
+> mdplot(GBSG2learn$ltime, predict(LMmod), cex = GBSG2w/4, 
++     main = "Linear Model", ylim = c(-3, 3), xlim = c(5, 8))
+
+> mdplot(GBSG2learn$ltime, predict(TRmod), cex = GBSG2w/4, 
++     main = "Tree", ylim = c(-3, 3), xlim = c(5, 8))
+
+> mdplot(GBSG2learn$ltime, predict(RFmod, newdata = GBSG2learn), 
++     cex = GBSG2w/4, main = "Random Forest", ylim = c(-3, 3), 
++     xlim = c(5, 8) .... [TRUNCATED] 
+
+> mdplot(GBSG2learn$ltime, predict(L2Bmod, newdata = GBSG2learn), 
++     cex = GBSG2w/4, main = "Boosting", ylim = c(-3, 3), xlim = c(5, 
++         8) .... [TRUNCATED] 
+
+> RFpr <- predict(RFmod, newdata = GBSG2learn)
+
+> L2Bpr <- predict(L2Bmod, newdata = GBSG2learn)
+
+> ylim <- range(c(RFpr[GBSG2w > 0], L2Bpr[GBSG2w > 0]))
+
+> mydf <- 4
+
+> par(mai = par("mai") * c(0.7, 0.8, 0.4, 0.6))
+
+> layout(matrix(1:4, ncol = 2))
+
+> plot(GBSG2learn$pnodes, RFpr, cex = GBSG2w/4, xlim = c(0, 
++     40), lwd = mylwd, xlab = "Nr. positive lymph nodes", ylim = ylim, 
++     ylab = exp .... [TRUNCATED] 
+
+> lines(smooth.spline(GBSG2learn$pnodes, RFpr, GBSG2w/4, 
++     df = mydf))
+
+> plot(GBSG2learn$age, RFpr, cex = GBSG2w/4, xlab = "Age", 
++     ylab = expression(hat(Y)), ylim = ylim, lwd = mylwd, cex.axis = CEX, 
++     cex.main .... [TRUNCATED] 
+
+> lines(smooth.spline(GBSG2learn$age, RFpr, GBSG2w/4, 
++     df = mydf))
+
+> plot(GBSG2learn$estrec, RFpr, cex = GBSG2w/4, xlab = "Estrogen receptor", 
++     ylab = expression(hat(Y)), ylim = ylim, lwd = mylwd, cex.axis = CEX .... [TRUNCATED] 
+
+> lines(smooth.spline(GBSG2learn$estrec, RFpr, GBSG2w/4, 
++     df = mydf))
+
+> indx <- which(GBSG2learn$progrec < 100)
+
+> plot(GBSG2learn$progrec[indx], RFpr[indx], cex = GBSG2w[indx]/4, 
++     xlab = "Progesterone receptor (< 100 fmol / l)", ylab = expression(hat(Y)),  .... [TRUNCATED] 
+
+> lines(smooth.spline(GBSG2learn$progrec[indx], RFpr[indx], 
++     GBSG2w[indx]/4, df = mydf))
+
+> par(mai = par("mai") * c(0.7, 0.8, 0.4, 0.6))
+
+> layout(matrix(1:4, ncol = 2))
+
+> plot(GBSG2learn$pnodes, L2Bpr, cex = GBSG2w/4, xlim = c(0, 
++     40), ylab = expression(hat(Y)), xlab = "Nr. positive lymph nodes", 
++     ylim = y .... [TRUNCATED] 
+
+> lines(smooth.spline(GBSG2learn$pnodes, L2Bpr, GBSG2w/4, 
++     df = mydf))
+
+> plot(GBSG2learn$age, L2Bpr, cex = GBSG2w/4, xlab = "Age", 
++     ylab = expression(hat(Y)), ylim = ylim, lwd = mylwd, cex.axis = CEX, 
++     cex.mai .... [TRUNCATED] 
+
+> lines(smooth.spline(GBSG2learn$age, L2Bpr, GBSG2w/4, 
++     df = mydf))
+
+> plot(GBSG2learn$estrec, L2Bpr, cex = GBSG2w/4, xlab = "Estrogen receptor", 
++     ylab = expression(hat(Y)), ylim = ylim, lwd = mylwd, cex.axis = CE .... [TRUNCATED] 
+
+> lines(smooth.spline(GBSG2learn$estrec, L2Bpr, GBSG2w/4, 
++     df = mydf))
+
+> indx <- which(GBSG2learn$progrec < 100)
+
+> plot(GBSG2learn$progrec[indx], L2Bpr[indx], cex = GBSG2w[indx]/4, 
++     xlab = "Progesterone receptor (< 100 fmol / l)", ylab = expression(hat(Y)), .... [TRUNCATED] 
+
+> lines(smooth.spline(GBSG2learn$progrec[indx], L2Bpr[indx], 
++     GBSG2w[indx]/4, df = mydf))
+
+> Mmod <- sum(GBSG2w * GBSG2learn$ltime)/sum(GBSG2w)
+
+> par(mai = par("mai") * c(0.7, 0.8, 0.7, 0.6))
+
+> layout(matrix(1:4, ncol = 2))
+
+> yl <- range(c(GBSG2Hp[GBSG2w > 0], L2Bpr[GBSG2w > 
++     0]))
+
+> mdplot(GBSG2learn$ltime, GBSG2Hp, main = "Huber Loss", 
++     cex = GBSG2w/4, ylim = c(-3, 3), xlim = c(5, 8))
+
+> plot(GBSG2learn$ltime, GBSG2Hp, cex = GBSG2w/4, xlim = range(GBSG2learn$ltime[GBSG2w > 
++     0]), ylim = yl, ylab = "Predicted", xlab = "Observed", .... [TRUNCATED] 
+
+> mdplot(GBSG2learn$ltime, L2Bpr, cex = GBSG2w/4, main = "Quadratic Loss", 
++     ylim = c(-3, 3), xlim = c(5, 8))
+
+> plot(GBSG2learn$ltime, L2Bpr, cex = GBSG2w/4, xlim = range(GBSG2learn$ltime[GBSG2w > 
++     0]), ylim = yl, ylab = "Predicted", xlab = "Observed", m .... [TRUNCATED] 
+
+ *** Run successfully completed ***
+R> 

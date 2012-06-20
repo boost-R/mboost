@@ -1,0 +1,694 @@
+
+\documentclass{article}
+\usepackage{amstext}
+\usepackage{amsfonts}
+\usepackage{hyperref}
+\usepackage[round]{natbib}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{rotating}
+%%\usepackage[nolists]{endfloat}
+%%\usepackage{Sweave}
+
+%%\VignetteIndexEntry{mboost Illustrations}
+%%\VignetteDepends{mboostDevel, survival}
+
+\newcommand{\Rpackage}[1]{{\normalfont\fontseries{b}\selectfont #1}}
+\newcommand{\Robject}[1]{\texttt{#1}}
+\newcommand{\Rclass}[1]{\textit{#1}}
+\newcommand{\Rcmd}[1]{\texttt{#1}}
+\newcommand{\Roperator}[1]{\texttt{#1}}
+\newcommand{\Rarg}[1]{\texttt{#1}}
+\newcommand{\Rlevel}[1]{\texttt{#1}}
+
+\newcommand{\RR}{\textsf{R}}
+\renewcommand{\S}{\textsf{S}}
+\newcommand{\df}{\mbox{df}}
+
+\RequirePackage[T1]{fontenc}
+\RequirePackage{graphicx,ae,fancyvrb}
+\IfFileExists{upquote.sty}{\RequirePackage{upquote}}{}
+\usepackage{relsize}
+
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{baselinestretch=1}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{fontfamily=courier,
+                                              baselinestretch=1,
+                                              fontshape=it,
+                                              fontsize=\relsize{-1}}
+\DefineVerbatimEnvironment{Scode}{Verbatim}{}
+\newenvironment{Schunk}{}{}
+
+\renewcommand{\baselinestretch}{1}
+
+\SweaveOpts{engine=R,eps=FALSE}
+
+\hypersetup{%
+  pdftitle = {mboost Illustrations},
+  pdfsubject = {package vignette},
+  pdfauthor = {Torsten Hothorn and Peter Buhlmann},
+%% change colorlinks to false for pretty printing
+  colorlinks = {true},
+  linkcolor = {blue},
+  citecolor = {blue},
+  urlcolor = {red},
+  hyperindex = {true},
+  linktocpage = {true},
+}
+
+\begin{document}
+
+\setkeys{Gin}{width=\textwidth}
+
+\title{\Rpackage{mboost} Illustrations}
+
+\author{Torsten Hothorn$^1$ and Peter B\"uhlmann$^2$}
+
+\date{}
+
+\maketitle
+
+\noindent$^1$ Institut f\"ur Statistik \\
+           Ludwig-Maximilians-Universit\"at M\"unchen \\
+           Ludwigstra{\ss}e 33, D-80539 M\"unchen, Germany \\
+           \texttt{Torsten.Hothorn@R-project.org}
+           \newline
+
+\noindent$^2$ Seminar f{\"u}r Statistik \\
+              ETH Z\"urich, CH-8092 Z{\"u}rich, Switzerland \\
+              \texttt{buhlmann@stat.math.ethz.ch}
+           \newline
+
+\section{Illustrations}
+
+This document reproduces the data analyses presented in
+\cite{BuhlmannHothorn06}. For a description of the theory behind
+applications shown here we refer to the original manuscript. The results
+differ slightly due to technical changes or bugfixes in \textbf{mboost}
+that have been implemented after the paper was printed. Most important,
+\texttt{gamboost} uses penalized $B$-splines instead of smoothing
+splines as baselearners. The computations are much faster
+and the results differ only slightly \citep{Schmid+Hothorn:2008b}.
+
+
+\SweaveOpts{prefix.string=figures/BH}
+
+\paragraph{Illustration: Prediction of total body fat}
+
+<<pkg-attach, echo = FALSE, results = tex>>=
+source("setup.R")
+@
+
+\citet{garcia2005} report on the development of predictive regression equations
+for body fat content by means of $p = 9$ common anthropometric
+measurements which were obtained for $n = 71$ healthy German women.
+In addition, the women's body composition was measured by
+Dual Energy X-Ray Absorptiometry (DXA). This reference method
+is very accurate in measuring body fat but finds little applicability
+in practical environments, mainly because of high costs and the
+methodological efforts needed. Therefore, a simple regression equation
+for predicting DXA measurements of body fat is of special interest for the practitioner.
+Backward-elimination was applied to select
+important variables from the available anthropometrical measurements and
+\citet{garcia2005} report a final linear model utilizing
+hip circumference, knee breadth and a compound covariate which is defined as
+the sum of log chin skinfold, log triceps skinfold and log subscapular skinfold:
+<<bodyfat-lm-fit, echo = TRUE>>=
+bf_lm <- lm(DEXfat ~ hipcirc + kneebreadth + anthro3a, data = bodyfat)
+coef(bf_lm)
+@
+A simple regression formula which is easy to communicate, such as a
+linear combination of only a few covariates, is of special interest in this
+application: we employ the \Rcmd{glmboost} function from package
+\Rpackage{mboost}
+to fit a linear regression model by means of $L_2$Boosting with componentwise
+linear least squares. By default, the function \Rcmd{glmboost} fits a linear model (with
+initial $m_\text{stop} = 100$ and shrinkage parameter $\nu = 0.1$) by
+minimizing squared error (argument \Rcmd{family = Gaussian()} is
+the default):
+<<bodyfat-glmboost-fit, echo = TRUE>>=
+bf_glm <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)
+@
+Note that, by default, the mean of the response variable is used as an
+offset in the first step of the boosting algorithm. We center the covariates
+prior to model fitting in addition.
+As mentioned above, the special form of the base learner,
+i.e., componentwise linear least squares,
+allows for a reformulation of the boosting fit in terms of a linear combination
+of the covariates which can be assessed via
+<<bodyfat-glmboost-coef, echo = TRUE>>=
+coef(bf_glm)
+@
+
+\setkeys{Gin}{height=0.9\textheight, keepaspectratio}
+\begin{figure}
+\begin{center}
+<<bodyfat-oob-plot, echo = FALSE, fig = FALSE, results = hide>>=
+load(system.file("cache/bodyfat_benchmarks.rda", package = "mboostDevel"))
+aic <- AIC(bf_glm)
+pdf("figures/bodyfat_glmboost-bodyfat-oob-plot.pdf", version = "1.4", width = 6, height = 10)
+par(mai = par("mai") * c(1, 1, 0.5, 1))
+mopt <- grid[which.min(colMeans(boob))]
+layout(matrix(1:2, nrow = 2))
+perfplot(boob, grid, ylab = "Out-of-bootstrap squared error",
+    xlab = "Number of boosting iterations", alpha = 0.05)
+abline(h = mean(boobrest), lty = 2)
+lines(c(which.min(colMeans(boob)), which.min(colMeans(boob))),
+      c(0, min(colMeans(boob))), lty = 2)
+points(which.min(colMeans(boob)), min(colMeans(boob)))
+plot(aic, ylim = c(3, 5.5))
+dev.off()
+@
+\includegraphics{figures/bodyfat_glmboost-bodyfat-oob-plot.pdf}
+\caption{\Robject{bodyfat} data: Out-of-bootstrap squared error for varying
+  number of
+         boosting iterations $m_\text{stop}$ (top). The dashed horizontal line
+         depicts the average out-of-bootstrap error of the linear model
+         for the pre-selected variables \Robject{hipcirc},
+         \Robject{kneebreadth}
+         and \Robject{anthro3a} fitted via ordinary least squares.
+         The lower part shows the corrected AIC criterion.
+         \label{bodyfat-oob-plot}}
+\end{center}
+\end{figure}
+
+
+We notice that most covariates have been used for fitting
+and thus no extensive variable selection was performed in the above model.
+Thus, we need to investigate how many boosting iterations are appropriate. Resampling
+methods such as cross-validation or the bootstrap can be used to estimate
+the out-of-sample error for a varying number of boosting iterations. The
+out-of-bootstrap mean
+squared error for $100$ bootstrap samples is depicted in the upper part of
+Figure~\ref{bodyfat-oob-plot}. The plot
+leads to the impression that approximately $m_\text{stop} = \Sexpr{mopt}$ would be a sufficient
+number of boosting iterations.
+In Section~\ref{subsec.stopping}, a corrected version of the Akaike
+information criterion (AIC) is proposed for determining the optimal number
+of boosting iterations. This criterion attains its
+minimum for
+<<bodyfat-glmboost-AIC, echo = TRUE>>=
+mstop(aic <- AIC(bf_glm))
+@
+boosting iterations, see the bottom part of
+Figure~\ref{bodyfat-oob-plot} in addition.
+The coef\-ficients of the linear model with
+$m_\text{stop} = \Sexpr{mstop(aic)}$
+boosting iterations are
+<<bodyfat-glmboost-coef, echo = TRUE>>=
+coef(bf_glm[mstop(aic)])
+@
+<<bodyfat-glmboost-coef-count, echo = FALSE>>=
+cf <- coef(bf_glm[mopt])
+nsel <- length(cf)
+@
+and thus \Sexpr{nsel} covariates have been selected for the final
+model (intercept equal to zero occurs here for mean centered response and
+predictors and hence,
+%TORSTEN: PLEASE CHECK
+$n^{-1} \sum_{i=1}^n Y_i = \Sexpr{round(bf_glm$offset, 3)}$
+%TORSTEN
+is the intercept in the uncentered model). Note that
+the variables \Robject{hipcirc}, \Robject{kneebreadth} and
+\Robject{anthro3a}, which
+we have used for fitting a linear model at the beginning of this
+paragraph, have been selected by the boosting algorithm as well.
+
+
+\SweaveOpts{prefix.string=figures/BH}
+
+\paragraph{Illustration: Prediction of total body fat (cont.)}
+
+<<bodyfat-pkg-attach, echo = FALSE, results = tex>>=
+source("setup.R")
+@
+
+Being more flexible than the linear model which we fitted to the
+\Robject{bodyfat} data in Section~\ref{subsec.compLS}, we estimate an additive
+model
+%for the mean-centered covariates
+using the \Rcmd{gamboost} function from \Rpackage{mboost} (first with
+pre-specified $m_\text{stop} = 100$
+boosting iterations, $\nu = 0.1$ and squared error loss):
+<<bodyfat-gamboost-fit, echo = TRUE>>=
+bf_gam <- gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss")
+@
+The degrees of freedom in the componentwise smoothing spline base procedure
+can be defined by the \Rcmd{dfbase} argument, defaulting to $4$.
+
+We can estimate the number of boosting iterations $m_\text{stop}$
+using the corrected AIC criterion described in
+Section~\ref{subsec.stopping}
+%(see Figure~\ref{bodyfat-gamboost-AIC})
+via
+<<bodyfat-gamboost-prune, echo = TRUE>>=
+mstop(aic <- AIC(bf_gam))
+@
+Similar to the linear regression model, the partial contributions of the covariates
+can be extracted from the boosting fit. For the most important variables,
+the partial fits are given in Figure~\ref{bodyfat-gamboost-plot} showing some
+slight non-linearity, mainly for \Robject{kneebreadth}.
+
+%\begin{figure}
+%\begin{center}
+%<<bodyfat-gamboost-AIC, echo = FALSE, fig = TRUE, height = 4>>=
+%plot(aic, ylim = c(3, 5.5))
+%@
+%\caption{\Robject{bodyfat} data: Corrected AIC as a function of the number of
+%boosting iterations $m_\text{stop}$
+%for fitting an additive model via \Rmd{gamboost}. \label{bodyfat-gamboost-AIC}}
+%\end{center}
+%\end{figure}
+
+\setkeys{Gin}{width=0.95\textwidth, keepaspectratio}
+\begin{figure}[t]
+\begin{center}
+<<bodyfat-gamboost-plot, echo = FALSE, fig = TRUE>>=
+bf_gam <- bf_gam[mstop(aic)]
+layout(matrix(1:4, ncol = 2))
+plot(bf_gam, which = c("hipcirc", "kneebreadth", "waistcirc", "anthro3b"))
+@
+\caption{\Robject{bodyfat} data: Partial contributions of four covariates
+  in an additive model (without centering of estimated functions to mean
+  zero).
+         \label{bodyfat-gamboost-plot}}
+\end{center}
+\end{figure}
+
+\SweaveOpts{prefix.string=figures/BH}
+
+\paragraph{Illustration: Prediction of total body fat (cont.)}
+
+<<bodyfat-pkg-attach, echo = FALSE, results = tex>>=
+source("setup.R")
+library("splines")
+indep <- names(bodyfat)[names(bodyfat) != "DEXfat"]
+bsfm <- as.formula(paste("DEXfat ~ ", paste("bs(", indep, ")", collapse = " + ", sep = ""), sep = ""))
+@
+
+Such transformations and estimation of a corresponding linear model can be
+done with the \Rcmd{glmboost} function,
+%%\citep[an implementation of the original fractional polynomials approach is
+%%available in package \Rpackage{mfp}, see][]{pkg:mfp,Sauerbreietal2006},
+where the model formula performs the computations of all transformations by
+means of the \Rcmd{bs} (B-spline basis) function from the package
+\Rpackage{splines}.
+First, we set up a formula transforming each covariate
+<<bodyfat-bs, echo = TRUE>>=
+bsfm
+@
+and then fit the complex linear model by using the \Rcmd{glmboost} function with
+initial $m_\text{stop} = 5000$ boosting iterations:
+<<bodyfat-fpboost-fit, echo = TRUE>>=
+ctrl <- boost_control(mstop = 5000)
+bf_bs <- glmboost(bsfm, data = bodyfat, center = FALSE, control = ctrl)
+mstop(aic <- AIC(bf_bs))
+@
+The corrected AIC criterion (see Section~\ref{subsec.stopping}) suggests to
+stop after $m_\text{stop} = \Sexpr{mstop(aic)}$
+boosting iterations and the final model selects
+$\Sexpr{sum(abs(coef(bf_bs[mstop(aic)])) > 0 )}$ (transformed) predictor
+variables. Again, the partial
+contributions of each of the $\Sexpr{length(indep)}$ original covariates
+can be computed
+easily and are shown in Figure~\ref{bodyfat-fpboost-plot} (for the same
+variables as in Figure~\ref{bodyfat-gamboost-plot}). Note that the depicted
+functional relationship derived from the model fitted above
+(Figure~\ref{bodyfat-fpboost-plot}) is qualitatively the same as the one
+derived from the additive model (Figure~\ref{bodyfat-gamboost-plot}).
+%, which is computationally more demanding.
+
+\setkeys{Gin}{width=0.95\textwidth, keepaspectratio}
+\begin{figure}[t]
+\begin{center}
+<<bodyfat-fpboost-plot, echo = FALSE, fig = TRUE>>=
+layout(matrix(1:4, ncol = 2, byrow = TRUE))
+par(mai = par("mai") * c(1, 1, 0.5, 1))
+cf <- coef(bf_bs[mstop(aic)])
+varorder <- c("hipcirc", "waistcirc", "kneebreadth", "anthro3b")
+fpartial <- sapply(varorder, function(v) {
+    rowSums(predict(bf_bs, which = v))
+})
+out <- sapply(varorder, function(i) {
+    x <- bodyfat[,i]
+    plot(sort(x), fpartial[order(x),i],  main = "", type = "b",
+         xlab = i, ylab = expression(f[partial]), ylim = max(abs(fpartial)) * c(-1, 1))
+    abline(h = 0, lty = 2, lwd = 0.5)
+    })
+@
+\caption{\Robject{bodyfat} data: Partial fits for a linear model fitted to
+  transformed covariates using B-splines (without centering of estimated
+  functions to mean zero). \label{bodyfat-fpboost-plot}}
+\end{center}
+\end{figure}
+
+
+\SweaveOpts{prefix.string=figures/BH}
+
+\paragraph{Illustration: Breast cancer subtypes}
+
+<<pkg-attach, echo = FALSE, results = hide>>=
+source("setup.R")
+
+### OK, this once required Biobase and is a very dirty hack...
+data("Westbc", package = "mboostDevel")
+westbc <- Westbc
+exprs <- function(x) x$assay
+pData <- function(x) x$pheno
+
+p <- nrow(exprs(westbc))
+n <- ncol(exprs(westbc))
+ytab <- table(pData(westbc)$nodal.y)
+@
+
+Variable selection is especially important in high-dimensional situations.
+As an example, we study a binary classification problem involving $p = \Sexpr{p}$
+gene expression levels in $n = \Sexpr{n}$ breast cancer tumor samples
+\citep[data taken from][]{west01}. For each sample, a binary response variable
+describes the lymph node status (\Sexpr{ytab[1]} negative and
+\Sexpr{ytab[2]} positive).
+%of the patient is to be explained by the  expression profiles.
+
+The data are stored in form of an \Rclass{exprSet} object \Robject{westbc}
+\citep[see][]{BioC2004}
+and we first extract the matrix of expression levels and the response variable:
+<<west-data-attach, echo = TRUE>>=
+### extract matrix of expression levels and binary response
+x <- t(exprs(westbc))
+y <- pData(westbc)$nodal.y
+@
+We aim at using $L_2$Boosting for classification, see
+Section~\ref{subsubsec.binclass},
+with classical AIC based on the binomial log-likelihood for stopping the
+boosting iterations. Thus, we first
+transform the factor \Robject{y} to a numeric variable with $0/1$ coding:
+%(different from the $-1/+1$-encoding in Section~\ref{subsec.binclass}):
+<<west-glmboost-ytrans, echo = TRUE>>=
+### numeric 0/1 response variable
+yfit <- as.numeric(y) - 1
+@
+The general framework implemented in \Rpackage{mboost} allows us to specify
+the negative gradient (the
+\Rcmd{ngradient} argument) corresponding to the surrogate loss function,
+here the squared error loss implemented as a function \Rcmd{rho}, and a different
+evaluating loss function (the \Rcmd{loss} argument), here the negative
+binomial log-likelihood, with the \Rcmd{Family} function as follows:
+<<west-glmboost-family, echo = TRUE>>=
+### L2 boosting for classification with response in 0/1
+### and binomial log-likelihood as loss function
+### ATTENTION: use offset = 1/2 instead of 0!!!
+rho <- function(y, f, w = 1) {
+    p <- pmax(pmin(1 - 1e-5, f), 1e-5)
+    -y * log(p) - (1 - y) * log(1 - p)
+}
+ngradient <- function(y, f, w = 1) y - f
+offset <- function(y, w) weighted.mean(y, w)
+L2fm <- Family(ngradient = ngradient,
+               loss = rho, offset = offset)
+@
+The resulting object (called \Rcmd{L2fm}), bundling the negative gradient,
+the loss function and a function for computing an offset term (\Rcmd{offset}),
+can now be passed to the \Rcmd{glmboost} function for boosting
+with componentwise linear least squares (here initial $m_\text{stop} = 200$
+iterations are used):
+<<west-glmboost-fit, echo = TRUE, eval = FALSE>>=
+### fit a linear model with initial mstop = 200 boosting iterations
+ctrl <- boost_control(mstop = 200)
+west_glm <- glmboost(x, yfit, family = L2fm, center = TRUE,
+                     control = ctrl)
+@
+<<west-glmboost-fit-lars, echo = FALSE>>=
+### fit a linear model with initial mstop = 200 boosting iterations
+### and record time
+time <- system.time(west_glm <- glmboost(x, yfit, family = L2fm, center = TRUE,
+                    control = boost_control(mstop = 200)))[1]
+x <- t(exprs(westbc) - rowMeans(exprs(westbc)))
+@
+Fitting such a linear model to $p = \Sexpr{p}$ covariates for $n = \Sexpr{n}$
+observations takes about \Sexpr{formatC(round(time, 1), digits = 2)}
+seconds on a medium scale desktop computer
+(Intel Pentium 4, 2.8GHz). Thus, this form of estimation and variable
+selection is computationally very efficient.
+
+The question how to choose $m_\text{stop}$ can be
+addressed by the
+classical AIC criterion
+%(see Section~\ref{subsec.stopping})
+as follows
+<<west-glmboost-AIC, echo = TRUE>>=
+### evaluate AIC based on binomial log-likelihood for _all_ boosting
+### iterations m = 1, ..., mstop = 200
+aic <- AIC(west_glm, method = "classical")
+### where should one stop? mstop = 108 or 107
+mstop(aic)
+@
+<<west-glmboost-cf, echo = FALSE>>=
+cf <- coef(west_glm[mstop(aic)], which = 1:ncol(x))
+ps <- length(cf[abs(cf) > 0])
+@
+where the AIC is computed as -2(log-likelihood) + 2(degrees of freedom) = 2
+(evaluating loss) + 2(degrees of freedom), see Formula~(\ref{aicl2}).
+The notion of degrees of freedom
+is discussed in Section~\ref{subsec.df}.
+
+Figure~\ref{west-glmboost-plot} shows the AIC curve depending on
+the number of boosting iterations. When we stop after $m_\text{stop} =
+\Sexpr{mstop(aic)}$
+boosting iterations, we obtain $\Sexpr{ps}$
+genes with non-zero regression coefficients whose standardized values
+$\hat{\beta}^{(j)}\sqrt{\widehat{\text{Var}}(X^{(j)})}$
+are depicted in the left panel of Figure~\ref{west-glmboost-plot}.
+\setkeys{Gin}{width=0.95\textwidth, keepaspectratio}
+\begin{figure}
+\begin{center}
+<<west-glmboost-plot, echo = FALSE, fig = TRUE, width = 7, height = 4>>=
+### compute standard deviations of expression levels for each gene
+sdx <- sqrt(rowSums((t(x) - colMeans(x))^2)/(nrow(x) - 1))
+layout(matrix(1:2, ncol = 2))
+cf <- cf * sdx
+plot(sort(cf[abs(cf) > 0]), ylab = "Standardized coefficients")
+abline(h = 0, lty = 2)
+plot(aic, ylim = c(25, 40))
+@
+\caption{\Robject{westbc} data: Standardized regression coefficients
+    $\hat{\beta}^{(j)}\sqrt{\widehat{\text{Var}}(X^{(j)})}$ (left panel) for
+    $m_\text{stop} = \Sexpr{mstop(aic)}$ determined from the classical AIC
+    criterion shown in the right panel. \label{west-glmboost-plot}}
+\end{center}
+\end{figure}
+
+Of course, we could also use BinomialBoosting for analyzing the data: the
+computational CPU time would be of the same order of magnitude, i.e.,
+only a few seconds.
+
+
+\SweaveOpts{prefix.string=figures/BH}
+
+\paragraph{Illustration: Wisconsin prognostic breast cancer}
+
+<<pkg-attach, echo = FALSE, results = tex>>=
+source("setup.R")
+n <- sum(complete.cases(wpbc))
+p <- ncol(wpbc) - 2
+@
+
+Prediction models for recurrence events in breast cancer patients
+based on covariates which have been computed from a digitized image of a
+fine needle aspirate of breast tissue (those measurements describe
+characteristics of the cell nuclei present in the image) have been studied
+by \citet{street1995} \citep[the data is part of the UCI repository][]{uci1998}.
+
+We first analyze this data as a binary prediction problem
+(recurrence vs. non-recurrence) and later in Section~\ref{sec.survival}
+by means of survival models. We are faced with many covariates ($p = \Sexpr{p}$)
+for a limited number of observations without missing values
+($n = \Sexpr{n}$), and variable selection is an important issue. We can
+choose a classical logistic regression model
+via AIC in a stepwise algorithm as follows
+%(after centering the covariates)
+<<wpbc-glm-fit, echo = TRUE>>=
+### remove missing values and time variable
+cc <- complete.cases(wpbc)
+wpbc2 <- wpbc[cc, colnames(wpbc) != "time"]
+### fit logistic regression model
+wpbc_step <- step(glm(status ~ ., data = wpbc2, family = binomial()), trace = 0)
+@
+The final model consists of \Sexpr{length(coef(wpbc_step))} parameters with
+<<wpbc-glm-aic, echo = TRUE>>=
+logLik(wpbc_step)
+AIC(wpbc_step)
+@
+and we want to compare this model to a logistic regression model fitted via gradient boosting.
+We simply select the \Robject{Binomial} family (with default offset of $1/2
+\log(\hat{p} / (1 - \hat{p}))$,
+where $\hat{p}$ is the empirical proportion of recurrences) and we
+initially use
+$m_\text{stop} = 500$ boosting iterations
+<<wpbc-glmboost-fit, echo = TRUE>>=
+### fit logistic regression model via gradient boosting
+ctrl <- boost_control(mstop = 500)
+wpbc_glm <- glmboost(status ~ ., data = wpbc2, family = Binomial(),
+                     center = TRUE, control = ctrl)
+@
+%The negative binomial log-likelihood is
+%<<wpbc-glmboost-loglik, echo = TRUE>>=
+%logLik(wpbc_glm)
+%@
+The classical AIC criterion (-2 log-likelihood + 2 $\df$) suggests to stop after
+<<wpbc-glmboost-AIC, echo = TRUE>>=
+aic <- AIC(wpbc_glm, "classical")
+aic
+@
+boosting iterations.
+%%Again, we want to investigate the out-of-bootstrap performance
+%%of the boosted logistic regression model. Figure~\ref{wpbc-benchmarks-plot} depicts the
+%%out-of-bootstrap (positive) binomial log-likelihood, standardized with
+%%the number of out-of-bootstrap observations, for varying number of boosting iterations $m_\text{stop}$.
+%%\begin{figure}
+%%\begin{center}
+%%<<wpbc-benchmarks-plot, echo = FALSE, fig = TRUE>>=
+%%load(system.file("cache/wpbc_benchmarks.rda", package = "mboostDevel"))
+%%grid <- seq(from = 5, to = 500, by = 5)
+%%plot(c(0, grid[-1] - 5), -colMeans(boob), type = "b",
+%%     ylab = "Log-Likelihood / n",
+%%     xlab = "Number of Boosting Iterations")
+%%mopt <- grid[which.max(colMeans(boob))]
+%%@
+%%\caption{\Robject{wpbc} data: Out-of-bootstrap (positive) binomial
+%%    log-likelihood. \label{wpbc-benchmarks-plot}}
+%%\end{center}
+%%\end{figure}
+We now restrict the number of boosting iterations to
+$m_\text{stop} = \Sexpr{mstop(aic)}$ and then obtain the estimated
+coefficients via
+<<wpbc-glmboost-fit2, echo = TRUE>>=
+### fit with new mstop
+wpbc_glm <- wpbc_glm[mstop(aic)]
+coef(wpbc_glm)[abs(coef(wpbc_glm)) > 0]
+@
+(because of using the offset-value $\hat{f}^{[0]}$, we have to add the value
+$\hat{f}^{[0]}$ to the reported intercept estimate above for the logistic
+regression model).
+%%We then can
+%%extract the fitted conditional probabilities
+%%<<wpbc-glmboost-prob, echo = TRUE>>=
+%%f <- fitted(wpbc_glm)
+%%### probabilities
+%%p <- exp(f) / (exp(f) + exp(-f))
+%%@
+%%which are depicted by a conditional density plot in
+%%Figure~\ref{wpbc-glmboost-prob-plot}.
+
+%\setkeys{Gin}{width=0.7\textwidth, keepaspectratio}
+%\begin{figure}
+%\begin{center}
+%<<wpbc-glmboost-prob-plot, echo = FALSE, fig = TRUE>>=
+%cdplot(status ~ p, data = wpbc2)
+%@
+%\caption{\Robject{wpbc} data: Conditional density plot of the fitted
+%         probabilities of recurrence / non-recurrence. \label{wpbc-glmboost-prob-plot}}
+%\end{center}
+%\end{figure}
+
+A generalized additive model adds more flexibility to the regression function but is still
+interpretable. We fit a logistic additive model to the \Robject{wpbc} data as follows:
+<<wpbc-gamboost-fit, echo = TRUE>>=
+wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial(), baselearner = "bss")
+mopt <- mstop(aic <- AIC(wpbc_gam, "classical"))
+aic
+@
+This model selected $\Sexpr{length(unique(wpbc_gam$xselect()))}$ out of $\Sexpr{ncol(wpbc2)-1}$
+covariates. The partial contributions of the four most important variables
+are depicted in
+Figure~\ref{wpbc-gamboost-plot} indicating a remarkable degree of non-linearity.
+\setkeys{Gin}{width=0.95\textwidth, keepaspectratio}
+\begin{figure}[t]
+\begin{center}
+<<wpbc-gamboost-plot, echo = FALSE, fig = TRUE, width = 7, height = 7>>=
+wpbc_gam <- wpbc_gam[mopt]
+fpartial <- predict(wpbc_gam, which = 1:length(variable.names(wpbc_gam)))
+layout(matrix(1:4, nrow = 2, byrow = TRUE))
+par(mai = par("mai") * c(1, 1, 0.5, 1))
+plot(wpbc_gam, which = rev(order(colMeans(abs(fpartial))))[1:4])
+@
+\caption{\Robject{wpbc} data: Partial contributions of four selected
+    covariates in an additive logistic model (without centering of
+    estimated functions to mean zero).
+    \label{wpbc-gamboost-plot}}
+\end{center}
+\end{figure}
+
+\SweaveOpts{prefix.string=figures/BH}
+
+\paragraph{Illustration: Wisconsin prognostic breast cancer (cont.)}
+
+<<pkg-attach, echo = FALSE, results = tex>>=
+source("setup.R")
+@
+Instead of the binary response variable describing the recurrence status, we
+make use of the additionally available time information for modeling
+the time to recurrence, i.e., all observations with non-recurrence are censored.
+First, we calculate IPC weights
+<<wpbc-glmboost-PIC, echo = TRUE>>=
+library("survival")
+### calculate IPC weights
+censored <- wpbc$status == "R"
+iw <- IPCweights(Surv(wpbc$time, censored))
+wpbc3 <- wpbc[,names(wpbc) != "status"]
+@
+and fit a weighted linear model by boosting with componentwise linear
+weighted least squares as base procedure:
+<<wpbc-glmboost-censored-fit, echo = TRUE>>=
+ctrl <- boost_control(mstop = 500)
+wpbc_surv <- glmboost(log(time) ~ ., data = wpbc3,
+                  weights = iw, center = TRUE, control = ctrl)
+mstop(aic <- AIC(wpbc_surv))
+wpbc_surv <- wpbc_surv[mstop(aic)]
+@
+The following variables have been selected for fitting
+<<wpbc-glmboost-coef, echo = TRUE>>=
+names(coef(wpbc_surv)[abs(coef(wpbc_surv)) > 0])
+@
+and the fitted values are
+depicted in Figure~\ref{wpbc-glmboost-censored-fit}, showing a reasonable model fit.
+
+\setkeys{Gin}{width=0.7\textwidth, keepaspectratio}
+\begin{figure}[t]
+\begin{center}
+<<wpbc-glmboost-censored-fit, echo = FALSE, fig = TRUE, width = 5, height = 5>>=
+plot(log(wpbc3$time), predict(wpbc_surv, newdata = wpbc3),
+     cex = iw, ylim = c(0, 5), xlim = c(0, 5),
+     xlab = "Time to recurrence (log-scale)",
+     ylab = "Predicted time to recurrence")
+abline(a = 0, b = 1, lty = 2, lwd = 0.5)
+@
+\caption{\Robject{wpbc} data: Fitted values of an IPC-weighted linear
+  model, taking both time to recurrence and
+    censoring information into account. The radius of the circles is proportional to the
+    IPC weight of the corresponding observation, censored observations with IPC weight zero
+    are not plotted. \label{wpbc-glmboost-censored-fit}}
+\end{center}
+\end{figure}
+
+Alternatively, a Cox model with linear predictor can be fitted using
+$L_2$Boosting by
+implementing the negative gradient
+of the partial likelihood (see \cite{ridgew99}) via
+%%<<wpbc-CoxPH, echo = TRUE, eval = FALSE>>=
+%%glmboost(Surv(wpbc$time, wpbc$status == "N") ~ .,
+%%    data = wpbc, family = CoxPH(), center = TRUE)
+%%@
+\begin{Schunk}
+\begin{Sinput}
+R> glmboost(Surv(wpbc$time, wpbc$status == "N") ~ .,
+         data = wpbc, family = CoxPH(), center = TRUE)
+\end{Sinput}
+\end{Schunk}
+For more examples, such as fitting an additive Cox model using
+\Rpackage{mboost}, see \citep{Hothorn:2006:Bioinformatics:16940323}.
+
+\clearpage
+
+\bibliographystyle{plainnat}
+\bibliography{boost}
+
+\end{document}

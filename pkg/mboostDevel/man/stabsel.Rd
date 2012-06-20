@@ -1,0 +1,65 @@
+\name{stabsel}
+\alias{stabsel}
+\title{
+    Stability Selection
+}
+\description{
+    Selection of influential variables or model components with error control.
+}
+\usage{
+stabsel(object, FWER = 0.05, cutoff, q, 
+        folds = cv(model.weights(object), type = "subsampling", B = 100),
+        papply = mclapply, ...)
+}
+\arguments{
+  \item{object}{an \code{mboost} object.}
+  \item{FWER}{family-wise error rate to be controlled by the selection procedure.}
+  \item{cutoff}{cutoff between 0.5 and 1.}
+  \item{q}{average number of selected variables.}
+  \item{folds}{ a weight matrix with number of rows equal to the number
+                of observations, see \code{\link{cvrisk}}.}
+  \item{papply}{ (parallel) apply function, defaults to  \code{\link[parallel]{mclapply}}.
+    Alternatively, \code{parLapply} can be used. In the
+    latter case, usually more setup is needed (see example for some details).}
+  \item{\dots}{additional arguments to \code{\link{cvrisk}}.}
+}
+\details{
+
+  This function implements the "stability selection" procedure
+  by Meinshausen and Buehlmann (2010).
+
+  Either \code{cutoff} or \code{q} must be specified. The probability
+  of selecting at least one non-influential variable (or model component)
+  is less than \code{FWER}.
+
+}
+\value{
+  An object of class \code{stabsel} with elements
+  \item{phat }{selection probabilities.}
+  \item{selected }{elements with maximal selection probability greater \code{cutoff}.}
+  \item{max }{maximum of selection probabilities.}
+  \item{cutoff }{cutoff used.}
+  \item{q }{average number of selected variables used.}
+  \item{FWER }{family-wise error rate.}
+}
+\references{
+
+  N. Meinshausen and P. Buehlmann (2010), Stability selection.
+  \emph{Journal of the Royal Statistical Society, Series B},
+  \bold{72}(4).
+
+}
+\examples{
+
+  data(bodyfat)
+
+  ### (too) low-dimensional example
+  mod <- glmboost(DEXfat ~ ., data = bodyfat)
+  (sbody <- stabsel(mod, q = 3,
+                    folds = cv(model.weights(mod), type = "subsampling", B = 25)))
+  opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
+  plot(sbody)
+  par(opar)
+
+}
+\keyword{nonparametric}

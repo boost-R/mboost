@@ -1,0 +1,38 @@
+
+     citHeader("To cite package 'mboost' in publications use:")
+     
+     desc <- packageDescription("mboost")
+     year <- sub("(2[[:digit:]]{3})-.*-.*", "\\1", desc$Date)
+     vers <- paste("R package version", desc$Version)
+     
+     citEntry(entry="Manual",
+              title = "Model-Based Boosting",
+              author = personList(as.person("Torsten Hothorn"), 
+                                  as.person("Peter Buehlmann"),
+                                  as.person("Thomas Kneib"),
+                                  as.person("Matthias Schmid"),
+                                  as.person("Benjamin Hofner")),
+              year = year,
+              note = vers,
+              url = "http://CRAN.R-project.org/package=mboost",
+              textVersion =
+              paste("T. Hothorn, P. Buehlmann, T. Kneib, M. Schmid, and B. Hofner (", 
+                    year,
+                    "). mboost: Model-Based Boosting, ",
+                    vers, ", http://CRAN.R-project.org/package=mboost", ".",
+                    sep=""))
+
+    citEntry(entry="Article",
+         title = "Boosting Algorithms: Regularization, Prediction and Model Fitting (with Discussion)",
+         author = personList(as.person("Peter Buehlmann"), as.person("Torsten Hothorn")),
+         journal      = "Statistical Science",
+         year         = "2007",
+         volume       = "22",
+         number       = "4",
+         pages        = "477--505",
+
+         textVersion =
+         paste("Peter Buehlmann and Torsten Hothorn (2007).",
+               "Boosting Algorithms: Regularization, Prediction and Model Fitting (with Discussion).",
+               "Statistical Science, 22(4), 477-505."),
+   )
