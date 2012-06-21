@@ -63,9 +63,13 @@
 
     Commit changes to pkg/mboostDevel/
 
-    IMPORTANT: 
-        - Replace all occurences of mboostDevel with mboost
+    IMPORTANT:
+        - Replace all occurences of mboostDevel with mboost:
+	     R CMD BATCH change_mboostDevel_to_mboost.R
+	     cat change_mboostDevel_to_mboost.Rout
 	- Run build and check again on mboost_XXX
+	- ATTENTION: Do NOT commit the new, modified files to mboostDevel
+	  	     (only to mboostPatch and CRAN)
 
     Ftp source package to CRAN.
 
@@ -75,7 +79,7 @@
 
        where 601 is the version of the last merge (2.1-0, here)
 
-    After a minor release, pkg/mboostDevel/ and pkg/mboostPatch/ are identical 
+    After a minor release, pkg/mboostDevel/ and pkg/mboostPatch/ are identical
     (with the exeption of the package names -- mboost vs. mboostDevel).
 
 
