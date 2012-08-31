@@ -248,7 +248,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             if (!nw) {
                 pr <- lapply(which, pfun, agg = "none")
                 pr <- lapply(pr, function(x) {
-                    .Call("R_mcumsum", as(x, "matrix"))
+                    .Call("R_mcumsum", as(x, "matrix"), PACKAGE = "mboost")
                 })
                 names(pr) <- bnames[which]
                 attr(pr, "offset") <- offset
@@ -256,7 +256,8 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             } else {
                 ret <- 0
                 for (i in 1:max(xselect)) ret <- ret + pfun(i, agg = "none")
-                return(.Call("R_mcumsum", as(ret, "matrix")) + offset)
+                return(.Call("R_mcumsum", as(ret, "matrix"), PACKAGE = "mboost")
+                       + offset)
             }
          }, "none" = {
             if (!nw) {
@@ -342,7 +343,8 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
                 ret <- switch(aggregate,
                               "sum" = rowSums(cf) * nu,
                               "cumsum" = {
-                                  .Call("R_mcumsum", as(cf, "matrix") * nu)
+                                  .Call("R_mcumsum", as(cf, "matrix") * nu,
+                                        PACKAGE = "mboost")
                               },
                               "none" = nu * cf
                               )

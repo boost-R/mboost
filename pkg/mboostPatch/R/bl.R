@@ -304,7 +304,7 @@ X_bbs <- function(mf, vary, args) {
             K <- kronecker(diag(ncol(by)), K)
         }
         if (args$center) {
-            L <- eigen(K, symmetric = TRUE, EISPACK = TRUE)
+            L <- eigen(K, symmetric = TRUE, EISPACK = FALSE)
             L$vectors <- L$vectors[,1:(ncol(X) - args$differences^2)]
             L$values <- sqrt(L$values[1:(ncol(X) - args$differences^2)])
             L <- L$vectors %*% (diag(length(L$values)) * (1/L$values))
@@ -595,8 +595,9 @@ bl_lin <- function(blg, Xfun, args) {
                 XtX <- as(XtX, "matrix")
             }
             mysolve <- function(y)
-                .Call("La_dgesv", XtX, crossprod(X, y), .Machine$double.eps,
-                      PACKAGE = "base")
+                #.Call("La_dgesv", XtX, crossprod(X, y), .Machine$double.eps,
+                #      PACKAGE = "base")
+                .Internal(La_solve(XtX, crossprod(X, y), .Machine$double.eps))
         }
 
         fit <- function(y) {
@@ -650,7 +651,8 @@ bl_lin <- function(blg, Xfun, args) {
             pr <- switch(aggregate, "sum" =
                 as(X %*% rowSums(cf), "matrix"),
             "cumsum" = {
-                as(X %*% .Call("R_mcumsum", as(cf, "matrix")), "matrix")
+                as(X %*% .Call("R_mcumsum", as(cf, "matrix"),
+                               PACKAGE = "mboost"), "matrix")
             },
             "none" = as(X %*% cf, "matrix"))
             if (is.null(index)) return(pr[,,drop = FALSE])

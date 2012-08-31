@@ -215,17 +215,26 @@ bl_mono <- function(blg, Xfun, args) {
         } else { ## not Matrix
             if (lambda2[[2]] == 0){#
                 mysolve <- function(y, V)
-                    .Call("La_dgesv", XtX +
-                          lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]]),
-                          crossprod(X, y), .Machine$double.eps,
-                          PACKAGE = "base")
+                    #.Call("La_dgesv", XtX +
+                    #      lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]]),
+                    #      crossprod(X, y), .Machine$double.eps,
+                    #      PACKAGE = "base")
+                    .Internal(La_solve(XtX +
+                                       lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]]),
+                                       crossprod(X, y),
+                                       .Machine$double.eps))
             } else {
                 mysolve <- function(y, V)
-                    .Call("La_dgesv", XtX +
-                          lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]]) +
-                          lambda2[[2]] * crossprod(D[[2]], V[[2]] %*% D[[2]]),
-                          crossprod(X, y), .Machine$double.eps,
-                          PACKAGE = "base")
+                    #.Call("La_dgesv", XtX +
+                    #      lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]]) +
+                    #      lambda2[[2]] * crossprod(D[[2]], V[[2]] %*% D[[2]]),
+                    #      crossprod(X, y), .Machine$double.eps,
+                    #      PACKAGE = "base")
+                    .Internal(La_solve(XtX +
+                                       lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]]) +
+                                       lambda2[[2]] * crossprod(D[[2]], V[[2]] %*% D[[2]]),
+                                       crossprod(X, y),
+                                       .Machine$double.eps))
             }
         }
         fit <- function(y) {
@@ -304,7 +313,8 @@ bl_mono <- function(blg, Xfun, args) {
             pr <- switch(aggregate, "sum" =
                 as(X %*% rowSums(cf), "matrix"),
             "cumsum" = {
-                as(X %*% .Call("R_mcumsum", as(cf, "matrix")), "matrix")
+                as(X %*% .Call("R_mcumsum", as(cf, "matrix"),
+                               PACKAGE = "mboost"), "matrix")
             },
             "none" = as(X %*% cf, "matrix"))
             if (is.null(index)) return(pr[,,drop = FALSE])
