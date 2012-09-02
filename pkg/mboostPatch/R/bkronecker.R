@@ -76,8 +76,8 @@ bl_lin_matrix <- function(blg, Xfun, args) {
                 #.Call("La_dgesv", XtX, matrix(as(XWY, "matrix"), ncol = 1),
                 #      .Machine$double.eps,
                 #      PACKAGE = "base")
-                .Internal(La_solve(XtX, matrix(as(XWY, "matrix"), ncol = 1),
-                                   .Machine$double.eps))
+                solve(XtX, matrix(as(XWY, "matrix"), ncol = 1),
+                      LINPACK = FALSE)
             }
         }
 

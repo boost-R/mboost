@@ -597,7 +597,7 @@ bl_lin <- function(blg, Xfun, args) {
             mysolve <- function(y)
                 #.Call("La_dgesv", XtX, crossprod(X, y), .Machine$double.eps,
                 #      PACKAGE = "base")
-                .Internal(La_solve(XtX, crossprod(X, y), .Machine$double.eps))
+                solve(XtX, crossprod(X, y), LINPACK = FALSE)
         }
 
         fit <- function(y) {

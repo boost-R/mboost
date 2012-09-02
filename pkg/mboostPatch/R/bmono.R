@@ -219,10 +219,8 @@ bl_mono <- function(blg, Xfun, args) {
                     #      lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]]),
                     #      crossprod(X, y), .Machine$double.eps,
                     #      PACKAGE = "base")
-                    .Internal(La_solve(XtX +
-                                       lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]]),
-                                       crossprod(X, y),
-                                       .Machine$double.eps))
+                    solve(XtX + lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]]),
+                          crossprod(X, y), LINPACK = FALSE)
             } else {
                 mysolve <- function(y, V)
                     #.Call("La_dgesv", XtX +
@@ -230,11 +228,9 @@ bl_mono <- function(blg, Xfun, args) {
                     #      lambda2[[2]] * crossprod(D[[2]], V[[2]] %*% D[[2]]),
                     #      crossprod(X, y), .Machine$double.eps,
                     #      PACKAGE = "base")
-                    .Internal(La_solve(XtX +
-                                       lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]]) +
-                                       lambda2[[2]] * crossprod(D[[2]], V[[2]] %*% D[[2]]),
-                                       crossprod(X, y),
-                                       .Machine$double.eps))
+                    solve(XtX + lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]]) +
+                          lambda2[[2]] * crossprod(D[[2]], V[[2]] %*% D[[2]]),
+                          crossprod(X, y), LINPACK = FALSE)
             }
         }
         fit <- function(y) {
