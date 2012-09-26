@@ -1,8 +1,8 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R Under development (unstable) (2012-08-30 r60505) -- "Unsuffered Consequences"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: x86_64-pc-linux-gnu (64-bit)
+Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -81,6 +81,8 @@ Loading required package: colorspace
 [1] 2.367443
 Loading required package: gbm
 Loading required package: lattice
+Loaded gbm 1.6.3.2
+
 Iter   TrainDeviance   ValidDeviance   StepSize   Improve
      1       74.4121            -nan     0.1000      -nan
      2       65.6474            -nan     0.1000      -nan
@@ -219,3 +221,6 @@ Warning message:
 > pr <- predict(mod, type="response")
 > # <FIXME> How do we check "correctness" of results?</FIXME>
 > 
+> proc.time()
+   user  system elapsed 
+ 10.328   0.144  10.669 

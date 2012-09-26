@@ -1,8 +1,8 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R Under development (unstable) (2012-08-30 r60505) -- "Unsuffered Consequences"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: x86_64-pc-linux-gnu (64-bit)
+Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -128,17 +128,17 @@ attr(,"offset")
 > fm <- SG4 ~ bols(GST) + bols(DBH) + bols(AOT) + bols(AFS) + bols(DWC) +
 +             bols(LOG) + bspatial(x_gk, y_gk, df=5, differences=1, knots=c(12,12))
 > sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
-Note: Method with signature "Matrix#diagonalMatrix" chosen for function "kronecker",
- target signature "dsCMatrix#ddiMatrix".
+Note: Method with signature 'Matrix#diagonalMatrix' chosen for function 'kronecker',
+ target signature 'dsCMatrix#ddiMatrix'.
  "sparseMatrix#ANY" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dsCMatrix#dtTMatrix".
+Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
+ target signature 'dsCMatrix#dtTMatrix'.
  "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature "diagonalMatrix#Matrix" chosen for function "kronecker",
- target signature "ddiMatrix#dsCMatrix".
+Note: Method with signature 'diagonalMatrix#Matrix' chosen for function 'kronecker',
+ target signature 'ddiMatrix#dsCMatrix'.
  "ANY#sparseMatrix" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dtTMatrix#dsCMatrix".
+Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
+ target signature 'dtTMatrix#dsCMatrix'.
  "TsparseMatrix#sparseMatrix" would also be valid
 [   1] ...................................... -- risk: 137.4561 
 [  41] ...................................... -- risk: 130.8831 
@@ -211,11 +211,11 @@ Final risk: 122.7069
 > coef(sp, which=1:6)
 $`bols(GST)`
  (Intercept)          GST 
- 0.778022823 -0.002811598 
+ 0.778022815 -0.002811598 
 
 $`bols(DBH)`
 (Intercept)         DBH 
- 0.59371220 -0.01241289 
+ 0.59371218 -0.01241289 
 
 $`bols(AOT)`
 (Intercept)         AOT 
@@ -223,7 +223,7 @@ $`bols(AOT)`
 
 $`bols(AFS)`
 (Intercept)         AFS 
--1.71264915  0.01108683 
+-1.71264914  0.01108683 
 
 $`bols(DWC)`
 (Intercept)         DWC 
@@ -321,3 +321,6 @@ Final risk: 485.706
 > plot(sp, which = "LOG")
 > 
 > 
+> proc.time()
+   user  system elapsed 
+ 10.384   0.140  10.631 

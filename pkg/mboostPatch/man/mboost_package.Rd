@@ -7,8 +7,8 @@
 \description{
   Functional gradient descent algorithm
   (boosting) for optimizing general risk functions utilizing
-  component-wise (penalised) least squares estimates or regression 
-  trees as base-learners for fitting generalized linear, additive 
+  component-wise (penalised) least squares estimates or regression
+  trees as base-learners for fitting generalized linear, additive
   and interaction models to potentially high-dimensional data.
 }
 \details{
@@ -16,7 +16,7 @@
 Package: \tab mboost\cr
 Type: \tab Package\cr
 Version: \tab 2.1-3\cr
-Date: \tab 2012-XX-XX\cr
+Date: \tab 2012-09-27\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes\cr
@@ -26,19 +26,19 @@ LazyData: \tab yes\cr
   in-between classical generalized linear and additive models, as for example
   implemented by \code{\link{lm}}, \code{\link{glm}}, or \code{\link[mgcv]{gam}},
   and machine-learning approaches for complex interactions models,
-  most prominently represented by \code{\link[gbm]{gbm}} and 
+  most prominently represented by \code{\link[gbm]{gbm}} and
   \code{\link[randomForest]{randomForest}}.
 
   All functionality in this package is based on the generic
   implementation of the optimization algorithm  (function
   \code{\link{mboost_fit}}) that allows for fitting linear, additive,
   and interaction models (and mixtures of those) in low and
-  high dimensions. The response may be numeric, binary, ordered,  
+  high dimensions. The response may be numeric, binary, ordered,
   censored or count data.
 
   Both theory and applications are discussed by Buehlmann and Hothorn (2007).
   UseRs without a basic knowledge of boosting methods are asked
-  to read this introduction before analyzing data using this package. 
+  to read this introduction before analyzing data using this package.
   The examples presented in this paper are available as package vignette
   \code{mboost_illustrations}.
 
@@ -66,9 +66,9 @@ LazyData: \tab yes\cr
   methods for selecting interesting base-learners. Predict
   methods are much faster now.
 
-  The memory consumption could be reduced considerably, 
+  The memory consumption could be reduced considerably,
   thanks to sparse matrix technology in package \code{Matrix}.
-  Resampling procedures run automatically in parallel 
+  Resampling procedures run automatically in parallel
   if package \code{multicore} is available.
 
   The most important advancement is a generic implementation
@@ -109,12 +109,12 @@ LazyData: \tab yes\cr
 
 \examples{
 
-  
+
   data("bodyfat")
   set.seed(290875)
 
   ### model conditional expectation of DEXfat given
-  model <- mboost(DEXfat ~ 
+  model <- mboost(DEXfat ~
       bols(age) +                 ### a linear function of age
       btree(hipcirc, waistcirc) + ### a non-linear interaction of
                                   ### hip and waist circumference
@@ -133,7 +133,7 @@ LazyData: \tab yes\cr
   plot(model, which = c("age", "kneebreadth"))
 
   ### plot interaction of hip and waist circumference
-  attach(bodyfat) 
+  attach(bodyfat)
   nd <- expand.grid(hipcirc = h <- seq(from = min(hipcirc),
                                   to = max(hipcirc),
                                   length = 100),

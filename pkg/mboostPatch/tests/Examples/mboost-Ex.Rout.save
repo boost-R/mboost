@@ -1,8 +1,8 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R Under development (unstable) (2012-08-30 r60505) -- "Unsuffered Consequences"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: x86_64-pc-linux-gnu (64-bit)
+Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -280,10 +280,12 @@ attr(,"offset")
 [1] 1.334042
 >   coef(model, which = 2:3) # two separate base-learners for x1 and x2
 $`bols(x1, intercept = FALSE)`
-[1] 7.571584e-08
+          x1 
+7.571584e-08 
 
 $`bols(x2, intercept = FALSE)`
-[1] 2.815168e-13
+          x2 
+2.815168e-13 
 
 attr(,"offset")
 [1] 1.334042
@@ -295,23 +297,23 @@ attr(,"offset")
 >   y <- sin(x1) * sin(x2) + rnorm(250, sd = 0.4)
 > 
 >   spline3 <- bspatial(x1, x2, knots = 12)
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dgCMatrix#dgTMatrix".
+Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
+ target signature ‘dgCMatrix#dgTMatrix’.
  "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dgTMatrix#dgCMatrix".
+Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
+ target signature ‘dgTMatrix#dgCMatrix’.
  "TsparseMatrix#sparseMatrix" would also be valid
-Note: Method with signature "Matrix#diagonalMatrix" chosen for function "kronecker",
- target signature "dsCMatrix#ddiMatrix".
+Note: Method with signature ‘Matrix#diagonalMatrix’ chosen for function ‘kronecker’,
+ target signature ‘dsCMatrix#ddiMatrix’.
  "sparseMatrix#ANY" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dsCMatrix#dtTMatrix".
+Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
+ target signature ‘dsCMatrix#dtTMatrix’.
  "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature "diagonalMatrix#Matrix" chosen for function "kronecker",
- target signature "ddiMatrix#dsCMatrix".
+Note: Method with signature ‘diagonalMatrix#Matrix’ chosen for function ‘kronecker’,
+ target signature ‘ddiMatrix#dsCMatrix’.
  "ANY#sparseMatrix" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dtTMatrix#dsCMatrix".
+Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
+ target signature ‘dtTMatrix#dsCMatrix’.
  "TsparseMatrix#sparseMatrix" would also be valid
 >   attributes(spline3)
 $names
@@ -327,7 +329,7 @@ $class
 > 
 >   ## decompose spatial effect into parametric part and
 >   ## deviation with one df
->   form2 <- y ~ bols(x1) + bols(x2) + bols(x1*x2) +
+>   form2 <- y ~ bols(x1) + bols(x2) + bols(x1, by = x2, intercept = FALSE) +
 +                bspatial(x1, x2, knots = 12, center = TRUE, df = 1)
 > 
 > 
@@ -552,11 +554,11 @@ Warning in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
 >   mod <- mboost(vol ~ bbs(x1, df = 3, knots = 10)%O%
 +                       bbs(x2, df = 3, knots = 10), 
 +                       control = boost_control(nu = 0.25))
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dsCMatrix#dgTMatrix".
+Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
+ target signature ‘dsCMatrix#dgTMatrix’.
  "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dgTMatrix#dsCMatrix".
+Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
+ target signature ‘dgTMatrix#dsCMatrix’.
  "TsparseMatrix#sparseMatrix" would also be valid
 >   mod[250]
 
@@ -585,11 +587,11 @@ Number of baselearners:  1
 >   modx <- mboost(vol ~ bbs(Var2, df = 3, knots = 10)%X%
 +                        bbs(Var1, df = 3, knots = 10), data = x,
 +                        control = boost_control(nu = 0.25))
-Note: Method with signature "sparseMatrix#ANY" chosen for function "kronecker",
- target signature "dgCMatrix#dgeMatrix".
+Note: Method with signature ‘sparseMatrix#ANY’ chosen for function ‘kronecker’,
+ target signature ‘dgCMatrix#dgeMatrix’.
  "ANY#Matrix" would also be valid
-Note: Method with signature "ANY#sparseMatrix" chosen for function "kronecker",
- target signature "dgeMatrix#dgCMatrix".
+Note: Method with signature ‘ANY#sparseMatrix’ chosen for function ‘kronecker’,
+ target signature ‘dgeMatrix#dgCMatrix’.
  "Matrix#ANY" would also be valid
 >   modx[250]
 
@@ -611,7 +613,7 @@ Number of baselearners:  1
 
 > 
 >   max(abs(fitted(mod) - fitted(modx)))
-[1] 2.006573e-11
+[1] 2.034994e-11
 > 
 > 
 >   ### setting contrasts via contrasts.arg
@@ -1245,13 +1247,6 @@ attr(,"offset")
 >     ### sparse high-dimensional example
 >     library("Matrix")
 Loading required package: lattice
-
-Attaching package: ‘Matrix’
-
-The following object(s) are masked from ‘package:base’:
-
-    det
-
 >     n <- 100
 >     p <- 10000
 >     ptrue <- 10
@@ -1352,12 +1347,12 @@ detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
 > ### ** Examples
 > 
 > 
->   
+> 
 >   data("bodyfat")
 >   set.seed(290875)
 > 
 >   ### model conditional expectation of DEXfat given
->   model <- mboost(DEXfat ~ 
+>   model <- mboost(DEXfat ~
 +       bols(age) +                 ### a linear function of age
 +       btree(hipcirc, waistcirc) + ### a non-linear interaction of
 +                                   ### hip and waist circumference
@@ -1399,7 +1394,7 @@ NULL
 >   plot(model, which = c("age", "kneebreadth"))
 > 
 >   ### plot interaction of hip and waist circumference
->   attach(bodyfat) 
+>   attach(bodyfat)
 >   nd <- expand.grid(hipcirc = h <- seq(from = min(hipcirc),
 +                                   to = max(hipcirc),
 +                                   length = 100),
@@ -2800,6 +2795,7 @@ attr(,"intercept")
 > ### ** Examples
 > 
 > 
+>   data(bodyfat)
 > 
 >   ### (too) low-dimensional example    
 >   sbody <- stabsel(glmboost(DEXfat ~ ., data = bodyfat), q = 3,
@@ -2943,7 +2939,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  63.78 2.55 67.634 0 0 
+Time elapsed:  30.801 0.856 32.032 0 0 
 > grDevices::dev.off()
 null device 
           1 
