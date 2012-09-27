@@ -59,15 +59,14 @@ btree <- function(...,
 
         fitfun <- function(y) {
 
-            .Call("R_modify_response", as.double(y), object@responses,
-                 PACKAGE = "party")
-            tree <- .Call("R_TreeGrow", object, weights, fitmem, ctrl,
-                          where, PACKAGE = "party")
-            .Call("R_remove_weights", tree, TRUE, package = "party")
+            party:::R_modify_response(y, object@responses)
+            tree <- party:::R_TreeGrow(object, weights, fitmem, ctrl,
+                          where)
+            party:::R_remove_weights(tree, TRUE)
 
             fitted <- function() {
-                wh <- .Call("R_get_nodeID", tree, object@inputs, 0.0, PACKAGE = "party")
-                return(unlist(.Call("R_getpredictions", tree, wh, PACKAGE = "party")))
+                wh <- party:::R_get_nodeID(tree, object@inputs, 0.0)
+                return(unlist(party:::R_getpredictions(tree, wh)))
             }
 
             ret <- list(model = tree, fitted = fitted)
@@ -86,9 +85,8 @@ btree <- function(...,
 
             pr <- 0
             for (i in 1:length(bm)) {
-                wh <- .Call("R_get_nodeID", bm[[i]]$model, newinp, 0.0,
-                         PACKAGE = "party")
-                pri <- unlist(.Call("R_getpredictions", bm[[i]]$model, wh, PACKAGE = "party"))
+                wh <- party:::R_get_nodeID(bm[[i]]$model, newinp, 0.0)
+                pri <- unlist(party:::R_getpredictions(bm[[i]]$model, wh))
                 if (aggregate == "sum") {
                     pr <- pr + pri
                 } else {

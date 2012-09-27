@@ -151,6 +151,8 @@ hyper_bbs <- function(mf, vary, knots = 20, boundary.knots = NULL, degree = 3,
     knotf <- function(x, knots, boundary.knots) {
         if (is.null(boundary.knots))
             boundary.knots <- range(x, na.rm = TRUE)
+        ## <fixme> At the moment only NULL or 2 boundary knots can be specified.
+        ## Knot expansion is done automatically on an equidistand grid.</fixme>
         if ((length(boundary.knots) != 2) || !boundary.knots[1] < boundary.knots[2])
             stop("boundary.knots must be a vector (or a list of vectors) ",
                  "of length 2 in increasing order")
@@ -350,10 +352,6 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
         if (isMATRIX(mf) && !is(mf, "Matrix"))
             class(mf) <- "matrix"
     } else {
-#        if (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]) && ncol(mf[[1]]) == 1 )
-#            warning("Matrix or data frame with 1 column was simplified to vector.\n",
-#                    "See manual on base-learners for more information (argument ",
-#                    sQuote("..."), ").")
         mf <- as.data.frame(mf)
         cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
         colnames(mf) <- sapply(cl, function(x) as.character(x))
@@ -438,10 +436,6 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
                             ncol(mf[[1]]) > 1 )) {
         mf <- as.data.frame(mf[[1]])
     } else {
-#        if (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]) && ncol(mf[[1]]) == 1 )
-#            warning("Matrix or data frame with 1 column was simplified to vector.\n",
-#                    "See manual on base-learners for more information (argument ",
-#                    sQuote("..."), ").")
         mf <- as.data.frame(mf)
         cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
         colnames(mf) <- sapply(cl, function(x) deparse(x))
@@ -595,8 +589,6 @@ bl_lin <- function(blg, Xfun, args) {
                 XtX <- as(XtX, "matrix")
             }
             mysolve <- function(y)
-                #.Call("La_dgesv", XtX, crossprod(X, y), .Machine$double.eps,
-                #      PACKAGE = "base")
                 solve(XtX, crossprod(X, y), LINPACK = FALSE)
         }
 

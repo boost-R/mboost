@@ -17,7 +17,7 @@ Description: Functional gradient descent algorithm
   and interaction models to potentially high-dimensional data.
 Depends: R (>= 2.14.0), methods, stats, parallel
 Imports: Matrix, survival, splines, lattice
-Suggests: party (>= 0.9-9997), ipred, MASS, fields, BayesX, gbm, mlbench, RColorBrewer
+Suggests: party (>= 1.0-3), ipred, MASS, fields, BayesX, gbm, mlbench, RColorBrewer
 LazyData: yes
 License: GPL-2
 URL: http://r-forge.r-project.org/projects/mboost/

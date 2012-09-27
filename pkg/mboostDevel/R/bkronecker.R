@@ -75,9 +75,8 @@ bl_lin_matrix <- function(blg, Xfun, args) {
             mysolve <- function(y) {
                 Y <- matrix(y, nrow = n1) * W
                 XWY <- crossprod(X$X1, Y) %*% X$X2
-                .Call("La_dgesv", XtX, matrix(as(XWY, "matrix"), ncol = 1), 
-                      .Machine$double.eps,
-                      PACKAGE = "base")
+                solve(XtX, matrix(as(XWY, "matrix"), ncol = 1),
+                      LINPACK = FALSE)
             }
         }
 
@@ -119,7 +118,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
                 newdata <- newdata[nm]
                 X <- newX(newdata)$X
             }
-            ncfprod <- function(b) 
+            ncfprod <- function(b)
                 as.vector(as(tcrossprod(X$X1 %*% b, X$X2), "matrix"))
             aggregate <- match.arg(aggregate)
             pr <- switch(aggregate, "sum" = {
@@ -138,7 +137,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
             },
             "none" = {
                 ret <- c()
-                for (b in cf) {   
+                for (b in cf) {
                     ret <- cbind(ret, ncfprod(b))
                 }
                 ret

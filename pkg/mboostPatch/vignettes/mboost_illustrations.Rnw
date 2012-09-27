@@ -412,15 +412,15 @@ with componentwise linear least squares (here initial $m_\text{stop} = 200$
 iterations are used): 
 <<west-glmboost-fit, echo = TRUE, eval = FALSE>>=
 ### fit a linear model with initial mstop = 200 boosting iterations
-ctrl <- boost_control(mstop = 200, center = TRUE)
-west_glm <- glmboost(x, yfit, family = L2fm, 
+ctrl <- boost_control(mstop = 200)
+west_glm <- glmboost(x, yfit, family = L2fm, center = TRUE,
                      control = ctrl)
 @
 <<west-glmboost-fit-lars, echo = FALSE>>=
 ### fit a linear model with initial mstop = 200 boosting iterations
 ### and record time
-time <- system.time(west_glm <- glmboost(x, yfit, family = L2fm, 
-                    control = boost_control(mstop = 200, center = TRUE)))[1]
+time <- system.time(west_glm <- glmboost(x, yfit, family = L2fm, center = TRUE,
+                    control = boost_control(mstop = 200)))[1]
 x <- t(exprs(westbc) - rowMeans(exprs(westbc)))
 @
 Fitting such a linear model to $p = \Sexpr{p}$ covariates for $n = \Sexpr{n}$ 
@@ -525,9 +525,9 @@ initially use
 $m_\text{stop} = 500$ boosting iterations 
 <<wpbc-glmboost-fit, echo = TRUE>>=
 ### fit logistic regression model via gradient boosting
-ctrl <- boost_control(mstop = 500, center = TRUE)
+ctrl <- boost_control(mstop = 500)
 wpbc_glm <- glmboost(status ~ ., data = wpbc2, family = Binomial(),
-                     control = ctrl)
+                     center = TRUE, control = ctrl)
 @
 %The negative binomial log-likelihood is
 %<<wpbc-glmboost-loglik, echo = TRUE>>= 
@@ -638,9 +638,9 @@ wpbc3 <- wpbc[,names(wpbc) != "status"]
 and fit a weighted linear model by boosting with componentwise linear
 weighted least squares as base procedure: 
 <<wpbc-glmboost-censored-fit, echo = TRUE>>=
-ctrl <- boost_control(mstop = 500, center = TRUE)
+ctrl <- boost_control(mstop = 500)
 wpbc_surv <- glmboost(log(time) ~ ., data = wpbc3,
-                  control = ctrl, weights = iw)
+                  weights = iw, center = TRUE, control = ctrl)
 mstop(aic <- AIC(wpbc_surv))
 wpbc_surv <- wpbc_surv[mstop(aic)]
 @
@@ -674,16 +674,13 @@ $L_2$Boosting by
 implementing the negative gradient  
 of the partial likelihood (see \cite{ridgew99}) via
 %%<<wpbc-CoxPH, echo = TRUE, eval = FALSE>>=
-%%ctrl <- boost_control(center = TRUE)
-%%glmboost(Surv(wpbc$time, wpbc$status == "N") ~ ., 
-%%    data = wpbc, family = CoxPH(), 
-%%        control = ctrl)
+%%glmboost(Surv(wpbc$time, wpbc$status == "N") ~ .,
+%%    data = wpbc, family = CoxPH(), center = TRUE)
 %%@
 \begin{Schunk}
 \begin{Sinput}
-R> ctrl <- boost_control(center = TRUE)
-R> glmboost(Surv(wpbc$time, wpbc$status == "N") ~ ., 
-         data = wpbc, family = CoxPH(), control = ctrl)
+R> glmboost(Surv(wpbc$time, wpbc$status == "N") ~ .,
+         data = wpbc, family = CoxPH(), center = TRUE)
 \end{Sinput}
 \end{Schunk}
 For more examples, such as fitting an additive Cox model using

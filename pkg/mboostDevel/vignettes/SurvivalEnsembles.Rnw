@@ -120,7 +120,7 @@ mdplot <- function(obs, pred, main = "", ...) {
 @
 
 <<loaddata, echo = FALSE, results = tex>>=
-### load data from internet. See `mboost/inst/readAML_Bullinger.R' for
+### load data. See `mboost/inst/readAML_Bullinger.R' for
 ### how the data were generated from the raw data.
 load(system.file("AML_Bullinger.Rda", package = "mboostDevel"))
 @

@@ -48,7 +48,7 @@ function (..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
         get_names = function() colnames(mf), set_names = function(value) attr(mf,
             "names") <<- value)
     class(ret) <- "blg"
-    ret$dpp <- mboost:::bl_lin(ret, Xfun = X_bmrf, args = hyper_bmrf(mf,
+    ret$dpp <- bl_lin(ret, Xfun = X_bmrf, args = hyper_bmrf(mf,
         vary, bnd = bnd, df = df, lambda = lambda, center = center))
     return(ret)
 }

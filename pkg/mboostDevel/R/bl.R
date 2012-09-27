@@ -326,7 +326,7 @@ X_bbs <- function(mf, vary, args) {
             K <- kronecker(diag(ncol(by)), K)
         }
         if (args$center) {
-            L <- eigen(K, symmetric = TRUE, EISPACK = TRUE)
+            L <- eigen(K, symmetric = TRUE, EISPACK = FALSE)
             L$vectors <- L$vectors[,1:(ncol(X) - args$differences^2)]
             L$values <- sqrt(L$values[1:(ncol(X) - args$differences^2)])
             L <- L$vectors %*% (diag(length(L$values)) * (1/L$values))
@@ -372,10 +372,6 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
         if (isMATRIX(mf) && !is(mf, "Matrix"))
             class(mf) <- "matrix"
     } else {
-        if (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]) && ncol(mf[[1]]) == 1 )
-            warning("Matrix or data frame with 1 column was simplified to vector.\n",
-                    "See manual on base-learners for more information (argument ",
-                    sQuote("..."), ").")
         mf <- as.data.frame(mf)
         cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
         colnames(mf) <- sapply(cl, function(x) as.character(x))
@@ -460,10 +456,6 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
                             ncol(mf[[1]]) > 1 )) {
         mf <- as.data.frame(mf[[1]])
     } else {
-        if (isMATRIX(mf[[1]]) || is.data.frame(mf[[1]]) && ncol(mf[[1]]) == 1 )
-            warning("Matrix or data frame with 1 column was simplified to vector.\n",
-                    "See manual on base-learners for more information (argument ",
-                    sQuote("..."), ").")
         mf <- as.data.frame(mf)
         cl <- as.list(match.call(expand.dots = FALSE))[2][[1]]
         colnames(mf) <- sapply(cl, function(x) deparse(x))
@@ -648,8 +640,7 @@ bl_lin <- function(blg, Xfun, args) {
                 XtX <- as(XtX, "matrix")
             }
             mysolve <- function(y)
-                .Call("La_dgesv", XtX, crossprod(X, y), .Machine$double.eps,
-                      PACKAGE = "base")
+                solve(XtX, crossprod(X, y), LINPACK = FALSE)
         }
 
         fit <- function(y) {
@@ -703,7 +694,8 @@ bl_lin <- function(blg, Xfun, args) {
             pr <- switch(aggregate, "sum" =
                 as(X %*% rowSums(cf), "matrix"),
             "cumsum" = {
-                as(X %*% .Call("R_mcumsum", as(cf, "matrix")), "matrix")
+                as(X %*% .Call("R_mcumsum", as(cf, "matrix"),
+                               PACKAGE = "mboostDevel"), "matrix")
             },
             "none" = as(X %*% cf, "matrix"))
             if (is.null(index)) return(pr[,,drop = FALSE])

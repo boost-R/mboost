@@ -274,16 +274,15 @@ bl_mono <- function(blg, Xfun, args) {
                  ## add if lambda3 != 0
                  ifelse(lambda3 != 0, l3txt,""),
                  "                                   ))",
-                 "    solve(XtXC, crossprod(X, y))",
+                 "    solve(XtXC, crossprod(X, y), LINPACK = FALSE)",
                  "}"
                  )
 
         if (!is(X, "Matrix")) {
-            ## some lines must be replaced in order to use La_dgesv instead of
-            ## Cholesky
-            fct[2] <- '    .Call("La_dgesv", XtX +'
-            fct[6] <- "          , crossprod(X, y), .Machine$double.eps,"
-            fct[7] <- '          PACKAGE = "base")'
+            ## some lines must be replaced in order to solve directly            
+            fct[2] <- '    solve(XtX +'
+            fct[6] <- "          , crossprod(X, y),"
+            fct[7] <- '          LINPACK = FALSE)'
         }
         ## deparsing and parsing again needed to tidy-up code.
         mysolve <- eval(parse(text = deparse(eval(parse(text = fct)))))
@@ -371,7 +370,8 @@ bl_mono <- function(blg, Xfun, args) {
             pr <- switch(aggregate, "sum" =
                 as(X %*% rowSums(cf), "matrix"),
             "cumsum" = {
-                as(X %*% .Call("R_mcumsum", as(cf, "matrix")), "matrix")
+                as(X %*% .Call("R_mcumsum", as(cf, "matrix"),
+                               PACKAGE = "mboostDevel"), "matrix")
             },
             "none" = as(X %*% cf, "matrix"))
             if (is.null(index)) return(pr[,,drop = FALSE])

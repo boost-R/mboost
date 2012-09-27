@@ -97,7 +97,7 @@ Laplace <- function()
            name = "Absolute Error",
            response = function(f) f)
 
-link2dist <- function(link, choices = c("logit", "probit"), ...) {                
+link2dist <- function(link, choices = c("logit", "probit"), ...) {
     i <- pmatch(link, choices, nomatch = 0L, duplicates.ok = TRUE)
     if (i[1] == 1) return("logit")
     if (i[1] == 2) return(list(p = pnorm, d = dnorm, q = qnorm))
@@ -110,7 +110,7 @@ link2dist <- function(link, choices = c("logit", "probit"), ...) {
     attr(ret, "link") <- link
     ret
 }
-    
+
 ### Binomial
 # lfinv <- binomial()$linkinv
 Binomial <- function(link = c("logit", "probit"), ...) {
@@ -179,7 +179,7 @@ Binomial <- function(link = c("logit", "probit"), ...) {
            },
            rclass = function(f) (f > 0) + 1 ,
            check_y = biny,
-           name = paste("Negative Binomial Likelihood --", 
+           name = paste("Negative Binomial Likelihood --",
                         attr(link, "link"), "Link")))
 }
 

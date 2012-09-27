@@ -232,10 +232,10 @@ distribution approximation used in Ma and Huang (2005).
     regression models with multidimensional prediction functions.
     \emph{Statistics and Computing}, \bold{20}, 139-150.
 
-    Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
-    (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
-    Package mboost. \emph{Department of Statistics, Technical Report No. 120}.\cr
-    \url{http://epub.ub.uni-muenchen.de/12754/}
+  Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
+  (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
+  Package mboost. \emph{Department of Statistics, Technical Report No. 120}.\cr
+  \url{http://epub.ub.uni-muenchen.de/12754/}
 
   Available as vignette via: vignette(package = "mboostDevel", "mboost_tutorial")
 

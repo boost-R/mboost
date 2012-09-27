@@ -26,16 +26,18 @@
        <bajohn3@emory.edu>)
 
 
-			    CHANGES in `mboost' VERSION 2.1-2 (2012-XX-XX, rXXX)
+                CHANGES in `mboost' VERSION 2.1-3 (2012-09-27, r672)
 
   o  matrices with one column are now handled as vectors in base-learners
 
   o  improved manual
 
+  o  fixed error that occures with R (>= 2.16) due to internal changes in R
+
 
                 CHANGES in `mboost' VERSION 2.1-2 (2012-02-29, r647)
 
-  o  improved handling of missing values 
+  o  improved handling of missing values
      (throws warnings and fixed a bug that occured for missings in the response)
 
   o  improved manual for the handling of contrasts in bols

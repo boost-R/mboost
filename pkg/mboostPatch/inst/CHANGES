@@ -1,8 +1,10 @@
-                CHANGES in `mboost' VERSION 2.1-3 (2012-09-27, rXXX)
+                CHANGES in `mboost' VERSION 2.1-3 (2012-09-27, r672)
 
-  o  matrizes with one column are now handled as vectors in base-learners
+  o  matrices with one column are now handled as vectors in base-learners
 
   o  improved manual
+
+  o  fixed error that occures with R (>= 2.16) due to internal changes in R
 
 
                 CHANGES in `mboost' VERSION 2.1-2 (2012-02-29, r647)

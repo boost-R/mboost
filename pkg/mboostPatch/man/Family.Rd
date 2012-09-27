@@ -198,7 +198,7 @@ distribution approximation used in Ma and Huang (2005).
 
     Nora Fenske, Thomas Kneib, and Torsten Hothorn (2011),
     Identifying risk factors for severe childhood malnutrition by
-    boosting additive quantile regression. 
+    boosting additive quantile regression.
 	\emph{Journal of the American Statistical Association}, \bold{106}:494-510.
 
     Yoav Freund and Robert E. Schapire (1996),

@@ -73,9 +73,6 @@ bl_lin_matrix <- function(blg, Xfun, args) {
             mysolve <- function(y) {
                 Y <- matrix(y, nrow = n1) * W
                 XWY <- crossprod(X$X1, Y) %*% X$X2
-                #.Call("La_dgesv", XtX, matrix(as(XWY, "matrix"), ncol = 1),
-                #      .Machine$double.eps,
-                #      PACKAGE = "base")
                 solve(XtX, matrix(as(XWY, "matrix"), ncol = 1),
                       LINPACK = FALSE)
             }
