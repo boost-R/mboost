@@ -11,7 +11,7 @@
 %%\usepackage{Sweave}
 
 %%\VignetteIndexEntry{Survival Ensembles}
-%%\VignetteDepends{ipred, mboost, survival}
+%%\VignetteDepends{mboost, survival, rpart, ipred}
 
 \newcommand{\Rpackage}[1]{{\normalfont\fontseries{b}\selectfont #1}}
 \newcommand{\Robject}[1]{\texttt{#1}}
@@ -102,7 +102,10 @@ that have been implemented after the paper was printed.
 source("setup.R")
 if (!require("ipred"))
     stop("cannot attach package ", sQuote("ipred"))
-require("party")
+if (!require("rpart"))
+    stop("cannot attach package ", sQuote("rpart"))
+if (!require("party"))
+    stop("cannot attach package ", sQuote("party"))
 
 set.seed(290875)
 CEX <- 0.85
