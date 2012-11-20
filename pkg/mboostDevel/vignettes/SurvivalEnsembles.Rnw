@@ -11,7 +11,7 @@
 %%\usepackage{Sweave}
 
 %%\VignetteIndexEntry{Survival Ensembles}
-%%\VignetteDepends{ipred, mboostDevel, survival}
+%%\VignetteDepends{mboostDevel, survival, rpart, ipred}
 
 \newcommand{\Rpackage}[1]{{\normalfont\fontseries{b}\selectfont #1}}
 \newcommand{\Robject}[1]{\texttt{#1}}
@@ -102,7 +102,10 @@ that have been implemented after the paper was printed.
 source("setup.R")
 if (!require("ipred"))
     stop("cannot attach package ", sQuote("ipred"))
-require("party")
+if (!require("rpart"))
+    stop("cannot attach package ", sQuote("rpart"))
+if (!require("party"))
+    stop("cannot attach package ", sQuote("party"))
 
 set.seed(290875)
 CEX <- 0.85
@@ -242,8 +245,10 @@ LMmod <- lm(ltime ~ . , data = GBSG2learn, weights = GBSG2w)
 LMerisk <- sum((GBSG2learn$ltime - predict(LMmod))^2*GBSG2w) / n
 
 ### regression tree
-TRmod <- rpart(ltime ~ . , data = GBSG2learn, weights = GBSG2w)
-TRerisk <- sum((GBSG2learn$ltime - predict(TRmod))^2*GBSG2w) / n
+pos <- GBSG2w > 0
+TRmod <- rpart(ltime ~ . , data = GBSG2learn, weights = GBSG2w, 
+               subset = pos)
+TRerisk <- sum((GBSG2learn$ltime[pos] - predict(TRmod))^2*GBSG2w[pos]) / n
 
 ### tree controls
 ctrl <- cforest_control(mincriterion = qnorm(0.95), mtry = 5,
