@@ -1,4 +1,4 @@
-                CHANGES in `mboost' VERSION 2.2-0 (2012-xx-xx)
+                CHANGES in `mboost' VERSION 2.2-0 (2012-11-20)
 
   o  switch from packages `multicore' and `snow' to `parallel'
 
@@ -13,13 +13,13 @@
   o  changed computation of B-spline basis at the boundaries: 
      now also use equidistant knots in the boundaries (per default)
 
-  o  bmono() now implements an experimental version of constraints at the
-     boundaries of (monotonic) P-splines
-
   o  improved plot function when dealing with spatial plots
      (now builds suitable grid based on the observations if no newdata is given)
 
   o  increased default number of subsampling replicates in stabsel to 100
+
+  o  [experimental] bmono() now implements constraints at the boundaries of 
+     (monotonic) P-splines
 
   o  [experimental] added family Gehan() for rank-based estimation of survival models
 	   in an accelerated failure time framework (contributed by Brent Johnson 

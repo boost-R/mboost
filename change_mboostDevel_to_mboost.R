@@ -17,8 +17,18 @@ OUT <- lapply(FILES, function(file) {
     }
 })
 
-## ATTENTION: DO NOT COMMIT THE NEW, MODIFIED FILES TO mboostDevel
-## (only to mboostPatch and CRAN)
+cat("\n\nChanging mboostDevel-Ex.Rout.save to mboost-Ex.Rout.save ...\n",
+        "------------------------------------------------------------\n",
+    sep = "")
 
-## To revert changes simply use:
-## svn revert --recursive pkg/mboostDevel
+file.rename(from = "pkg/mboostDevel/tests/Examples/mboostDevel-Ex.Rout.save",
+            to = "pkg/mboostDevel/tests/Examples/mboost-Ex.Rout.save")
+
+cat("#########################################################################",
+    "# ATTENTION: DO NOT COMMIT THE NEW, MODIFIED FILES TO mboostDevel",
+    "# (only to mboostPatch and CRAN)",
+    "# ",
+    "# To revert changes simply use:",
+    "#  svn revert --recursive pkg/mboostDevel",
+    "#########################################################################",
+    sep = "\n")

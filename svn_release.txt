@@ -25,9 +25,14 @@
     Update Date and Version in /man/mboost_package.Rd
 
     R CMD build --resave-data --compact-vignettes pkg/mboostPatch
-    R CMD check mboost_XXX
+    R CMD check --as-cran mboost_XXX.tar.gz
 
-    gives no warnings / errors.
+    If differences to .Rout.save occure:
+       - Manually check differences
+       - If ok, copy new .Rout files to .Rout.save:
+       	    R CMD BATCH "--args which='mboostPatch'" copy_Rout_to_Routsave.R
+
+    Gives no warnings / errors.
 
     Commit changes to pkg/mboostPatch/
 
@@ -57,9 +62,14 @@
     Update Date and Version in /man/mboost_package.Rd
 
     R CMD build --resave-data --compact-vignettes pkg/mboostDevel
-    R CMD check mboostDevel_XXX
+    R CMD check --as-cran mboostDevel_XXX.tar.gz
 
-    gives no warnings / errors.
+    If differences to .Rout.save occure:
+       - Manually check differences
+       - If ok, copy new .Rout files to .Rout.save:
+       	    R CMD BATCH "--args which='mboostDevel'" copy_Rout_to_Routsave.R
+
+    Gives no warnings / errors.
 
     Commit changes to pkg/mboostDevel/
 
