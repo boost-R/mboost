@@ -1,7 +1,7 @@
 Package: mboost
 Title: Model-Based Boosting
-Version: 2.2-0
-Date: 2012-11-21
+Version: 2.2-1
+Date: 2012-XX-XX
 Authors@R: c(person("Torsten", "Hothorn", role = c("aut", "cre"),
                     email = "Torsten.Hothorn@R-project.org"),
              person("Peter", "Buehlmann", role = "aut"),
