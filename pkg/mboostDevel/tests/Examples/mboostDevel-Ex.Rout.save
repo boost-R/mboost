@@ -622,11 +622,7 @@ Number of baselearners:  1
 > 
 >   ## compute base-learners with different reference categories
 >   BL1 <- bols(x, contrasts.arg = contr.treatment(4, base = 1)) # default
-Warning in if (args$contrasts.arg == "contr.dummy") { :
-  the condition has length > 1 and only the first element will be used
 >   BL2 <- bols(x, contrasts.arg = contr.treatment(4, base = 2))
-Warning in if (args$contrasts.arg == "contr.dummy") { :
-  the condition has length > 1 and only the first element will be used
 >   ## compute 'sum to zero contrasts' using character string
 >   BL3 <- bols(x, contrasts.arg = "contr.sum")
 > 
@@ -3163,7 +3159,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  31.817 0.688 33.154 0 0 
+Time elapsed:  31.705 0.796 33.165 0 0 
 > grDevices::dev.off()
 null device 
           1 

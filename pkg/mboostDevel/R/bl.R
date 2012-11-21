@@ -92,7 +92,10 @@ X_ols <- function(mf, vary, args) {
         fac <- sapply(mf[colnames(mf) != vary], is.factor)
         if (any(fac)){
             if (!is.list(args$contrasts.arg)){
-                if (args$contrasts.arg == "contr.dummy"){
+                ## first part needed to prevent warnings from calls such as
+                ## contrasts.arg = contr.treatment(4, base = 1):
+                if (is.character(args$contrasts.arg) &&
+                    args$contrasts.arg == "contr.dummy"){
                     if (!args$intercept)
                         stop('"contr.dummy" can only be used with ',
                              sQuote("intercept = TRUE"))

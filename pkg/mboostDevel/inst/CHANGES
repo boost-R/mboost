@@ -1,4 +1,4 @@
-                CHANGES in `mboost' VERSION 2.2-0 (2012-11-20)
+                CHANGES in `mboost' VERSION 2.2-0 (2012-11-21)
 
   o  switch from packages `multicore' and `snow' to `parallel'
 
