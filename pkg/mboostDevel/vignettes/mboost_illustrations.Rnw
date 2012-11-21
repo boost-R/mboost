@@ -300,7 +300,7 @@ and then fit the complex linear model by using the \Rcmd{glmboost} function with
 initial $m_\text{stop} = 5000$ boosting iterations:
 <<bodyfat-fpboost-fit, echo = TRUE>>=
 ctrl <- boost_control(mstop = 5000)
-bf_bs <- glmboost(bsfm, data = bodyfat, center = FALSE, control = ctrl)
+bf_bs <- glmboost(bsfm, data = bodyfat, control = ctrl)
 mstop(aic <- AIC(bf_bs))
 @
 The corrected AIC criterion (see Section~\ref{subsec.stopping}) suggests to

@@ -1,22 +1,20 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: i686-pc-linux-gnu (32-bit)
+Platform: x86_64-pc-linux-gnu (64-bit)
 
-R is free software and comes with ABSOLUTELY NO WARRANTY.
-You are welcome to redistribute it under certain conditions.
-Type 'license()' or 'licence()' for distribution details.
+R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
+Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
+Tippen Sie 'license()' or 'licence()' für Details dazu.
 
-  Natural language support but running in an English locale
+R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
+Tippen Sie 'contributors()' für mehr Information und 'citation()',
+um zu erfahren, wie R oder R packages in Publikationen zitiert werden können.
 
-R is a collaborative project with many contributors.
-Type 'contributors()' for more information and
-'citation()' on how to cite R or R packages in publications.
-
-Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for an HTML browser interface to help.
-Type 'q()' to quit R.
+Tippen Sie 'demo()' für einige Demos, 'help()' für on-line Hilfe, oder
+'help.start()' für eine HTML Browserschnittstelle zur Hilfe.
+Tippen Sie 'q()', um R zu verlassen.
 
 > tools:::.run_one_vignette("mboost.Rnw", docDir = ".");
 
@@ -24,10 +22,10 @@ Type 'q()' to quit R.
 
 > set.seed(290875)
 
-> if (!require("mboost")) install.packages("mboost", 
+> if (!require("mboostDevel")) install.packages("mboostDevel", 
 +     dependencies = TRUE)
 
-> library("mboost")
+> library("mboostDevel")
 
 > if (!require("party")) install.packages("party", dependencies = TRUE)
 
@@ -51,7 +49,7 @@ Type 'q()' to quit R.
 > fm <- as.formula(paste("DEXfat", paste(fml, fms, fmt, 
 +     sep = "+"), sep = "~"))
 
-> library("mboost")
+> library("mboostDevel")
 
 > print(fm)
 DEXfat ~ bols(age) + bols(waistcirc) + bols(hipcirc) + bols(elbowbreadth) + 
@@ -102,7 +100,7 @@ Loss function: tau * (y - f) * ((y - f) >= 0) - (1 - tau) * (y - f) * ((y -
      f) < 0) 
  
 
-Number of boosting iterations: mstop = 500 
+Number of boosting iterations: mstop = 450 
 Step size:  0.1 
 Offset:  29.63 
 Number of baselearners:  19 
@@ -130,6 +128,9 @@ Number of baselearners:  19
 > nd <- with(bodyfat, expand.grid(hipcirc = h <- seq(from = min(hipcirc), 
 +     to = max(hipcirc), length = 100), waistcirc = w <- seq(from = min(wai .... [TRUNCATED] 
 
+> col <- c("#023FA5", "#1141A4", "#1A44A4", "#2146A4", 
++     "#2749A4", "#2C4BA4", "#304DA4", "#3550A5", "#3852A5", "#3C54A6", 
++     "#4056A6", "#43 ..." ... [TRUNCATED] 
 
 > print(plot(model, which = "btree", newdata = nd, col.regions = col, 
 +     at = seq(from = -16, to = 16, length = 100)))

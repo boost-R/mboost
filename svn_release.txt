@@ -31,6 +31,7 @@
        - Manually check differences
        - If ok, copy new .Rout files to .Rout.save:
        	    R CMD BATCH "--args which='mboostPatch'" copy_Rout_to_Routsave.R
+       - Update vignette .Rout.save files if necessary (see below)
 
     Gives no warnings / errors.
 
@@ -68,6 +69,12 @@
        - Manually check differences
        - If ok, copy new .Rout files to .Rout.save:
        	    R CMD BATCH "--args which='mboostDevel'" copy_Rout_to_Routsave.R
+	    cat copy_Rout_to_Routsave.Rout
+       - Update vignette .Rout.save files if necessary
+       	    echo 'tools:::.run_one_vignette("mboost_illustrations.Rnw", docDir = ".");' | R --vanilla > mboost_illustrations.Rout.save
+	    echo 'tools:::.run_one_vignette("mboost.Rnw", docDir = ".");' | R --vanilla > mboost.Rout.save
+	    echo 'tools:::.run_one_vignette("mboost_tutorial.Rnw", docDir = ".");' | R --vanilla > mboost_tutorial.Rout.save
+	    echo 'tools:::.run_one_vignette("SurvivalEnsembles.Rnw", docDir = ".");' | R --vanilla > SurvivalEnsembles.Rout.save
 
     Gives no warnings / errors.
 

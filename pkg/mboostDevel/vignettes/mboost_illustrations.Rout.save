@@ -1,22 +1,20 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: i686-pc-linux-gnu (32-bit)
+Platform: x86_64-pc-linux-gnu (64-bit)
 
-R is free software and comes with ABSOLUTELY NO WARRANTY.
-You are welcome to redistribute it under certain conditions.
-Type 'license()' or 'licence()' for distribution details.
+R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
+Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
+Tippen Sie 'license()' or 'licence()' für Details dazu.
 
-  Natural language support but running in an English locale
+R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
+Tippen Sie 'contributors()' für mehr Information und 'citation()',
+um zu erfahren, wie R oder R packages in Publikationen zitiert werden können.
 
-R is a collaborative project with many contributors.
-Type 'contributors()' for more information and
-'citation()' on how to cite R or R packages in publications.
-
-Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for an HTML browser interface to help.
-Type 'q()' to quit R.
+Tippen Sie 'demo()' für einige Demos, 'help()' für on-line Hilfe, oder
+'help.start()' für eine HTML Browserschnittstelle zur Hilfe.
+Tippen Sie 'q()', um R zu verlassen.
 
 > tools:::.run_one_vignette("mboost_illustrations.Rnw", docDir = ".");
 
@@ -45,7 +43,7 @@ elbowbreadth  kneebreadth     anthro3a     anthro3b
 attr(,"offset")
 [1] 30.783
 
-> load(system.file("cache/bodyfat_benchmarks.rda", package = "mboost"))
+> load(system.file("cache/bodyfat_benchmarks.rda", package = "mboostDevel"))
 
 > aic <- AIC(bf_glm)
 
@@ -87,7 +85,7 @@ attr(,"offset")
 
 > cf <- coef(bf_glm[mopt])
 
-> nsel <- sum(abs(cf) > 0)
+> nsel <- length(cf)
 
 > source("setup.R")
 
@@ -98,7 +96,7 @@ attr(,"offset")
 > bf_gam <- gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss")
 
 > mstop(aic <- AIC(bf_gam))
-[1] 50
+[1] 51
 
 > bf_gam <- bf_gam[mstop(aic)]
 
@@ -156,7 +154,7 @@ DEXfat ~ bs(age) + bs(waistcirc) + bs(hipcirc) + bs(elbowbreadth) +
 	%%%% DON'T EDIT THIS FILE
 
 \setkeys{Gin}{width = 0.95\textwidth}
-> data("Westbc", package = "mboost")
+> data("Westbc", package = "mboostDevel")
 
 > westbc <- Westbc
 
@@ -189,7 +187,7 @@ DEXfat ~ bs(age) + bs(waistcirc) + bs(hipcirc) + bs(elbowbreadth) +
 +     offset = offset)
 
 > time <- system.time(west_glm <- glmboost(x, yfit, 
-+     family = L2fm, control = boost_control(mstop = 200, center = TRUE)))[1]
++     family = L2fm, center = TRUE, control = boost_control(mstop = 200)))[1]
 
 > x <- t(exprs(westbc) - rowMeans(exprs(westbc)))
 
@@ -238,10 +236,10 @@ DEXfat ~ bs(age) + bs(waistcirc) + bs(hipcirc) + bs(elbowbreadth) +
 > AIC(wpbc_step)
 [1] 192.26
 
-> ctrl <- boost_control(mstop = 500, center = TRUE)
+> ctrl <- boost_control(mstop = 500)
 
 > wpbc_glm <- glmboost(status ~ ., data = wpbc2, family = Binomial(), 
-+     control = ctrl)
++     center = TRUE, control = ctrl)
 
 > aic <- AIC(wpbc_glm, "classical")
 
@@ -272,9 +270,9 @@ Degrees of freedom (for mstop = 260): 7.0319
 > mopt <- mstop(aic <- AIC(wpbc_gam, "classical"))
 
 > aic
-[1] 196.39
-Optimal number of boosting iterations: 98 
-Degrees of freedom (for mstop = 98): 15.025 
+[1] 196.16
+Optimal number of boosting iterations: 86 
+Degrees of freedom (for mstop = 86): 11.348 
 
 > wpbc_gam <- wpbc_gam[mopt]
 
@@ -300,10 +298,10 @@ Degrees of freedom (for mstop = 98): 15.025
 
 > wpbc3 <- wpbc[, names(wpbc) != "status"]
 
-> ctrl <- boost_control(mstop = 500, center = TRUE)
+> ctrl <- boost_control(mstop = 500)
 
 > wpbc_surv <- glmboost(log(time) ~ ., data = wpbc3, 
-+     control = ctrl, weights = iw)
++     weights = iw, center = TRUE, control = ctrl)
 
 > mstop(aic <- AIC(wpbc_surv))
 [1] 111

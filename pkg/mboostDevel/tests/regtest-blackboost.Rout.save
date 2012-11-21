@@ -1,6 +1,6 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -17,8 +17,9 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
-> require("mboost")
-Loading required package: mboost
+> require("mboostDevel")
+Loading required package: mboostDevel
+Loading required package: parallel
 This is mboost 2.2-0.
   See NEWS for a complete list of changes.
   Note: The default for the computation of the degrees of freedom has been changed!
@@ -85,6 +86,8 @@ Loading required package: colorspace
 [1] 2.367443
 Loading required package: gbm
 Loading required package: lattice
+Loaded gbm 1.6.3.2
+
 Iter   TrainDeviance   ValidDeviance   StepSize   Improve
      1       74.4121            -nan     0.1000      -nan
      2       65.6474            -nan     0.1000      -nan
@@ -223,3 +226,6 @@ Warning message:
 > pr <- predict(mod, type="response")
 > # <FIXME> How do we check "correctness" of results?</FIXME>
 > 
+> proc.time()
+   user  system elapsed 
+ 10.944   0.100  11.197 

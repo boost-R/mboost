@@ -1,27 +1,43 @@
 
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
+Copyright (C) 2012 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
+Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
+Tippen Sie 'license()' or 'licence()' für Details dazu.
+
+R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
+Tippen Sie 'contributors()' für mehr Information und 'citation()',
+um zu erfahren, wie R oder R packages in Publikationen zitiert werden können.
+
+Tippen Sie 'demo()' für einige Demos, 'help()' für on-line Hilfe, oder
+'help.start()' für eine HTML Browserschnittstelle zur Hilfe.
+Tippen Sie 'q()', um R zu verlassen.
+
+> tools:::.run_one_vignette("mboost_tutorial.Rnw", docDir = ".");
+
 > options(prompt = "R> ", continue = "+  ", width = 80)
 
-> pd <- packageDescription("mboost")
+> pd <- packageDescription("mboostDevel")
 
 > if (any(is.na(pd))) {
-+     install.packages("mboost", repos = "http://cran.at.r-project.org")
-+     pd <- packageDescription("mboost")
-+ }
-Warnung in if (is.na(pd)) { :
-  Bedingung hat Länge > 1 und nur das erste Element wird benutzt
++     install.packages("mboostDevel", repos = "http://cran.at.r-project.org")
++     pd <- packageDescription("mboostDevel")
++  .... [TRUNCATED] 
 
 > if (compareVersion(pd$Version, "2.1-0") < 0) {
 +     warning("Current version of mboost is installed!")
-+     install.packages("mboost", repos = "ht ..." ... [TRUNCATED] 
++     install.packages("mboostDevel", repos  .... [TRUNCATED] 
 
-> require("mboost")
-Loading required package: mboost
+> require("mboostDevel")
 
 > set.seed(190781)
 
 > if (!file.exists("graphics")) dir.create("graphics")
 
-> library("mboost")
+> library("mboostDevel")
 
 > data("bodyfat")
 
@@ -90,10 +106,10 @@ attr(,"offset")
 
 > gam2 <- gamboost(DEXfat ~ ., baselearner = "bbs", 
 +     data = bodyfat, control = boost_control(trace = TRUE))
-[   1] ...................................... -- risk: 505.0447 
-[  41] ...................................... -- risk: 428.2663 
+[   1] ...................................... -- risk: 544.4295 
+[  41] ...................................... -- risk: 478.6167 
 [  81] ..................
-Final risk: 406.6786 
+Final risk: 460.343 
 
 > gam2 <- gamboost(DEXfat ~ ., baselearner = "bbs", 
 +     data = bodyfat)
@@ -101,7 +117,6 @@ Final risk: 406.6786
 > set.seed(123)
 
 > cvm <- cvrisk(gam2)
-Loading required package: multicore
 
 > cvm
 
@@ -109,33 +124,33 @@ Loading required package: multicore
 	 gamboost(formula = DEXfat ~ ., data = bodyfat, baselearner = "bbs") 
 
         1         2         3         4         5         6         7         8 
-109.44090  93.77936  80.39199  69.39746  60.03652  52.63142  45.98735  40.61891 
+109.44043  93.90510  80.59096  69.60200  60.13397  52.59479  46.11235  40.80175 
         9        10        11        12        13        14        15        16 
- 36.19419  32.43483  29.45696  26.83747  24.87569  23.13113  21.61787  20.37703 
+ 36.32637  32.66942  29.66258  27.07809  24.99304  23.11263  21.55970  20.40313 
        17        18        19        20        21        22        23        24 
- 19.28041  18.45433  17.75830  17.09118  16.71937  16.34698  16.11248  15.80643 
+ 19.16541  18.31613  17.59806  16.96801  16.48827  16.07595  15.75689  15.47100 
        25        26        27        28        29        30        31        32 
- 15.68170  15.61957  15.51475  15.44504  15.43898  15.43648  15.47471  15.49106 
+ 15.21898  15.06787  14.96986  14.86724  14.80542  14.74726  14.68165  14.68648 
        33        34        35        36        37        38        39        40 
- 15.53716  15.59909  15.69337  15.74063  15.79742  15.82627  15.92533  15.96498 
+ 14.64315  14.67862  14.68193  14.68394  14.75454  14.80268  14.81760  14.87570 
        41        42        43        44        45        46        47        48 
- 16.05951  16.14622  16.15449  16.22718  16.24294  16.36161  16.41389  16.45765 
+ 14.90511  14.92398  15.00389  15.03604  15.07639  15.10671  15.15364  15.20770 
        49        50        51        52        53        54        55        56 
- 16.53431  16.58332  16.64761  16.68104  16.76672  16.83018  16.87198  16.94478 
+ 15.23825  15.30189  15.31950  15.35630  15.41134  15.46079  15.49545  15.53137 
        57        58        59        60        61        62        63        64 
- 16.98208  17.03797  17.09194  17.16252  17.19414  17.22933  17.26655  17.33742 
+ 15.57602  15.61894  15.66218  15.71172  15.72119  15.75424  15.80828  15.84097 
        65        66        67        68        69        70        71        72 
- 17.36385  17.41176  17.46760  17.51569  17.53330  17.58616  17.61561  17.66218 
+ 15.89077  15.90547  15.93003  15.95715  15.99073  16.03679  16.06174  16.10615 
        73        74        75        76        77        78        79        80 
- 17.69674  17.72085  17.73939  17.81207  17.84139  17.87207  17.91952  17.95899 
+ 16.12734  16.15830  16.18715  16.22298  16.27167  16.27686  16.30944  16.33804 
        81        82        83        84        85        86        87        88 
- 17.98436  18.00266  18.06980  18.08974  18.12129  18.13717  18.18262  18.21936 
+ 16.36836  16.39441  16.41587  16.43615  16.44862  16.48259  16.51989  16.52985 
        89        90        91        92        93        94        95        96 
- 18.24584  18.26830  18.28842  18.30035  18.30461  18.34825  18.41183  18.41228 
+ 16.54723  16.58531  16.61028  16.61020  16.62380  16.64316  16.64343  16.68386 
        97        98        99       100 
- 18.42904  18.44325  18.47198  18.50329 
+ 16.69995  16.73360  16.74944  16.75756 
 
-	 Optimal number of boosting iterations: 30 
+	 Optimal number of boosting iterations: 33 
 
 > plot(cvm)
 
@@ -144,7 +159,7 @@ Loading required package: multicore
 > plot(cvm, main = "")
 
 > mstop(cvm)
-[1] 30
+[1] 33
 
 > gam2[mstop(cvm)]
 
@@ -159,7 +174,7 @@ gamboost(formula = DEXfat ~ ., data = bodyfat, baselearner = "bbs")
 Loss function: (y - f)^2 
  
 
-Number of boosting iterations: mstop = 30 
+Number of boosting iterations: mstop = 33 
 Step size:  0.1 
 Offset:  30.78282 
 Number of baselearners:  9 
@@ -167,10 +182,10 @@ Number of baselearners:  9
 
 > gam2 <- gamboost(DEXfat ~ ., baselearner = "bbs", 
 +     data = bodyfat, control = boost_control(trace = TRUE))
-[   1] ...................................... -- risk: 505.0447 
-[  41] ...................................... -- risk: 428.2663 
+[   1] ...................................... -- risk: 544.4295 
+[  41] ...................................... -- risk: 478.6167 
 [  81] ..................
-Final risk: 406.6786 
+Final risk: 460.343 
 
 > gam2[mstop(cvm)]
 
@@ -185,7 +200,7 @@ gamboost(formula = DEXfat ~ ., data = bodyfat, baselearner = "bbs",     control 
 Loss function: (y - f)^2 
  
 
-Number of boosting iterations: mstop = 30 
+Number of boosting iterations: mstop = 33 
 Step size:  0.1 
 Offset:  30.78282 
 Number of baselearners:  9 
@@ -195,32 +210,33 @@ Number of baselearners:  9
 [1] "bbs(waistcirc, df = dfbase)"   "bbs(hipcirc, df = dfbase)"    
 [3] "bbs(kneebreadth, df = dfbase)" "bbs(anthro3a, df = dfbase)"   
 [5] "bbs(anthro3b, df = dfbase)"    "bbs(anthro3c, df = dfbase)"   
+[7] "bbs(anthro4, df = dfbase)"    
 
 > gam2[1000, return = FALSE]
-[ 101] ...................................... -- risk: 374.6936 
-[ 141] ...................................... -- risk: 351.2605 
-[ 181] ...................................... -- risk: 333.3519 
-[ 221] ...................................... -- risk: 318.883 
-[ 261] ...................................... -- risk: 306.9214 
-[ 301] ...................................... -- risk: 296.7923 
-[ 341] ...................................... -- risk: 288.0382 
-[ 381] ...................................... -- risk: 280.3657 
-[ 421] ...................................... -- risk: 273.5146 
-[ 461] ...................................... -- risk: 267.3621 
-[ 501] ...................................... -- risk: 261.7149 
-[ 541] ...................................... -- risk: 256.5418 
-[ 581] ...................................... -- risk: 251.7186 
-[ 621] ...................................... -- risk: 247.224 
-[ 661] ...................................... -- risk: 243.0014 
-[ 701] ...................................... -- risk: 238.9041 
-[ 741] ...................................... -- risk: 234.9688 
-[ 781] ...................................... -- risk: 231.2079 
-[ 821] ...................................... -- risk: 227.5621 
-[ 861] ...................................... -- risk: 224.1102 
-[ 901] ...................................... -- risk: 220.7802 
-[ 941] ...................................... -- risk: 217.5494 
+[ 101] ...................................... -- risk: 431.3254 
+[ 141] ...................................... -- risk: 408.7952 
+[ 181] ...................................... -- risk: 390.5753 
+[ 221] ...................................... -- risk: 375.6194 
+[ 261] ...................................... -- risk: 363.12 
+[ 301] ...................................... -- risk: 352.3364 
+[ 341] ...................................... -- risk: 342.9405 
+[ 381] ...................................... -- risk: 334.5222 
+[ 421] ...................................... -- risk: 326.9719 
+[ 461] ...................................... -- risk: 320.1967 
+[ 501] ...................................... -- risk: 313.9576 
+[ 541] ...................................... -- risk: 308.2658 
+[ 581] ...................................... -- risk: 302.9771 
+[ 621] ...................................... -- risk: 298.0882 
+[ 661] ...................................... -- risk: 293.5637 
+[ 701] ...................................... -- risk: 289.2967 
+[ 741] ...................................... -- risk: 285.3045 
+[ 781] ...................................... -- risk: 281.5391 
+[ 821] ...................................... -- risk: 277.9986 
+[ 861] ...................................... -- risk: 274.6487 
+[ 901] ...................................... -- risk: 271.4487 
+[ 941] ...................................... -- risk: 268.4307 
 [ 981] ..................
-Final risk: 215.9465 
+Final risk: 266.9768 
 NULL
 
 > names(coef(gam2))
@@ -299,7 +315,7 @@ Loss function: tau * (y - f) * ((y - f) >= 0) + (tau - 1) * (y - f) * ((y -
 
 > red <- rgb(103, 0, 31, max = 255)
 
-> library("mboost")
+> library("mboostDevel")
 
 > library("RColorBrewer")
 
@@ -480,13 +496,9 @@ Loss function: tau * (y - f) * ((y - f) >= 0) + (tau - 1) * (y - f) * ((y -
 
 > lines(newX, predict(mod, data.frame(x = newX)), col = "black", 
 +     lwd = 2)
-Warnung in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
-  some 'x' values beyond boundary knots may cause ill-conditioned bases
 
 > lines(newX + 2 * pi, predict(mod, data.frame(x = newX)), 
 +     col = "black", lwd = 2)
-Warnung in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
-  some 'x' values beyond boundary knots may cause ill-conditioned bases
 
 > legend("bottomleft", c("cyclic = FALSE"), lty = c(1), 
 +     col = c("black"), lwd = 2, bty = "n")
@@ -517,33 +529,8 @@ Warnung in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
 
 > modspa <- gamboost(y ~ bspatial(x1, x2, knots = list(x1 = 12, 
 +     x2 = 12)))
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dgCMatrix#dgTMatrix".
- "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dgTMatrix#dgCMatrix".
- "TsparseMatrix#sparseMatrix" would also be valid
-Note: Method with signature "Matrix#diagonalMatrix" chosen for function "kronecker",
- target signature "dsCMatrix#ddiMatrix".
- "sparseMatrix#ANY" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dsCMatrix#dtTMatrix".
- "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature "diagonalMatrix#Matrix" chosen for function "kronecker",
- target signature "ddiMatrix#dsCMatrix".
- "ANY#sparseMatrix" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dtTMatrix#dsCMatrix".
- "TsparseMatrix#sparseMatrix" would also be valid
 
 > library(lattice)
-
-Attaching package: ‘lattice’
-
-The following object(s) are masked from ‘package:multicore’:
-
-    parallel
-
 
 > library(RColorBrewer)
 
@@ -556,10 +543,6 @@ The following object(s) are masked from ‘package:multicore’:
 +     x2 = seq(-pi, pi, length = 100))
 
 > preds <- predict(modspa, newdata = nd)
-Warnung in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
-  some 'x' values beyond boundary knots may cause ill-conditioned bases
-Warnung in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
-  some 'x' values beyond boundary knots may cause ill-conditioned bases
 
 > breaks <- seq(min(preds), max(preds), length = nCols + 
 +     1)
@@ -573,10 +556,6 @@ Warnung in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
 > nd <- expand.grid(x1 = x1, x2 = x2)
 
 > preds <- predict(modspa, newdata = nd)
-Warnung in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
-  some 'x' values beyond boundary knots may cause ill-conditioned bases
-Warnung in bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,  :
-  some 'x' values beyond boundary knots may cause ill-conditioned bases
 
 > z <- matrix(preds, ncol = length(x1))
 
@@ -685,3 +664,4 @@ pdf
   2 
 
  *** Run successfully completed ***
+R> 

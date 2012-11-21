@@ -1,6 +1,6 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -17,7 +17,8 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
-> library("mboost")
+> library("mboostDevel")
+Loading required package: parallel
 This is mboost 2.2-0.
   See NEWS for a complete list of changes.
   Note: The default for the computation of the degrees of freedom has been changed!
@@ -274,7 +275,7 @@ Loading required package: splines
 > 
 > 
 > ### AUC
-> data("wpbc", package = "mboost")
+> data("wpbc", package = "mboostDevel")
 > wpbc[,colnames(wpbc) != "status"] <- scale(wpbc[,colnames(wpbc) != "status"])
 > wpbc <- wpbc[complete.cases(wpbc), colnames(wpbc) != "time"]
 > mAUC <- gamboost(status ~ ., data = wpbc, family = AUC())
@@ -296,3 +297,51 @@ Loading required package: splines
  [99] 0.9792891 0.9795828
 > 
 > 
+> # rank-based boosting
+> 
+> if (require("survival")) {
++ 
++ set.seed(1907)
++ n <- 100
++ beta <- c(3, 1.5, 0, 0, 2, 0, 0, 0)
++ p <- length(beta)
++ x <- matrix(rnorm(n*p), n, p)
++ yt <- x %*% beta + rnorm(n)
++ x <- cbind(1, x)
++ colnames(x) <- c("intercept", paste("x", 1:8, sep=""))
++ cens <- runif(n, 0, 6)
++ y <- exp(pmin(yt, cens))
++ del <- yt <= cens
++ ## check fitting and cvrisk
++ mod <- glmboost(x = x, y = Surv(y, del),
++                 control = boost_control(mstop = 500, nu = 0.1),
++                 center = TRUE,
++                 family = Gehan())
++ coef(mod)
++ plot(mod$risk())
++ cvr <- cvrisk(mod, folds = cv(model.weights(mod), "kfold"), papply=lapply)
++ plot(cvr)
++ ## check weighting:
++ wMat <- cv(rep(1, n), type = "kfold",B = 2)
++ modWeighted <- glmboost(x = x, y = Surv(y, del), weights = wMat[, 1],
++                         control = boost_control(mstop = 300, nu = 0.20),
++                         family = Gehan())
++ # same model with data set subseted:
++ modSubset <- glmboost(x = x[as.logical(wMat[, 1]),],
++                       y = Surv(y, del)[as.logical(wMat[, 1]),],
++                       control = boost_control(mstop = 300, nu = 0.20),
++                       family = Gehan())
++ ## <FIXME> there are still some minor discrepancies. Perhaps this is due to
++ ## different pre-processing? </FIXME>
++ round(coef(modWeighted) - coef(modSubset), 3)
++ }
+intercept        x1        x2        x3        x4        x5        x6        x7 
+   -0.169     0.002     0.000     0.000    -0.002     0.001     0.000    -0.004 
+       x8 
+   -0.005 
+attr(,"offset")
+[1] 353.4646
+> 
+> proc.time()
+   user  system elapsed 
+ 22.025   0.108  22.186 

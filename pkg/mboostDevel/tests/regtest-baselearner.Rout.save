@@ -1,6 +1,6 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -17,16 +17,17 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
-> library("mboost")
+> library("mboostDevel")
+Loading required package: parallel
 This is mboost 2.2-0.
   See NEWS for a complete list of changes.
   Note: The default for the computation of the degrees of freedom has been changed!
 
-> attach(asNamespace("mboost"))
-The following object(s) are masked from 'package:mboost':
+> attach(asNamespace("mboostDevel"))
+The following object(s) are masked from 'package:mboostDevel':
 
     %+%, %O%, %X%, AUC, AdaExp, Binomial, CoxPH, ExpectReg, FP, Family,
-    GammaReg, GaussClass, GaussReg, Gaussian, Huber, IPCweights,
+    GammaReg, GaussClass, GaussReg, Gaussian, Gehan, Huber, IPCweights,
     Laplace, Loglog, Lognormal, NBinomial, Poisson, PropOdds, QuantReg,
     Weibull, bbs, blackboost, bmono, bmrf, bns, bols, boost_control,
     brad, brandom, bspatial, bss, btree, buser, cv, cvrisk, extract,
@@ -35,13 +36,6 @@ The following object(s) are masked from 'package:mboost':
 > library("MASS")
 > library("Matrix")
 Loading required package: lattice
-
-Attaching package: 'Matrix'
-
-The following object(s) are masked from 'package:base':
-
-    det
-
 > 
 > set.seed(290875)
 > 
@@ -93,16 +87,24 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 > testfun(m1, m2)
 > 
 > ### factor x without intercept
-> m1 <- lm(y ~ xf - 1, weights = w, na.action = na.exclude)
+> tmp <- model.matrix(~ xf)[,-1] ## build model matrix without first row
+> mm <- matrix(NA, ncol = ncol(tmp), nrow = length(y))
+> mm[!is.na(xf),] <- tmp ## build model matrix with missings
+> m1 <- lm(y ~ mm - 1, weights = w, na.action = na.exclude)
 > m2 <- fit(dpp(bols(xf, intercept = FALSE), w), y)
 Warning message:
 In bols(xf, intercept = FALSE) : base-learner contains missing values;
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > testfun(m1, m2)
-[1] 0.0376829 0.9668475
+> 
+> ### factor x with "contr.dummy"
+> m1 <- lm(y ~ xf - 1, weights = w, na.action = na.exclude)
+> m2 <- fit(dpp(bols(xf, contrasts.arg = "contr.dummy"), w), y)
 Warning message:
-In coef(m1) - coef(m2) :
-  longer object length is not a multiple of shorter object length
+In bols(xf, contrasts.arg = "contr.dummy") :
+  base-learner contains missing values;
+missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
+> testfun(m1, m2)
 > 
 > ### contrasts
 > m1 <- lm(y ~ xf, weights = w, contrasts = list(xf = "contr.sum"), na.action = na.exclude)
@@ -225,7 +227,7 @@ In cf1 - cf2 :
 > stopifnot(abs(truedf - 4) < sqrt(.Machine$double.eps))
 > 
 > ### check accuracy of df2lambda
-> data("bodyfat", package="mboost")
+> data("bodyfat", package="mboostDevel")
 > diff_df <- matrix(NA, nrow=8, ncol=ncol(bodyfat))
 > rownames(diff_df) <- paste("df", 3:10)
 > colnames(diff_df) <- names(bodyfat)
@@ -314,36 +316,36 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 > 
 > ### spatial
 > m1 <- gamboost(y ~ bbs(x1) %X% bbs(x2))
-Note: Method with signature "sparseMatrix#ANY" chosen for function "kronecker",
- target signature "dgCMatrix#dgeMatrix".
+Note: Method with signature 'sparseMatrix#ANY' chosen for function 'kronecker',
+ target signature 'dgCMatrix#dgeMatrix'.
  "ANY#Matrix" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dgCMatrix#dgTMatrix".
+Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
+ target signature 'dgCMatrix#dgTMatrix'.
  "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature "ANY#sparseMatrix" chosen for function "kronecker",
- target signature "dgeMatrix#dgCMatrix".
+Note: Method with signature 'ANY#sparseMatrix' chosen for function 'kronecker',
+ target signature 'dgeMatrix#dgCMatrix'.
  "Matrix#ANY" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dgTMatrix#dgCMatrix".
+Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
+ target signature 'dgTMatrix#dgCMatrix'.
  "TsparseMatrix#sparseMatrix" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dsCMatrix#dgTMatrix".
+Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
+ target signature 'dsCMatrix#dgTMatrix'.
  "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dgTMatrix#dsCMatrix".
+Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
+ target signature 'dgTMatrix#dsCMatrix'.
  "TsparseMatrix#sparseMatrix" would also be valid
 > m2 <- gamboost(y ~ bspatial(x1, x2, df = 16))
-Note: Method with signature "Matrix#diagonalMatrix" chosen for function "kronecker",
- target signature "dsCMatrix#ddiMatrix".
+Note: Method with signature 'Matrix#diagonalMatrix' chosen for function 'kronecker',
+ target signature 'dsCMatrix#ddiMatrix'.
  "sparseMatrix#ANY" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dsCMatrix#dtTMatrix".
+Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
+ target signature 'dsCMatrix#dtTMatrix'.
  "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature "diagonalMatrix#Matrix" chosen for function "kronecker",
- target signature "ddiMatrix#dsCMatrix".
+Note: Method with signature 'diagonalMatrix#Matrix' chosen for function 'kronecker',
+ target signature 'ddiMatrix#dsCMatrix'.
  "ANY#sparseMatrix" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dtTMatrix#dsCMatrix".
+Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
+ target signature 'dtTMatrix#dsCMatrix'.
  "TsparseMatrix#sparseMatrix" would also be valid
 > stopifnot(max(abs(predict(m1) - predict(m2))) < sqrt(.Machine$double.eps))
 > stopifnot(max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < sqrt(.Machine$double.eps))
@@ -354,56 +356,61 @@ Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "k
 > 
 > ### varying numeric
 > m1 <- gamboost(y ~ bbs(x1) %X% bols(x2, intercept = FALSE, lambda = 0))
-Note: Method with signature "sparseMatrix#ANY" chosen for function "kronecker",
- target signature "dgCMatrix#dtrMatrix".
+Note: Method with signature 'sparseMatrix#ANY' chosen for function 'kronecker',
+ target signature 'dgCMatrix#dtrMatrix'.
  "ANY#Matrix" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dgCMatrix#dtTMatrix".
+Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
+ target signature 'dgCMatrix#dtTMatrix'.
  "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature "Matrix#ANY" chosen for function "kronecker",
- target signature "dgeMatrix#dgeMatrix".
+Note: Method with signature 'Matrix#ANY' chosen for function 'kronecker',
+ target signature 'dgeMatrix#dgeMatrix'.
  "ANY#Matrix" would also be valid
 > m2 <- gamboost(y ~ bbs(x1, by = x2, df = 4))
 > stopifnot(max(abs(predict(m1) - predict(m2))) < sqrt(.Machine$double.eps))
 > stopifnot(max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < sqrt(.Machine$double.eps))
 > 
 > ### varying factor
-> m1 <- gamboost(y ~ bbs(x1) %X% bols(f, intercept = FALSE, df = 5))
+> m1 <- gamboost(y ~ bbs(x1) %X% bols(f, df = 5, contrasts.arg = "contr.dummy"))
 Warning message:
 In data.frame(..., check.names = FALSE) :
   row names were found from a short variable and have been discarded
 > coef(m1)
-$`"bbs(x1) %X% bols(f, intercept = FALSE, df = 5)"`
- [1]  0.036903202 -0.003690066 -0.110218476 -0.217631763  0.128506672
- [6] -0.241142489 -0.509069931  0.264393476 -0.261848025 -0.665175239
-[11]  0.279153742  0.021699928 -0.288802257 -0.083329189  0.323415348
-[16]  0.570048880 -0.233008378  0.080256026  0.440328464  0.420094108
-[21] -0.246871614 -0.208069203  0.084630121 -0.081080347 -0.350027693
-[26] -0.502445802 -0.103693785 -0.064017368 -0.057527748 -0.297775465
-[31]  0.206825382  0.196610509  0.012097308  0.092806755  0.117639218
-[36]  0.266995753 -0.150042226 -0.019131663  0.011118544 -0.138117084
-[41]  0.039516694  0.055159114  0.287430697 -0.118978103  0.083109822
-[46]  0.046480446  0.110470106 -0.640273257 -0.084022807  0.087965077
-[51] -0.079824358  0.449081647  0.338254730  0.154519779  0.786715155
-[56]  0.423853792  0.221334660  0.346426952  0.395452499  0.107242229
-[61] -0.357313710  0.649976890 -0.050506082 -0.923570089  0.607049427
-[66] -0.034773285 -0.841850874  0.406506357 -0.013446308 -0.388754013
-[71]  0.147685699  0.003940335
+$`"bbs(x1) %X% bols(f, df = 5, contrasts.arg = \"contr.dummy\")"`
+ [1]  0.2242693758  0.0244549055 -0.0018236656 -0.0649204417 -0.0158616261
+ [6] -0.1891022703  0.0633957967 -0.1288712394 -0.3211539316 -0.4271143516
+[11]  0.1304389247 -0.1279015955 -0.2844975667 -0.5354756406  0.1377335871
+[16]  0.0453968886 -0.0338951732 -0.1953318221 -0.0365952954  0.2189850221
+[21]  0.3040001645  0.4485289400 -0.0716853706  0.0631618066  0.3325198072
+[26]  0.3788911610  0.2873215520 -0.1578934092  0.0374947404 -0.1538460700
+[31]  0.0321145668 -0.1042998008 -0.1475466005 -0.3312423509 -0.3729888541
+[36] -0.1410106097 -0.1263566256 -0.0751116331 -0.0884109521 -0.2399923387
+[41] -0.0389393947  0.1848036883  0.1656488243  0.0090057253  0.0241351838
+[46]  0.0880914017  0.1332083246  0.2231047247  0.0008369162 -0.1344615659
+[51]  0.0073865257  0.0724598930  0.0446383409 -0.1022702643  0.0035663694
+[56]  0.0550943778 -0.0316890953  0.2015664246 -0.0822295181 -0.0247739018
+[61] -0.2539099743  0.0695884531  0.0758519443 -0.4923737237 -0.0674229150
+[66]  0.0138897271  0.1275144137 -0.1310550250 -0.0040526037  0.3899574508
+[71]  0.3122233938  0.1306996445 -0.0656754995  0.6050839245  0.3881688503
+[76]  0.2096929714 -0.0502131903  0.2857074658  0.3854780456  0.1159202913
+[81] -0.1884282320 -0.2241611822  0.5098269614 -0.0069895193 -0.1851369840
+[86] -0.6265554226  0.4419209852 -0.0189754388 -0.0917695408 -0.5729191166
+[91]  0.2786709776 -0.0124807032  0.0007989512 -0.2654733304  0.0868918239
+[96] -0.0029929838
 
 attr(,"offset")
 [1] 0.03826691
 > predict(m1, newdata = ndf)
-            [,1]
- [1,] 0.03826691
- [2,] 0.03826691
- [3,] 0.03826691
- [4,] 0.03826691
- [5,] 0.03826691
- [6,] 0.03826691
- [7,] 0.03826691
- [8,] 0.03826691
- [9,] 0.03826691
-[10,] 0.03826691
+             [,1]
+ [1,]  0.02564341
+ [2,]  0.01259759
+ [3,]  0.05543313
+ [4,] -0.12988977
+ [5,] -0.03716691
+ [6,] -0.02293550
+ [7,] -0.01661927
+ [8,] -0.09304843
+ [9,]  0.06323357
+[10,] -0.13853039
 > 
 > ### cbind
 > m1 <- gamboost(y ~ bols(x1, intercept = FALSE, df = 1) %+%
@@ -444,9 +451,11 @@ In data.frame(..., check.names = FALSE) :
 > mod21 <- mboost(y ~ bmono(x1, x2, df = 6, knots = list(x1 = 10, x2 = 5),
 +                           lambda2 = list(x1 = 10e6, x2 = 0)),
 +                 control = boost_control(mstop = 50))
+There were 50 or more warnings (use warnings() to see the first 50)
 > mod22 <- mboost(y ~ bmono(x1, x2, df = 6, knots = list(x1 = 10, x2 = 5),
 +                           lambda2 = list(x1 = 0, x2 = 10e6)),
 +                 control = boost_control(mstop = 50))
+There were 50 or more warnings (use warnings() to see the first 50)
 > 
 > diff_order <- 1
 > D1 <- kronecker(diff(diag(10 + 3 + 1), differences = diff_order),
@@ -566,3 +575,6 @@ In data.frame(..., check.names = FALSE) :
 > stopifnot(max(abs(p1 - p2)) < tol)
 > 
 > 
+> proc.time()
+   user  system elapsed 
+ 23.361   0.172  23.580 

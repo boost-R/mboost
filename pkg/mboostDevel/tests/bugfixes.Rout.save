@@ -1,6 +1,6 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -17,8 +17,9 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
-> require("mboost")
-Loading required package: mboost
+> require("mboostDevel")
+Loading required package: mboostDevel
+Loading required package: parallel
 This is mboost 2.2-0.
   See NEWS for a complete list of changes.
   Note: The default for the computation of the degrees of freedom has been changed!
@@ -26,13 +27,6 @@ This is mboost 2.2-0.
 > require("Matrix")
 Loading required package: Matrix
 Loading required package: lattice
-
-Attaching package: 'Matrix'
-
-The following object(s) are masked from 'package:base':
-
-    det
-
 > 
 > set.seed(290875)
 > 
@@ -84,7 +78,7 @@ Loading required package: colorspace
 > 
 > ### blackboost _did_ touch the response, arg!
 > 
-> data("bodyfat", package = "mboost")
+> data("bodyfat", package = "mboostDevel")
 > ctrl <- boost_control(mstop = 500, nu = 0.01)
 > bb <- blackboost(DEXfat ~ ., data = bodyfat, control = ctrl)
 > n <- nrow(bodyfat)
@@ -124,7 +118,7 @@ Loading required package: colorspace
 > if (FALSE){
 + ### dfbase=1 was not working correctly for ssp
 + ### spotted by Matthias Schmid <Matthias.Schmid@imbe.imed.uni-erlangen.de>
-+ data("bodyfat", package = "mboost")
++ data("bodyfat", package = "mboostDevel")
 + ctrl <- boost_control(mstop = 100)
 + ### COMMENT: Not using ssp here but P-splines
 + ### Remove check!
@@ -201,7 +195,7 @@ Loading required package: colorspace
 > 
 > ### check gamboost with weights (use weighted some of residuals
 > ### for variable selection)
-> data("bodyfat", package = "mboost")
+> data("bodyfat", package = "mboostDevel")
 > 
 > set.seed(290875)
 > n <- nrow(bodyfat)
@@ -334,23 +328,23 @@ Error in object$newX(newdata) :
 > x2 <- rnorm(100)
 > data <- data.frame(y=y, x1=x1, x2=x2, z=z)
 > model <- gamboost(y ~ bspatial(x1,x2, by=z), data = data)
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dgCMatrix#dgTMatrix".
+Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
+ target signature 'dgCMatrix#dgTMatrix'.
  "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dgTMatrix#dgCMatrix".
+Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
+ target signature 'dgTMatrix#dgCMatrix'.
  "TsparseMatrix#sparseMatrix" would also be valid
-Note: Method with signature "Matrix#diagonalMatrix" chosen for function "kronecker",
- target signature "dsCMatrix#ddiMatrix".
+Note: Method with signature 'Matrix#diagonalMatrix' chosen for function 'kronecker',
+ target signature 'dsCMatrix#ddiMatrix'.
  "sparseMatrix#ANY" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dsCMatrix#dtTMatrix".
+Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
+ target signature 'dsCMatrix#dtTMatrix'.
  "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature "diagonalMatrix#Matrix" chosen for function "kronecker",
- target signature "ddiMatrix#dsCMatrix".
+Note: Method with signature 'diagonalMatrix#Matrix' chosen for function 'kronecker',
+ target signature 'ddiMatrix#dsCMatrix'.
  "ANY#sparseMatrix" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dtTMatrix#dsCMatrix".
+Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
+ target signature 'dtTMatrix#dsCMatrix'.
  "TsparseMatrix#sparseMatrix" would also be valid
 > stopifnot(!is.na(predict(model,data[1,-1])))
 > 
@@ -487,7 +481,7 @@ attr(,"offset")
 Warning message:
 In glmboost.matrix(x = X, y = y) :
   model with centered covariates does not contain intercept
-> b <- list(mboost:::bolscw(X))
+> b <- list(mboostDevel:::bolscw(X))
 > mboost_fit(blg = b, response = y)
 
 	 Model-based Boosting
@@ -504,7 +498,7 @@ Offset:  0.1193473
 Number of baselearners:  1 
 
 > z <- rnorm(100)
-> b <- list(b1 = mboost:::bolscw(X), b2 = bbs(z))
+> b <- list(b1 = mboostDevel:::bolscw(X), b2 = bbs(z))
 > mboost_fit(blg = b, response = y)
 
 	 Model-based Boosting
@@ -648,11 +642,11 @@ In mboost_fit(bl, response = response, ...) :
 +                   bmono(x1) +  buser(x1, K = 1, lambda = 0) + x2)
 Loading required package: fields
 Loading required package: spam
-Package 'spam' is loaded. Spam version 0.27-0 (2011-08-17).
-Type demo( spam) for some demos, help( Spam) for an overview
-of this package.
-Help for individual functions is optained by adding the
-suffix '.spam' to the function name, e.g. 'help(chol.spam)'.
+Spam version 0.29-2 (2012-08-17) is loaded.
+Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+and overview of this package.
+Help for individual functions is also obtained by adding the
+suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
 
 Attaching package: 'spam'
 
@@ -664,13 +658,9 @@ The following object(s) are masked from 'package:stats4':
 
     mle
 
-The following object(s) are masked from 'package:Matrix':
-
-    norm
-
 The following object(s) are masked from 'package:base':
 
-    backsolve, forwardsolve, norm
+    backsolve, forwardsolve
 
 Warning messages:
 1: In bols(x1) : base-learner contains missing values;
@@ -691,3 +681,6 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 8: In buser(x1, K = 1, lambda = 0) : base-learner contains missing values;
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > 
+> proc.time()
+   user  system elapsed 
+ 30.969   0.172  31.434 

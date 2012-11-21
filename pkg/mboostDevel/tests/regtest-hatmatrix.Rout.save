@@ -1,6 +1,6 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -17,7 +17,8 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
-> library("mboost")
+> library("mboostDevel")
+Loading required package: parallel
 This is mboost 2.2-0.
   See NEWS for a complete list of changes.
   Note: The default for the computation of the degrees of freedom has been changed!
@@ -82,3 +83,6 @@ Warning messages:
 > #stopifnot(max(abs(H %*% (mydf$y - weighted.mean(mydf$y, w)) - fitted(mod2) + weighted.mean(mydf$y, w))) <
 > #          sqrt(.Machine$double.eps))
 > 
+> proc.time()
+   user  system elapsed 
+  2.144   0.060   2.226 

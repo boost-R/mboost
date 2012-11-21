@@ -1,6 +1,6 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -17,8 +17,9 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
-> require("mboost")
-Loading required package: mboost
+> require("mboostDevel")
+Loading required package: mboostDevel
+Loading required package: parallel
 This is mboost 2.2-0.
   See NEWS for a complete list of changes.
   Note: The default for the computation of the degrees of freedom has been changed!
@@ -77,7 +78,7 @@ Degrees of freedom (for mstop = 37): 4.37119
 > 
 > ### check boosting hat matrix with multiple independent variables
 > ### and weights
-> data("bodyfat", package = "mboost")
+> data("bodyfat", package = "mboostDevel")
 > bffm <- DEXfat ~ age + waistcirc + hipcirc + elbowbreadth + kneebreadth +
 +       anthro3a + anthro3b + anthro3c + anthro4
 > indep <- names(bodyfat)[names(bodyfat) != "DEXfat"]
@@ -293,7 +294,7 @@ In bols(x, intercept = FALSE) :
 > stopifnot(tmp < 1e-5)
 > 
 > ### predictions:
-> data("bodyfat", package = "mboost")
+> data("bodyfat", package = "mboostDevel")
 > amod <- gamboost(DEXfat ~ hipcirc + anthro3a, data = bodyfat, baselearner = "bbs")
 > 
 > agg <- c("none", "sum", "cumsum")
@@ -422,7 +423,7 @@ Number of baselearners:  3
 > stopifnot(pr - pr2  < sqrt(.Machine$double.eps))
 > 
 > ### coefficients:
-> data("bodyfat", package = "mboost")
+> data("bodyfat", package = "mboostDevel")
 > amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth,
 +                  data = bodyfat, baselearner = "bbs")
 > stopifnot(length(coef(amod)) == 3)
@@ -508,3 +509,6 @@ Warning in Xfun(mf, vary, args) :
 +                  control = boost_control(mstop = 1000))
 > stopifnot(max(abs(predict(mod9) - predict(mod10))) < sqrt(.Machine$double.eps))
 > 
+> proc.time()
+   user  system elapsed 
+ 13.496   0.100  13.745 

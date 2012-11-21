@@ -5,14 +5,14 @@
 
 
 ################################################################################
-# Get command line arguments specified via:
+# Extract command line arguments specified via:
 #   R CMD BATCH "--args which='mboostDevel'" copy_Rout_to_Routsave.R
 # or
 #   R CMD BATCH "--args which='mboostPatch'" copy_Rout_to_Routsave.R
 args <- commandArgs(TRUE)
 if (length(args) > 1)
     stop("specify (at maximum) one argument (i.e., which)")
-eval(parse(text=args[[i]]))
+eval(parse(text=args))
 if (length(args) == 0)
     which <- "mboostDevel"
 

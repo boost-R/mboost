@@ -1,6 +1,6 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -17,12 +17,13 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
-> library("mboost")
+> library("mboostDevel")
+Loading required package: parallel
 This is mboost 2.2-0.
   See NEWS for a complete list of changes.
   Note: The default for the computation of the degrees of freedom has been changed!
 
-> data("birds", package = "mboost")
+> data("birds", package = "mboostDevel")
 > 
 > # define characteristics of the boosting algorithm
 > bcr <- boost_control(mstop=200, trace=TRUE)
@@ -132,17 +133,17 @@ attr(,"offset")
 > fm <- SG4 ~ bols(GST) + bols(DBH) + bols(AOT) + bols(AFS) + bols(DWC) +
 +             bols(LOG) + bspatial(x_gk, y_gk, df=5, differences=1, knots=c(12,12))
 > sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
-Note: Method with signature "Matrix#diagonalMatrix" chosen for function "kronecker",
- target signature "dsCMatrix#ddiMatrix".
+Note: Method with signature 'Matrix#diagonalMatrix' chosen for function 'kronecker',
+ target signature 'dsCMatrix#ddiMatrix'.
  "sparseMatrix#ANY" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dsCMatrix#dtTMatrix".
+Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
+ target signature 'dsCMatrix#dtTMatrix'.
  "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature "diagonalMatrix#Matrix" chosen for function "kronecker",
- target signature "ddiMatrix#dsCMatrix".
+Note: Method with signature 'diagonalMatrix#Matrix' chosen for function 'kronecker',
+ target signature 'ddiMatrix#dsCMatrix'.
  "ANY#sparseMatrix" would also be valid
-Note: Method with signature "dsparseMatrix#dsparseMatrix" chosen for function "kronecker",
- target signature "dtTMatrix#dsCMatrix".
+Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
+ target signature 'dtTMatrix#dsCMatrix'.
  "TsparseMatrix#sparseMatrix" would also be valid
 [   1] ...................................... -- risk: 139.3667 
 [  41] ...................................... -- risk: 131.9988 
@@ -203,8 +204,8 @@ attr(,"offset")
 [ 241] ...................................... -- risk: 129.7354 
 [ 281] ...................................... -- risk: 129.1004 
 [ 321] ...................................... -- risk: 128.511 
-[ 361] ...................................... -- risk: 127.9745 
-[ 401] ...................................... -- risk: 127.4639 
+[ 361] ...................................... -- risk: 127.9744 
+[ 401] ...................................... -- risk: 127.4638 
 [ 441] ...................................... -- risk: 127.0067 
 [ 481] ..................
 Final risk: 126.7845 
@@ -215,7 +216,7 @@ Final risk: 126.7845
 > coef(sp, which=1:6)
 $`bols(GST)`
  (Intercept)          GST 
- 0.910987887 -0.003347132 
+ 0.910987882 -0.003347132 
 
 $`bols(DBH)`
 (Intercept)         DBH 
@@ -227,7 +228,7 @@ $`bols(AOT)`
 
 $`bols(AFS)`
 (Intercept)         AFS 
--1.79414563  0.01161085 
+-1.79414567  0.01161085 
 
 $`bols(DWC)`
 (Intercept)         DWC 
@@ -278,7 +279,7 @@ Final risk: 459.1693
 [ 161] ...................................... -- risk: 493.5607 
 [ 201] ...................................... -- risk: 492.2036 
 [ 241] ...................................... -- risk: 491.0902 
-[ 281] ...................................... -- risk: 490.1868 
+[ 281] ...................................... -- risk: 490.1867 
 [ 321] ...................................... -- risk: 489.3907 
 [ 361] ...................................... -- risk: 488.674 
 [ 401] ...................................... -- risk: 488.0528 
@@ -325,3 +326,6 @@ Final risk: 497.9626
 > plot(sp, which = "LOG")
 > 
 > 
+> proc.time()
+   user  system elapsed 
+ 19.413   0.248  19.694 
