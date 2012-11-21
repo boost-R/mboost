@@ -1,7 +1,7 @@
 \name{bodyfat}
 \alias{bodyfat}
 \docType{data}
-\title{ Prediction of Body Fat by Skinfold Thickness, Circumferences, and 
+\title{ Prediction of Body Fat by Skinfold Thickness, Circumferences, and
         Bone Breadths}
 \description{
     For 71 healthy female subjects, body fat measurements and several
@@ -25,7 +25,7 @@
   }
 }
 \details{
- 
+
   Garcia et al. (2005) report on the development of predictive regression equations
   for body fat content by means of common anthropometric
   measurements which were obtained for 71 healthy German women.
@@ -44,7 +44,7 @@
 }
 \source{
 
-    Ada L. Garcia, Karen Wagner, Torsten Hothorn, Corinna Koebnick, 
+    Ada L. Garcia, Karen Wagner, Torsten Hothorn, Corinna Koebnick,
     Hans-Joachim F. Zunft and Ulrike Trippo (2005),
     Improved prediction of body fat by measuring skinfold
     thickness, circumferences, and bone breadths. \emph{Obesity Research},
@@ -67,10 +67,10 @@
 
     ### final model proposed by Garcia et al. (2005)
     fmod <- lm(DEXfat ~ hipcirc + anthro3a + kneebreadth, data = bodyfat)
-    coef(fmod)  
+    coef(fmod)
 
     ### plot additive model for same variables
-    amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth, 
+    amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth,
                      data = bodyfat, baselearner = "bbs")
     layout(matrix(1:3, ncol = 3))
     plot(amod[mstop(AIC(amod, "corrected"))], ask = FALSE)

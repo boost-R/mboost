@@ -1,3 +1,31 @@
+                CHANGES in `mboost' VERSION 2.2-0 (2012-11-21, r479)
+
+  o  switch from packages `multicore' and `snow' to `parallel'
+
+  o  changed behavior of bols(x, intercept = FALSE) when x is a factor:
+     now the intercept is simply dropped from the design matrix; 
+     coding can be specified as usually for factors.
+
+  o  changed default for options("mboost_dftraceS") to FALSE, i.e., 
+     degrees of freedom are now computed from smoothing parameter 
+     as described in B. Hofner, T. Hothorn, T. Kneib, M. Schmid (2011).
+
+  o  changed computation of B-spline basis at the boundaries: 
+     now also use equidistant knots in the boundaries (per default)
+
+  o  improved plot function when dealing with spatial plots
+     (now builds suitable grid based on the observations if no newdata is given)
+
+  o  increased default number of subsampling replicates in stabsel to 100
+
+  o  [experimental] bmono() now implements constraints at the boundaries of 
+     (monotonic) P-splines
+
+  o  [experimental] added family Gehan() for rank-based estimation of survival models
+	   in an accelerated failure time framework (contributed by Brent Johnson 
+       <bajohn3@emory.edu>)
+
+
                 CHANGES in `mboost' VERSION 2.1-3 (2012-09-27, r672)
 
   o  matrices with one column are now handled as vectors in base-learners

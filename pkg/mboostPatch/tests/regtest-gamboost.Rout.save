@@ -1,8 +1,8 @@
 
-R Under development (unstable) (2012-08-30 r60505) -- "Unsuffered Consequences"
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
 Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: x86_64-unknown-linux-gnu (64-bit)
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -19,6 +19,11 @@ Type 'q()' to quit R.
 > 
 > require("mboost")
 Loading required package: mboost
+Loading required package: parallel
+This is mboost 2.2-0.
+  See NEWS for a complete list of changes.
+  Note: The default for the computation of the degrees of freedom has been changed!
+
 > 
 > set.seed(290875)
 > 
@@ -50,9 +55,9 @@ Number of baselearners:  1
 
 > aic <- AIC(cars.gb, method = "corrected")
 > aic
-[1] 6.625438
-Optimal number of boosting iterations: 34 
-Degrees of freedom (for mstop = 34): 5.056199 
+[1] 6.58661
+Optimal number of boosting iterations: 37 
+Degrees of freedom (for mstop = 37): 4.37119 
 > 
 > ht <- hatvalues(cars.gb)
 > 
@@ -225,18 +230,18 @@ In optimize(risk, interval = c(0, max(y[, 1], na.rm = TRUE)), y = y,  :
 > A2
 $surv
            [,1]
- [1,] 0.9983186
- [2,] 0.9930606
- [3,] 0.9867089
- [4,] 0.9766845
- [5,] 0.9158358
- [6,] 0.8576859
- [7,] 0.7982222
- [8,] 0.7225968
- [9,] 0.6427971
-[10,] 0.5623798
-[11,] 0.4490299
-[12,] 0.3426993
+ [1,] 0.9952287
+ [2,] 0.9882014
+ [3,] 0.9791706
+ [4,] 0.9671912
+ [5,] 0.9115227
+ [6,] 0.8581761
+ [7,] 0.8026945
+ [8,] 0.7316060
+ [9,] 0.6567913
+[10,] 0.5825302
+[11,] 0.4737687
+[12,] 0.3723020
 
 $time
  [1]  59 115 156 268 329 353 365 431 464 475 563 638
@@ -251,19 +256,19 @@ attr(,"class")
 > A2 <- survFit(fit2, newdata = newdata)
 > A2
 $surv
-                  1            3        12
- [1,]  5.059374e-01 9.071417e-01 0.9992658
- [2,]  5.963542e-02 6.681175e-01 0.9969654
- [3,]  4.437993e-03 4.607471e-01 0.9941774
- [4,]  7.105658e-05 2.550524e-01 0.9897566
- [5,]  3.469611e-16 6.147540e-03 0.9623562
- [6,]  1.012013e-27 1.376467e-04 0.9351947
- [7,]  2.348370e-40 2.145790e-06 0.9063236
- [8,]  7.382807e-58 6.731171e-09 0.8677950
- [9,]  1.953311e-78 7.669578e-12 0.8245871
-[10,] 6.154361e-102 3.335760e-15 0.7778646
-[11,] 1.619033e-141 7.275027e-21 0.7050833
-[12,] 4.902193e-189 1.161233e-27 0.6266419
+                 1            3        12
+ [1,] 7.224865e-01 8.759679e-01 0.9975414
+ [2,] 4.463454e-01 7.199103e-01 0.9939098
+ [3,] 2.391600e-01 5.583185e-01 0.9892243
+ [4,] 1.035965e-01 3.970621e-01 0.9829766
+ [5,] 1.843298e-03 7.691705e-02 0.9534377
+ [6,] 3.058580e-05 1.448212e-02 0.9242974
+ [7,] 3.256537e-07 2.275840e-03 0.8930422
+ [8,] 5.964830e-10 1.745993e-04 0.8514192
+ [9,] 3.903423e-13 8.807263e-06 0.8054337
+[10,] 1.121666e-16 3.177056e-07 0.7571977
+[11,] 8.909567e-23 1.039739e-09 0.6807910
+[12,] 6.853145e-30 1.314449e-12 0.6013670
 
 $time
  [1]  59 115 156 268 329 353 365 431 464 475 563 638
@@ -506,4 +511,4 @@ Warning in Xfun(mf, vary, args) :
 > 
 > proc.time()
    user  system elapsed 
- 12.056   0.100  12.337 
+ 13.496   0.100  13.745 

@@ -62,7 +62,7 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   Base-learners can be specified via a formula interface
   (function \code{mboost}) or as a list of objects of class \code{bl},
   see \code{\link{bols}}.
-  
+
   \code{oobweights} is a vector used internally by \code{cvrisk}. When carrying
   out cross-validation to determine the optimal stopping iteration of a boosting
   model, the default value of \code{oobweights} (out-of-bag weights) assures

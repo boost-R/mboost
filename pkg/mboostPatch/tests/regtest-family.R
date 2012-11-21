@@ -143,3 +143,42 @@ wpbc <- wpbc[complete.cases(wpbc), colnames(wpbc) != "time"]
 mAUC <- gamboost(status ~ ., data = wpbc, family = AUC())
 1 - mAUC$risk()
 
+
+# rank-based boosting
+
+if (require("survival")) {
+
+set.seed(1907)
+n <- 100
+beta <- c(3, 1.5, 0, 0, 2, 0, 0, 0)
+p <- length(beta)
+x <- matrix(rnorm(n*p), n, p)
+yt <- x %*% beta + rnorm(n)
+x <- cbind(1, x)
+colnames(x) <- c("intercept", paste("x", 1:8, sep=""))
+cens <- runif(n, 0, 6)
+y <- exp(pmin(yt, cens))
+del <- yt <= cens
+## check fitting and cvrisk
+mod <- glmboost(x = x, y = Surv(y, del),
+                control = boost_control(mstop = 500, nu = 0.1),
+                center = TRUE,
+                family = Gehan())
+coef(mod)
+plot(mod$risk())
+cvr <- cvrisk(mod, folds = cv(model.weights(mod), "kfold"), papply=lapply)
+plot(cvr)
+## check weighting:
+wMat <- cv(rep(1, n), type = "kfold",B = 2)
+modWeighted <- glmboost(x = x, y = Surv(y, del), weights = wMat[, 1],
+                        control = boost_control(mstop = 300, nu = 0.20),
+                        family = Gehan())
+# same model with data set subseted:
+modSubset <- glmboost(x = x[as.logical(wMat[, 1]),],
+                      y = Surv(y, del)[as.logical(wMat[, 1]),],
+                      control = boost_control(mstop = 300, nu = 0.20),
+                      family = Gehan())
+## <FIXME> there are still some minor discrepancies. Perhaps this is due to
+## different pre-processing? </FIXME>
+round(coef(modWeighted) - coef(modSubset), 3)
+}

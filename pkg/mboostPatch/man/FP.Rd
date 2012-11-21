@@ -48,7 +48,7 @@ FP(x, p = c(-2, -1, -0.5, 0.5, 1, 2, 3), scaling = TRUE)
     })
 
     ### generate formula
-    fpfm <- as.formula(paste("DEXfat ~ ", 
+    fpfm <- as.formula(paste("DEXfat ~ ",
         paste("FP(", indep, ", scaling = FALSE)", collapse = "+")))
     fpfm
 

@@ -1,6 +1,10 @@
 
 future
 
+    o  allow for Matrices in buser 
+
+    o  remove dependency on pkg spam
+
     o  implement partial dependency plots for blackboost, see
        party:::partialPlot.party
 

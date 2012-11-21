@@ -84,13 +84,16 @@
         - Replace all occurences of mboostDevel with mboost:
 	     R CMD BATCH change_mboostDevel_to_mboost.R
 	     cat change_mboostDevel_to_mboost.Rout
-	- Run build and check again on mboost_XXX
+	- Run build and check again on mboost_XXX 
+	  (*not* mboostDevel this time!)
 	- ATTENTION: Do NOT commit the new, modified files to mboostDevel
 	  	     (only to mboostPatch and CRAN)
 
     Ftp source package to CRAN.
 
     Merge changes to pkg/mboostPatch/
+       (NOTE: This should not work that way as we didn't commit the name changes mboostDevel --> mboost.
+        However, if one uses this path, change_mboostDevel_to_mboost.R needs to be used with mboostPatch)
        cd pkg/mboostPatch
        svn merge (--dry-run) -r601:HEAD svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/pkg/mboostDevel
 

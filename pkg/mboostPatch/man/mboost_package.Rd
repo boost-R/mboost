@@ -15,8 +15,8 @@
 \tabular{ll}{
 Package: \tab mboost\cr
 Type: \tab Package\cr
-Version: \tab 2.1-3\cr
-Date: \tab 2012-09-27\cr
+Version: \tab 2.2-0\cr
+Date: \tab 2012-11-21\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes\cr
@@ -69,7 +69,7 @@ LazyData: \tab yes\cr
   The memory consumption could be reduced considerably,
   thanks to sparse matrix technology in package \code{Matrix}.
   Resampling procedures run automatically in parallel
-  if package \code{multicore} is available.
+  on OSes where parallelization via package \code{parallel} is available.
 
   The most important advancement is a generic implementation
   of the optimizer in function \code{\link{mboost_fit}}.

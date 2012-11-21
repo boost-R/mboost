@@ -23,6 +23,8 @@ cat("\n\nChanging mboostDevel-Ex.Rout.save to mboost-Ex.Rout.save ...\n",
 
 file.rename(from = "pkg/mboostDevel/tests/Examples/mboostDevel-Ex.Rout.save",
             to = "pkg/mboostDevel/tests/Examples/mboost-Ex.Rout.save")
+## Try to remove "from" if it wasn't removed by file.rename
+file.remove("pkg/mboostDevel/tests/Examples/mboostDevel-Ex.Rout.save")
 
 cat("#########################################################################",
     "# ATTENTION: DO NOT COMMIT THE NEW, MODIFIED FILES TO mboostDevel",

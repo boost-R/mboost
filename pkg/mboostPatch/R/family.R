@@ -761,3 +761,69 @@ HingeLoss <- function(alphaCost = 0.5) {
            rclass = function(f) (f > (2 * alphaCost - 1)) + 1,
            name = "Hinge Loss")
 }
+
+# Gehan family for 'mboost' package
+#   Brent Johnson, with comments from Benjamin Hofner
+#   Reference : Johnson BA and Long Q (2011) Survival ensembles by the sum of pairwise differences with application to
+#		lung cancer microarray studies, Annals of Applied Statistics, 5:1081-1101.
+Gehan <- function() {
+    Family(ngradient = function(y, f, w) {
+               Z <- as.vector(log(y[,1]))
+               Del <- as.vector(y[,2])
+               n1 <- length(Z)
+               if(length(f)==1) f <- rep(f,n1)
+               if(length(w)==1) w <- rep(w,n1)
+               idx <- rep(1:n1,w)
+               deltaSubset <- Del[idx]
+               resSubset <- Z[idx] - f[idx]  		# e_j
+               n2 <- length(deltaSubset)		# n2=sum(w)
+               tmpg.fun <- function(I, res, del) {
+                   ediff <- res[I] - res
+                   arg2 <- sum(del * (ediff >= 0) )
+                   arg1 <- ifelse(del[I] > 0.5, sum(ediff <= 0), 0)
+                   arg1 - arg2
+               }
+
+               g <- rep(0,n1)		## here, the gradient is n1-by-1 with 0s for obs out of the Subset
+               g[idx] <- unlist(lapply(1:n2, tmpg.fun, resSubset, deltaSubset))
+               return(-1 * g / n2)      ## here, divide by n2=sum(w)
+           },
+           loss = gehan.loss <- function(y, f, w) {
+               Z <- as.vector(log(y[,1]))
+               Del <- as.vector(y[,2])
+               n1 <- length(Z)
+               if(length(f)==1) rep(f, n1)
+               if(length(w)==1) rep(w, n1)
+               idx <- rep(1:n1,w)
+               deltaSubset <- Del[idx]
+               resSubset <- Z[idx] - f[idx]
+               n2 <- length(deltaSubset)
+               tmpl.fun <- function(I, res, del) {
+                   if(del[I] < 0.5) out1 <- 0
+                   else {
+                       ediff <- res[I] - res
+                       out1 <- -1 * sum(ediff[ediff <= 0])
+                   }
+                   out1
+               }
+               out2 <- rep(0,n1)
+               out2[idx] <- unlist(lapply(1:n2, tmpl.fun, resSubset, deltaSubset))/n2
+               out2
+           },
+           risk = risk <- function(y, f, w = 1){
+               sum(gehan.loss(y, f, w), na.rm=TRUE)
+           },
+           weights = "case",
+           offset = function(y,w){
+               optimize(risk,
+                        interval = c(0, max(y[,1], na.rm=TRUE)), y = y, w = w)$minimum
+           },
+           check_y = function(y) {
+               if (!inherits(y,"Surv"))
+                   stop("response is not an object of class ",
+                        sQuote("Surv"), " but ",
+                        sQuote("family = Gehan()"))
+               y
+           },
+           name = "Gehan loss")
+}

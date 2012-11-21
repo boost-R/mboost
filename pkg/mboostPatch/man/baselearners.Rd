@@ -28,15 +28,18 @@ bspatial(..., df = 6)
 brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
      covFun = stationary.cov,
      args = list(Covariance="Matern", smoothness = 1.5, theta=NULL))
-brandom(..., df = 4)
+brandom(..., contrasts.arg = "contr.dummy", df = 4)
 btree(..., tree_controls = ctree_control(stump = TRUE,
                                          mincriterion = 0,
                                          savesplitstats = FALSE))
-bmono(..., constraint = c("increasing", "decreasing", "convex", "concave"),
+bmono(...,
+      constraint = c("increasing", "decreasing", "convex", "concave", "none"),
       by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
       degree = 3, differences = 2, df = 4, lambda = NULL,
       lambda2 = 1e6, niter=10, intercept = TRUE,
-      contrasts.arg = "contr.treatment")
+      contrasts.arg = "contr.treatment",
+      boundary.constraints = FALSE,
+      cons.arg = list(lambda = 1e+06, n = NULL, diff_order = NULL))
 bmrf(..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
     center = FALSE)
 buser(X, K = NULL, by = NULL, index = NULL, df = 4, lambda = NULL)
@@ -105,26 +108,44 @@ bl1 \%O\% bl2
                  (package \code{fields}) is used. }
   \item{args}{ a named list of arguments to be passed to
                \code{cov.function}. Thus strongly dependent on the
-           specified \code{cov.function}. }
-  \item{contrasts.arg}{ a named list of characters suitable for input to the
-                        \code{\link{contrasts}} replacement function or
-			the contrast matrix itself, see
-                        \code{\link{model.matrix}}, or a single
-			character string (or contrast matrix)
-			which is then used as contrasts for
-			all factors in this base-learner (with the
-			exception of factors in \code{by}). See also
-			example below for setting contrasts. }
+               specified \code{cov.function}. }
+  \item{contrasts.arg}{ a named list of characters suitable for input to
+    the \code{\link{contrasts}} replacement function, or the contrast
+    matrix itself, see \code{\link{model.matrix}}, or a single character
+    string (or contrast matrix) which is then used as contrasts for all
+    factors in this base-learner (with the exception of factors in
+    \code{by}). See also example below for setting contrasts. Note that
+    a special \code{contrasts.arg} exists in package \code{mboost},
+    namely "contr.dummy". This contrast is used per default in
+    \code{brandom} and can also be used in \code{bols}. It leads to a
+    dummy coding as returned by \code{model.matrix(~ x - 1)} were the
+    intercept is implicitly included but each factor level gets a
+    seperate effect estimate (see example below).}
   \item{tree_controls}{ an object of class \code{"TreeControl"}, which can be
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners,
                   stumps are fitted by default.}
   \item{constraint}{ type of constraint to be used. The constraint can
     be either monotonic "increasing" (default), "decreasing" or "convex"
-    or "concave". }
+    or "concave". Additionally, "none" can be used to specify
+    unconstrained P-splines. This is especially of interest in
+    conjunction with \code{boundary.constraints = TRUE}.}
   \item{lambda2}{ penalty parameter for the (monotonicity) constraint. }
   \item{niter}{ maximum number of iterations used to compute constraint
     estimates. Increase this number if a warning is displayed. }
+  \item{boundary.constraints}{ a logical indicating whether additional
+    constraints on the boundaries of the spline should be applied
+    (default: FALSE). This is still experimental.}
+  \item{cons.arg}{ a named list with additional arguments for boundary
+    constraints. The element \code{lambda} specifies the
+    penalty parameter that is used for the additional boundary
+    constraint. The element \code{n} specifies the number of knots to be
+    subject to the constraint and  can be either a scalar (use same
+    number of constrained knots on each side) or a vector. Per default
+    10\% of the knots on each side are used. The element
+    \code{diff_order} can be used to specify the order of the boundary
+    penalty: 1 (constant; default for monotonically constrained effects)
+    or 2 (linear; default for all other effects).}
   \item{bnd}{
     Object of class \code{bnd}, in which the boundaries of a map are defined and from which neighborhood
     relations can be construed. See \code{\link[BayesX]{read.bnd}}. If a boundary object is not available,
@@ -308,7 +329,7 @@ bl1 \%O\% bl2
   Smooth estimates with constraints can be computed using the base-learner
   \code{bmono()} which specifies P-spline base-learners with an
   additional asymmetric penalty enforcing monotonicity or
-  convexity/concavity (see and Eilers, 2005). For more details in the boosting 
+  convexity/concavity (see and Eilers, 2005). For more details in the boosting
   context and monotonic effects of ordinal factors see Hofner, Mueller and Hothorn (2011).
 
   Two or more linear base-learners can be joined using \code{\%+\%}. A
@@ -344,7 +365,7 @@ bl1 \%O\% bl2
 \references{
 
   Iain D. Currie, Maria Durban, and Paul H. C. Eilers (2006),
-  Generalized linear array models with applications to 
+  Generalized linear array models with applications to
   multidimensional smoothing. \emph{Journal of the Royal
   Statistical Society, Series B--Statistical Methodology},
   \bold{68}(2), 259--280.
@@ -367,7 +388,7 @@ bl1 \%O\% bl2
   \emph{Journal of Computational and Graphical Statistics}, \bold{20}, 956--971.
 
   Benjamin Hofner, Joerg Mueller, and Torsten Hothorn (2011),
-  Monotonicity-Constrained Species Distribution Models, 
+  Monotonicity-Constrained Species Distribution Models,
   \emph{Ecology}, 92:1895-1901.
 
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable
@@ -382,10 +403,10 @@ bl1 \%O\% bl2
   Benjamin Hofner (2010), Model-based Boosting 2.0, \emph{Journal of
     Machine Learning Research}, \bold{11}, 2109--2113.
 
-  
-} 
 
-\seealso{\code{\link{mboost}}} 
+}
+
+\seealso{\code{\link{mboost}}}
 
 \examples{
 
@@ -619,7 +640,7 @@ bl1 \%O\% bl2
 
   vol <- as.vector(volcano)
   mod <- mboost(vol ~ bbs(x1, df = 3, knots = 10)\%O\%
-                      bbs(x2, df = 3, knots = 10), 
+                      bbs(x2, df = 3, knots = 10),
                       control = boost_control(nu = 0.25))
   mod[250]
 
@@ -658,5 +679,8 @@ bl1 \%O\% bl2
                                    x2 = "contr.helmert"))
   extract(BL4)
 
+  ### using special contrast: "contr.dummy":
+  BL5 <- bols(x, contrasts.arg = "contr.dummy")
+  extract(BL5)
 }
 \keyword{models}

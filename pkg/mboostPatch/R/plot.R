@@ -4,6 +4,10 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                         xlab = NULL, ylab = expression(f[partial]), add = FALSE,
                         ...) {
 
+    if (inherits(x, "blackboost"))
+        stop("partial dependency plots for ", sQuote("blackboost"), " not yet implemented.",
+             "See ?blackboost.")
+
     which <- x$which(which, usedonly = is.null(which))
 
     pr <- predict(x, which = which, newdata = newdata)
@@ -53,8 +57,10 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
 
         plot_helper <- function(xl, yl){
             pr <- predict(x, newdata = data, which = w)
-            if (vary != "")
+            if (vary != "") {
+                datavary <- data[, colnames(data) == vary, drop = FALSE]
                 data <- data[, colnames(data) != vary, drop = FALSE]
+            }
 
             if (ncol(data) == 1) {
                 if (!add){
@@ -78,6 +84,18 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                 }
             }
             if (ncol(data) == 2) {
+                if (is.null(newdata)){
+                    tmp <- expand.grid(unique(data[,1]), unique(data[,2]))
+                    colnames(tmp) <- colnames(data)
+                    data <- tmp
+                    if (vary != "") {
+                        ## datavary contains only 1 value, thus use only first
+                        ## entry and use recycling to get appropriate vector
+                        tmp <- cbind(datavary[1,], tmp)
+                        colnames(tmp)[1] <- vary
+                    }
+                    pr <- predict(x, newdata = tmp, which = w)
+                }
                 fm <- as.formula(paste("pr ~ ", paste(colnames(data), collapse = "*"), sep = ""))
                 RET[[w]] <<- levelplot(fm, data = data, ...)
             }

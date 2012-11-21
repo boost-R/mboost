@@ -1,4 +1,23 @@
 
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
+Copyright (C) 2012 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
+Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
+Tippen Sie 'license()' or 'licence()' für Details dazu.
+
+R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
+Tippen Sie 'contributors()' für mehr Information und 'citation()',
+um zu erfahren, wie R oder R packages in Publikationen zitiert werden können.
+
+Tippen Sie 'demo()' für einige Demos, 'help()' für on-line Hilfe, oder
+'help.start()' für eine HTML Browserschnittstelle zur Hilfe.
+Tippen Sie 'q()', um R zu verlassen.
+
+> tools:::.run_one_vignette("SurvivalEnsembles.Rnw", docDir = ".");
+
 > source("setup.R")
 
 
@@ -7,41 +26,12 @@
 \setkeys{Gin}{width = 0.95\textwidth}
 > if (!require("ipred")) stop("cannot attach package ", 
 +     sQuote("ipred"))
-Loading required package: ipred
-Loading required package: rpart
-Loading required package: MASS
-Loading required package: mlbench
-Loading required package: survival
-Loading required package: splines
-Loading required package: nnet
-Loading required package: class
 
-Attaching package: ‘ipred’
+> if (!require("rpart")) stop("cannot attach package ", 
++     sQuote("rpart"))
 
-The following object(s) are masked from ‘package:mboost’:
-
-    cv
-
-
-> require("party")
-Loading required package: party
-Loading required package: grid
-Loading required package: modeltools
-Loading required package: stats4
-Loading required package: coin
-Loading required package: mvtnorm
-Loading required package: zoo
-
-Attaching package: ‘zoo’
-
-The following object(s) are masked from ‘package:base’:
-
-    as.Date, as.Date.numeric
-
-Loading required package: sandwich
-Loading required package: strucchange
-Loading required package: vcd
-Loading required package: colorspace
+> if (!require("party")) stop("cannot attach package ", 
++     sQuote("party"))
 
 > set.seed(290875)
 
@@ -52,12 +42,7 @@ Loading required package: colorspace
 +     d <- obs - pred
 +     plot(m, d, xlab = "(Observed + Predicted) / 2" .... [TRUNCATED] 
 
-> handle <- try(url("http://www.stat.uni-muenchen.de/~hothorn/data/AML_Bullinger.rda", 
-+     open = "r"))
-
-> if (inherits(handle, "try-error")) cat("Cannot download data from the net. This vignette needs a working internet connection. \n \\end{document} \n" .... [TRUNCATED] 
-
-> load(handle)
+> load(system.file("AML_Bullinger.Rda", package = "mboost"))
 
 > AMLw <- IPCweights(Surv(clinical$time, clinical$event))
 
@@ -180,10 +165,13 @@ Loading required package: colorspace
 > LMerisk <- sum((GBSG2learn$ltime - predict(LMmod))^2 * 
 +     GBSG2w)/n
 
-> TRmod <- rpart(ltime ~ ., data = GBSG2learn, weights = GBSG2w)
+> pos <- GBSG2w > 0
 
-> TRerisk <- sum((GBSG2learn$ltime - predict(TRmod))^2 * 
-+     GBSG2w)/n
+> TRmod <- rpart(ltime ~ ., data = GBSG2learn, weights = GBSG2w, 
++     subset = pos)
+
+> TRerisk <- sum((GBSG2learn$ltime[pos] - predict(TRmod))^2 * 
++     GBSG2w[pos])/n
 
 > ctrl <- cforest_control(mincriterion = qnorm(0.95), 
 +     mtry = 5, minsplit = 5, ntree = 100)
@@ -325,3 +313,4 @@ Loading required package: colorspace
 +     0]), ylim = yl, ylab = "Predicted", xlab = "Observed", m .... [TRUNCATED] 
 
  *** Run successfully completed ***
+R> 

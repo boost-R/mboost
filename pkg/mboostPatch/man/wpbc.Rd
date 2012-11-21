@@ -8,14 +8,14 @@
   case.  These are consecutive patients seen by Dr. Wolberg
   since 1984, and include only those cases exhibiting invasive
   breast cancer and no evidence of distant metastases at the
-  time of diagnosis. 
+  time of diagnosis.
 
 }
 \usage{data("wpbc")}
 \format{
   A data frame with 198 observations on the following 34 variables.
   \describe{
-    \item{\code{status}}{a factor with levels \code{N} (nonrecur) and 
+    \item{\code{status}}{a factor with levels \code{N} (nonrecur) and
                          \code{R} (recur)}
     \item{\code{time}}{recurrence time (for \code{status == "R"}) or
                        disease-free time (for \code{status == "N"}). }
@@ -67,7 +67,7 @@
 	endpoint; e.g., recurrences before 24 months = positive,
 	non-recurrence beyond 24 months = negative.
 	- 86.3% accuracy estimated accuracy on 2-year recurrence using
-	previous version of this data.  
+	previous version of this data.
 
 	2) Predicting Time To Recur (field 3 in recurrent records)
 	- Estimated mean error 13.9 months using Recurrence Surface
@@ -79,8 +79,8 @@
 }
 \source{
 
-  W. Nick Street, Olvi L. Mangasarian and William H. Wolberg (1995). 
-  An inductive learning approach to prognostic prediction. 
+  W. Nick Street, Olvi L. Mangasarian and William H. Wolberg (1995).
+  An inductive learning approach to prognostic prediction.
   In A. Prieditis and S. Russell, editors, \emph{Proceedings of the
   Twelfth International Conference on Machine Learning}, pages
   522--530, San Francisco, Morgan Kaufmann.
@@ -95,7 +95,7 @@
     data("wpbc", package = "mboost")
 
     ### fit logistic regression model with 100 boosting iterations
-    coef(glmboost(status ~ ., data = wpbc[,colnames(wpbc) != "time"], 
+    coef(glmboost(status ~ ., data = wpbc[,colnames(wpbc) != "time"],
                   family = Binomial()))
 
 }

@@ -89,19 +89,40 @@ X_ols <- function(mf, vary, args) {
         ### set up model matrix
         fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary],
                     collapse = "+"), sep = "")
-        if (!args$intercept) fm <- paste(fm, "-1")
         fac <- sapply(mf[colnames(mf) != vary], is.factor)
         if (any(fac)){
             if (!is.list(args$contrasts.arg)){
-                txt <- paste("list(", paste(colnames(mf)[colnames(mf) != vary][fac],
-                                            "= args$contrasts.arg", collapse = ", "),")")
-                args$contrasts.arg <- eval(parse(text=txt))
+                ## first part needed to prevent warnings from calls such as
+                ## contrasts.arg = contr.treatment(4, base = 1):
+                if (is.character(args$contrasts.arg) &&
+                    args$contrasts.arg == "contr.dummy"){
+                    if (!args$intercept)
+                        stop('"contr.dummy" can only be used with ',
+                             sQuote("intercept = TRUE"))
+                    fm <- paste(fm, "-1")
+                } else {
+                    txt <- paste("list(", paste(colnames(mf)[colnames(mf) != vary][fac],
+                                                "= args$contrasts.arg", collapse = ", "),")")
+                    args$contrasts.arg <- eval(parse(text=txt))
+                }
+            } else {
+                ## if contrasts are given as list check if "contr.dummy" is specified
+                if (any(args$contrasts.arg == "contr.dummy"))
+                    stop('"contr.dummy"',
+                         " can only be used for all factors at the same time.\n",
+                         "Use ", sQuote('contrasts.arg = "contr.dummy"'),
+                         " to achieve this.")
             }
         } else {
             args$contrasts.arg <- NULL
         }
         X <- model.matrix(as.formula(fm), data = mf, contrasts.arg = args$contrasts.arg)
+        if (!is.null(args$contrasts.arg) && args$contrasts.arg == "contr.dummy")
+            attr(X, "contrasts") <- lapply(attr(X, "contrasts"),
+                                           function(x) x <- "contr.dummy")
         contr <- attr(X, "contrasts")
+        if (!args$intercept)
+            X <- X[ , -1, drop = FALSE]
         MATRIX <- any(dim(X) > c(500, 50)) && any(fac)
         MATRIX <- MATRIX && options("mboost_useMatrix")$mboost_useMatrix
         if (MATRIX) {
@@ -185,8 +206,10 @@ X_bbs <- function(mf, vary, args) {
 
     stopifnot(is.data.frame(mf))
     mm <- lapply(which(colnames(mf) != vary), function(i) {
-        X <- bs(mf[[i]], knots = args$knots[[i]]$knots, degree = args$degree,
-           Boundary.knots = args$knots[[i]]$boundary.knots, intercept = TRUE)
+        X <- bsplines(mf[[i]],
+                      knots = args$knots[[i]]$knots,
+                      boundary.knots = args$knots[[i]]$boundary.knots,
+                      degree = args$degree)
         if (args$cyclic) {
             X <- cbs(mf[[i]],
                      knots = args$knots[[i]]$knots,
@@ -541,6 +564,37 @@ cbs <- function (x, knots, boundary.knots, degree = 3) {
     return(X)
 }
 
+bsplines <- function(x, knots, boundary.knots, degree){
+    nx <- names(x)
+    x <- as.vector(x)
+    ## handling of NAs
+    nax <- is.na(x)
+    if (nas <- any(nax))
+        x <- x[!nax]
+    ## use equidistant boundary knots
+    dx <- diff(boundary.knots)/(length(knots) + 1)
+    bk_lower <- seq(boundary.knots[1] - degree * dx, boundary.knots[1],
+                    length = degree + 1)
+    bk_upper <- seq(boundary.knots[2], boundary.knots[2] + degree * dx,
+                    length = degree + 1)
+    ## complete knot mesh
+    k <- c(bk_lower, knots, bk_upper)
+    ## construct design matrix
+    X <- splineDesign(k, x, degree + 1, outer.ok = TRUE)
+    ## handling of NAs
+    if (nas) {
+        tmp <- matrix(NA, length(nax), ncol(X))
+        tmp[!nax, ] <- X
+        X <- tmp
+    }
+    ## add attributes
+    attr(X, "degree") <- degree
+    attr(X,"knots") <- knots
+    attr(X,"boundary.knots") <- list(lower = bk_lower, upper = bk_upper)
+    dimnames(X) <- list(nx, 1L:ncol(X))
+    return(X)
+}
+
 ### workhorse for fitting (Ridge-penalized) baselearners
 bl_lin <- function(blg, Xfun, args) {
 
@@ -673,7 +727,7 @@ bspatial <- function(..., df = 6) {
 }
 
 ### random-effects (Ridge-penalized ANOVA) baselearner
-brandom <- function(..., df = 4) {
+brandom <- function(..., contrasts.arg = "contr.dummy", df = 4) {
     cl <- cltmp <- match.call()
     if (is.null(cl$df)) cl$df <- df
     cl$intercept <- FALSE

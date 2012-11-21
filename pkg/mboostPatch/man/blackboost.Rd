@@ -11,7 +11,7 @@ blackboost(formula, data = list(),
                teststat = "max",
                testtype = "Teststatistic",
                mincriterion = 0,
-               maxdepth = 2, savesplitstats = FALSE), 
+               maxdepth = 2, savesplitstats = FALSE),
            ...)
 }
 \arguments{
@@ -42,7 +42,7 @@ blackboost(formula, data = list(),
   The regression fit is a black box prediction machine and thus
   hardly interpretable.
 
-  Partial dependency plots are not yet available; see example section for 
+  Partial dependency plots are not yet available; see example section for
   plotting of additive tree models.
 
 }
@@ -97,7 +97,7 @@ blackboost(formula, data = list(),
     viris$Species <- viris$Species[, drop = TRUE]
     imod <- mboost(Species ~ btree(Sepal.Length, tree_controls = ctrl) +
                              btree(Sepal.Width, tree_controls = ctrl) +
-                             btree(Petal.Length, tree_controls = ctrl) + 
+                             btree(Petal.Length, tree_controls = ctrl) +
                              btree(Petal.Width, tree_controls = ctrl),
                    data = viris, family = Binomial())[500]
     layout(matrix(1:4, ncol = 2))

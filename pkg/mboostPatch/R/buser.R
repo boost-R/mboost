@@ -26,7 +26,7 @@ buser <- function(X, K = NULL,  by = NULL, index = NULL, df = 4, lambda = NULL){
                 "i.e., base-learners may depend on different",
                 " numbers of observations.")
     ### option
-    DOINDEX <- (nrow(mf) > 10000)
+    DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]])
     if (is.null(index)) {
         if (!CC || DOINDEX) {
             index <- get_index(mf)

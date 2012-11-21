@@ -1,7 +1,7 @@
 
 stabsel <- function(object, FWER = 0.05, cutoff, q, 
-                    folds = cv(model.weights(object), type = "subsampling"),
-                    papply = if (require("multicore")) mclapply else lapply, ...) {
+                    folds = cv(model.weights(object), type = "subsampling", B = 100),
+                    papply = mclapply, ...) {
 
     p <- length(variable.names(object))
     ibase <- 1:p

@@ -1,8 +1,8 @@
 
-R Under development (unstable) (2012-08-30 r60505) -- "Unsuffered Consequences"
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
 Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: x86_64-unknown-linux-gnu (64-bit)
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -19,6 +19,11 @@ Type 'q()' to quit R.
 > 
 > require("mboost")
 Loading required package: mboost
+Loading required package: parallel
+This is mboost 2.2-0.
+  See NEWS for a complete list of changes.
+  Note: The default for the computation of the degrees of freedom has been changed!
+
 > 
 > set.seed(290875)
 > 
@@ -497,4 +502,4 @@ attr(,"offset")
 > 
 > proc.time()
    user  system elapsed 
- 16.985   0.088  17.149 
+ 17.425   0.172  17.636 

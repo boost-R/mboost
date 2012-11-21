@@ -12,7 +12,7 @@ if (!file.exists("figures"))
 cat("\\setkeys{Gin}{width = 0.95\\textwidth}")
 set.seed(290875)
 
-perfplot <- function(x, grid, alpha = NULL, border = 1, 
+perfplot <- function(x, grid, alpha = NULL, border = 1,
                      xlab = "", ylab = "Performance") {
   x <- as.matrix(x)
   nc <- NCOL(x)

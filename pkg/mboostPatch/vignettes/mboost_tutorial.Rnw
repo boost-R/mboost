@@ -120,9 +120,13 @@ if (!file.exists("graphics"))
   \small
   \textbf{This is an extended and slightly modified version of the manuscript}\\
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Mattthias Schmid (2012),
-  Model-based Boosting in \textsf{R}: A Hands-on Tutorial Using the \textsf{R}
-  Package mboost. \emph{Department of Statistics, Technical Report No. 120.}\\
-  URL \url{http://epub.ub.uni-muenchen.de/12754/}.
+  Model-based Boosting in \textsf{R} - A Hands-on Tutorial Using the \textsf{R}
+  Package mboost. \emph{Computational Statistics}\\
+  DOI \href{http://dx.doi.org/10.1007/s00180-012-0382-5}{10.1007/s00180-012-0382-5}.\\
+  The final publication is available at \url{http://link.springer.com}.\\[2em]
+  Changes to the results in the original manuscript are due to changes in some
+  defaults of mboost (most notably the definition of degrees of freedom has
+  changed in mboost 2.2-0). See NEWS for details.
 \end{center}
 \bigskip
 

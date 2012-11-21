@@ -1,6 +1,6 @@
 
 ### Linear baselearner, potentially Ridge-penalized
-bcobs <- function(..., index = NULL, lambda = 1, knots = 20, 
+bcobs <- function(..., index = NULL, lambda = 1, knots = 20,
                   constraint = c("none", "increase", "decrease",
                                  "convex", "concave", "periodic")) {
 
@@ -28,7 +28,7 @@ bcobs <- function(..., index = NULL, lambda = 1, knots = 20,
     ### option
     DOINDEX <- is.data.frame(mf) && (nrow(mf) > 10000 || is.factor(mf[[1]]))
     if (is.null(index)) {
-        ### try to remove duplicated observations or 
+        ### try to remove duplicated observations or
         ### observations with missings
         if (!CC || DOINDEX) {
             index <- mboost:::get_index(mf)
@@ -37,7 +37,7 @@ bcobs <- function(..., index = NULL, lambda = 1, knots = 20,
         }
     }
 
-    ret <- list(model.frame = function() 
+    ret <- list(model.frame = function()
                     if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
                 get_call = function() cll,
                 get_data = function() mf,
@@ -60,7 +60,7 @@ bcobs <- function(..., index = NULL, lambda = 1, knots = 20,
                 y <- y * weights
             }
             model <- cobs(x = mf[[1]], y = y, w = w, constraint = constraint)
-            ret <- list(model = model, 
+            ret <- list(model = model,
                         fitted = function() {
                             ret <- fitted(model)
                             if (is.null(index)) return(ret)
@@ -77,7 +77,7 @@ bcobs <- function(..., index = NULL, lambda = 1, knots = 20,
                 cobs:::predict.cobs(mod$model, z = newdata[[colnames(mf)]])[,2]
             })
             aggregate <- match.arg(aggregate)
-            pr <- switch(aggregate, "sum" = 
+            pr <- switch(aggregate, "sum" =
                 matrix(rowSums(pr), ncol = 1),
             "cumsum" = {
                 M <- triu(crossprod(Matrix(1, nc = ncol(cf))))

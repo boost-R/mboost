@@ -1,26 +1,45 @@
 
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
+Copyright (C) 2012 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
+Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
+Tippen Sie 'license()' or 'licence()' für Details dazu.
+
+R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
+Tippen Sie 'contributors()' für mehr Information und 'citation()',
+um zu erfahren, wie R oder R packages in Publikationen zitiert werden können.
+
+Tippen Sie 'demo()' für einige Demos, 'help()' für on-line Hilfe, oder
+'help.start()' für eine HTML Browserschnittstelle zur Hilfe.
+Tippen Sie 'q()', um R zu verlassen.
+
+> tools:::.run_one_vignette("mboost_illustrations.Rnw", docDir = ".");
+
 > source("setup.R")
 
 
 	%%%% DON'T EDIT THIS FILE
 
 \setkeys{Gin}{width = 0.95\textwidth}
-> bf_lm <- lm(DEXfat ~ hipcirc + kneebreadth + anthro3a,
+> bf_lm <- lm(DEXfat ~ hipcirc + kneebreadth + anthro3a, 
 +     data = bodyfat)
 
 > coef(bf_lm)
-(Intercept)     hipcirc kneebreadth    anthro3a
-  -75.23478     0.51153     1.90199     8.90964
+(Intercept)     hipcirc kneebreadth    anthro3a 
+  -75.23478     0.51153     1.90199     8.90964 
 
 > bf_glm <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)
 
 > coef(bf_glm)
- (Intercept)          age    waistcirc      hipcirc
-  -98.816608     0.013602     0.189716     0.351626
-elbowbreadth  kneebreadth     anthro3a     anthro3b
-   -0.384140     1.736589     3.326860     3.656524
-    anthro3c
-    0.595363
+ (Intercept)          age    waistcirc      hipcirc 
+  -98.816608     0.013602     0.189716     0.351626 
+elbowbreadth  kneebreadth     anthro3a     anthro3b 
+   -0.384140     1.736589     3.326860     3.656524 
+    anthro3c 
+    0.595363 
 attr(,"offset")
 [1] 30.783
 
@@ -28,7 +47,7 @@ attr(,"offset")
 
 > aic <- AIC(bf_glm)
 
-> pdf("figures/bodyfat_glmboost-bodyfat-oob-plot.pdf",
+> pdf("figures/bodyfat_glmboost-bodyfat-oob-plot.pdf", 
 +     version = "1.4", width = 6, height = 10)
 
 > par(mai = par("mai") * c(1, 1, 0.5, 1))
@@ -37,12 +56,12 @@ attr(,"offset")
 
 > layout(matrix(1:2, nrow = 2))
 
-> perfplot(boob, grid, ylab = "Out-of-bootstrap squared error",
+> perfplot(boob, grid, ylab = "Out-of-bootstrap squared error", 
 +     xlab = "Number of boosting iterations", alpha = 0.05)
 
 > abline(h = mean(boobrest), lty = 2)
 
-> lines(c(which.min(colMeans(boob)), which.min(colMeans(boob))),
+> lines(c(which.min(colMeans(boob)), which.min(colMeans(boob))), 
 +     c(0, min(colMeans(boob))), lty = 2)
 
 > points(which.min(colMeans(boob)), min(colMeans(boob)))
@@ -50,17 +69,17 @@ attr(,"offset")
 > plot(aic, ylim = c(3, 5.5))
 
 > dev.off()
-null device
-          1
+null device 
+          1 
 
 > mstop(aic <- AIC(bf_glm))
 [1] 45
 
 > coef(bf_glm[mstop(aic)])
-(Intercept)         age   waistcirc     hipcirc kneebreadth
--97.8458288   0.0023271   0.1893046   0.3488781   1.5217686
-   anthro3a    anthro3b    anthro3c
-  3.3268603   3.6051548   0.5043133
+(Intercept)         age   waistcirc     hipcirc kneebreadth 
+-97.8458288   0.0023271   0.1893046   0.3488781   1.5217686 
+   anthro3a    anthro3b    anthro3c 
+  3.3268603   3.6051548   0.5043133 
 attr(,"offset")
 [1] 30.783
 
@@ -75,17 +94,15 @@ attr(,"offset")
 
 \setkeys{Gin}{width = 0.95\textwidth}
 > bf_gam <- gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss")
-Warning in gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss") :
-  bss and bns are deprecated, bbs is used instead
 
 > mstop(aic <- AIC(bf_gam))
-[1] 50
+[1] 51
 
 > bf_gam <- bf_gam[mstop(aic)]
 
 > layout(matrix(1:4, ncol = 2))
 
-> plot(bf_gam, which = c("hipcirc", "kneebreadth", "waistcirc",
+> plot(bf_gam, which = c("hipcirc", "kneebreadth", "waistcirc", 
 +     "anthro3b"))
 
 > source("setup.R")
@@ -98,12 +115,12 @@ Warning in gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss") :
 
 > indep <- names(bodyfat)[names(bodyfat) != "DEXfat"]
 
-> bsfm <- as.formula(paste("DEXfat ~ ", paste("bs(",
+> bsfm <- as.formula(paste("DEXfat ~ ", paste("bs(", 
 +     indep, ")", collapse = " + ", sep = ""), sep = ""))
 
 > bsfm
-DEXfat ~ bs(age) + bs(waistcirc) + bs(hipcirc) + bs(elbowbreadth) +
-    bs(kneebreadth) + bs(anthro3a) + bs(anthro3b) + bs(anthro3c) +
+DEXfat ~ bs(age) + bs(waistcirc) + bs(hipcirc) + bs(elbowbreadth) + 
+    bs(kneebreadth) + bs(anthro3a) + bs(anthro3b) + bs(anthro3c) + 
     bs(anthro4)
 
 > ctrl <- boost_control(mstop = 5000)
@@ -119,7 +136,7 @@ DEXfat ~ bs(age) + bs(waistcirc) + bs(hipcirc) + bs(elbowbreadth) +
 
 > cf <- coef(bf_bs[mstop(aic)])
 
-> varorder <- c("hipcirc", "waistcirc", "kneebreadth",
+> varorder <- c("hipcirc", "waistcirc", "kneebreadth", 
 +     "anthro3b")
 
 > fpartial <- sapply(varorder, function(v) {
@@ -128,8 +145,8 @@ DEXfat ~ bs(age) + bs(waistcirc) + bs(hipcirc) + bs(elbowbreadth) +
 
 > out <- sapply(varorder, function(i) {
 +     x <- bodyfat[, i]
-+     plot(sort(x), fpartial[order(x), i], main = "", type = "b",
-+         xlab = i, .... [TRUNCATED]
++     plot(sort(x), fpartial[order(x), i], main = "", type = "b", 
++         xlab = i, .... [TRUNCATED] 
 
 > source("setup.R")
 
@@ -166,19 +183,15 @@ DEXfat ~ bs(age) + bs(waistcirc) + bs(hipcirc) + bs(elbowbreadth) +
 
 > offset <- function(y, w) weighted.mean(y, w)
 
-> L2fm <- Family(ngradient = ngradient, loss = rho,
+> L2fm <- Family(ngradient = ngradient, loss = rho, 
 +     offset = offset)
 
-> time <- system.time(west_glm <- glmboost(x, yfit,
+> time <- system.time(west_glm <- glmboost(x, yfit, 
 +     family = L2fm, center = TRUE, control = boost_control(mstop = 200)))[1]
-Warning in glmboost.matrix(x, yfit, family = L2fm, control = boost_control(mstop = 200,  :
-  model with centered covariates does not contain intercept
 
 > x <- t(exprs(westbc) - rowMeans(exprs(westbc)))
 
 > aic <- AIC(west_glm, method = "classical")
-Warning in hatvalues.gamboost(model) :
-  AIC might not be reasonable for family user-specified
 
 > mstop(aic)
 [1] 100
@@ -187,7 +200,7 @@ Warning in hatvalues.gamboost(model) :
 
 > ps <- length(cf[abs(cf) > 0])
 
-> sdx <- sqrt(rowSums((t(x) - colMeans(x))^2)/(nrow(x) -
+> sdx <- sqrt(rowSums((t(x) - colMeans(x))^2)/(nrow(x) - 
 +     1))
 
 > layout(matrix(1:2, ncol = 2))
@@ -214,7 +227,7 @@ Warning in hatvalues.gamboost(model) :
 
 > wpbc2 <- wpbc[cc, colnames(wpbc) != "time"]
 
-> wpbc_step <- step(glm(status ~ ., data = wpbc2, family = binomial()),
+> wpbc_step <- step(glm(status ~ ., data = wpbc2, family = binomial()), 
 +     trace = 0)
 
 > logLik(wpbc_step)
@@ -225,43 +238,41 @@ Warning in hatvalues.gamboost(model) :
 
 > ctrl <- boost_control(mstop = 500)
 
-> wpbc_glm <- glmboost(status ~ ., data = wpbc2, family = Binomial(),
+> wpbc_glm <- glmboost(status ~ ., data = wpbc2, family = Binomial(), 
 +     center = TRUE, control = ctrl)
 
 > aic <- AIC(wpbc_glm, "classical")
 
 > aic
 [1] 198.44
-Optimal number of boosting iterations: 260
-Degrees of freedom (for mstop = 260): 7.0319
+Optimal number of boosting iterations: 260 
+Degrees of freedom (for mstop = 260): 7.0319 
 
 > wpbc_glm <- wpbc_glm[mstop(aic)]
 
 > coef(wpbc_glm)[abs(coef(wpbc_glm)) > 0]
-     (Intercept)     mean_texture    mean_symmetry
-      2.3013e-01      -2.4215e-02      -3.3878e+00
- mean_fractaldim       SE_texture     SE_perimeter
-     -2.0321e+01      -2.6603e-02       4.0908e-02
-  SE_compactness     SE_concavity SE_concavepoints
-      7.0280e+00      -4.6303e+00      -1.5737e+01
-     SE_symmetry     worst_radius  worst_perimeter
-      2.8601e+00       1.7777e-02       1.2639e-03
-      worst_area worst_smoothness            tsize
-      1.5854e-04       8.8372e+00       3.1014e-02
-          pnodes
-      2.5981e-02
+     (Intercept)     mean_texture    mean_symmetry 
+      2.3013e-01      -2.4215e-02      -3.3878e+00 
+ mean_fractaldim       SE_texture     SE_perimeter 
+     -2.0321e+01      -2.6603e-02       4.0908e-02 
+  SE_compactness     SE_concavity SE_concavepoints 
+      7.0280e+00      -4.6303e+00      -1.5737e+01 
+     SE_symmetry     worst_radius  worst_perimeter 
+      2.8601e+00       1.7777e-02       1.2639e-03 
+      worst_area worst_smoothness            tsize 
+      1.5854e-04       8.8372e+00       3.1014e-02 
+          pnodes 
+      2.5981e-02 
 
-> wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial(),
+> wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial(), 
 +     baselearner = "bss")
-Warning in gamboost(status ~ ., data = wpbc2, family = Binomial(), baselearner = "bss") :
-  bss and bns are deprecated, bbs is used instead
 
 > mopt <- mstop(aic <- AIC(wpbc_gam, "classical"))
 
 > aic
-[1] 196.39
-Optimal number of boosting iterations: 98
-Degrees of freedom (for mstop = 98): 15.025
+[1] 196.16
+Optimal number of boosting iterations: 86 
+Degrees of freedom (for mstop = 86): 11.348 
 
 > wpbc_gam <- wpbc_gam[mopt]
 
@@ -289,7 +300,7 @@ Degrees of freedom (for mstop = 98): 15.025
 
 > ctrl <- boost_control(mstop = 500)
 
-> wpbc_surv <- glmboost(log(time) ~ ., data = wpbc3,
+> wpbc_surv <- glmboost(log(time) ~ ., data = wpbc3, 
 +     weights = iw, center = TRUE, control = ctrl)
 
 > mstop(aic <- AIC(wpbc_surv))
@@ -298,16 +309,17 @@ Degrees of freedom (for mstop = 98): 15.025
 > wpbc_surv <- wpbc_surv[mstop(aic)]
 
 > names(coef(wpbc_surv)[abs(coef(wpbc_surv)) > 0])
- [1] "(Intercept)"         "mean_radius"
- [3] "mean_texture"        "mean_smoothness"
- [5] "mean_symmetry"       "SE_texture"
- [7] "SE_smoothness"       "SE_concavepoints"
+ [1] "(Intercept)"         "mean_radius"        
+ [3] "mean_texture"        "mean_smoothness"    
+ [5] "mean_symmetry"       "SE_texture"         
+ [7] "SE_smoothness"       "SE_concavepoints"   
  [9] "SE_symmetry"         "worst_concavepoints"
-[11] "pnodes"
+[11] "pnodes"             
 
-> plot(log(wpbc3$time), predict(wpbc_surv, newdata = wpbc3),
-+     cex = iw, ylim = c(0, 5), xlim = c(0, 5), xlab = "Time to recurrence (log-scale)", .... [TRUNCATED]
+> plot(log(wpbc3$time), predict(wpbc_surv, newdata = wpbc3), 
++     cex = iw, ylim = c(0, 5), xlim = c(0, 5), xlab = "Time to recurrence (log-scale)", .... [TRUNCATED] 
 
 > abline(a = 0, b = 1, lty = 2, lwd = 0.5)
 
  *** Run successfully completed ***
+R> 
