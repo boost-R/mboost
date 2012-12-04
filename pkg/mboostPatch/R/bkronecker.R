@@ -26,7 +26,10 @@ bl_lin_matrix <- function(blg, Xfun, args) {
 
     G <- function(x) {
         one <- matrix(rep(1, ncol(x)), nrow = 1)
-        kronecker(x, one) * kronecker(one, x)
+        suppressMessages(
+            ret <- kronecker(x, one) * kronecker(one, x)
+            )
+        ret
     }
 
     dpp <- function(weights) {
@@ -47,7 +50,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         if (is.null(args$lambda)) {
 
             ### <FIXME>: is there a better way to feed XtX into lambdadf?
-            lambdadf <- df2lambda(matrix(0, ncol = ncol(X$X1) + ncol(X$X2)), 
+            lambdadf <- df2lambda(matrix(0, ncol = ncol(X$X1) + ncol(X$X2)),
                                   df = args$df, lambda = args$lambda,
                                   dmat = K, weights = weights, XtX = XtX)
             ### </FIXME>
@@ -236,9 +239,10 @@ bl_lin_matrix <- function(blg, Xfun, args) {
             X2 <- Matrix(X2)
         if (MATRIX & !is(K2, "Matrix"))
             K2 <- Matrix(K2)
-
-        K <- kronecker(K2, diag(ncol(X1))) +
-             kronecker(diag(ncol(X2)), K1)
+        suppressMessages(
+            K <- kronecker(K2, diag(ncol(X1))) +
+                kronecker(diag(ncol(X2)), K1)
+            )
         list(X = list(X1 = X1, X2 = X2), K = K)
     }
 

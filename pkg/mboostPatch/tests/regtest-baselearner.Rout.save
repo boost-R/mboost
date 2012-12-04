@@ -19,10 +19,9 @@ Type 'q()' to quit R.
 > 
 > library("mboost")
 Loading required package: parallel
-This is mboost 2.2-0.
-  See NEWS for a complete list of changes.
-  Note: The default for the computation of the degrees of freedom has been changed!
-
+This is mboost 2.2-1. See NEWS for a complete list of changes.
+Note: The default for the computation of the degrees of freedom has changed.
+      For details see section 'Global Options' of '?bols'.
 > attach(asNamespace("mboost"))
 The following object(s) are masked from 'package:mboost':
 
@@ -316,37 +315,7 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 > 
 > ### spatial
 > m1 <- gamboost(y ~ bbs(x1) %X% bbs(x2))
-Note: Method with signature 'sparseMatrix#ANY' chosen for function 'kronecker',
- target signature 'dgCMatrix#dgeMatrix'.
- "ANY#Matrix" would also be valid
-Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
- target signature 'dgCMatrix#dgTMatrix'.
- "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature 'ANY#sparseMatrix' chosen for function 'kronecker',
- target signature 'dgeMatrix#dgCMatrix'.
- "Matrix#ANY" would also be valid
-Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
- target signature 'dgTMatrix#dgCMatrix'.
- "TsparseMatrix#sparseMatrix" would also be valid
-Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
- target signature 'dsCMatrix#dgTMatrix'.
- "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
- target signature 'dgTMatrix#dsCMatrix'.
- "TsparseMatrix#sparseMatrix" would also be valid
 > m2 <- gamboost(y ~ bspatial(x1, x2, df = 16))
-Note: Method with signature 'Matrix#diagonalMatrix' chosen for function 'kronecker',
- target signature 'dsCMatrix#ddiMatrix'.
- "sparseMatrix#ANY" would also be valid
-Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
- target signature 'dsCMatrix#dtTMatrix'.
- "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature 'diagonalMatrix#Matrix' chosen for function 'kronecker',
- target signature 'ddiMatrix#dsCMatrix'.
- "ANY#sparseMatrix" would also be valid
-Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
- target signature 'dtTMatrix#dsCMatrix'.
- "TsparseMatrix#sparseMatrix" would also be valid
 > stopifnot(max(abs(predict(m1) - predict(m2))) < sqrt(.Machine$double.eps))
 > stopifnot(max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < sqrt(.Machine$double.eps))
 > 
@@ -356,15 +325,6 @@ Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'k
 > 
 > ### varying numeric
 > m1 <- gamboost(y ~ bbs(x1) %X% bols(x2, intercept = FALSE, lambda = 0))
-Note: Method with signature 'sparseMatrix#ANY' chosen for function 'kronecker',
- target signature 'dgCMatrix#dtrMatrix'.
- "ANY#Matrix" would also be valid
-Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
- target signature 'dgCMatrix#dtTMatrix'.
- "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature 'Matrix#ANY' chosen for function 'kronecker',
- target signature 'dgeMatrix#dgeMatrix'.
- "ANY#Matrix" would also be valid
 > m2 <- gamboost(y ~ bbs(x1, by = x2, df = 4))
 > stopifnot(max(abs(predict(m1) - predict(m2))) < sqrt(.Machine$double.eps))
 > stopifnot(max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < sqrt(.Machine$double.eps))
@@ -577,4 +537,4 @@ There were 50 or more warnings (use warnings() to see the first 50)
 > 
 > proc.time()
    user  system elapsed 
- 23.361   0.172  23.580 
+ 23.193   0.144  23.440 

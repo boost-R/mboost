@@ -71,6 +71,8 @@
        	    R CMD BATCH "--args which='mboostDevel'" copy_Rout_to_Routsave.R
 	    cat copy_Rout_to_Routsave.Rout
        - Update vignette .Rout.save files if necessary
+         (First R CMD INSTALL mboost_XXX.tar.gz, then change to vignettes folder)
+
        	    echo 'tools:::.run_one_vignette("mboost_illustrations.Rnw", docDir = ".");' | R --vanilla > mboost_illustrations.Rout.save
 	    echo 'tools:::.run_one_vignette("mboost.Rnw", docDir = ".");' | R --vanilla > mboost.Rout.save
 	    echo 'tools:::.run_one_vignette("mboost_tutorial.Rnw", docDir = ".");' | R --vanilla > mboost_tutorial.Rout.save
@@ -84,7 +86,7 @@
         - Replace all occurences of mboostDevel with mboost:
 	     R CMD BATCH change_mboostDevel_to_mboost.R
 	     cat change_mboostDevel_to_mboost.Rout
-	- Run build and check again on mboost_XXX 
+	- Run build and check again on mboost_XXX
 	  (*not* mboostDevel this time!)
 	- ATTENTION: Do NOT commit the new, modified files to mboostDevel
 	  	     (only to mboostPatch and CRAN)

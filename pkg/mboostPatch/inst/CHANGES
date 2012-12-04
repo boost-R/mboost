@@ -1,19 +1,31 @@
                 CHANGES in `mboost' VERSION 2.2-1 (2012-XX-XX)
 
+  o  included warnings in stabsel() for better guidiance of the user:
+     - A warning is issued if the upper bound for the FWER in stability
+       selection is greater (by a certain margin) than the specified bound.
+     - A warning is also issued if mstop is too small to select q variables.
+
+  o  suppress the notes from package Matrix about method ambiguity
+     ("Note: method with signature ... chosen, ... would also be valid")
+
+  o  updated manual on base-learners to reflect the change in the default for
+     degrees of freedom (addtionally, all options are now discussed in a
+     separate section of the baselearner manual)
+
 
                 CHANGES in `mboost' VERSION 2.2-0 (2012-11-21, r680)
 
-  o  switch from packages `multicore' and `snow' to `parallel'
+  o  switch from packages `multicore' and`snow' to `parallel'
 
   o  changed behavior of bols(x, intercept = FALSE) when x is a factor:
-     now the intercept is simply dropped from the design matrix; 
+     now the intercept is simply dropped from the design matrix;
      coding can be specified as usually for factors.
 
-  o  changed default for options("mboost_dftraceS") to FALSE, i.e., 
-     degrees of freedom are now computed from smoothing parameter 
+  o  changed default for options("mboost_dftraceS") to FALSE, i.e.,
+     degrees of freedom are now computed from smoothing parameter
      as described in B. Hofner, T. Hothorn, T. Kneib, M. Schmid (2011).
 
-  o  changed computation of B-spline basis at the boundaries: 
+  o  changed computation of B-spline basis at the boundaries:
      now also use equidistant knots in the boundaries (per default)
 
   o  improved plot function when dealing with spatial plots
@@ -21,11 +33,11 @@
 
   o  increased default number of subsampling replicates in stabsel to 100
 
-  o  [experimental] bmono() now implements constraints at the boundaries of 
+  o  [experimental] bmono() now implements constraints at the boundaries of
      (monotonic) P-splines
 
   o  [experimental] added family Gehan() for rank-based estimation of survival models
-	   in an accelerated failure time framework (contributed by Brent Johnson 
+	   in an accelerated failure time framework (contributed by Brent Johnson
        <bajohn3@emory.edu>)
 
 

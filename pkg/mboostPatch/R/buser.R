@@ -83,7 +83,7 @@ X_user <- function(mf, vary, args) {
             X <- do.call("cbind", DM)
         }
         if (ncol(by) > 1)
-            K <- kronecker(diag(ncol(by)), K)
+            suppressMessages(K <- kronecker(diag(ncol(by)), K))
     }
     X <- as.matrix(X)
     # contr <- NULL ##<FIXME> Do we need this?

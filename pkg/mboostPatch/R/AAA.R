@@ -24,10 +24,19 @@
 #}
 
 .onAttach <- function(libname, pkgname) {
-    packageStartupMessage(paste("This is mboost 2.2-0.\n",
-                                " See NEWS for a complete list of changes.\n",
-                                " Note: The default for the computation",
-                                "of the degrees of freedom has been changed!\n"))
+
+    ## get package version
+    vers <- library(help = mboost)$info[[1]]
+    vers <- vers[grep("Version", vers)]
+    vers <- gsub("(Version.* )([0-9]+\\.[0-9]+-[0-9]+)", "\\2", vers)
+
+    packageStartupMessage(paste("This is mboost ",  vers, ". ",
+                                "See NEWS for a complete list of changes.\n",
+                                "Note: The default for the computation",
+                                " of the degrees of freedom has changed.\n",
+                                "      For details see section ",
+                                sQuote("Global Options"), " of ",
+                                sQuote("?bols"), ".", sep =""))
     return(TRUE)
 }
 

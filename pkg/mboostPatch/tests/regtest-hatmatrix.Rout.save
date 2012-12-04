@@ -19,10 +19,9 @@ Type 'q()' to quit R.
 > 
 > library("mboost")
 Loading required package: parallel
-This is mboost 2.2-0.
-  See NEWS for a complete list of changes.
-  Note: The default for the computation of the degrees of freedom has been changed!
-
+This is mboost 2.2-1. See NEWS for a complete list of changes.
+Note: The default for the computation of the degrees of freedom has changed.
+      For details see section 'Global Options' of '?bols'.
 > 
 > set.seed(290875)
 > 
@@ -85,4 +84,4 @@ Warning messages:
 > 
 > proc.time()
    user  system elapsed 
-  2.144   0.060   2.226 
+  2.152   0.040   2.222 

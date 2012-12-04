@@ -25,11 +25,11 @@ Tippen Sie 'q()', um R zu verlassen.
 > if (any(is.na(pd))) {
 +     install.packages("mboost", repos = "http://cran.at.r-project.org")
 +     pd <- packageDescription("mboost")
-+  .... [TRUNCATED] 
++ }
 
 > if (compareVersion(pd$Version, "2.1-0") < 0) {
 +     warning("Current version of mboost is installed!")
-+     install.packages("mboost", repos  .... [TRUNCATED] 
++     install.packages("mboost", repos = "ht ..." ... [TRUNCATED] 
 
 > require("mboost")
 

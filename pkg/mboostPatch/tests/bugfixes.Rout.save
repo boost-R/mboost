@@ -20,10 +20,9 @@ Type 'q()' to quit R.
 > require("mboost")
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.2-0.
-  See NEWS for a complete list of changes.
-  Note: The default for the computation of the degrees of freedom has been changed!
-
+This is mboost 2.2-1. See NEWS for a complete list of changes.
+Note: The default for the computation of the degrees of freedom has changed.
+      For details see section 'Global Options' of '?bols'.
 > require("Matrix")
 Loading required package: Matrix
 Loading required package: lattice
@@ -328,24 +327,6 @@ Error in object$newX(newdata) :
 > x2 <- rnorm(100)
 > data <- data.frame(y=y, x1=x1, x2=x2, z=z)
 > model <- gamboost(y ~ bspatial(x1,x2, by=z), data = data)
-Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
- target signature 'dgCMatrix#dgTMatrix'.
- "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
- target signature 'dgTMatrix#dgCMatrix'.
- "TsparseMatrix#sparseMatrix" would also be valid
-Note: Method with signature 'Matrix#diagonalMatrix' chosen for function 'kronecker',
- target signature 'dsCMatrix#ddiMatrix'.
- "sparseMatrix#ANY" would also be valid
-Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
- target signature 'dsCMatrix#dtTMatrix'.
- "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature 'diagonalMatrix#Matrix' chosen for function 'kronecker',
- target signature 'ddiMatrix#dsCMatrix'.
- "ANY#sparseMatrix" would also be valid
-Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
- target signature 'dtTMatrix#dsCMatrix'.
- "TsparseMatrix#sparseMatrix" would also be valid
 > stopifnot(!is.na(predict(model,data[1,-1])))
 > 
 > ### bols with intercept = FALSE for categorical covariates was broken
@@ -683,4 +664,4 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 > 
 > proc.time()
    user  system elapsed 
- 30.969   0.172  31.434 
+ 30.741   0.164  31.254 
