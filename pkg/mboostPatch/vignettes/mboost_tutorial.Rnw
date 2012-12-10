@@ -446,7 +446,7 @@ using the function \R{boost\_control()}. For example one could specify:
 
 \begin{Schunk}
 \begin{Sinput}
-R> boost_control(mstop = 200,  ## initial number of boosting iterartions. Default: 100
+R> boost_control(mstop = 200,  ## initial number of boosting iterations. Default: 100
 +                nu = 0.05,    ## step length. Default: 0.1
 +                trace = TRUE) ## print status information? Default: FALSE
 \end{Sinput}
@@ -871,7 +871,7 @@ is given in Table~\ref{tab:bbs}.
     estimated for each factor level; Note that in this case, the main effect
     needs to be specified additionally via \R{bbs(x)}.\\
     \R{bbs(x, knots = 10)} & smooth effect with 10 inner knots  \\
-    \R{bbs(x, boundary.knots = (0, 2 * pi),}\newline\hphantom{\R{bbs(}}\R{cyclic = TRUE)} &
+    \R{bbs(x, boundary.knots = c(0, 2 * pi),}\newline\hphantom{\R{bbs(}}\R{cyclic = TRUE)} &
     periodic function with period $2\pi$\\
     \R{bbs(x, center = TRUE, df = 1)} & P-spline decomposition (\R{center =
       TRUE}), which is needed to specify arbitrary small \R{df} for P-splines\\
