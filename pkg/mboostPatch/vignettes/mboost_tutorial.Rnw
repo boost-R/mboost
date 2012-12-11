@@ -1579,7 +1579,7 @@ ngradient = function(y, f, w = 1)  tau * ((y - f) >= 0) +
                     (tau- 1) * ((y - f) < 0)
 @
 Of further interest is also the starting value for the algorithm, which is
-specified via the \R{offset} argument. For quantile regression is was
+specified via the \R{offset} argument. For quantile regression it was
 demonstrated that the offset may be set to the median of the response
 \citep{Fens2011}. With this information, we can already specify our new family
 for quantile regression:
