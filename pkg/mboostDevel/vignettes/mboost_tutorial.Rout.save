@@ -1,23 +1,4 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
-Platform: x86_64-pc-linux-gnu (64-bit)
-
-R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
-Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
-Tippen Sie 'license()' or 'licence()' für Details dazu.
-
-R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
-Tippen Sie 'contributors()' für mehr Information und 'citation()',
-um zu erfahren, wie R oder R packages in Publikationen zitiert werden können.
-
-Tippen Sie 'demo()' für einige Demos, 'help()' für on-line Hilfe, oder
-'help.start()' für eine HTML Browserschnittstelle zur Hilfe.
-Tippen Sie 'q()', um R zu verlassen.
-
-> tools:::.run_one_vignette("mboost_tutorial.Rnw", docDir = ".");
-
 > options(prompt = "R> ", continue = "+  ", width = 80)
 
 > pd <- packageDescription("mboostDevel")
@@ -32,6 +13,12 @@ Tippen Sie 'q()', um R zu verlassen.
 +     install.packages("mboostDevel", repos  .... [TRUNCATED] 
 
 > require("mboostDevel")
+Loading required package: mboostDevel
+Loading required package: parallel
+This is mboost 2.2-0.
+  See NEWS for a complete list of changes.
+  Note: The default for the computation of the degrees of freedom has been changed!
+
 
 > set.seed(190781)
 
@@ -529,6 +516,24 @@ Loss function: tau * (y - f) * ((y - f) >= 0) + (tau - 1) * (y - f) * ((y -
 
 > modspa <- gamboost(y ~ bspatial(x1, x2, knots = list(x1 = 12, 
 +     x2 = 12)))
+Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
+ target signature ‘dgCMatrix#dgTMatrix’.
+ "sparseMatrix#TsparseMatrix" would also be valid
+Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
+ target signature ‘dgTMatrix#dgCMatrix’.
+ "TsparseMatrix#sparseMatrix" would also be valid
+Note: Method with signature ‘Matrix#diagonalMatrix’ chosen for function ‘kronecker’,
+ target signature ‘dsCMatrix#ddiMatrix’.
+ "sparseMatrix#ANY" would also be valid
+Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
+ target signature ‘dsCMatrix#dtTMatrix’.
+ "sparseMatrix#TsparseMatrix" would also be valid
+Note: Method with signature ‘diagonalMatrix#Matrix’ chosen for function ‘kronecker’,
+ target signature ‘ddiMatrix#dsCMatrix’.
+ "ANY#sparseMatrix" would also be valid
+Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
+ target signature ‘dtTMatrix#dsCMatrix’.
+ "TsparseMatrix#sparseMatrix" would also be valid
 
 > library(lattice)
 
@@ -664,4 +669,6 @@ pdf
   2 
 
  *** Run successfully completed ***
-R> 
+> proc.time()
+       User      System verstrichen 
+     12.604       0.148      12.999 

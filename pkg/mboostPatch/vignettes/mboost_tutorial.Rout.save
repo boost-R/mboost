@@ -1,23 +1,4 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
-Platform: x86_64-pc-linux-gnu (64-bit)
-
-R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
-Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
-Tippen Sie 'license()' or 'licence()' für Details dazu.
-
-R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
-Tippen Sie 'contributors()' für mehr Information und 'citation()',
-um zu erfahren, wie R oder R packages in Publikationen zitiert werden können.
-
-Tippen Sie 'demo()' für einige Demos, 'help()' für on-line Hilfe, oder
-'help.start()' für eine HTML Browserschnittstelle zur Hilfe.
-Tippen Sie 'q()', um R zu verlassen.
-
-> tools:::.run_one_vignette("mboost_tutorial.Rnw", docDir = ".");
-
 > options(prompt = "R> ", continue = "+  ", width = 80)
 
 > pd <- packageDescription("mboost")
@@ -32,6 +13,11 @@ Tippen Sie 'q()', um R zu verlassen.
 +     install.packages("mboost", repos = "ht ..." ... [TRUNCATED] 
 
 > require("mboost")
+Loading required package: mboost
+Loading required package: parallel
+This is mboost 2.2-1. See NEWS for a complete list of changes.
+Note: The default for the computation of the degrees of freedom has changed.
+      For details see section ‘Global Options’ of ‘?bols’.
 
 > set.seed(190781)
 
@@ -664,4 +650,6 @@ pdf
   2 
 
  *** Run successfully completed ***
-R> 
+> proc.time()
+       User      System verstrichen 
+     12.308       0.188      12.769 

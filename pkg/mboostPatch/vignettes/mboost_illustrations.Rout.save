@@ -1,24 +1,9 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
-Platform: x86_64-pc-linux-gnu (64-bit)
-
-R ist freie Software und kommt OHNE JEGLICHE GARANTIE.
-Sie sind eingeladen, es unter bestimmten Bedingungen weiter zu verbreiten.
-Tippen Sie 'license()' or 'licence()' für Details dazu.
-
-R ist ein Gemeinschaftsprojekt mit vielen Beitragenden.
-Tippen Sie 'contributors()' für mehr Information und 'citation()',
-um zu erfahren, wie R oder R packages in Publikationen zitiert werden können.
-
-Tippen Sie 'demo()' für einige Demos, 'help()' für on-line Hilfe, oder
-'help.start()' für eine HTML Browserschnittstelle zur Hilfe.
-Tippen Sie 'q()', um R zu verlassen.
-
-> tools:::.run_one_vignette("mboost_illustrations.Rnw", docDir = ".");
-
 > source("setup.R")
+Loading required package: parallel
+This is mboost 2.2-1. See NEWS for a complete list of changes.
+Note: The default for the computation of the degrees of freedom has changed.
+      For details see section ‘Global Options’ of ‘?bols’.
 
 
 	%%%% DON'T EDIT THIS FILE
@@ -94,6 +79,8 @@ attr(,"offset")
 
 \setkeys{Gin}{width = 0.95\textwidth}
 > bf_gam <- gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss")
+Warnung in gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss") :
+  bss and bns are deprecated, bbs is used instead
 
 > mstop(aic <- AIC(bf_gam))
 [1] 51
@@ -188,10 +175,14 @@ DEXfat ~ bs(age) + bs(waistcirc) + bs(hipcirc) + bs(elbowbreadth) +
 
 > time <- system.time(west_glm <- glmboost(x, yfit, 
 +     family = L2fm, center = TRUE, control = boost_control(mstop = 200)))[1]
+Warnung in glmboost.matrix(x, yfit, family = L2fm, center = TRUE, control = boost_control(mstop = 200)) :
+  model with centered covariates does not contain intercept
 
 > x <- t(exprs(westbc) - rowMeans(exprs(westbc)))
 
 > aic <- AIC(west_glm, method = "classical")
+Warnung in hatvalues.gamboost(model) :
+  AIC might not be reasonable for family user-specified
 
 > mstop(aic)
 [1] 100
@@ -266,6 +257,8 @@ Degrees of freedom (for mstop = 260): 7.0319
 
 > wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial(), 
 +     baselearner = "bss")
+Warnung in gamboost(status ~ ., data = wpbc2, family = Binomial(), baselearner = "bss") :
+  bss and bns are deprecated, bbs is used instead
 
 > mopt <- mstop(aic <- AIC(wpbc_gam, "classical"))
 
@@ -322,4 +315,6 @@ Degrees of freedom (for mstop = 86): 11.348
 > abline(a = 0, b = 1, lty = 2, lwd = 0.5)
 
  *** Run successfully completed ***
-R> 
+> proc.time()
+       User      System verstrichen 
+     13.772       0.108      14.009 
