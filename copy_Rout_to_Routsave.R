@@ -6,19 +6,44 @@
 #
 # USAGE:
 #   Use either
-#     R CMD BATCH "--args which='mboostDevel'" copy_Rout_to_Routsave.R
+#     ## To copy test output
+#     Rscript copy_Rout_to_Routsave.R "which='mboostDevel'" "vignettes=FALSE"
+#     ## To copy vignette output
+#     Rscript copy_Rout_to_Routsave.R "which='mboostDevel'" "vignettes=TRUE"
 #   or
-#     R CMD BATCH "--args which='mboostPatch'" copy_Rout_to_Routsave.R
+#     ## To copy test output
+#     Rscript copy_Rout_to_Routsave.R "which='mboostPatch'" "vignettes=FALSE"
+#     ## To copy vignette output
+#     Rscript copy_Rout_to_Routsave.R "which='mboostPatch'" "vignettes=TRUE"
+#
+#
+# ALTERNATIVE USAGE (with R CMD BATCH):
+#   Use either
+#     ## To copy test output
+#     R CMD BATCH "--args which='mboostDevel' vignettes=FALSE" copy_Rout_to_Routsave.R
+#     ## To copy vignette output
+#     R CMD BATCH "--args which='mboostDevel' vignettes=TRUE" copy_Rout_to_Routsave.R
+#   or
+#     ## To copy test output
+#     R CMD BATCH "--args which='mboostPatch' vignettes=FALSE" copy_Rout_to_Routsave.R
+#     ## To copy vignette output
+#     R CMD BATCH "--args which='mboostPatch' vignettes=TRUE" copy_Rout_to_Routsave.R
 #
 ################################################################################
 
 ## Get command line arguments
 args <- commandArgs(TRUE)
-if (length(args) > 1)
-    stop("specify (at maximum) one argument (i.e., which)")
+if (length(args) > 2)
+    stop("specify (at maximum) two arguments (i.e., which and vignettes)")
 eval(parse(text=args))
-if (length(args) == 0)
+if (length(args) == 0) {
     which <- "mboostDevel"
+    vignettes <- FALSE
+}
+if (is.null(which))
+    which <- "mboostDevel"
+if (is.null(vignettes))
+    vignettes <- FALSE
 
 if (which == "mboostDevel") {
     path <- "pkg/mboostDevel"
@@ -35,70 +60,76 @@ if (which == "mboostDevel") {
 ################################################################################
 ## Copy output of test files
 
-## Get relevant file names
-ROUT <- list.files(path = check_path, pattern = ".Rout$", recursive = TRUE)
-ROUT2 <- paste(check_path, ROUT, sep ="")
+if (vignettes == FALSE) {
 
-ROUT.SAVE <- list.files(path = path, pattern = ".Rout.save$", recursive = TRUE)
-ROUT.SAVE <- paste(path, "/", ROUT.SAVE, sep ="")
-ROUT.SAVE <- ROUT.SAVE[grep("test", ROUT.SAVE)]
+    ## Get relevant file names
+    ROUT <- list.files(path = check_path, pattern = ".Rout$", recursive = TRUE)
+    ROUT2 <- paste(check_path, ROUT, sep ="")
 
-## sort ROUT.SAVE
-idx <- rep(NA, length(ROUT))
-for (i in 1:length(ROUT))
-    idx[i] <- grep(ROUT[i], ROUT.SAVE)
-ROUT.SAVE <- ROUT.SAVE[idx]
+    ROUT.SAVE <- list.files(path = path, pattern = ".Rout.save$", recursive = TRUE)
+    ROUT.SAVE <- paste(path, "/", ROUT.SAVE, sep ="")
+    ROUT.SAVE <- ROUT.SAVE[grep("test", ROUT.SAVE)]
 
-cbind(ROUT2, ROUT.SAVE)
+    ## sort ROUT.SAVE
+    idx <- rep(NA, length(ROUT))
+    for (i in 1:length(ROUT))
+        idx[i] <- grep(ROUT[i], ROUT.SAVE)
+    ROUT.SAVE <- ROUT.SAVE[idx]
 
-cat("\n\nCopy *.Rout to *.Rout.save:\n---------------------------\n")
+    cbind(ROUT2, ROUT.SAVE)
 
-for (i in 1:length(ROUT))
-    print(file.copy(ROUT2[i], ROUT.SAVE[i], overwrite = TRUE))
+    cat("\n\nCopy *.Rout to *.Rout.save:\n---------------------------\n")
 
-cat("#########################################################################",
-    "# To revert changes simply use:",
-    ifelse(which == "mboostDevel",
-           "#   svn revert --recursive pkg/mboostDevel/tests",
-           "#   svn revert --recursive pkg/mboostPatch/tests"),
-    "#########################################################################",
-    sep = "\n")
+    for (i in 1:length(ROUT))
+        print(file.copy(ROUT2[i], ROUT.SAVE[i], overwrite = TRUE))
+
+    cat("#########################################################################",
+        "# To revert changes simply use:",
+        ifelse(which == "mboostDevel",
+               "#   svn revert --recursive pkg/mboostDevel/tests",
+               "#   svn revert --recursive pkg/mboostPatch/tests"),
+        "#########################################################################",
+        sep = "\n")
+
+}
 
 ################################################################################
 ## Copy output of vignettes
 
-vpath <- paste(path, "vignettes", sep ="/")
+if (vignettes == TRUE) {
+    vpath <- paste(path, "vignettes", sep ="/")
 
-## get vignette output as created by R CMD check:
-vROUT <- list.files(path = check_path, pattern = ".Rnw.log$")
-if (length(vROUT) > 0) {
-    vROUT2 <- paste(check_path, vROUT, sep ="")
+    ## get vignette output as created by R CMD check:
+    vROUT <- list.files(path = check_path, pattern = ".Rnw.log$")
+    if (length(vROUT) > 0) {
+        vROUT2 <- paste(check_path, vROUT, sep ="")
 
-    vROUT.SAVE <- list.files(path = vpath, pattern = ".Rout.save",
-                             recursive = TRUE)
-    vROUT.SAVE <- paste(vpath, vROUT.SAVE, sep = "/")
+        vROUT.SAVE <- list.files(path = vpath, pattern = ".Rout.save",
+                                 recursive = TRUE)
+        vROUT.SAVE <- paste(vpath, vROUT.SAVE, sep = "/")
 
-    ## sort
-    filenames <- gsub("(.*)\\.Rnw\\.log", "\\1", vROUT)
-    idx <- sapply(filenames, function(fn)
-                  res <- grep(paste(fn, "\\.Rout\\.save", sep=""), vROUT.SAVE))
+        ## sort
+        filenames <- gsub("(.*)\\.Rnw\\.log", "\\1", vROUT)
+        idx <- sapply(filenames, function(fn)
+                      res <- grep(paste(fn, "\\.Rout\\.save", sep=""), vROUT.SAVE))
 
-    vROUT.SAVE <- vROUT.SAVE[idx]
+        vROUT.SAVE <- vROUT.SAVE[idx]
 
-    cbind(vROUT2, vROUT.SAVE)
+        cbind(vROUT2, vROUT.SAVE)
 
-    cat("\n\nCopy *.Rnw.log to *.Rout.save:\n---------------------------\n")
+        cat("\n\nCopy *.Rnw.log to *.Rout.save:\n---------------------------\n")
 
-    for (i in 1:length(vROUT))
-        print(file.copy(vROUT2[i], vROUT.SAVE[i], overwrite = TRUE))
+        for (i in 1:length(vROUT))
+            print(file.copy(vROUT2[i], vROUT.SAVE[i], overwrite = TRUE))
 
-    cat("#########################################################################",
-    "# To revert changes simply use:",
-    ifelse(which == "mboostDevel",
-           "#   svn revert --recursive pkg/mboostDevel/vignettes",
-           "#   svn revert --recursive pkg/mboostPatch/vignettes"),
-    "#########################################################################",
-    sep = "\n")
-} else {
-    cat("\n\nNOTE: No changes in output of vignettes.\n\n")
+        cat("#########################################################################",
+            "# To revert changes simply use:",
+            ifelse(which == "mboostDevel",
+                   "#   svn revert --recursive pkg/mboostDevel/vignettes",
+                   "#   svn revert --recursive pkg/mboostPatch/vignettes"),
+            "#########################################################################",
+            sep = "\n")
+    } else {
+        cat("\n\nNOTE: No changes in output of vignettes.\n\n")
+    }
 }

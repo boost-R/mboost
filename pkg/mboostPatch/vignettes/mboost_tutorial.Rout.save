@@ -41,6 +41,8 @@ Note: The default for the computation of the degrees of freedom has changed.
 (Intercept)     hipcirc kneebreadth    anthro3a 
 -75.2073365   0.5114861   1.9005386   8.9071301 
 
+> glm2 <- glmboost(DEXfat ~ ., data = bodyfat)
+
 > preds <- names(bodyfat[, names(bodyfat) != "DEXfat"])
 
 > fm <- as.formula(paste("DEXfat ~", paste(preds, collapse = "+")))
@@ -49,14 +51,7 @@ Note: The default for the computation of the degrees of freedom has changed.
 DEXfat ~ age + waistcirc + hipcirc + elbowbreadth + kneebreadth + 
     anthro3a + anthro3b + anthro3c + anthro4
 
-> glm2a <- glmboost(fm, data = bodyfat)
-
-> glm2b <- glmboost(DEXfat ~ ., data = bodyfat)
-
-> identical(coef(glm2a), coef(glm2b))
-[1] TRUE
-
-> coef(glm2b, which = "")
+> coef(glm2, which = "")
  (Intercept)          age    waistcirc      hipcirc elbowbreadth  kneebreadth 
  -98.8166077    0.0136017    0.1897156    0.3516258   -0.3841399    1.7365888 
     anthro3a     anthro3b     anthro3c      anthro4 
@@ -64,17 +59,17 @@ DEXfat ~ age + waistcirc + hipcirc + elbowbreadth + kneebreadth +
 attr(,"offset")
 [1] 30.78282
 
-> plot(glm2b, off2int = TRUE)
+> plot(glm2, off2int = TRUE)
 
-> plot(glm2b, ylim = range(coef(glm2b, which = preds)))
-
-> par(mar = c(4, 4, 0, 6) + 0.1)
-
-> plot(glm2b, main = "", off2int = TRUE)
+> plot(glm2, ylim = range(coef(glm2, which = preds)))
 
 > par(mar = c(4, 4, 0, 6) + 0.1)
 
-> plot(glm2b, ylim = range(coef(glm2b, which = preds)), 
+> plot(glm2, main = "", off2int = TRUE)
+
+> par(mar = c(4, 4, 0, 6) + 0.1)
+
+> plot(glm2, ylim = range(coef(glm2, which = preds)), 
 +     main = "")
 
 > gam1 <- gamboost(DEXfat ~ bbs(hipcirc) + bbs(kneebreadth) + 
@@ -242,7 +237,7 @@ NULL
 > loss = function(y, f) tau * (y - f) * ((y - f) >= 
 +     0) + (tau - 1) * (y - f) * ((y - f) < 0)
 
-> ngradient = function(y, f, w = 1) tau * ((y - f) >= 
+> ngradient = function(y, f, w = NULL) tau * ((y - f) >= 
 +     0) + (tau - 1) * ((y - f) < 0)
 
 > OurQuantReg <- function(tau = 0.5) {
@@ -652,4 +647,4 @@ pdf
  *** Run successfully completed ***
 > proc.time()
        User      System verstrichen 
-     12.308       0.188      12.769 
+     12.372       0.204      12.821 

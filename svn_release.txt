@@ -1,8 +1,11 @@
 
-    Standard operating procedures for `mboost' development
+  ############################################################
+  #  Standard operating procedures for `mboost' development  #
+  ############################################################ 
 
 
   Structure of the repository
+  ---------------------------
 
     pkg/mboostDevel/    current development version
             add bug fixes and new functionality
@@ -16,6 +19,7 @@
 
 
   Making a patch release
+  ----------------------
 
     A bug was fixed in pkg/mboostPatch/.
 
@@ -30,8 +34,16 @@
     If differences to .Rout.save occure:
        - Manually check differences
        - If ok, copy new .Rout files to .Rout.save:
-       	    R CMD BATCH "--args which='mboostPatch'" copy_Rout_to_Routsave.R
-       - Update vignette .Rout.save files if necessary (see below)
+
+       	    Rscript copy_Rout_to_Routsave.R "which='mboostPatch'" "vignettes=FALSE"
+
+       - Update vignette .Rout.save files if necessary
+
+            Rscript copy_Rout_to_Routsave.R "which='mboostPatch'" "vignettes=TRUE"
+
+	 For details see 
+         http://r.789695.n4.nabble.com/Generate-Rout-save-files-for-vignettes-td4652752.html
+
 
     Gives no warnings / errors.
 
@@ -54,6 +66,7 @@
 
 
   Making a minor release
+  ----------------------
 
     Several new tools have been added to pkg/mboostDevel/.
 
@@ -68,15 +81,15 @@
     If differences to .Rout.save occure:
        - Manually check differences
        - If ok, copy new .Rout files to .Rout.save:
-       	    R CMD BATCH "--args which='mboostDevel'" copy_Rout_to_Routsave.R
-	    cat copy_Rout_to_Routsave.Rout
-       - Update vignette .Rout.save files if necessary
-         (First R CMD INSTALL mboost_XXX.tar.gz, then change to vignettes folder)
 
-       	    echo 'tools:::.run_one_vignette("mboost_illustrations.Rnw", docDir = ".");' | R --vanilla > mboost_illustrations.Rout.save
-	    echo 'tools:::.run_one_vignette("mboost.Rnw", docDir = ".");' | R --vanilla > mboost.Rout.save
-	    echo 'tools:::.run_one_vignette("mboost_tutorial.Rnw", docDir = ".");' | R --vanilla > mboost_tutorial.Rout.save
-	    echo 'tools:::.run_one_vignette("SurvivalEnsembles.Rnw", docDir = ".");' | R --vanilla > SurvivalEnsembles.Rout.save
+       	    Rscript copy_Rout_to_Routsave.R "which='mboostDevel'" "vignettes=FALSE"
+
+       - Update vignette .Rout.save files if necessary
+
+            Rscript copy_Rout_to_Routsave.R "which='mboostDevel'" "vignettes=TRUE"
+
+	 For details see 
+         http://r.789695.n4.nabble.com/Generate-Rout-save-files-for-vignettes-td4652752.html
 
     Gives no warnings / errors.
 
@@ -106,6 +119,7 @@
 
 
   Starting a new experimental version
+  -----------------------------------
 
     cd mboost
     svn copy pkg/mboostDevel ng/mboost_XXX
