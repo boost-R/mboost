@@ -20,7 +20,8 @@ Type 'q()' to quit R.
 > require("mboost")
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.2-1. See NEWS for a complete list of changes.
+This is mboost 2.2-1. See 'package?mboost' and the NEWS file
+for a complete list of changes.
 Note: The default for the computation of the degrees of freedom has changed.
       For details see section 'Global Options' of '?bols'.
 > require("Matrix")
@@ -664,4 +665,4 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 > 
 > proc.time()
    user  system elapsed 
- 30.741   0.164  31.254 
+ 33.562   0.120  33.939 

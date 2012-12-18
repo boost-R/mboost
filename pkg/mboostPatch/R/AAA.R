@@ -26,12 +26,13 @@
 .onAttach <- function(libname, pkgname) {
 
     ## get package version
-    vers <- library(help = mboost)$info[[1]]
+    vers <- library(help = "mboost")$info[[1]]
     vers <- vers[grep("Version", vers)]
     vers <- gsub("(Version.* )([0-9]+\\.[0-9]+-[0-9]+)", "\\2", vers)
 
-    packageStartupMessage(paste("This is mboost ",  vers, ". ",
-                                "See NEWS for a complete list of changes.\n",
+    packageStartupMessage(paste("This is mboost ", vers, ". ",
+                                "See ", sQuote("package?mboost"), " and the NEWS file\n",
+                                "for a complete list of changes.\n",
                                 "Note: The default for the computation",
                                 " of the degrees of freedom has changed.\n",
                                 "      For details see section ",

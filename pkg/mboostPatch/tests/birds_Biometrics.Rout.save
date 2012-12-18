@@ -19,7 +19,8 @@ Type 'q()' to quit R.
 > 
 > library("mboost")
 Loading required package: parallel
-This is mboost 2.2-1. See NEWS for a complete list of changes.
+This is mboost 2.2-1. See 'package?mboost' and the NEWS file
+for a complete list of changes.
 Note: The default for the computation of the degrees of freedom has changed.
       For details see section 'Global Options' of '?bols'.
 > data("birds", package = "mboost")
@@ -315,4 +316,4 @@ Final risk: 497.9626
 > 
 > proc.time()
    user  system elapsed 
- 19.137   0.308  19.538 
+ 21.281   0.272  21.602 

@@ -20,7 +20,8 @@ Type 'q()' to quit R.
 > require("mboost")
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.2-1. See NEWS for a complete list of changes.
+This is mboost 2.2-1. See 'package?mboost' and the NEWS file
+for a complete list of changes.
 Note: The default for the computation of the degrees of freedom has changed.
       For details see section 'Global Options' of '?bols'.
 > library("party")
@@ -227,4 +228,4 @@ Warning message:
 > 
 > proc.time()
    user  system elapsed 
- 10.876   0.112  11.135 
+ 11.656   0.156  11.995 

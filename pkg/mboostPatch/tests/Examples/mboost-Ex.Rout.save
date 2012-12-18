@@ -23,7 +23,8 @@ Type 'q()' to quit R.
 > options(warn = 1)
 > library('mboost')
 Loading required package: parallel
-This is mboost 2.2-1. See NEWS for a complete list of changes.
+This is mboost 2.2-1. See ‘package?mboost’ and the NEWS file
+for a complete list of changes.
 Note: The default for the computation of the degrees of freedom has changed.
       For details see section ‘Global Options’ of ‘?bols’.
 > 
@@ -3130,7 +3131,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  31.329 0.772 32.787 0.232 0.072 
+Time elapsed:  34.146 0.708 35.761 0.22 0.104 
 > grDevices::dev.off()
 null device 
           1 

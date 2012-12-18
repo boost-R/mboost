@@ -7,7 +7,8 @@
 +     dependencies = TRUE)
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.2-1. See NEWS for a complete list of changes.
+This is mboost 2.2-1. See ‘package?mboost’ and the NEWS file
+for a complete list of changes.
 Note: The default for the computation of the degrees of freedom has changed.
       For details see section ‘Global Options’ of ‘?bols’.
 
@@ -160,4 +161,4 @@ Number of baselearners:  19
  *** Run successfully completed ***
 > proc.time()
        User      System verstrichen 
-     56.962       0.176      61.427 
+     59.587       0.188      64.329 
