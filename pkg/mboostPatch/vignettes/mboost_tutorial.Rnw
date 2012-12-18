@@ -1686,7 +1686,7 @@ $$
             (y_i - f_{\tau i} ) \cdot\tau & \quad   (y_i - f_{\tau i} ) \geq 0 \\
             (y_i - f_{\tau i} ) \cdot(\tau-1) & \quad  (y_i - f_{\tau i} ) <0,
             \end{array} \right.
-$$S
+$$
 which is depicted in Figure~\ref{fig:fam_quantreg}. The \R{loss} for our new
 family is therefore given as:
 <<loss>>=
