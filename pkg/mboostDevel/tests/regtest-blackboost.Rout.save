@@ -20,10 +20,10 @@ Type 'q()' to quit R.
 > require("mboostDevel")
 Loading required package: mboostDevel
 Loading required package: parallel
-This is mboost 2.2-0.
-  See NEWS for a complete list of changes.
-  Note: The default for the computation of the degrees of freedom has been changed!
-
+This is mboostDevel 2.3-0. See 'package?mboostDevel' and the NEWS file
+for a complete list of changes.
+Note: The default for the computation of the degrees of freedom has changed.
+      For details see section 'Global Options' of '?bols'.
 > library("party")
 Loading required package: survival
 Loading required package: splines
@@ -228,4 +228,4 @@ Warning message:
 > 
 > proc.time()
    user  system elapsed 
- 10.944   0.100  11.197 
+ 10.956   0.116  11.216 

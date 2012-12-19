@@ -1,5 +1,5 @@
 
-stabsel <- function(object, FWER = 0.05, cutoff, q, 
+stabsel <- function(object, FWER = 0.05, cutoff, q,
                     folds = cv(model.weights(object), type = "subsampling", B = 100),
                     papply = mclapply, ...) {
 
@@ -8,24 +8,39 @@ stabsel <- function(object, FWER = 0.05, cutoff, q,
 
     stopifnot(FWER > 0 && FWER < 0.5)
     stopifnot(xor(missing(cutoff), missing(q)))
-    if (missing(cutoff)) cutoff <- min(0.9, (q^2 / (FWER * p) + 1) / 2)
+    if (missing(cutoff)) {
+        cutoff <- min(0.9, tmp <- (q^2 / (FWER * p) + 1) / 2)
+        upperbound <- q^2 / p / (2 * cutoff - 1)
+        if (tmp > 0.9 && upperbound - FWER > FWER/2) {
+            warning("Upper bound for FWER > ", FWER, " (by at least ", FWER/2 ,") for the given value of ",
+                    sQuote("q"))
+        }
+    }
     if (missing(q)){
-		stopifnot(cutoff >= 0.5)
-		q <- ceiling(sqrt(FWER * (2 * cutoff - 1) * p))
-	} 
+        stopifnot(cutoff >= 0.5)
+        q <- ceiling(sqrt(FWER * (2 * cutoff - 1) * p))
+        upperbound <- q^2 / p / (2 * cutoff - 1)
+        if (upperbound - FWER > FWER/2)
+            warning("Upper bound for FWER > ", FWER, " (by at least ", FWER/2 ,") for the given value of ",
+                    sQuote("cutoff"))
+    }
 
     fun <- function(model) {
         xs <- selected(model)
         qq <- sapply(1:length(xs), function(x) length(unique(xs[1:x])))
+        if (qq[length(xs)] < q)
+            warning(sQuote("mstop"), " too small to select ", sQuote("q"),
+                    " base-learners; Increase ", sQuote("mstop"),
+                    " bevor applying ", sQuote("stabsel"))
         xs[qq > q] <- xs[1]
         xs
     }
-    ss <- cvrisk(object, fun  = fun, 
+    ss <- cvrisk(object, fun  = fun,
                  folds = folds,
                  papply = papply)
     ret <- matrix(0, nrow = length(ibase), ncol = m <- mstop(object))
     for (i in 1:length(ss)) {
-        tmp <- sapply(ibase, function(x) 
+        tmp <- sapply(ibase, function(x)
             ifelse(x %in% ss[[i]], which(ss[[i]] == x)[1], m + 1))
         ret <- ret + t(sapply(tmp, function(x) c(rep(0, x - 1), rep(1, m - x + 1))))
     }
@@ -65,14 +80,14 @@ plot.stabsel <- function(x, main = deparse(x$call), col = NULL, ...) {
     matplot(t(h), type = "l", lty = 1, xlab = "Number of boosting iterations",
             ylab = "Selection Probability", main = main, col = col, ylim = c(0, 1), ...)
     abline(h = x$cutoff, lty = 1, col = "lightgray")
-    axis(4, at = x$phat[rowSums(x$phat) > 0, ncol(x$phat)], 
+    axis(4, at = x$phat[rowSums(x$phat) > 0, ncol(x$phat)],
          labels = rownames(x$phat)[rowSums(x$phat) > 0], las = 1)
 }
 
-    
+
 fitsel <- function(object, newdata = NULL, which = NULL, ...) {
     fun <- function(model) {
-        tmp <- predict(model, newdata = newdata, 
+        tmp <- predict(model, newdata = newdata,
                        which = which, agg = "cumsum")
         ret <- c()
         for (i in 1:length(tmp))

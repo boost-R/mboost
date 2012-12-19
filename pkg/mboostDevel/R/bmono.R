@@ -229,12 +229,16 @@ bl_mono <- function(blg, Xfun, args) {
         stopifnot(ncoli[[1]] * ncoli[[2]] == ncol(X))
 
         D <- V <- lambda2 <- vector(mode = "list", length =2)
-        D[[1]] <- kronecker(diff(diag(ncoli[[1]]),
-                                 differences = diff_order[[1]]),
-                            diag(ncoli[[2]]))
-        D[[2]] <- kronecker(diag(ncoli[[1]]),
-                            diff(diag(ncoli[[2]]),
-                                 differences = diff_order[[2]]))
+        suppressMessages(
+            D[[1]] <- kronecker(diff(diag(ncoli[[1]]),
+                                     differences = diff_order[[1]]),
+                                diag(ncoli[[2]]))
+            )
+        suppressMessages(
+            D[[2]] <- kronecker(diag(ncoli[[1]]),
+                                diff(diag(ncoli[[2]]),
+                                     differences = diff_order[[2]]))
+            )
         V[[1]] <- matrix(0, ncol = nrow(D[[1]]), nrow =  nrow(D[[1]]))
         V[[2]] <- matrix(0, ncol = nrow(D[[2]]), nrow =  nrow(D[[2]]))
         if (length(args$lambda2) == 1) {
@@ -279,7 +283,7 @@ bl_mono <- function(blg, Xfun, args) {
                  )
 
         if (!is(X, "Matrix")) {
-            ## some lines must be replaced in order to solve directly            
+            ## some lines must be replaced in order to solve directly
             fct[2] <- '    solve(XtX +'
             fct[6] <- "          , crossprod(X, y),"
             fct[7] <- '          LINPACK = FALSE)'

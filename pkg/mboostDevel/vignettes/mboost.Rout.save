@@ -7,10 +7,10 @@
 +     dependencies = TRUE)
 Loading required package: mboostDevel
 Loading required package: parallel
-This is mboost 2.2-0.
-  See NEWS for a complete list of changes.
-  Note: The default for the computation of the degrees of freedom has been changed!
-
+This is mboostDevel 2.3-0. See ‘package?mboostDevel’ and the NEWS file
+for a complete list of changes.
+Note: The default for the computation of the degrees of freedom has changed.
+      For details see section ‘Global Options’ of ‘?bols’.
 
 > library("mboostDevel")
 
@@ -161,4 +161,4 @@ Number of baselearners:  19
  *** Run successfully completed ***
 > proc.time()
        User      System verstrichen 
-     57.106       0.188      60.890 
+      56.81        0.22       61.20 

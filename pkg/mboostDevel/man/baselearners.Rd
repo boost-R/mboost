@@ -66,19 +66,27 @@ bl1 \%O\% bl2
 	     "locally" for the factor (see \code{\link{contrasts}}). Per
 	     default treatment coding is used. Note that the main
 	     effect needs to be specified in a separate base-learner.}
-  \item{index}{ a vector of integers for expanding the variables in \code{...}.
-                For example, \code{bols(x, index = index)} is equal to \code{bols(x[index])},
-                where \code{index} is an integer of length greater or equal to \code{length(x)}.}
-  \item{df}{ trace of the hat matrix for the base-learner defining the base-learner
-             complexity. Low values of \code{df} correspond to a large amount of smoothing and
-             thus to "weaker" base-learners. Certain restrictions have to be kept for the
-             specification of \code{df} since most of the base-learners rely on penalization
-             approaches with a non-trivial null space. For example, for P-splines fitted with
-             \code{bbs}, \code{df} has to be larger than the order of differences employed in
-             the construction of the penalty term. However, when option \code{center=TRUE},
-             the effect is centered around its unpenalized part and therefore any positive number
-             is admissible for \code{df}.}
-  \item{lambda}{ smoothing penalty, computed from \code{df} when \code{df} is specified.}
+
+  \item{index}{ a vector of integers for expanding the variables in
+    \code{...}. For example, \code{bols(x, index = index)} is equal to
+    \code{bols(x[index])}, where \code{index} is an integer of length
+    greater or equal to \code{length(x)}.}
+
+  \item{df}{ trace of the hat matrix for the base-learner defining the
+    base-learner complexity. Low values of \code{df} correspond to a
+    large amount of smoothing and thus to "weaker" base-learners.
+    Certain restrictions have to be kept for the specification of
+    \code{df} since most of the base-learners rely on penalization
+    approaches with a non-trivial null space. For example, for P-splines
+    fitted with \code{bbs}, \code{df} has to be larger than the order of
+    differences employed in the construction of the penalty term.
+    However, when option \code{center=TRUE}, the effect is centered
+    around its unpenalized part and therefore any positive number is
+    admissible for \code{df}. For details on the computation of degrees
+    of freedom see section \sQuote{Global Options}.}
+  \item{lambda}{ smoothing penalty, computed from \code{df} when
+    \code{df} is specified. For details on the computation of degrees
+    of freedom see section \sQuote{Global Options}.}
   \item{knots}{ either the number of knots or a vector of the positions
     of the interior knots (for more details see below). For multiple
     predictor variables, \code{knots} may be a named list where the
@@ -92,10 +100,12 @@ bl1 \%O\% bl2
   \item{degree}{ degree of the regression spline.}
   \item{differences}{ a non-negative integer, typically 1, 2 or 3. If \code{differences} =
                      \emph{k}, \emph{k}-th-order differences are used as
-		     a penalty (\emph{0}-th order differences specify a ridge penalty).}
-  \item{intercept}{ if \code{intercept = TRUE} an intercept is added to the design matrix
-                    of a linear base-learner. If \code{intercept =
-		      FALSE}, continuous covariates should be (mean-) centered.}
+		     a penalty (\emph{0}-th order differences specify a
+		     ridge penalty).}
+  \item{intercept}{ if \code{intercept = TRUE} an intercept is added to
+                    the design matrix of a linear base-learner. If
+                    \code{intercept = FALSE}, continuous covariates
+                    should be (mean-) centered.}
   \item{center}{ if \code{center = TRUE} the corresponding effect is
                  re-parameterized such that the unpenalized part of the fit is subtracted and
                  only the deviation effect is fitted. The unpenalized, parametric part has then
@@ -147,9 +157,10 @@ bl1 \%O\% bl2
     penalty: 1 (constant; default for monotonically constrained effects)
     or 2 (linear; default for all other effects).}
   \item{bnd}{
-    Object of class \code{bnd}, in which the boundaries of a map are defined and from which neighborhood
-    relations can be construed. See \code{\link[BayesX]{read.bnd}}. If a boundary object is not available,
-    the neighborhood matrix can also be given directly. }
+    Object of class \code{bnd}, in which the boundaries of a map are
+    defined and from which neighborhood relations can be construed. See
+    \code{\link[BayesX]{read.bnd}}. If a boundary object is not
+    available, the neighborhood matrix can also be given directly. }
   \item{X}{ design matrix as it should be used in the penalized least
     squares estimation. Effect modifiers do not need to be included here
     (\code{by} can be used for convenience). }
@@ -160,14 +171,16 @@ bl1 \%O\% bl2
   \item{bl2}{a linear base-learner or a list of linear base-learners.}
 }
 \details{
-  \code{bols} refers to linear base-learners (potentially estimated with a ridge penalty), while
-  \code{bbs} provide penalized regression splines. \code{bspatial}
-  fits bivariate surfaces and \code{brandom} defines random effects base-learners.
-  In combination with option \code{by}, these base-learners can be turned into varying
-  coefficient terms. The linear base-learners are fitted using Ridge Regression
-  where the penalty parameter \code{lambda} is either computed from \code{df}
-  (default for \code{bbs}, \code{bspatial}, and \code{brandom}) or specified directly
-  (\code{lambda = 0} means no penalization as default for \code{bols}).
+  \code{bols} refers to linear base-learners (potentially estimated with
+  a ridge penalty), while \code{bbs} provide penalized regression
+  splines. \code{bspatial} fits bivariate surfaces and \code{brandom}
+  defines random effects base-learners. In combination with option
+  \code{by}, these base-learners can be turned into varying coefficient
+  terms. The linear base-learners are fitted using Ridge Regression
+  where the penalty parameter \code{lambda} is either computed from
+  \code{df} (default for \code{bbs}, \code{bspatial}, and
+  \code{brandom}) or specified directly (\code{lambda = 0} means no
+  penalization as default for \code{bols}).
 
   In \code{bols(x)}, \code{x} may be a numeric vector or factor.
   Alternatively, \code{x} can be a data frame containing numeric or
@@ -177,14 +190,14 @@ bl1 \%O\% bl2
   respectively. By default, an intercept term is added to the
   corresponding design matrix (which can be omitted using
   \code{intercept = FALSE}). It is \emph{strongly} advised to (mean-)
-  center continuous covariates, if no intercept is used in \code{bols} (see Hofner
-  et al., 2011). When \code{df} is given, a ridge estimator with
-  \code{df} degrees of freedom (trace of hat matrix) is used as
-  base-learner. Note that all variables are treated as a group, i.e.,
-  they enter the model together if the corresponding base-learner is
-  selected. For ordinal variables, a ridge penalty for the differences
-  of the adjacent categories (Gertheiss and Tutz 2009, Hofner et al.
-  2011) is applied.
+  center continuous covariates, if no intercept is used in \code{bols}
+  (see Hofner et al., 2011a). When \code{df} (or \code{lambda}) is
+  given, a ridge estimator with \code{df} degrees of freedom (see
+  section \sQuote{Global Options}) is used as base-learner. Note that
+  all variables are treated as a group, i.e., they enter the model
+  together if the corresponding base-learner is selected. For ordinal
+  variables, a ridge penalty for the differences of the adjacent
+  categories (Gertheiss and Tutz 2009, Hofner et al. 2011a) is applied.
 
   With \code{bbs}, the P-spline approach of Eilers and Marx (1996) is
   used. P-splines use a squared \emph{k}-th-order difference penalty
@@ -215,10 +228,11 @@ bl1 \%O\% bl2
   factor variable \code{x} that defines the grouping structure of the
   data set. For each level of \code{x}, a separate random intercept is
   fitted, where the random effects variance is governed by the
-  specification of the degrees of freedom \code{df}. Note that
-  \code{brandom(...)} is essentially a wrapper to \code{bols(..., df =
-  4)}, i.e., a wrapper that utilizes ridge-penalized categorical
-  effects. For possible arguments and defaults see \code{bols}.
+  specification of the degrees of freedom \code{df} or \code{lambda}
+  (see section \sQuote{Global Options}). Note that \code{brandom(...)}
+  is essentially a wrapper to \code{bols(..., df = 4)}, i.e., a wrapper
+  that utilizes ridge-penalized categorical effects. For possible
+  arguments and defaults see \code{bols}.
 
   For all linear base-learners the amount of smoothing is determined by
   the trace of the hat matrix, as indicated by \code{df}.
@@ -278,19 +292,21 @@ bl1 \%O\% bl2
   \code{args}. If an effective range \code{theta} is applicable for the
   correlation function (e.g., the Matern family) the user can specify
   this value. Per default (if \code{theta = NULL}) the effective range is
-  chosen as \eqn{\theta = max(||x_i - x_j||)/c}{theta =
+  chosen as \eqn{\theta = max(||x_i - x_j||)/c}{\theta =
   max(||x_i - x_j||)/c} such that the correlation function
-  \deqn{\rho(c; \theta = 1) = \varepsilon,}{rho(c; theta = 1) = epsilon,}
+  \deqn{\rho(c; \theta = 1) = \varepsilon,}{\rho(c; theta = 1) = epsilon,}
   where \eqn{\varepsilon = 0.001}{epsilon = 0.001}.
 
-  \code{bmrf} builds a base of a Markov random field consisting of several regions
-  with a neighborhood structure. The input variable is the observed region.
-  The penalty matrix is either construed from a boundary object or must be
-  given directly via the option \code{bnd}. In that case the \code{dimnames} of
-  the matrix have to be the region names, on the diagonal the number of neighbors
-  have to be given for each region, and for each neighborhood relation the value
-  in the matrix has to be -1, else 0. With a boundary object at hand, the fitted
-  or predicted values can be directly plotted into the map using \code{\link[BayesX]{drawmap}}.
+  \code{bmrf} builds a base of a Markov random field consisting of
+  several regions with a neighborhood structure. The input variable is
+  the observed region. The penalty matrix is either construed from a
+  boundary object or must be given directly via the option \code{bnd}.
+  In that case the \code{dimnames} of the matrix have to be the region
+  names, on the diagonal the number of neighbors have to be given for
+  each region, and for each neighborhood relation the value in the
+  matrix has to be -1, else 0. With a boundary object at hand, the
+  fitted or predicted values can be directly plotted into the map using
+  \code{\link[BayesX]{drawmap}}.
 
   \code{buser(X, K)} specifies a base-learner with user-specified design
   matrix \code{X} and penalty matrix \code{K}, where \code{X} and
@@ -315,33 +331,22 @@ bl1 \%O\% bl2
   covariate \code{x} a separate effect for each group (mean effect) is
   estimated (see examples for resulting design matrices).
 
-  Three global options affect the base-learners: \code{option("mboost_useMatrix")}
-  defaulting to \code{TRUE} indicates that the base-learner may use
-  sparse matrix techniques for its computations. This reduces the memory
-  consumption but might (for smaller sample sizes) require more computing
-  time. \code{option("mboost_indexmin")} is an integer for the sample
-  size required to optimize model fitting by taking ties into account.
-  \code{option("mboost_dftraceS")}, which is also \code{TRUE} by default,
-  indicates that the trace of the smoother matrix is used as degrees
-  of freedom. If \code{FALSE}, an alternative is used (see
-  Hofner et al., 2011).
-
-  Smooth estimates with constraints can be computed using the base-learner
-  \code{bmono()} which specifies P-spline base-learners with an
-  additional asymmetric penalty enforcing monotonicity or
-  convexity/concavity (see and Eilers, 2005). For more details in the boosting
-  context and monotonic effects of ordinal factors see Hofner, Mueller and Hothorn (2011).
+  Smooth estimates with constraints can be computed using the
+  base-learner \code{bmono()} which specifies P-spline base-learners
+  with an additional asymmetric penalty enforcing monotonicity or
+  convexity/concavity (see and Eilers, 2005). For more details in the
+  boosting context and monotonic effects of ordinal factors see Hofner,
+  Mueller and Hothorn (2011b).
 
   Two or more linear base-learners can be joined using \code{\%+\%}. A
   tensor product of two or more linear base-learners is returned by
-  \code{\%X\%}. When the design matrix can be written as the
-  Kronecker product of two matrices \code{X = kronecker(X2, X1)},
-  then \code{bl1 \%O\% bl2} with design matrices X1 and X2, respectively,
-  can be used to efficiently compute Ridge-estimates
-  following Currie, Durban, Eilers (2006). In cases the overall degrees of freedom of the
-  combined base-learner increase (additive or multiplicative,
-  respectively). These three features are experimental and for expert use
-  only.
+  \code{\%X\%}. When the design matrix can be written as the Kronecker
+  product of two matrices \code{X = kronecker(X2, X1)}, then \code{bl1
+  \%O\% bl2} with design matrices X1 and X2, respectively, can be used
+  to efficiently compute Ridge-estimates following Currie, Durban,
+  Eilers (2006). In cases the overall degrees of freedom of the combined
+  base-learner increase (additive or multiplicative, respectively).
+  These three features are experimental and for expert use only.
 
   \code{btree} fits a stump to one or more variables. Note that
   \code{\link{blackboost}} is more efficient for boosting stumps. For
@@ -354,6 +359,37 @@ bl1 \%O\% bl2
   more attractive.
 
 }
+\section{Global Options}{
+  Three global options affect the base-learners:
+
+  \describe{
+
+    \item{\code{options("mboost_useMatrix")}}{ defaulting to \code{TRUE}
+      indicates that the base-learner may use sparse matrix techniques
+      for its computations. This reduces the memory consumption but
+      might (for smaller sample sizes) require more computing time.}
+
+    \item{\code{options("mboost_indexmin")}}{is an integer that
+      specifies the minimum sample size needed to optimize model fitting
+      by automatically taking ties into account (default = 10000).}
+
+    \item{\code{options("mboost_dftraceS")}}{\code{FALSE} by default,
+      indicating how the degrees of freedom should be computed. Per
+      default \deqn{\mathrm{df}(\lambda) = \mathrm{trace}(2S -
+      S^{\top}S),}{df(\lambda) = trace(2S - S'S),} with smoother matrix
+      \eqn{S = X(X^{\top}X + \lambda K)^{-1} X}{S = X(X'X + \lambda
+      K)^(-1) X} is used (see Hofner et al., 2011a). If \code{TRUE}, the
+      trace of the smoother matrix \eqn{\mathrm{df}(\lambda) =
+      \mathrm{trace}(S)} is used as degrees of freedom.
+
+      Note that these formulae specify the relation of \code{df} and
+      \code{lambda} as the smoother matrix \eqn{S} depends only on
+      \eqn{\lambda} (and the (fixed) design matrix \eqn{X}, the (fixed)
+      penalty matrix \eqn{K}).}
+
+  }
+}
+
 \value{
  An object of class \code{blg} (base-learner generator) with a
  \code{dpp} function.
@@ -383,11 +419,11 @@ bl1 \%O\% bl2
   Jan Gertheiss and Gerhard Tutz (2009), Penalized regression with ordinal
   predictors, \emph{International Statistical Review}, \bold{77}(3), 345--365.
 
-  Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011),
+  Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011a),
   A framework for unbiased model selection based on boosting.
   \emph{Journal of Computational and Graphical Statistics}, \bold{20}, 956--971.
 
-  Benjamin Hofner, Joerg Mueller, and Torsten Hothorn (2011),
+  Benjamin Hofner, Joerg Mueller, and Torsten Hothorn (2011b),
   Monotonicity-Constrained Species Distribution Models,
   \emph{Ecology}, 92:1895-1901.
 

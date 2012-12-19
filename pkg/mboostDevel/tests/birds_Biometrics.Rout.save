@@ -19,10 +19,10 @@ Type 'q()' to quit R.
 > 
 > library("mboostDevel")
 Loading required package: parallel
-This is mboost 2.2-0.
-  See NEWS for a complete list of changes.
-  Note: The default for the computation of the degrees of freedom has been changed!
-
+This is mboostDevel 2.3-0. See 'package?mboostDevel' and the NEWS file
+for a complete list of changes.
+Note: The default for the computation of the degrees of freedom has changed.
+      For details see section 'Global Options' of '?bols'.
 > data("birds", package = "mboostDevel")
 > 
 > # define characteristics of the boosting algorithm
@@ -133,18 +133,6 @@ attr(,"offset")
 > fm <- SG4 ~ bols(GST) + bols(DBH) + bols(AOT) + bols(AFS) + bols(DWC) +
 +             bols(LOG) + bspatial(x_gk, y_gk, df=5, differences=1, knots=c(12,12))
 > sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
-Note: Method with signature 'Matrix#diagonalMatrix' chosen for function 'kronecker',
- target signature 'dsCMatrix#ddiMatrix'.
- "sparseMatrix#ANY" would also be valid
-Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
- target signature 'dsCMatrix#dtTMatrix'.
- "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature 'diagonalMatrix#Matrix' chosen for function 'kronecker',
- target signature 'ddiMatrix#dsCMatrix'.
- "ANY#sparseMatrix" would also be valid
-Note: Method with signature 'dsparseMatrix#dsparseMatrix' chosen for function 'kronecker',
- target signature 'dtTMatrix#dsCMatrix'.
- "TsparseMatrix#sparseMatrix" would also be valid
 [   1] ...................................... -- risk: 139.3667 
 [  41] ...................................... -- risk: 131.9988 
 [  81] ...................................... -- risk: 127.5401 
@@ -328,4 +316,4 @@ Final risk: 497.9626
 > 
 > proc.time()
    user  system elapsed 
- 19.413   0.248  19.694 
+ 19.085   0.208  19.343 

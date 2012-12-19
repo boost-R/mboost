@@ -23,10 +23,10 @@ Type 'q()' to quit R.
 > options(warn = 1)
 > library('mboostDevel')
 Loading required package: parallel
-This is mboost 2.2-0.
-  See NEWS for a complete list of changes.
-  Note: The default for the computation of the degrees of freedom has been changed!
-
+This is mboostDevel 2.3-0. See ‘package?mboostDevel’ and the NEWS file
+for a complete list of changes.
+Note: The default for the computation of the degrees of freedom has changed.
+      For details see section ‘Global Options’ of ‘?bols’.
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
 > cleanEx()
@@ -302,24 +302,6 @@ attr(,"offset")
 >   y <- sin(x1) * sin(x2) + rnorm(250, sd = 0.4)
 > 
 >   spline3 <- bspatial(x1, x2, knots = 12)
-Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
- target signature ‘dgCMatrix#dgTMatrix’.
- "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
- target signature ‘dgTMatrix#dgCMatrix’.
- "TsparseMatrix#sparseMatrix" would also be valid
-Note: Method with signature ‘Matrix#diagonalMatrix’ chosen for function ‘kronecker’,
- target signature ‘dsCMatrix#ddiMatrix’.
- "sparseMatrix#ANY" would also be valid
-Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
- target signature ‘dsCMatrix#dtTMatrix’.
- "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature ‘diagonalMatrix#Matrix’ chosen for function ‘kronecker’,
- target signature ‘ddiMatrix#dsCMatrix’.
- "ANY#sparseMatrix" would also be valid
-Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
- target signature ‘dtTMatrix#dsCMatrix’.
- "TsparseMatrix#sparseMatrix" would also be valid
 >   attributes(spline3)
 $names
 [1] "model.frame" "get_call"    "get_data"    "get_index"   "get_vary"   
@@ -555,12 +537,6 @@ bols(x_center, intercept = FALSE).x_center
 >   mod <- mboost(vol ~ bbs(x1, df = 3, knots = 10)%O%
 +                       bbs(x2, df = 3, knots = 10),
 +                       control = boost_control(nu = 0.25))
-Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
- target signature ‘dsCMatrix#dgTMatrix’.
- "sparseMatrix#TsparseMatrix" would also be valid
-Note: Method with signature ‘dsparseMatrix#dsparseMatrix’ chosen for function ‘kronecker’,
- target signature ‘dgTMatrix#dsCMatrix’.
- "TsparseMatrix#sparseMatrix" would also be valid
 >   mod[250]
 
 	 Model-based Boosting
@@ -588,12 +564,6 @@ Number of baselearners:  1
 >   modx <- mboost(vol ~ bbs(Var2, df = 3, knots = 10)%X%
 +                        bbs(Var1, df = 3, knots = 10), data = x,
 +                        control = boost_control(nu = 0.25))
-Note: Method with signature ‘sparseMatrix#ANY’ chosen for function ‘kronecker’,
- target signature ‘dgCMatrix#dgeMatrix’.
- "ANY#Matrix" would also be valid
-Note: Method with signature ‘ANY#sparseMatrix’ chosen for function ‘kronecker’,
- target signature ‘dgeMatrix#dgCMatrix’.
- "Matrix#ANY" would also be valid
 >   modx[250]
 
 	 Model-based Boosting
@@ -1355,9 +1325,9 @@ detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
 > 
 > flush(stderr()); flush(stdout())
 > 
-> ### Name: mboost-package
+> ### Name: mboostDevel-package
 > ### Title: mboostDevel: Model-Based Boosting
-> ### Aliases: mboost-package
+> ### Aliases: mboostDevel-package
 > ### Keywords: package smooth nonparametric models
 > 
 > ### ** Examples
@@ -3021,6 +2991,8 @@ attr(,"boundary.knots")$upper
 >   mod <- glmboost(DEXfat ~ ., data = bodyfat)
 >   (sbody <- stabsel(mod, q = 3,
 +                     folds = cv(model.weights(mod), type = "subsampling", B = 25)))
+Warning in stabsel(mod, q = 3, folds = cv(model.weights(mod), type = "subsampling",  :
+  Upper bound for FWER > 0.05 (by at least 0.025) for the given value of ‘q’
 	Stability Selection
 
 Selected base-learners:
@@ -3159,7 +3131,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  31.705 0.796 33.165 0 0 
+Time elapsed:  31.437 0.768 32.842 0 0 
 > grDevices::dev.off()
 null device 
           1 

@@ -154,7 +154,7 @@ X_ols <- function(mf, vary, args) {
     if (ANOVA && any(sapply(mf[, names(contr), drop = FALSE], is.ordered))) {
         K <- diff(diag(ncol(X) + 1), differences = 1)[, -1, drop = FALSE]
         if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
-            K <- kronecker(diag(ncol(by)), K)
+            suppressMessages(K <- kronecker(diag(ncol(by)), K))
         }
         K <- crossprod(K)
     }
@@ -267,7 +267,7 @@ X_bbs <- function(mf, vary, args) {
         }
 
         if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
-                K <- kronecker(diag(ncol(by)), K)
+                suppressMessages(K <- kronecker(diag(ncol(by)), K))
         }
         if (args$center) {
             tmp <- attributes(X)[c("degree", "knots", "Boundary.knots")]
@@ -279,8 +279,10 @@ X_bbs <- function(mf, vary, args) {
         }
     }
     if (length(mm) == 2) {
-        X <- kronecker(mm[[1]], matrix(1, ncol = ncol(mm[[2]]))) *
-             kronecker(matrix(1, ncol = ncol(mm[[1]])), mm[[2]])
+        suppressMessages(
+            X <- kronecker(mm[[1]], matrix(1, ncol = ncol(mm[[2]]))) *
+                 kronecker(matrix(1, ncol = ncol(mm[[1]])), mm[[2]])
+            )
         if (vary != "") {
             by <- model.matrix(as.formula(paste("~", vary, collapse = "")),
                                data = mf)[ , -1, drop = FALSE] # drop intercept
@@ -323,10 +325,12 @@ X_bbs <- function(mf, vary, args) {
 
         Kx <- crossprod(Kx)
         Ky <- crossprod(Ky)
-        K <- kronecker(Kx, diag(ncol(mm[[2]]))) +
-            kronecker(diag(ncol(mm[[1]])), Ky)
+        suppressMessages(
+            K <- kronecker(Kx, diag(ncol(mm[[2]]))) +
+                kronecker(diag(ncol(mm[[1]])), Ky)
+            )
         if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
-            K <- kronecker(diag(ncol(by)), K)
+            suppressMessages(K <- kronecker(diag(ncol(by)), K))
         }
         if (args$center) {
             L <- eigen(K, symmetric = TRUE, EISPACK = FALSE)
@@ -972,16 +976,18 @@ fit.bl <- function(object, y)
             X2 <- Matrix(X2)
         if (MATRIX & !is(K2, "Matrix"))
             K2 <- Matrix(K2)
-
-        X <- kronecker(X1, Matrix(1, ncol = ncol(X2),
+        suppressMessages(
+            X <- kronecker(X1, Matrix(1, ncol = ncol(X2),
                                   dimnames = list("", colnames(X2))),
                        make.dimnames = TRUE) *
-             kronecker(Matrix(1, ncol = ncol(X1),
+                kronecker(Matrix(1, ncol = ncol(X1),
                               dimnames = list("", colnames(X1))),
                        X2, make.dimnames = TRUE)
-
-        K <- kronecker(K1, diag(ncol(X2))) +
-             kronecker(diag(ncol(X1)), K2)
+            )
+        suppressMessages(
+            K <- kronecker(K1, diag(ncol(X2))) +
+                 kronecker(diag(ncol(X1)), K2)
+            )
         list(X = X, K = K)
     }
 

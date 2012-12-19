@@ -111,7 +111,7 @@ if (vignettes == TRUE) {
         ## sort
         filenames <- gsub("(.*)\\.Rnw\\.log", "\\1", vROUT)
         idx <- sapply(filenames, function(fn)
-                      res <- grep(paste(fn, "\\.Rout\\.save", sep=""), vROUT.SAVE))
+                      res <- grep(paste(fn, "\\.Rout\\.save$", sep=""), vROUT.SAVE))
 
         vROUT.SAVE <- vROUT.SAVE[idx]
 

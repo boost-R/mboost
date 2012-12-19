@@ -5,6 +5,7 @@
 %%\VignetteIndexEntry{mboost Tutorial}
 %%\VignetteDepends{mboostDevel,lattice,RColorBrewer}
 
+\usepackage{threeparttable}  % needed for \tnote (footnotes in table)
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{color}
@@ -47,6 +48,7 @@
 \newcommand{\R}[1]{\texttt{#1}}
 \newcommand{\x}{\mathbf{x}}
 \newcommand{\X}{\mathbf{X}}
+\newcommand{\K}{\mathbf{K}}
 \newcommand{\y}{\mathbf{y}}
 \newcommand{\uv}{\mathbf{u}}
 \newcommand{\bv}{\mbf{\beta}}
@@ -240,15 +242,17 @@ prediction function~$f^*$ that is defined by
 where the loss function $\rho$ is assumed to be differentiable with respect to
 $f$. In practice, we usually deal with realizations $(y_i, \x_i^\top)$,
 $i=1,\dots,n$, of $(y, \x^{\top})$, and the expectation in (\ref{thmean}) is
-therefore not known. For this reason, instead of minimizing the expectated value
+therefore not known. For this reason, instead of minimizing the expected value
 given in (\ref{thmean}), boosting algorithms minimize the observed mean
 $\mathcal{R} := \sum_{i=1}^n \rho(y_i,f(\x_i^\top))$ (also called the
 ``empirical risk''). The following algorithm (``component-wise gradient
 boosting'') is used
-to minimize the $\mathcal{R}$ over $f$:\\
+to minimize $\mathcal{R}$ over $f$:\\
 \begin{enumerate}
 \item Initialize the function estimate $\hat{f}^{[0]}$ with offset values. Note
-  that $\hat{f}^{[0]}$ is a vector of length $n$.
+  that $\hat{f}^{[0]}$ is a vector of length $n$. In the following paragraphs,
+  we will generally denote the vector of function estimates at iteration $m$ by
+  $\hat{f}^{[m]}$.
 \item Specify a set of \emph{base-learners}. Base-learners are simple regression
   estimators with a fixed set of input variables and a univariate response. The
   sets of input variables are allowed to differ among the base-learners.
@@ -262,7 +266,7 @@ to minimize the $\mathcal{R}$ over $f$:\\
   Section~\ref{sec:baselearners} for details and examples). Each base-learner
   represents a modeling alternative for the statistical model. Denote the number
   of base-learners by $P$ and set $m=0$.
-\item Increase $m$ by 1.
+\item Increase $m$ by 1, where $m$ is the number of iterations.
 \item
 \begin{enumerate}
 \item Compute the negative gradient $-\frac{\partial \rho}{\partial f}$ of the
@@ -274,10 +278,11 @@ to minimize the $\mathcal{R}$ over $f$:\\
     \frac{\partial}{\partial f} \rho \left(y_i,\hat{f}^{[m-1]} (\x_i^\top)\right)
   \right)_{i=1,\dots,n} \ .
 \end{eqnarray*}
-\item Fit each of the $P$ base-learners (i.e., the $P$ regression estimators
-  specified in step 2) separately to the negative gradient vector. This yields
-  $P$ vectors of predicted values, where each vector is an estimate of the
-  negative gradient vector $\uv^{[m]}$.
+\item Fit each of the $P$ base-learners to the negative gradient vector, i.e.,
+  use each of the regression estimators specified in step 2 separately to fit
+  the negative gradient. The resulting $P$ regression fits yield $P$ vectors of
+  predicted values, where each vector is an estimate of the negative gradient
+  vector $\uv^{[m]}$.
 \item Select the base-learner that fits $\uv^{[m]}$ best according to the
   residual sum of squares (RSS) criterion and set $\hat{\uv}^{[m]}$ equal to the
   fitted values of the best-fitting base-learner.
@@ -293,7 +298,7 @@ From step 4 it is seen that an estimate of the true negative gradient of
 $\mathcal{R}$ is added to the current estimate of $f^*$ in each iteration.
 Consequently, the component-wise boosting algorithm descends along the gradient
 of the empirical risk $\mathcal{R}$. The empirical risk $\mathcal{R}$ is
-consequently minimized in a stage-wise fashion, and a structural (regression)
+thus minimized in a stage-wise fashion, and a structural (regression)
 relationship between $y$ and $\x$ is established. This strategy corresponds to
 replacing classical Fisher scoring algorithms for maximum likelihood estimation
 of $f^*$ (\citealt{mccullagh}) by a gradient descent algorithm in function
@@ -302,7 +307,11 @@ variable selection and model choice, as only one base-learner is selected for
 updating~$\hat{f}^{[m]}$ in each iteration. For example, if each base-learner
 corresponds to exactly one predictor variable (that is used as the input
 variable of the respective base-learner), only {\em one} predictor variable is
-selected in each iteration (hence the term ``component-wise'').
+selected in each iteration (hence the term ``component-wise''). Note that the
+variable selection property of the above-described algorithm is not a general
+feature of all boosting methods (where, in principle, any type of regression
+estimator could be used to fit the negative gradient) but is caused by the
+specific definition of the base-learning mechanism in steps 2 and 4.
 
 Due to the additive update, the final boosting estimate in iteration $m_{\mathrm{stop}}$
 can be interpreted as an additive prediction function. It is easily seen that
@@ -332,7 +341,10 @@ corresponding base-learner. For example, $f_j$ is a linear function if the
 base-learner used to model $f_j$ in step~4(b) is a simple linear model (see
 \citealt{BuhlmannHothorn06}, p.~484, also see Section \ref{sec:mboost} for
 details). Similarly, $f_j$ is a smooth function of the $j$th covariate $\x_j$ if
-the corresponding base-learner is smooth as well.
+the corresponding base-learner is smooth as well. Note that it is generally
+possible to incorporate observation weights into component-wise gradient
+boosting. This is accomplished by using weighted regression techniques for each
+of the base-learners in step 4.
 
 A crucial issue is the choice of the stopping iteration
 $m_{\mathrm{stop}}$. Several authors have argued that boosting algorithms should
@@ -351,9 +363,9 @@ $\nu$ is small (e.g., $\nu=0.1$, see
 necessary to guarantee that the algorithm does not overshoot the minimum of the
 empirical risk $\mathcal{R}$.
 
-A major consequence of early stopping is that the estimates of $f^*$ are
-shrunken towards zero. This due to the fact that using a small step length $\nu$
-ensures that  effect estimates increase ``slowly'' in the course of the
+A major consequence of early stopping is that boosting optimizes prediction
+accuracy by regularizing the estimates of $f^*$ via shrinkage techniques. This
+is due to the fact that using a small step length $\nu$ ensures that  effect estimates increase ``slowly'' in the course of the
 boosting algorithm, and that the estimates stop increasing as soon as the
 optimal stopping iteration $m_{\mathrm{stop}}$ is reached. Stopping a
 component-wise gradient boosting algorithm at the optimal iteration therefore
@@ -376,7 +388,7 @@ model-based boosting methods as introduced above that result in interpretable
 models. This is in contrast to other boosting packages such as \textbf{gbm}
 \citep{Ridgeway:gbm:2010}, which implements tree-based boosting methods that
 lead to black-box predictions. The \textbf{mboost} package offers a modular
-nature that allows to specify a wide range of models.
+nature that allows to specify a wide range of statistical models.
 
 A generalized additive model is specified as the combination of a distributional
 assumption and a structural assumption. The distributional assumption specifies
@@ -408,14 +420,28 @@ specified is shown in Section~\ref{sec:family}.
 \label{sec:glmboost}
 
 The function \R{glmboost()} provides an interface to fit (generalized) linear
-models. The resulting models can be essentially interpreted the same way as
-models that are derived from \R{glm()}. The only difference is that the boosted
-generalized linear model additionally performs variable selection as described
-in Section~\ref{sec:theory} and the effects are shrunken toward zero if early
-stopping is applied. In each boosting iteration, \R{glmboost()} fits simple
-linear models without intercept separately for each column of the design matrix
-to the negative gradient vector. Only the best-fitting linear model (i.e., the
-best fitting base-learner) is used in the update step.
+models. A (generalized) linear model of the covariates $\x = (x_1,
+  \ldots, x_p)^\top$ has the form
+  \begin{equation*}
+    g(\vec{\mu}) = \beta_0 + \beta_1 x_1 + \ldots +  \beta_px_p
+  \end{equation*}
+  with the (conditional) expectation of the response $\vec{\mu} = \mathds{E}(y |
+  \vec{x})$, the link function $g$ and parameters $\vec{\beta}$. The resulting
+  models from \R{glmboost()} can be essentially interpreted the same way as
+  models that are derived from \R{glm()}. The only difference is that the
+  boosted generalized linear model additionally performs variable selection as
+  described in Section~\ref{sec:theory} and the effects are shrunken toward zero
+  if early stopping is applied. In each boosting iteration, \R{glmboost()} fits
+  simple linear models without intercept \emph{separately for each column of the
+    design matrix} to the negative gradient vector. Only the best-fitting linear
+  model (i.e., the best fitting base-learner) is used in the update step. If
+  factors are used in the model, this results in separate updates for the
+  effects of each factor level as these are (after dummy coding) represented by
+  separate columns in the design matrix. If one wants to treat factors or groups
+  of variables as one base-learner with a common update, one needs to use the
+  \R{gamboost()} function with a \R{bols()} base-learner for each factor or
+  group (see Section~\ref{sec:gamboost}, especially Table~\ref{tab:bols}, for
+  details).
 
 The interface of \R{glmboost()} is in essence the same as for \R{glm()}. Before
 we show how one can use the function to fit a linear model to predict the body
@@ -446,7 +472,7 @@ using the function \R{boost\_control()}. For example one could specify:
 
 \begin{Schunk}
 \begin{Sinput}
-R> boost_control(mstop = 200,  ## initial number of boosting iterartions. Default: 100
+R> boost_control(mstop = 200,  ## initial number of boosting iterations. Default: 100
 +                nu = 0.05,    ## step length. Default: 0.1
 +                trace = TRUE) ## print status information? Default: FALSE
 \end{Sinput}
@@ -530,43 +556,42 @@ coef(glm1, off2int=TRUE)    ## off2int adds the offset to the intercept
 \noindent Note that in this case we used the default settings in \R{control} and
 the default family \R{Gaussian()} leading to boosting with the $L_2$ loss.
 
-We now want consider all available variables as potential predictors. As a
-convenient way to specify a large number of predictors via the formula interface
-one can use \R{paste()}. This solution can also be very useful for
-high-dimensional non-linear models. As an example we now consider the (still
-rather low dimensional) linear model for body fat prediction:
+We now want to consider all available variables as potential predictors. One way
+is to simply specify \R{"."} on the right side of the formula:
 <<mod_glmboost>>=
+glm2 <- glmboost(DEXfat ~ ., data = bodyfat)
+@
+As an alternative one can explicitly provide the whole formula by using the
+\R{paste()} function\footnote{Another alternative is given by the matrix
+  interface for \R{glmboost()} where one can directly use the design matrix as
+  an argument. For details see \R{?glmboost}.}. Therefore, one could essentially
+call:
+<<mod_glmboost2>>=
 preds <- names(bodyfat[, names(bodyfat) != "DEXfat"])        ## names of predictors
 fm <- as.formula(paste("DEXfat ~", paste(preds, collapse = "+")))  ## build formula
 fm
-glm2a <- glmboost(fm, data = bodyfat)
 @
-Another possibility to include all available predictors as candidates is to
-simply specify \R{"."} on the right side of the formula\footnote{A third
-  alternative is given by the matrix interface for \R{glmboost()} where one can
-  directly use the design matrix as an argument. For details see
-  \R{?glmboost}.}:
-<<mod_glmboost2>>=
-glm2b <- glmboost(DEXfat ~ ., data = bodyfat)
-identical(coef(glm2a), coef(glm2b))
-@
+and provide \R{fm} to the \R{formula} argument in \R{glmboost()}. Note that a
+solution using the \R{paste()} function is somewhat unavoidable when we intend
+to combine different base-learners for plenty of predictors in \R{gamboost()}.
+
 Note that at this iteration (\R{mstop} is still 100 as it is the default value)
-\R{anthro4a} is not not included in the resulting model as the corresponding
+\R{anthro4a} is not included in the resulting model as the corresponding
 base-learner was never selected in the update step. The function \R{coef()} by
 default only displays the selected variables but can be forced to show all
 effects by specifying \R{which = ""}:
 <<coef_glmboost>>=
-coef(glm2b,         ## usually the argument 'which' is used to specify single base-
-     which = "")    ## learners via partial matching; With which = "" we select all.
+coef(glm2,        ## usually the argument 'which' is used to specify single base-
+     which = "")  ## learners via partial matching; With which = "" we select all.
 @
 A plot of the coefficient paths, similar to the ones commonly known from the
 LARS algorithm \citep{Efron2002}, can be easily produced by using \R{plot()} on
 the \R{glmboost} object (see Figure~\ref{fig:coefpaths}):
 
 <<plot_glmboost>>=
-plot(glm2b, off2int = TRUE)    ## default plot, offset added to intercept
+plot(glm2, off2int = TRUE)    ## default plot, offset added to intercept
 ## now change ylim to the range of the coefficients without intercept (zoom-in)
-plot(glm2b, ylim = range(coef(glm2b, which = preds)))
+plot(glm2, ylim = range(coef(glm2, which = preds)))
 @
 
 \setkeys{Gin}{width = 0.45\textwidth}
@@ -575,16 +600,18 @@ plot(glm2b, ylim = range(coef(glm2b, which = preds)))
 <<coefsplot1, width = 5, height = 5, fig = true, echo = false>>=
 ## same as first plot from chunk "plot_glmboost" but with better margins
 par(mar = c(4, 4, 0, 6) + 0.1)
-plot(glm2b, main="", off2int=TRUE)
+plot(glm2, main="", off2int=TRUE)
 @
 \hfill
 <<coefsplot2, width = 5,height = 5, fig = true, echo = false>>=
 ## same as second plot from chunk "plot_glmboost" but with better margins
 par(mar = c(4, 4, 0, 6) + 0.1)
-plot(glm2b, ylim = range(coef(glm2b, which = preds)), main = "")
+plot(glm2, ylim = range(coef(glm2, which = preds)), main = "")
 @
-\caption{Coefficents paths with the body fat data, default plot (left) and with
-  an adjusted y-scale (right). \label{fig:coefpaths}}
+\caption{Coefficients paths for the body fat data: Here, the default plot on the
+  left leads to hardly readable variable names due to the inclusion of the
+  intercept. For the plot on the right we therefore adjusted the y-scale to
+  avoid this problem. \label{fig:coefpaths}}
 \end{figure}
 
 \paragraph{Centering of Linear Base-learners Without Intercept}\hfill\\
@@ -655,8 +682,18 @@ predictors.
 \label{sec:gamboost}
 
 Besides an interface to fit linear models, \textbf{mboost} offers a very
-flexible and powerful function to fit structured additive models. This
-function, \R{gamboost()} can be used to fit linear models or (non-linear)
+flexible and powerful function to fit additive models. An additive model of the
+covariates $\x = (x_1, \ldots, x_p)^\top$ has, in general, the form
+\begin{equation*}
+  g(\vec{\mu}) = \beta_0 + f_1 + \ldots +  f_p
+\end{equation*}
+with the (conditional) expectation of the response $\vec{\mu} = \mathds{E}(y |
+\vec{x})$, the link function $g$ and arbitrary functions $f_1, \ldots, f_p$ of
+the covariates. These functions include simple, linear functions as well as
+smooth, non-linear functions. The functions are specified by the base-learners
+that are introduced in the following paragraphs.
+
+The function \R{gamboost()} can be used to fit linear models or (non-linear)
 additive models via component-wise boosting. The user additionally needs to
 state which variable should enter the model in which fashion, e.g. as a linear
 effect or as a smooth effect. In general, however, the interface of
@@ -689,6 +726,18 @@ results from this base-learner can adopt higher order degrees of freedom due to
 the iterative nature of the algorithm. If the base-learner is chosen multiple
 times, it overall adapts to an appropriate degree of flexibility and smoothness.
 
+All base-learners considered in this tutorial are simple penalized least squares
+models of the form
+\begin{equation*}
+  \hat{\uv} = \X (\X^\top\X + \lambda
+  \K)^{-1}\X^\top \uv = \mathcal{S} \uv,
+\end{equation*}
+where the hat-matrix is defined as $\mathcal{S} = \X (\X^\top\X + \lambda
+\K)^{-1}\X^\top$, with design matrix $\X$, penalty parameter $\lambda$ and
+penalty matrix $\K$. The design and penalty matrices depend on the type of
+base-learner. A penalty parameter $\lambda = 0$ results in unpenalized
+estimation.
+
 \paragraph{Linear and Categorical Effects}\hfill\\
 
 \noindent The \R{bols()} function\footnote{the name refers to \textbf{o}rdinary
@@ -697,13 +746,13 @@ times, it overall adapts to an appropriate degree of flexibility and smoothness.
 this type include (a) linear effects, (b) categorical effects, (c) linear
 effects for groups of variables $\x = (x_1, x_2, \ldots, x_p)^\top$, (d)
 ridge-penalized effects for (b) and (c), (e) varying coefficient terms (i.e.,
-interactions), etc. If a penalized base-learner is specified, a special penalty
-based on the differences of the effects of adjacent categories is automatically
-used for ordinal variables (\R{x <- as.ordered(x)}) instead of the ridge penalty
+interactions). If a penalized base-learner is specified, a special penalty based
+on the differences of the effects of adjacent categories is automatically used
+for ordinal variables (\R{x <- as.ordered(x)}) instead of the ridge penalty
 \citep{Hofner:unbiased:2011}. Figure~\ref{fig:expl_bols} shows two effect
 estimates that result from \R{bols()} base-learners, a simple linear effect and
 an effect estimate for a factor variable. The call to an ordinary penalized
-least squares base-learner looks as follows:
+least squares base-learner is as follows:
 \begin{Schunk}
 \begin{Sinput}
   bols(..., by = NULL, intercept = TRUE, df = NULL, lambda = 0)
@@ -712,13 +761,13 @@ least squares base-learner looks as follows:
 The variables that correspond to the base-learner are specified in the
 \,`\R{\ldots}'\, argument, separated by commas. If multiple variables are
 specified, they are treated as \emph{one group}. A linear model is fitted for
-all given variables together and they are either all updated or not at all.
-An additional variable that defines varying coefficients can optionally
+all given variables together and they are either all updated or not at all. An
+additional variable that defines varying coefficients can optionally
 be given in the \R{by} argument. The logical variable \R{intercept} determines
 whether an intercept is added to the design matrix (\R{intercept = TRUE}, the
 default). If \R{intercept = FALSE}, continuous covariates should be (mean-)
 centered as discussed above. This must be done `by hand' in advance of fitting
-the model. The impact of the penalty in case of penalized OLS base-learners can
+the model. The impact of the penalty in case of penalized OLS (ordinary least squares) base-learners can
 be determined either via the degrees of freedom \R{df} or the penalty parameter
 \R{lambda}. If degrees of freedom are specified, the penalty parameter
 \R{lambda} is computed from \R{df}\footnote{If \R{df} is specified in
@@ -740,7 +789,10 @@ details]{Hofner:unbiased:2011}.
   \includegraphics{graphics/fig-bolsx2}
   \caption{Examples for linear and categorical effects estimated using \R{bols()}:
     Linear effect (left; $f(x_1) = 0.5 x_1$) and categorical effect (right;
-    $f(x_2) = 0 x_2^{(1)} - 1 x_2^{(2)} + 0.5 x_2^{(3)} + 3 x_2^{(4)}$) \label{fig:expl_bols}}
+    $f(x_2) = 0 x_2^{(1)} - 1 x_2^{(2)} + 0.5 x_2^{(3)} + 3 x_2^{(4)}$). The
+  effects can be estimated with base-learners \R{bols(x1)} and \R{bols(x2)},
+  where \R{x1} is a continuous covariate and \R{x2} is a categorical covariate
+  coded as \R{factor} in \textsf{R}. \label{fig:expl_bols}}
 \end{figure}
 
 Table~\ref{tab:bols} shows some calls to \R{bols()} and gives the resulting type
@@ -748,7 +800,27 @@ of effect. To gain more information on a specific base-learner it is possible to
 inspect the base-learners in \textbf{mboost} using the function \R{extract()} on
 a base-learner or a boosting model. With the function one can extract, for
 example, the design matrices, the penalty matrices and many more characteristics
-of the base-learners. For a detailed instruction on how to use the function see
+of the base-learners. To extract, for example, the design matrix that results
+from a linear base-learner of a factor \R{z}, say \R{z <- factor(1:3)}, we can
+use
+\begin{Schunk}
+\begin{Sinput}
+R> extract(bols(z))
+\end{Sinput}
+\begin{Soutput}
+  (Intercept) z2 z3
+1           1  0  0
+2           1  1  0
+3           1  0  1
+attr(,"assign")
+[1] 0 1 1
+attr(,"contrasts")
+attr(,"contrasts")$z
+[1] "contr.treatment"
+\end{Soutput}
+\end{Schunk}
+Thus, we see that base-learners of factors use treatment contrasts per default.
+For a detailed instruction on how to use the function see
 the manual for \R{extract()} and especially the examples therein.
 
 \begin{table}[h!]
@@ -779,26 +851,17 @@ the manual for \R{extract()} and especially the examples therein.
 
 \paragraph{Smooth Effects}\hfill\\
 
-%% figure is build at the end of the document
-\setkeys{Gin}{width = 0.45\textwidth}
-\begin{figure}[ht]
-  \centering
-  \includegraphics{graphics/fig-bbsx1}
-  \hfill
-  \includegraphics{graphics/fig-bbsx2}
-  \caption{Examples for smooth effects estimated using \R{bbs()}. True effect
-    $f_1(x_1) = 3 \cdot \sin(x_1)$ (left) and $f_2(x_2) = x_2^2$ (right). \label{fig:expl_bbs}}
-\end{figure}
-
 \noindent The \R{bbs()} base-learner\footnote{the name refers to B-splines with
-  penalty, hence the second b} allows the definition of smooth effects based on
-B-splines with difference penalty \citep[i.e., P-splines, cf.][]{eilers1996}. A
-wide class of effects can be specified using P-splines. Examples include (a)
-smooth effects, (b) bivariate smooth effects (e.g., spatial effects), (c)
-varying coefficient terms, (d) cyclic effects (= periodic effects) and many
-more. Two examples of smooth function estimates fitted using a \R{bbs()}
-base-learner are given in Figure~\ref{fig:expl_bbs}. The call to a P-spline
-base-learner is as follows:
+  penalty, hence the second b} allows the definition of smooth effects (i.e.,
+functions of the covariate that are required to be sufficiently smooth, see
+Figure~\ref{fig:expl_bbs}) based on B-splines \citep{deBoor:splines:1978} with
+difference penalty \citep[i.e., P-splines, cf.][]{eilers1996}. P-splines can be
+seen as a versatile modeling tool for smooth effects. A wide class of effects
+can be specified using P-splines. Examples include (a) smooth effects, (b)
+bivariate smooth effects (e.g., spatial effects), (c) varying coefficient terms,
+(d) cyclic effects (= periodic effects) and many more. Two examples of smooth
+function estimates fitted using a \R{bbs()} base-learner are given in
+Figure~\ref{fig:expl_bbs}. The call to a P-spline base-learner is as follows:
 \begin{Schunk}
 \begin{Sinput}
   bbs(..., by = NULL, knots = 20, boundary.knots = NULL,
@@ -828,6 +891,22 @@ are subject to penalization. The smoothness of the base-learner can be specified
 using degrees of freedom (\R{df}) or the smoothing parameter (\R{lambda})\footnote{If
   \R{lambda} is specified in \R{bbs()}, \R{df} is always ignored.}.
 
+%% figure is build at the end of the document
+\setkeys{Gin}{width = 0.45\textwidth}
+\begin{figure}[ht]
+  \centering
+  \includegraphics{graphics/fig-bbsx1}
+  \hfill
+  \includegraphics{graphics/fig-bbsx2}
+  \caption{Examples for smooth effects estimated using \R{bbs(x1)} (left) and
+  \R{bbs(x2, knots = quantile(x2, c(0.25, 0.5, 0.75)), df = 5)} (right). Hence,
+  the left P-spline uses the default values of 20 equidistant inner knots and 4
+  degrees of freedom, while the right P-spline estimate is derived with 3 inner
+  knots placed at the quartiles and 5 degrees of freedom. True effects:
+  $f_1(x_1) = 3 \cdot \sin(x_1)$ (left) and $f_2(x_2) = x_2^2$
+  (right). \label{fig:expl_bbs}}
+\end{figure}
+
 An issue in the context of P-splines is that one cannot make the degrees of
 freedom arbitrary small. A polynomial of order \R{differences - 1} always
 remains unpenalized (i.e., the so-called null space). As we usually apply second
@@ -851,7 +930,7 @@ A special P-spline base-learner is obtained if \R{cyclic = TRUE}. In this case,
 the fitted values are forced to coincide at the boundary knots and the function
 estimate is smoothly joined (see Figure~\ref{fig:expl_cyclic}). This is
 especially interesting for time-series or longitudinal data were smooth,
-periodic functions should be modeled. In this case it is of great importance,
+periodic functions should be modeled. In this case it is of great importance
 that the boundary knots are properly specified to match the points were the
 function should be joined (due to subject matter knowledge).
 
@@ -871,7 +950,7 @@ is given in Table~\ref{tab:bbs}.
     estimated for each factor level; Note that in this case, the main effect
     needs to be specified additionally via \R{bbs(x)}.\\
     \R{bbs(x, knots = 10)} & smooth effect with 10 inner knots  \\
-    \R{bbs(x, boundary.knots = (0, 2 * pi),}\newline\hphantom{\R{bbs(}}\R{cyclic = TRUE)} &
+    \R{bbs(x, boundary.knots = c(0, 2 * pi),}\newline\hphantom{\R{bbs(}}\R{cyclic = TRUE)} &
     periodic function with period $2\pi$\\
     \R{bbs(x, center = TRUE, df = 1)} & P-spline decomposition (\R{center =
       TRUE}), which is needed to specify arbitrary small \R{df} for P-splines\\
@@ -888,7 +967,7 @@ is given in Table~\ref{tab:bbs}.
   \includegraphics{graphics/fig-cyclic2}
   \caption{Example for cyclic splines. The unconstrained effect in the left figure
     is fitted using \R{bbs(x, knots = 12)}, the cyclic effect in the right is
-    estimates using \R{bbs(x, cyclic = TRUE, knots = 12, boundary.knots = c(0,
+    estimated using \R{bbs(x, cyclic = TRUE, knots = 12, boundary.knots = c(0,
       2*pi))}. True effect: $f(x) = \sin(x)$.}.\label{fig:expl_cyclic}
 \end{figure}
 
@@ -898,7 +977,9 @@ is given in Table~\ref{tab:bbs}.
 \noindent An extension of P-splines to two dimensions is given by bivariate
 P-splines. They allow to fit spatial effects and smooth interaction surfaces. An
 example of a two dimensional function estimate is given in
-Figure~\ref{fig:expl_bspatial}. The effects can be obtained from a call to
+Figure~\ref{fig:expl_bspatial}. For further details on bivariate P-splines in
+the boosting context see \citet{Kneib:Hothorn:Tutz:modelchoice:2009}. The
+effects can be obtained from a call to
 \begin{Schunk}
 \begin{Sinput}
   bspatial(..., df = 6)
@@ -924,22 +1005,26 @@ Section~\ref{sec:model_building}.
     \sin(x_2)$. \label{fig:expl_bspatial}}
 \end{figure}
 
-
 \paragraph{Random Effects}\hfill\\
 \\
 \noindent To specify random intercept or random slope terms in \textbf{mboost},
-one can use a random effects base-learner. Random effects are modeled as
-ridge-penalized group-specific effects. One can show that these coincide with
-standard random effects. The ridge penalty parameter is then simply the ratio of
-the error variance $\sigma^2$ and the random effects variance $\tau^2$. Hence,
-the penalty parameter is inversely linked to $\tau^2$ (and the degrees of
-freedom are directly linked to $\tau^2$). As for all base-learners, we initially
-specify a small value for the degrees of freedom, i.e., we set a small random
-effects variance (relative to the residual variance). By repeatedly selecting
-the base-learner, the boosting algorithm can then adapt to the ``true'' random
-effects variance. For more details see \citet[Web
-Appendix]{Kneib:Hothorn:Tutz:modelchoice:2009}. We can specify random effects
-base-learners with a call to
+one can use a random effects base-learner. Random effects are used to model
+subject specific effects (in contrast to the usual -- fixed -- effects which can
+be seen as population specific effects). Usually, one is only interested in
+modeling the increased variability but not in the effect estimate of a specific
+individual as this effect is not transferable. For a comprehensive overview of
+random effects models we refer to \citet{PinheiroBates:2000}. Random effects are
+modeled as ridge-penalized group-specific effects. One can show that these
+coincide with standard random effects. The ridge penalty parameter is then
+simply the ratio of the error variance $\sigma^2$ and the random effects
+variance $\tau^2$. Hence, the penalty parameter is inversely linked to $\tau^2$
+(and the degrees of freedom are directly linked to $\tau^2$). As for all
+base-learners, we initially specify a small value for the degrees of freedom,
+i.e., we set a small random effects variance (relative to the residual
+variance). By repeatedly selecting the base-learner, the boosting algorithm can
+then adapt to the ``true'' random effects variance. For more details see
+\citet[Web Appendix]{Kneib:Hothorn:Tutz:modelchoice:2009}. We can specify random
+effects base-learners with a call to
 \begin{Schunk}
 \begin{Sinput}
   brandom(..., df = 4)
@@ -990,9 +1075,17 @@ some usage examples see the manual.
 \subsubsection{Building a Model -- or: How to Combine Different Base-learners}
 \label{sec:model_building}
 
-Base-learners can be combined in a simple manner to form a model. They are
-combined in the formula as a sum of base-learners to specify the desired model.
-We will show this using a simple toy example:
+In general, the choice of effect for a given covariate has to be based on the
+subject matter knowledge of the involved researchers. There is no general rule
+when to use a certain effect. In order to allow researchers to make a decision
+on which effect to use we exemplified the different modeling types in graphical
+displays (see Figures~\ref{fig:expl_bols} to \ref{fig:expl_bspatial}).
+
+Once this decision is made, it is relatively easy to estimate the model using
+the described boosting methodology. Base-learners can be combined in a simple
+manner to form the desired model. They are combined in the formula as a sum of
+base-learners to specify the desired model. We will show this using a simple toy
+example:
 \begin{Schunk}
 \begin{Sinput}
 R> m1 <- gamboost(y ~ bols(x1) + bbs(x2) + bspatial(s1, s2) + brandom(id),
@@ -1017,9 +1110,9 @@ R> m2 <- gamboost(y ~ bols(int, intercept = FALSE) +
 Now, with \R{example\$int = rep(1, length(y))}, we specify a separate intercept
 in the model. In the first formula (\R{m1}), the intercept was implicitly
 included in the base-learners. Now we allow the boosting algorithm to explicitly
-choose and update solely the intercept. Note that therefor we need to remove the
-implicit intercept from the base-learner for \R{int} (\R{intercept = FALSE}) as
-otherwise we would get a linear base-learner with \emph{two} intercepts which
+choose and update solely the intercept. Note that therefore we need to remove
+the implicit intercept from the base-learner for \R{int} (\R{intercept = FALSE})
+as otherwise we would get a linear base-learner with \emph{two} intercepts which
 has no unique solution. We can now also remove the intercept from the
 base-learner of \R{x1}. This leads to a base-learner of the form $x_1\beta_1$.
 For the smooth effect of \R{x2} we now use the decomposition~\eqref{eq:decomp}.
@@ -1043,11 +1136,12 @@ decomposition for the spatial base-learner:
 \begin{Sinput}
     bols(int, intercept = FALSE) +
     bols(s1, intercept = FALSE) + bols(s2, intercept = FALSE) +
-    bols(s1 * s2, intercept = FALSE) +
+    bols(s1, by = s2, intercept = FALSE) +
     bspatial(s1, s2, center = TRUE, df = 1)
 \end{Sinput}
 \end{Schunk}
-Finally, we added a random slope for \R{x1} (in the groups of \R{id}) to \R{m2}.
+where \R{bols(s1, by = s2, intercept = FALSE)} specifies the interaction of
+\R{s1} and \R{s2} (without intercept). Finally, we added a random slope for \R{x1} (in the groups of \R{id}) to \R{m2}.
 Note that the groups are the argument of the base-learner and the slope variable
 is specified via the \R{by} argument.
 
@@ -1110,7 +1204,7 @@ boosting is the number of iterations $m_{\text{stop}}$. To prevent overfitting
 it is important that the optimal stopping iteration is carefully chosen. Various
 possibilities to determine the stopping iteration exist. One can use information
 criteria such as AIC\footnote{see \R{?AIC.boost} for further details} to find
-the optimal model. However, this is usually not recommended as AIC based
+the optimal model. However, this is usually not recommended as AIC-based
 stopping tends to overshoot the optimal $m_{\text{stop}}$ dramatically
 \citep[see][]{Hast:comment:2007,Mayr:mstop:2012}. Instead, it is advised to use
 cross-validated estimates of the empirical risk to choose an appropriate number
@@ -1271,21 +1365,59 @@ leads to selecting the most influential predictors.
 
 The list of implemented families in \textbf{mboost} is diverse and wide-ranging.
 At the time of writing this paper, the user has access to sixteen different
-families. A family (most importantly) implements the loss function $\rho$ and
-the corresponding negative gradient. A careful specification of the loss
-function leads to the estimation of any desired characteristic of the
-conditional distribution of the response. This coupled with the large number of
-base learners guarantees a rich set of models that can be addressed by boosting.
-We can specify the connection between the response and the covariates in a
-fairly modular nature such as
-\begin{equation}
-    \label{eq:module}
+families. An overview is given in Table~\ref{tab:families}. A family (most
+importantly) implements the loss function $\rho$ and the corresponding negative
+gradient. A careful specification of the loss function leads to the estimation
+of any desired characteristic of the conditional distribution of the response.
+This coupled with the large number of base learners guarantees a rich set of
+models that can be addressed by boosting. We can specify the connection between
+the response and the covariates in a fairly modular nature such as
+\begin{equation*}
     \xi(y|\x) = \hat{f}_1 + \cdots + \hat{f}_P
-\end{equation}
+\end{equation*}
 having on the right hand side any desired combination of base learners. On the
 left hand side, $\xi(.)$ describes \emph{some} characteristic of the conditional
 distribution specified by the \R{family} argument. In the following subsections
-we discuss major aspects relating to the choice of the family.
+we discuss major aspects related to the choice of the family.
+
+\begin{table}[h!]
+  \begin{threeparttable}[b]
+    \centering
+  \caption{An overview on the currently implemented families in \textbf{mboost}.
+  \label{tab:families}}
+  \begin{tabular}{llllll}
+    \toprule
+        & continuous response & binary response & count data & ordered response & censored data \\
+    \cmidrule{2-6}
+     Standard regression & \R{Gaussian} & & & & \\
+     Median regression & \R{Laplace} & & & & \\
+     Quantile regression& \R{QuantReg}   & & & & \\
+     Expectile regression & \R{ExprectReg}  & & & & \\
+     Robust regression &  \R{Huber} & & & & \\
+     Gamma regression\tnote{a} &  \R{GammaReg} & & & & \\
+
+     Logistic regression& &  \R{Binomial} & & & \\
+     AdaBoost classification & &\R{AdaExp}  & & & \\
+     AUC regression & &\R{AUC} & & & \\
+
+     Poisson regression & &&\R{Poisson}  & & \\
+     Negative binomial model & &&\R{NBinomial}  & & \\
+
+     Proportional odds model & &&&\R{ProppOdds}   & \\
+
+     Proportional hazards model   & &&&  &\R{CoxPH} \\
+
+     Weibull AFT\tnote{b}\;\, model & &&&  &\R{Weibull} \\
+     Log-logistic AFT\tnote{b}\;\, model & &&&  &\R{Loglog} \\
+     Log-normal AFT\tnote{b}\;\, model & &&&  &\R{Lognormal} \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}
+  \item[a] for non-negative continuous response
+  \item[b] accelerated failure time
+  \end{tablenotes}
+\end{threeparttable}
+ \end{table}
 
 \subsubsection{Families for Continuous Response}\label{sec:famcont}
 
@@ -1309,10 +1441,9 @@ Until now the focus was on the conditional mean of a continuous response which
 is the default setting: \R{family = Gaussian()}. In this case, our assumption is
 that $Y|\x$ is normally distributed and the loss function is the negative
 Gaussian log-likelihood which is equivalent to the $\text{L}_2$ loss
-\begin{equation}
-    \label{eq:l2}
+\begin{equation*}
     \rho(y,f) =\frac{1}{2}(y-f)^2
-\end{equation}
+\end{equation*}
 (see Figure~\ref{fig:fam_gauss}). A plain \R{Gaussian()} call in the console
 returns its definition
 \begin{Sinput}
@@ -1337,10 +1468,9 @@ If we are interested in the median of the conditional distribution, the
 \R{Laplace()} family is the right choice. It implements a distribution free,
 median regression approach especially useful for long-tailed error
 distributions. In this case, we use the L$_1$ loss defined as
-\begin{equation}
-    \label{eq:l1}
+\begin{equation*}
     \rho(y,f) = |y-f|
-\end{equation}
+\end{equation*}
 and shown in Figure~\ref{fig:fam_laplace}. Note that the L$_1$ loss is not
 differentiable at $y = f$ and the value of the negative gradient at such points
 is fixed at zero.
@@ -1364,14 +1494,13 @@ is fixed at zero.
 
 A compromise between the L$_1$ and the L$_2$ loss is the Huber loss function
 shown in Figure~\ref{fig:fam_huber}. It is defined as
-\begin{equation}
-    \label{eq:huber}
+\begin{equation*}
     \rho(y,f; \delta) =
     \begin{cases}
         (y-f)^2/2 & \text{if $|y - f| \le \delta$,}\\
         \delta(|y-f|-\delta /2)   &\text{if $|y - f| > \delta$}
     \end{cases}
-\end{equation}
+\end{equation*}
 where the parameter $\delta$ limits the outliers which are subject to absolute
 error loss. The Huber loss can be seen as a robust alternative to the L$_2$
 loss. The user can either specify $\delta$ subjectively, e.g. \R{Huber(d = 2)},
@@ -1379,17 +1508,16 @@ or leave it adaptively chosen by the boosting algorithm (the default behaviour).
 An adaptive specification of $\delta$, proposed by \citet{friedman2001}, means
 that each boosting step produces a new $\delta^{[m]}$ matching the actual median
 of the absolute values of the residuals, i.e.
-\begin{equation}
-    \label{eq:delta}
+\begin{equation*}
     \delta^{[m]} = \text{median}\left(\Bigl|y_i - \hat{f}^{[m-1]}(x_i)\Bigr|, i=1,\ldots,n
     \right).
-\end{equation}
+\end{equation*}
 
 Another alternative for settings with continuous response is modeling
 conditional quantiles through quantile regression \citep{Koen2005} --
 implemented in \textbf{mboost} with the \R{QuantReg()} family
 \citep{Fenske:2011}. The main advantage of quantile regression is (beyond its
-robustness toward outliers) that it does not rely on any distributional
+robustness towards outliers) that it does not rely on any distributional
 assumptions on the response or the error terms. The appropriate loss function
 here is the check-function shown in Figure~\ref{fig:fam_quantreg}. For the
 special case of the 0.5 quantile both \R{QuantReg(0.5)} and \R{Laplace()} will
@@ -1425,7 +1553,7 @@ response can be estimated by minimizing the negative binomial log-likelihood
 where $\tilde{y} = 2 y -1$ and $\pi(f) = \mathbb{P}(Y = 1| \x )$. For reasons of
 computational efficiency the binary response $y \in\{0,1\}$ is converted into
 $\tilde{y} = 2y -1$ where $\tilde{y} \in \{-1,1\}$. In
-equation~\eqref{eq:binary} $\tilde{y}f$ are the so-called margin values
+equation~\eqref{eq:binary}, $\tilde{y}f$ are the so-called margin values
 (depicted in Figure~\ref{fig:fam_binary}) which are, roughly speaking, the
 equivalent of the continuous residuals $y-f$ for the binomial case. This
 internal re-coding\footnote{Note that in \textbf{mboost} the response must be
@@ -1435,8 +1563,8 @@ log-likelihood loss (\R{family = Binomial()}) and the exponential loss
 \citep[see][Section 3]{BuhlmannHothorn06}.
 
 Note that the transformation $\tilde{y} = 2y -1$ changes the interpretation of
-the effect estimates because now we get the half of the log-odd ratio. One
-implication is that the \R{coef()} output is half the estimations that result
+the effect estimates because now we get the half of the log-odds ratio. One
+implication is that the \R{coef()} output is half the estimates that result
 from \R{glm()}. This means that the user has to double the coefficients
 \emph{manually} in order to get the final standard estimates of a logistic
 regression model.
@@ -1446,7 +1574,7 @@ regression model.
     \caption{The \R{Binomial} and the \R{AdaExp} families as functions of the
       marginal values $\tilde{y}f$. Since $\tilde{y} \in \{-1,1\}$, a positive
       product between $\tilde{y}$ and half the estimated log-odds ratio $f$
-      means correct categorical discrimination.}
+      means correct classification.}
     \label{fig:fam_binary}
 \end{figure}
 
@@ -1491,32 +1619,33 @@ logarithmic link function, \R{ExpectReg()} implements expectile regression
 ordinal outcome variables \citep{Schmid:2010:PropOdds}.
 
 Despite the wide range of available families, users might wish to implement new
-loss functions. One only needs a loss function and the corresponding negative
-gradient $\delta \rho(y, f)\, / \, \delta f$, which both are independent of the
-base-learners. Using the constructor function \R{Family()}, one can then easily
-define new families and thus new estimation problems as we show in the Appendix.
+loss functions. One only needs a differentiable loss function and the
+corresponding negative gradient $\delta \rho(y, f)\, / \, \delta f$, which both
+are independent of the base-learners. Using the constructor function
+\R{Family()}, one can then easily define new families and thus new estimation
+problems as we show in the Appendix.
 
 \section{Summary}
 \label{sec:summary}
 
-The R-package \textbf{mboost} offers an easy entry into the world of boosting.
-It implements a model-based boosting approach that results in interpretable
-structured additive models of the same form most researchers will feel familiar
-with. The interfaces of fitting functions are quite similar to standard
-implementations like \R{lm()} or \R{glm()} and are hence relatively easy to use.
-However, the fitting algorithms of \textbf{mboost} additionally offer a high
-flexibility when it comes to the effect type of potential predictors and the
-type of risk function to be optimized. There exist a large number of pre-defined
-families for various risk functions as well as a large number of pre-defined
-base-learners to specify various types of effects. As \textbf{mboost} has a
-modular nature, both can be combined in any form as desired by the user: For
-many model classes, \textbf{mboost} therefore offers much more modeling
-alternatives than the classical fitting algorithms. Additionally, the user can
-also easily extend \textbf{mboost} by implementing new families or
-base-learners.
+The \textsf{R} package \textbf{mboost} offers an easy entry into the world of
+boosting. It implements a model-based boosting approach that results in
+interpretable structured additive models of the same form most researchers will
+feel familiar with. The interfaces of fitting functions are quite similar to
+standard implementations like \R{lm()} or \R{glm()} and are hence relatively
+easy to use. However, the fitting algorithms of \textbf{mboost} additionally
+offer a high flexibility when it comes to the effect type of potential
+predictors and the type of risk function to be optimized. There exist a large
+number of pre-defined families for various risk functions as well as a large
+number of pre-defined base-learners to specify various types of effects. As
+\textbf{mboost} has a modular nature, both can be combined in any form as
+desired by the user: For many model classes, \textbf{mboost} therefore offers
+much more modeling alternatives than the classical fitting algorithms.
+Additionally, the user can also easily extend \textbf{mboost} by implementing
+new families or base-learners.
 
 As seen in the case study, many functions for the manipulation and extraction of
-the results are available. These allows the user to fit, tune and finally
+the results are available. These allow the user to fit, tune and finally
 interpret the model. We note that the present tutorial has been designed as an
 introduction to the basic functionalities of the \textbf{mboost} package,
 highlighting its usage from a practical perspective. Readers who are interested
@@ -1555,14 +1684,14 @@ function $\rho_{\tau}(\cdot)$:
 $$
 \rho_{\tau}(y_i - f_{\tau i} ) = \left\{\begin{array}{ll}
             (y_i - f_{\tau i} ) \cdot\tau & \quad   (y_i - f_{\tau i} ) \geq 0 \\
-            (y_i - f_{\tau i} ) \cdot(\tau-1) & \quad  (y_i - f_{\tau i} ) <0.
+            (y_i - f_{\tau i} ) \cdot(\tau-1) & \quad  (y_i - f_{\tau i} ) <0,
             \end{array} \right.
 $$
 which is depicted in Figure~\ref{fig:fam_quantreg}. The \R{loss} for our new
 family is therefore given as:
 <<loss>>=
 loss =  function(y, f) tau * (y - f) * ((y - f) >= 0) +
-                        (tau - 1) * (y - f) * ((y - f) < 0)
+                       (tau - 1) * (y - f) * ((y - f) < 0)
 @
 The check-function is not differentiable at the point 0. However in practice, as
 the response is continuous, we can ignore this by defining:
@@ -1572,26 +1701,26 @@ the response is continuous, we can ignore this by defining:
             \tau-1 &  (y_i - f_{\tau i}) <0.
           \end{array} \right.  $$
         The negative gradient of our loss is therefore\footnote{The unused
-          weights argument \R{w} is required by \textbf{mboost} when the
-          function is (internally) called.}:
+          weights argument \R{w} is required to exist by \textbf{mboost} when the
+          function is (internally) called. It is hence 'specified' as \R{NULL}.}:
 <<ngradient>>=
-ngradient = function(y, f, w = 1)  tau * ((y - f) >= 0) +
+ngradient = function(y, f, w = NULL)  tau * ((y - f) >= 0) +
                     (tau- 1) * ((y - f) < 0)
 @
 Of further interest is also the starting value for the algorithm, which is
-specified via the \R{offset} argument. For quantile regression is was
+specified via the \R{offset} argument. For quantile regression it was
 demonstrated that the offset may be set to the median of the response
 \citep{Fens2011}. With this information, we can already specify our new family
 for quantile regression:
 <<OurQR>>=
 OurQuantReg <- function(tau = 0.5){    ## function to include dependency on tau
   Family(                              ## applying the Family function
-         loss = function(y, f)                                     ## loss as above
+         loss = function(y, f)                               ## loss as above
                     tau       * (y - f) * ((y - f) >= 0) +
                     (tau - 1) * (y - f) * ((y - f) < 0) ,
-         ngradient = function(y, f, w = 1)                    ## ngradient as above
+         ngradient = function(y, f, w = NULL)                ## ngradient as above
                     tau * ((y - f) >= 0) + (tau - 1) * ((y - f) < 0),
-         offset = function(y, w = 1)                            ## median as offset
+         offset = function(y, w = NULL)                      ## median as offset
                     quantile(y, p = 0.5),
          name = "Our new family for quantile regression" )}
 OurQuantReg()
