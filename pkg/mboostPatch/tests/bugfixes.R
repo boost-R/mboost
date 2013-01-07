@@ -421,24 +421,24 @@ stopifnot(max(abs(f1 - f2)) < sqrt(.Machine$double.eps))
 
 ### check if bmrf works correctly
 ## (if not all locations are observed)
-require("BayesX")
-germany <- read.bnd(system.file("examples/germany.bnd", package="BayesX"))
-districts <- attr(germany, "regions")
-set.seed(1907)
-regions <- sample(districts, 400, replace = TRUE)
-B <- bmrf(regions, bnd = germany)
-X <- extract(B)
-K <- extract(B, what = "pen")
-Xs <- colSums(as.matrix(X))
-names(Xs) <- rownames(K)
-stopifnot(all(Xs[Xs > 0] == table(regions)[names(Xs[Xs > 0])]))
+if (require("BayesX")) {
+    germany <- read.bnd(system.file("examples/germany.bnd", package="BayesX"))
+    districts <- attr(germany, "regions")
+    set.seed(1907)
+    regions <- sample(districts, 400, replace = TRUE)
+    B <- bmrf(regions, bnd = germany)
+    X <- extract(B)
+    K <- extract(B, what = "pen")
+    Xs <- colSums(as.matrix(X))
+    names(Xs) <- rownames(K)
+    stopifnot(all(Xs[Xs > 0] == table(regions)[names(Xs[Xs > 0])]))
 
-## check against old, slower code:
-Xold <- matrix(0, nrow = length(regions), ncol = ncol(K))
-for (i in 1:length(regions))
-    Xold[i, which(districts == regions[i])] <- 1
-stopifnot(all(X == Xold))
-
+    ## check against old, slower code:
+    Xold <- matrix(0, nrow = length(regions), ncol = ncol(K))
+    for (i in 1:length(regions))
+        Xold[i, which(districts == regions[i])] <- 1
+    stopifnot(all(X == Xold))
+}
 
 ## check handling of missing values
 y <- yNa <- rnorm(100)
