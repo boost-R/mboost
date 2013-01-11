@@ -1,6 +1,6 @@
 
 require("mboostDevel")
-library("party")
+if (require("party")) {
 
 set.seed(290875)
 
@@ -22,7 +22,7 @@ if (!inherits(tst, "try-error")) {
 
     ### attach `gbm', quietly
     sink("tmpfile")
-    require("gbm")
+    if (require("gbm")) cat()
     sink()
     file.remove("tmpfile")
 
@@ -105,3 +105,5 @@ foo <- table(pr, y)
 stopifnot(foo[1,2] + foo[2,1] == 0)
 pr <- predict(mod, type="response")
 # <FIXME> How do we check "correctness" of results?</FIXME>
+
+}

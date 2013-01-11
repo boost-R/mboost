@@ -19,6 +19,9 @@
 
   o  updated vignette mboost_tutorial
 
+  o  updated mboost_package.Rd: 
+     now all important changes since mboost 2.0 are documented there
+
 
                 CHANGES in `mboost' VERSION 2.2-0 (2012-11-21, r680)
 
