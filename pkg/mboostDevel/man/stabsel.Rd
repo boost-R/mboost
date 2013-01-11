@@ -15,7 +15,7 @@ stabsel(object, FWER = 0.05, cutoff, q,
   \item{object}{an \code{mboost} object.}
   \item{FWER}{family-wise error rate to be controlled by the selection procedure.}
   \item{cutoff}{cutoff between 0.5 and 1.}
-  \item{q}{average number of selected variables.}
+  \item{q}{average number of selected base-learners.}
   \item{folds}{ a weight matrix with number of rows equal to the number
                 of observations, see \code{\link{cvrisk}}.}
   \item{papply}{ (parallel) apply function, defaults to  \code{\link[parallel]{mclapply}}.

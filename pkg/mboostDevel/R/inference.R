@@ -6,14 +6,25 @@ stabsel <- function(object, FWER = 0.05, cutoff, q,
     p <- length(variable.names(object))
     ibase <- 1:p
 
-    stopifnot(FWER > 0 && FWER < 0.5)
-    stopifnot(xor(missing(cutoff), missing(q)))
+    if (!missing(q) && p < q)
+        stop("Average number of selected base-learners ", sQuote("q"),
+             " must be smaller \n  than the number of base-learners",
+             " specified in the model ", sQuote("object"))
+
+    if (!(FWER > 0 && FWER < 0.5))
+        stop(sQuote("FWER"), " must be between 0 and 0.5")
+
+    if (! xor(missing(cutoff), missing(q)))
+        stop(" Either ", sQuote("cutoff"), " or ", sQuote("q"),
+             "must be specified (but not both).")
+
     if (missing(cutoff)) {
         cutoff <- min(0.9, tmp <- (q^2 / (FWER * p) + 1) / 2)
         upperbound <- q^2 / p / (2 * cutoff - 1)
         if (tmp > 0.9 && upperbound - FWER > FWER/2) {
-            warning("Upper bound for FWER > ", FWER, " (by at least ", FWER/2 ,") for the given value of ",
-                    sQuote("q"))
+            warning("Upper bound for FWER >> ", FWER,
+                    " for the given value of ", sQuote("q"),
+                    " (true upper bound = ", upperbound, ")")
         }
     }
     if (missing(q)){
@@ -21,8 +32,9 @@ stabsel <- function(object, FWER = 0.05, cutoff, q,
         q <- ceiling(sqrt(FWER * (2 * cutoff - 1) * p))
         upperbound <- q^2 / p / (2 * cutoff - 1)
         if (upperbound - FWER > FWER/2)
-            warning("Upper bound for FWER > ", FWER, " (by at least ", FWER/2 ,") for the given value of ",
-                    sQuote("cutoff"))
+            warning("Upper bound for FWER >> ", FWER,
+                    " for the given value of ", sQuote("cutoff"),
+                    " (true upper bound = ", upperbound, ")")
     }
 
     fun <- function(model) {
