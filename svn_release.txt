@@ -32,7 +32,13 @@
     R CMD check --as-cran mboost_XXX.tar.gz
 
     If differences to .Rout.save occure:
-       - Manually check differences
+       - Manually check differences. You might want to use something like:
+            
+        cd mboost.Rcheck/tests
+	    meld Examples/mboost-Ex.Rout.save ../mboost-Ex.Rout &
+	or 
+	    meld regtest-XXX.Rout.save regtest-XXX.Rout &
+
        - If ok, copy new .Rout files to .Rout.save:
 
        	    Rscript copy_Rout_to_Routsave.R "which='mboostPatch'" "vignettes=FALSE"

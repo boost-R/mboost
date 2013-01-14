@@ -2992,7 +2992,7 @@ attr(,"boundary.knots")$upper
 >   (sbody <- stabsel(mod, q = 3,
 +                     folds = cv(model.weights(mod), type = "subsampling", B = 25)))
 Warning in stabsel(mod, q = 3, folds = cv(model.weights(mod), type = "subsampling",  :
-  Upper bound for FWER > 0.05 (by at least 0.025) for the given value of ‘q’
+  Upper bound for FWER >> 0.05 for the given value of ‘q’ (true upper bound = 1.125)
 	Stability Selection
 
 Selected base-learners:
@@ -3131,7 +3131,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  34.146 0.708 35.761 0.22 0.104 
+Time elapsed:  31.649 0.688 33.193 0 0 
 > grDevices::dev.off()
 null device 
           1 

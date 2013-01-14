@@ -1,9 +1,11 @@
-                CHANGES in `mboost' VERSION 2.2-1 (2012-XX-XX)
+                CHANGES in `mboost' VERSION 2.2-1 (2013-01-14, r694)
 
   o  included warnings in stabsel() for better guidiance of the user:
      - A warning is issued if the upper bound for the FWER in stability
        selection is greater (by a certain margin) than the specified bound.
      - A warning is also issued if mstop is too small to select q variables.
+
+  o  improved output of errors and warnings in stabsel.
 
   o  suppress the notes from package Matrix about method ambiguity
      ("Note: method with signature ... chosen, ... would also be valid")
@@ -16,6 +18,12 @@
 
   o  updated mboost_package.Rd: 
      now all important changes since mboost 2.0 are documented there
+
+  o  changed roles of contributers to ctb
+
+  o  suggested packages are now only used inside if(require(pkg)) statements
+
+  o  changed startup message
 
 
                 CHANGES in `mboost' VERSION 2.2-0 (2012-11-21, r680)
