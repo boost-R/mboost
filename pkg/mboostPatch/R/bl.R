@@ -189,7 +189,7 @@ hyper_bbs <- function(mf, vary, knots = 20, boundary.knots = NULL, degree = 3,
         stop("variable names and knot names must be the same")
     if (is.list(boundary.knots)) if(!all(names(boundary.knots) %in% nm))
         stop("variable names and boundary.knot names must be the same")
-    if (center && cyclic)
+    if (!identical(center, FALSE) && cyclic)
         stop("centering of cyclic covariates not yet implemented")
     ret <- vector(mode = "list", length = length(nm))
     names(ret) <- nm
@@ -269,9 +269,23 @@ X_bbs <- function(mf, vary, args) {
         if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
                 suppressMessages(K <- kronecker(diag(ncol(by)), K))
         }
-        if (args$center) {
+        if (!identical(args$center, FALSE)) {
             tmp <- attributes(X)[c("degree", "knots", "Boundary.knots")]
-            X <- tcrossprod(X, K) %*% solve(tcrossprod(K))
+            center <- match.arg(as.character(args$center), 
+                                choices = c("TRUE", "differenceMatrix", "spectralDecomp"))
+            if (center == "TRUE") center <- "differenceMatrix"
+            X <- switch(center, 
+                ### L = t(D) in Section 2.3. of Fahrmeir et al. (2004, Stat Sinica)
+                "differenceMatrix" = tcrossprod(X, K) %*% solve(tcrossprod(K)),
+                ### L = \Gamma \Omega^1/2 in Section 2.3. of 
+                ### Fahrmeir et al. (2004, Stat Sinica)
+                "spectralDecomp" = {
+                    SVD <- eigen(crossprod(K), symmetric = TRUE, EISPACK = FALSE)
+                    ev <- SVD$vector[, 1:(ncol(X) - args$differences), drop = FALSE]
+                    ew <- SVD$values[1:(ncol(X) - args$differences), drop = FALSE]
+                    X %*% ev %*% diag(1/sqrt(ew))
+                }
+            )
             attributes(X)[c("degree", "knots", "Boundary.knots")] <- tmp
             K <- diag(ncol(X))
         } else {
@@ -332,10 +346,12 @@ X_bbs <- function(mf, vary, args) {
         if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
             suppressMessages(K <- kronecker(diag(ncol(by)), K))
         }
-        if (args$center) {
+        if (!identical(args$center, FALSE)) {
+            ### L = \Gamma \Omega^1/2 in Section 2.3. of Fahrmeir et al. 
+            ### (2004, Stat Sinica), always
             L <- eigen(K, symmetric = TRUE, EISPACK = FALSE)
-            L$vectors <- L$vectors[,1:(ncol(X) - args$differences^2)]
-            L$values <- sqrt(L$values[1:(ncol(X) - args$differences^2)])
+            L$vectors <- L$vectors[,1:(ncol(X) - args$differences^2), drop = FALSE]
+            L$values <- sqrt(L$values[1:(ncol(X) - args$differences^2), drop = FALSE])
             L <- L$vectors %*% (diag(length(L$values)) * (1/L$values))
             X <- as(X %*% L, "matrix")
             K <- as(diag(ncol(X)), "matrix")
@@ -352,12 +368,12 @@ X_bbs <- function(mf, vary, args) {
             warning( sQuote("df"), " equal to rank of null space ",
                     "(unpenalized part of P-spline);\n  ",
                     "Consider larger value for ", sQuote("df"),
-                    " or set ", sQuote("center = TRUE"), ".", immediate.=TRUE)
+                    " or set ", sQuote("center != FALSE"), ".", immediate.=TRUE)
         if (rns > args$df)
             stop("not possible to specify ", sQuote("df"),
                  " smaller than the rank of the null space\n  ",
                  "(unpenalized part of P-spline). Use larger value for ",
-                 sQuote("df"), " or set ", sQuote("center = TRUE"), ".")
+                 sQuote("df"), " or set ", sQuote("center != FALSE"), ".")
     }
     return(list(X = X, K = K))
 }

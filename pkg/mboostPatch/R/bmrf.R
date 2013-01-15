@@ -97,11 +97,13 @@ function (mf, vary, args)
             data = mf)[, 2]
         X <- X * by
     }
-    if (args$center) {
-        e <- eigen(K)
-        L <- e$vectors[, -dim(e$vectors)[2]] * sqrt(e$values[-length(e$values)])
-        Zspathelp <- L %*% solve(t(L) %*% L)
-        X <- as(X%*%Zspathelp, "matrix")
+    if (!identical(args$center, FALSE)) {
+        ### L = \Gamma \Omega^1/2 in Section 2.3. of Fahrmeir et al. 
+        ### (2004, Stat Sinica)
+        SVD <- eigen(K, EISPACK = FALSE)
+        ev <- SVD$vectors[, -dim(SVD$vectors)[2]] 
+        ew <- SVD$values[-length(SVD$values)]
+        X <- as(X %*% ev %*% diag(1/sqrt(ew)), "matrix")
         K <- as(diag(ncol(X)), "matrix")
     }
     return(list(X = X, K = K))

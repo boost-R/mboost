@@ -1,3 +1,18 @@
+
+                CHANGES in `mboost' VERSION 2.2-2 (2013-xx-yy, rzzz)
+
+  o  bbs(..., center = "spectralDecomp") computes the spectral decomposition
+     of the penalty matrix and the penalized part of the design matrix is
+     defined by this decomposition. Experiments show that
+         bols(x) + bbs(x, center = "spectralDecomp")
+     is a little better in recovering the true underlying functions than
+     the default
+         bols(x) + bbs(x, center = TRUE)		or, equivalently,
+         bols(x) + bbs(x, center = "differenceMatrix")
+     For bbs(x, y, center = TRUE) or bmrf(x, center = TRUE), the spectral
+     decomposition is (and was) always used.
+
+
                 CHANGES in `mboost' VERSION 2.2-1 (2013-01-14, r694)
 
   o  included warnings in stabsel() for better guidiance of the user:

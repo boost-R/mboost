@@ -80,7 +80,7 @@ bl1 \%O\% bl2
     approaches with a non-trivial null space. For example, for P-splines
     fitted with \code{bbs}, \code{df} has to be larger than the order of
     differences employed in the construction of the penalty term.
-    However, when option \code{center=TRUE}, the effect is centered
+    However, when option \code{center != FALSE}, the effect is centered
     around its unpenalized part and therefore any positive number is
     admissible for \code{df}. For details on the computation of degrees
     of freedom see section \sQuote{Global Options}.}
@@ -106,10 +106,17 @@ bl1 \%O\% bl2
                     the design matrix of a linear base-learner. If
                     \code{intercept = FALSE}, continuous covariates
                     should be (mean-) centered.}
-  \item{center}{ if \code{center = TRUE} the corresponding effect is
+  \item{center}{ if \code{center != FALSE} the corresponding effect is
                  re-parameterized such that the unpenalized part of the fit is subtracted and
                  only the deviation effect is fitted. The unpenalized, parametric part has then
-         to be included in separate base-learners using \code{bols} (see the examples below).}
+                 to be included in separate base-learners using \code{bols} (see the examples below).
+                 There are two possible ways to re-parameterization; 
+                 \code{center = "differenceMatrix"} is based on the difference matrix 
+                 (the default for \code{bbs} with one covariate only) 
+                 and \code{center = "spectralDecomp"} uses a spectral decomposition 
+                 of the penalty matrix (see Fahrmeir et al., 2004, Section 2.3 for details).
+                 The latter option is the default (and currently only option) for \code{bbs}
+                 with multiple covariates or \code{bmrf}.}
   \item{cyclic}{ if \code{cyclic = TRUE} the fitted values coincide at the boundaries
                  (useful for cyclic covariates such as day time etc.).}
   \item{covFun}{ the covariance function (i.e. radial basis)
@@ -263,7 +270,7 @@ bl1 \%O\% bl2
   increase with increasing number of levels of \code{by} (if
   \code{center = FALSE}).
 
-  For \code{bbs} and \code{bspatial}, option \code{center} requests that
+  For \code{bbs} and \code{bspatial}, option \code{center != FALSE} requests that
   the fitted effect is centered around its parametric, unpenalized part
   (the so called null space). For example, with second order difference
   penalty, a linear effect of \code{x} remains unpenalized by \code{bbs}
@@ -278,7 +285,8 @@ bl1 \%O\% bl2
   their interaction (\code{bols(x*y)}) are subtracted from the effect
   and have to be added separately to the model equation. More details on
   centering can be found in Kneib, Hothorn and Tutz (2009) and Fahrmeir,
-  Kneib and Lang (2004).
+  Kneib and Lang (2004). We strongly recommend to consult the latter reference
+  before using this option.
 
   \code{brad(x)} specifies penalized radial basis functions as used in
   Kriging. If \code{knots} is used to specify the number of knots, the
