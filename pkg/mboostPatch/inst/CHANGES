@@ -1,4 +1,3 @@
-
                 CHANGES in `mboost' VERSION 2.2-2 (2013-xx-yy, rzzz)
 
   o  bbs(..., center = "spectralDecomp") computes the spectral decomposition
@@ -11,6 +10,11 @@
          bols(x) + bbs(x, center = "differenceMatrix")
      For bbs(x, y, center = TRUE) or bmrf(x, center = TRUE), the spectral
      decomposition is (and was) always used.
+
+  o  fixed bug in stabsel: '...' was not passed to cvrisk and thus one could 
+     not specify options for mclapply
+
+  o  small improvements in manual
 
 
                 CHANGES in `mboost' VERSION 2.2-1 (2013-01-14, r694)

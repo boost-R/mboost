@@ -49,7 +49,7 @@ stabsel <- function(object, FWER = 0.05, cutoff, q,
     }
     ss <- cvrisk(object, fun  = fun,
                  folds = folds,
-                 papply = papply)
+                 papply = papply, ...)
     ret <- matrix(0, nrow = length(ibase), ncol = m <- mstop(object))
     for (i in 1:length(ss)) {
         tmp <- sapply(ibase, function(x)

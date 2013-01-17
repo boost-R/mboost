@@ -98,7 +98,8 @@
     cars.gb
 
     ### coefficients should coincide
-    coef(cars.gb) + c(cars.gb$offset, 0)
+    coef(cars.gb, off2int = TRUE)         ## add offset to intercept
+    coef(cars.gb) + c(cars.gb$offset, 0)  ## add offset to intercept (by hand)
     coef(lm(dist ~ speed, data = cars))
 
     ### plot fit
@@ -121,7 +122,7 @@
                          family = Laplace())
     cars.gbl
 
-    coef(cars.gbl) + c(cars.gbl$offset, 0)
+    coef(cars.gbl, off2int = TRUE)
     lines(cars$speed, predict(cars.gbl), col = "green")
 
     ### Huber loss with adaptive choice of delta
