@@ -24,7 +24,7 @@ stabsel <- function(object, FWER = 0.05, cutoff, q,
         if (tmp > 0.9 && upperbound - FWER > FWER/2) {
             warning("Upper bound for FWER >> ", FWER,
                     " for the given value of ", sQuote("q"),
-                    " (true upper bound = ", upperbound, ")")
+                    " (true upper bound = ", min(1, round(upperbound, 2)), ")")
         }
     }
     if (missing(q)){
@@ -50,7 +50,14 @@ stabsel <- function(object, FWER = 0.05, cutoff, q,
     ss <- cvrisk(object, fun  = fun,
                  folds = folds,
                  papply = papply, ...)
-    ret <- matrix(0, nrow = length(ibase), ncol = m <- mstop(object))
+
+    ## if grid specified in '...'
+    if (length(list(...)) > 1 && grid %in% names(list(...))) {
+        m <- max(list(...)$grid)
+    } else {
+        m <- mstop(object)
+    }
+    ret <- matrix(0, nrow = length(ibase), ncol = m)
     for (i in 1:length(ss)) {
         tmp <- sapply(ibase, function(x)
             ifelse(x %in% ss[[i]], which(ss[[i]] == x)[1], m + 1))
