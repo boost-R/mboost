@@ -9,7 +9,7 @@
 \usage{
 stabsel(object, FWER = 0.05, cutoff, q,
         folds = cv(model.weights(object), type = "subsampling", B = 100),
-        papply = mclapply, ...)
+        papply = mclapply, verbose = TRUE, ...)
 }
 \arguments{
   \item{object}{an \code{mboost} object.}
@@ -20,7 +20,10 @@ stabsel(object, FWER = 0.05, cutoff, q,
                 of observations, see \code{\link{cvrisk}}.}
   \item{papply}{ (parallel) apply function, defaults to  \code{\link[parallel]{mclapply}}.
     Alternatively, \code{parLapply} can be used. In the
-    latter case, usually more setup is needed (see example for some details).}
+    latter case, usually more setup is needed (see example for some
+    details).}
+  \item{verbose}{ logical (default: \code{TRUE}) that determines wether
+    \code{warnings} should be issued. }
   \item{\dots}{additional arguments to \code{\link{cvrisk}}.}
 }
 \details{

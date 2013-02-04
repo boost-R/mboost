@@ -1,7 +1,7 @@
 
 stabsel <- function(object, FWER = 0.05, cutoff, q,
                     folds = cv(model.weights(object), type = "subsampling", B = 100),
-                    papply = mclapply, ...) {
+                    papply = mclapply, verbose = TRUE, ...) {
 
     p <- length(variable.names(object))
     ibase <- 1:p
@@ -21,7 +21,7 @@ stabsel <- function(object, FWER = 0.05, cutoff, q,
     if (missing(cutoff)) {
         cutoff <- min(0.9, tmp <- (q^2 / (FWER * p) + 1) / 2)
         upperbound <- q^2 / p / (2 * cutoff - 1)
-        if (tmp > 0.9 && upperbound - FWER > FWER/2) {
+        if (verbose && tmp > 0.9 && upperbound - FWER > FWER/2) {
             warning("Upper bound for FWER >> ", FWER,
                     " for the given value of ", sQuote("q"),
                     " (true upper bound = ", min(1, round(upperbound, 2)), ")")
@@ -31,7 +31,7 @@ stabsel <- function(object, FWER = 0.05, cutoff, q,
         stopifnot(cutoff >= 0.5)
         q <- ceiling(sqrt(FWER * (2 * cutoff - 1) * p))
         upperbound <- q^2 / p / (2 * cutoff - 1)
-        if (upperbound - FWER > FWER/2)
+        if (verbose && upperbound - FWER > FWER/2)
             warning("Upper bound for FWER >> ", FWER,
                     " for the given value of ", sQuote("cutoff"),
                     " (true upper bound = ", upperbound, ")")
@@ -40,16 +40,24 @@ stabsel <- function(object, FWER = 0.05, cutoff, q,
     fun <- function(model) {
         xs <- selected(model)
         qq <- sapply(1:length(xs), function(x) length(unique(xs[1:x])))
-        if (qq[length(xs)] < q)
-            warning(sQuote("mstop"), " too small to select ", sQuote("q"),
-                    " base-learners; Increase ", sQuote("mstop"),
-                    " bevor applying ", sQuote("stabsel"))
         xs[qq > q] <- xs[1]
         xs
     }
     ss <- cvrisk(object, fun  = fun,
                  folds = folds,
                  papply = papply, ...)
+
+    if (verbose){
+        qq <- sapply(ss, function(x) length(unique(x)))
+        sum_of_violations <- sum(qq < q)
+        if (sum_of_violations > 0)
+            warning(sQuote("mstop"), " too small in ",
+                    sum_of_violations, " of the ", ncol(folds),
+                    " subsampling replicates to select ", sQuote("q"),
+                    " base-learners; Increase ", sQuote("mstop"),
+                    " bevor applying ", sQuote("stabsel"))
+    }
+
 
     ## if grid specified in '...'
     if (length(list(...)) >= 1 && "grid" %in% names(list(...))) {
