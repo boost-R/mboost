@@ -52,7 +52,7 @@ stabsel <- function(object, FWER = 0.05, cutoff, q,
                  papply = papply, ...)
 
     ## if grid specified in '...'
-    if (length(list(...)) > 1 && grid %in% names(list(...))) {
+    if (length(list(...)) >= 1 && "grid" %in% names(list(...))) {
         m <- max(list(...)$grid)
     } else {
         m <- mstop(object)
