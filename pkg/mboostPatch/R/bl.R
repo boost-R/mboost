@@ -271,13 +271,13 @@ X_bbs <- function(mf, vary, args) {
         }
         if (!identical(args$center, FALSE)) {
             tmp <- attributes(X)[c("degree", "knots", "Boundary.knots")]
-            center <- match.arg(as.character(args$center), 
+            center <- match.arg(as.character(args$center),
                                 choices = c("TRUE", "differenceMatrix", "spectralDecomp"))
             if (center == "TRUE") center <- "differenceMatrix"
-            X <- switch(center, 
+            X <- switch(center,
                 ### L = t(D) in Section 2.3. of Fahrmeir et al. (2004, Stat Sinica)
                 "differenceMatrix" = tcrossprod(X, K) %*% solve(tcrossprod(K)),
-                ### L = \Gamma \Omega^1/2 in Section 2.3. of 
+                ### L = \Gamma \Omega^1/2 in Section 2.3. of
                 ### Fahrmeir et al. (2004, Stat Sinica)
                 "spectralDecomp" = {
                     SVD <- eigen(crossprod(K), symmetric = TRUE, EISPACK = FALSE)
@@ -347,7 +347,7 @@ X_bbs <- function(mf, vary, args) {
             suppressMessages(K <- kronecker(diag(ncol(by)), K))
         }
         if (!identical(args$center, FALSE)) {
-            ### L = \Gamma \Omega^1/2 in Section 2.3. of Fahrmeir et al. 
+            ### L = \Gamma \Omega^1/2 in Section 2.3. of Fahrmeir et al.
             ### (2004, Stat Sinica), always
             L <- eigen(K, symmetric = TRUE, EISPACK = FALSE)
             L$vectors <- L$vectors[,1:(ncol(X) - args$differences^2), drop = FALSE]
@@ -747,10 +747,12 @@ bspatial <- function(..., df = 6) {
 }
 
 ### random-effects (Ridge-penalized ANOVA) baselearner
-brandom <- function(..., contrasts.arg = "contr.dummy", df = 4) {
+brandom <- function (..., contrasts.arg = "contr.dummy", df = 4) {
     cl <- cltmp <- match.call()
-    if (is.null(cl$df)) cl$df <- df
-    cl$intercept <- FALSE
+    if (is.null(cl$df))
+        cl$df <- df
+    if (is.null(cl$contrasts.arg))
+        cl$contrasts.arg <- contrasts.arg
     cl[[1L]] <- as.name("bols")
     ret <- eval(cl, parent.frame())
     cltmp[[1]] <- as.name("brandom")

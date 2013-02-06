@@ -11,8 +11,11 @@
      For bbs(x, y, center = TRUE) or bmrf(x, center = TRUE), the spectral
      decomposition is (and was) always used.
 
-  o  fixed bug in stabsel: '...' was not passed to cvrisk and thus one could 
+  o  fixed bug in stabsel: '...' was not passed to cvrisk and thus one could
      not specify options for mclapply
+
+  o  fixed bug in brandom: now really use contrasts.arg = "contr.dummy" per
+     default.
 
   o  small improvements in manual
 
@@ -35,7 +38,7 @@
 
   o  updated vignette mboost_tutorial
 
-  o  updated mboost_package.Rd: 
+  o  updated mboost_package.Rd:
      now all important changes since mboost 2.0 are documented there
 
   o  changed roles of contributers to ctb
