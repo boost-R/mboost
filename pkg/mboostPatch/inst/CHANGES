@@ -1,4 +1,4 @@
-                CHANGES in `mboost' VERSION 2.2-2 (2013-02-08, rzzz)
+                CHANGES in `mboost' VERSION 2.2-2 (2013-02-08, r703)
 
   o  bbs(..., center = "spectralDecomp") computes the spectral decomposition
      of the penalty matrix and the penalized part of the design matrix is
