@@ -15,7 +15,7 @@
 > require("mboost")
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.2-1. See ‘package?mboost’ and the NEWS file
+This is mboost 2.2-2. See ‘package?mboost’ and the NEWS file
 for a complete list of changes.
 Note: The default for the computation of the degrees of freedom has changed.
       For details see section ‘Global Options’ of ‘?bols’.
@@ -648,4 +648,4 @@ pdf
  *** Run successfully completed ***
 > proc.time()
        User      System verstrichen 
-     13.160       0.212      13.640 
+     12.644       0.176      13.064 

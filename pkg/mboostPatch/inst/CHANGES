@@ -1,4 +1,4 @@
-                CHANGES in `mboost' VERSION 2.2-2 (2013-xx-yy, rzzz)
+                CHANGES in `mboost' VERSION 2.2-2 (2013-02-08, rzzz)
 
   o  bbs(..., center = "spectralDecomp") computes the spectral decomposition
      of the penalty matrix and the penalized part of the design matrix is
@@ -16,6 +16,9 @@
 
   o  fixed bug in brandom: now really use contrasts.arg = "contr.dummy" per
      default.
+
+  o  removed tests/ folder and .Rout.save files for vignettes from the CRAN 
+     release
 
   o  small improvements in manual
 

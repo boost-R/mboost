@@ -20,7 +20,7 @@ Type 'q()' to quit R.
 > require("mboost")
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.2-1. See 'package?mboost' and the NEWS file
+This is mboost 2.2-2. See 'package?mboost' and the NEWS file
 for a complete list of changes.
 Note: The default for the computation of the degrees of freedom has changed.
       For details see section 'Global Options' of '?bols'.
@@ -502,7 +502,7 @@ Number of baselearners:  3
 +                  control = boost_control(mstop = 1000))
 Warning in Xfun(mf, vary, args) :
   'df' equal to rank of null space (unpenalized part of P-spline);
-  Consider larger value for 'df' or set 'center = TRUE'.
+  Consider larger value for 'df' or set 'center != FALSE'.
 > X <- extract(bbs(x))
 > K <- extract(bbs(x), "penalty")
 > mod10 <- gamboost(y ~  buser(X, K) + buser(X, K, by = z),
@@ -511,4 +511,4 @@ Warning in Xfun(mf, vary, args) :
 > 
 > proc.time()
    user  system elapsed 
- 14.372   0.084  14.611 
+ 13.984   0.144  14.303 

@@ -1,0 +1,23 @@
+# ${R_HOME}/bin/buildCRAN -*- sh -*- for building add-on packages
+
+args=
+while test -n "${1}"; do
+  args="${args}nextArg${1}"
+  if test -n ${2}; then
+     path=${1}
+  fi
+  shift
+done
+
+standardPath=${path}/.Rbuildignore
+cranPath=${path}/.RbuildignoreCRAN
+tmpPath=${path}/.RbuildignoreTMP
+
+mv -v ${standardPath} ${tmpPath}
+mv -v ${cranPath} ${standardPath}
+
+## NB: Apple's ICU needs LC_COLLATE set when R is started.
+echo 'tools:::.build_packages()' | R_DEFAULT_PACKAGES= LC_COLLATE=C "${R_HOME}/bin/R" --no-restore --slave --args ${args}
+
+mv -v ${standardPath} ${cranPath}
+mv -v ${tmpPath} ${standardPath}

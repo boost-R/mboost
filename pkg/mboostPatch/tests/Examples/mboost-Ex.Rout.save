@@ -23,7 +23,7 @@ Type 'q()' to quit R.
 > options(warn = 1)
 > library('mboost')
 Loading required package: parallel
-This is mboost 2.2-1. See ‘package?mboost’ and the NEWS file
+This is mboost 2.2-2. See ‘package?mboost’ and the NEWS file
 for a complete list of changes.
 Note: The default for the computation of the degrees of freedom has changed.
       For details see section ‘Global Options’ of ‘?bols’.
@@ -341,10 +341,10 @@ $class
 >   model <- gamboost(y ~ brandom(id), weights = obs)
 >   coef(model)
 $`brandom(id)`
-       id2        id3        id4        id5        id6        id7        id8 
--0.2048302  0.8687702  0.9059585  0.6728108 -0.7326978  0.5056362  0.8295553 
-       id9       id10 
--1.2953884  0.0000000 
+       id1        id2        id3        id4        id5        id6        id7 
+-1.5095486 -0.1995084  0.8461985  0.8824206  0.6553304 -0.7136614  0.4924992 
+       id8        id9       id10 
+ 0.8080024 -1.2617327  0.0000000 
 
 attr(,"offset")
 [1] -0.6983303
@@ -389,11 +389,11 @@ $class
 +                       control = boost_control(mstop = 1000))
 Warning in Xfun(mf, vary, args) :
   ‘df’ equal to rank of null space (unpenalized part of P-spline);
-  Consider larger value for ‘df’ or set ‘center = TRUE’.
+  Consider larger value for ‘df’ or set ‘center != FALSE’.
 >   nd$pred_gam <- predict(mod_gam, newdata = nd)
 Warning in Xfun(mf, vary, args) :
   ‘df’ equal to rank of null space (unpenalized part of P-spline);
-  Consider larger value for ‘df’ or set ‘center = TRUE’.
+  Consider larger value for ‘df’ or set ‘center != FALSE’.
 >   for (i in seq(along = levels(z)))
 +       with(nd[nd$z == i,], lines(x, pred_gam, col = z, lty = "dashed"))
 >   ### convenience function for plotting
@@ -401,10 +401,10 @@ Warning in Xfun(mf, vary, args) :
 >   plot(mod_gam)
 Warning in Xfun(mf, vary, args) :
   ‘df’ equal to rank of null space (unpenalized part of P-spline);
-  Consider larger value for ‘df’ or set ‘center = TRUE’.
+  Consider larger value for ‘df’ or set ‘center != FALSE’.
 Warning in Xfun(mf, vary, args) :
   ‘df’ equal to rank of null space (unpenalized part of P-spline);
-  Consider larger value for ‘df’ or set ‘center = TRUE’.
+  Consider larger value for ‘df’ or set ‘center != FALSE’.
 > 
 > 
 >   ### remove intercept from base-learner
@@ -1159,7 +1159,10 @@ attr(,"offset")
 
 > 
 >     ### coefficients should coincide
->     coef(cars.gb) + c(cars.gb$offset, 0)
+>     coef(cars.gb, off2int = TRUE)         ## add offset to intercept
+(Intercept)       speed 
+ -17.579044    3.932406 
+>     coef(cars.gb) + c(cars.gb$offset, 0)  ## add offset to intercept (by hand)
 (Intercept)       speed 
  -17.579044    3.932406 
 attr(,"offset")
@@ -1210,11 +1213,9 @@ attr(,"offset")
 [1] 35.99999
 
 > 
->     coef(cars.gbl) + c(cars.gbl$offset, 0)
+>     coef(cars.gbl, off2int = TRUE)
 (Intercept)       speed 
   -11.60001     3.40000 
-attr(,"offset")
-[1] 35.99999
 >     lines(cars$speed, predict(cars.gbl), col = "green")
 > 
 >     ### Huber loss with adaptive choice of delta
@@ -2992,7 +2993,7 @@ attr(,"boundary.knots")$upper
 >   (sbody <- stabsel(mod, q = 3,
 +                     folds = cv(model.weights(mod), type = "subsampling", B = 25)))
 Warning in stabsel(mod, q = 3, folds = cv(model.weights(mod), type = "subsampling",  :
-  Upper bound for FWER >> 0.05 for the given value of ‘q’ (true upper bound = 1.125)
+  Upper bound for FWER >> 0.05 for the given value of ‘q’ (true upper bound = 1)
 	Stability Selection
 
 Selected base-learners:
@@ -3131,7 +3132,7 @@ attr(,"offset")
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  31.649 0.688 33.193 0 0 
+Time elapsed:  32.878 0.896 34.487 0 0 
 > grDevices::dev.off()
 null device 
           1 

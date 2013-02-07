@@ -20,7 +20,7 @@ Type 'q()' to quit R.
 > require("mboost")
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.2-1. See 'package?mboost' and the NEWS file
+This is mboost 2.2-2. See 'package?mboost' and the NEWS file
 for a complete list of changes.
 Note: The default for the computation of the degrees of freedom has changed.
       For details see section 'Global Options' of '?bols'.
@@ -649,7 +649,7 @@ Warning messages:
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 2: In bbs(x1) : base-learner contains missing values;
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
-3: In bols(x1, df = 4, intercept = FALSE) :
+3: In bols(x1, df = 4, contrasts.arg = "contr.dummy") :
   base-learner contains missing values;
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 4: In bbs(x1, x2, df = 6) : base-learner contains missing values;
@@ -665,4 +665,4 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 > 
 > proc.time()
    user  system elapsed 
- 30.233   0.132  30.671 
+ 31.765   0.196  32.253 

@@ -49,13 +49,16 @@
 
 	 For details see 
          http://r.789695.n4.nabble.com/Generate-Rout-save-files-for-vignettes-td4652752.html
-
-
+    
     Gives no warnings / errors.
 
     Commit changes to pkg/mboostPatch/
 
     Add latest svn LATEST version to NEWS
+
+    Now build package without test folder to be submitted to CRAN
+       R CMD buildCRAN --resave-data --compact-vignettes pkg/mboostPatch
+       R CMD check --as-cran mboost_XXX.tar.gz
 
     Ftp source package to CRAN.
 

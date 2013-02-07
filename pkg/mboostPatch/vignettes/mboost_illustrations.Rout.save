@@ -1,7 +1,7 @@
 
 > source("setup.R")
 Loading required package: parallel
-This is mboost 2.2-1. See ‘package?mboost’ and the NEWS file
+This is mboost 2.2-2. See ‘package?mboost’ and the NEWS file
 for a complete list of changes.
 Note: The default for the computation of the degrees of freedom has changed.
       For details see section ‘Global Options’ of ‘?bols’.
@@ -318,4 +318,4 @@ Degrees of freedom (for mstop = 86): 11.348
  *** Run successfully completed ***
 > proc.time()
        User      System verstrichen 
-     14.464       0.120      14.687 
+     14.220       0.112      14.430 
