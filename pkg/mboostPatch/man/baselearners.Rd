@@ -466,14 +466,13 @@ bl1 \%O\% bl2
 
   ### set up base-learners
   spline1 <- bbs(x1, knots = 20, df = 4)
-  attributes(spline1)
-
+  extract(spline1, "design")[1:10, 1:10]
+  extract(spline1, "penalty")
   knots.x2 <- quantile(x2, c(0.25, 0.5, 0.75))
   spline2 <- bbs(x2, knots = knots.x2, df = 5)
-  attributes(spline2)
-
-  attributes(ols3 <- bols(x3))
-  attributes(ols4 <- bols(x4))
+  ols3 <- bols(x3)
+  extract(ols3)
+  ols4 <- bols(x4)
 
   ### compute base-models
   drop(ols3$dpp(weights)$fit(y)$model) ## same as:
@@ -489,7 +488,7 @@ bl1 \%O\% bl2
   mod2 <- mboost(y ~ bbs(x1, knots = 20, df = 4) +
                      bbs(x2, knots = knots.x2, df = 5) +
                      bols(x3) + bols(x4), weights = weights)
-  all.equal(coef(mod1), coef(mod2))
+  all.equal(coef(mod1), coef(mod2), check.attributes = FALSE)
 
 
   ### grouped linear effects
@@ -499,9 +498,10 @@ bl1 \%O\% bl2
   model <- gamboost(y ~ bols(x1, x2, intercept = FALSE) +
                         bols(x1, intercept = FALSE) +
                         bols(x2, intercept = FALSE),
-                        control = boost_control(mstop = 400))
+                        control = boost_control(mstop = 50))
   coef(model, which = 1)   # one base-learner for x1 and x2
   coef(model, which = 2:3) # two separate base-learners for x1 and x2
+                           # zero because they were (not yet) selected. 
 
   ### example for bspatial
   x1 <- runif(250,-pi,pi)
@@ -510,7 +510,8 @@ bl1 \%O\% bl2
   y <- sin(x1) * sin(x2) + rnorm(250, sd = 0.4)
 
   spline3 <- bspatial(x1, x2, knots = 12)
-  attributes(spline3)
+  extract(spline3, "design")[1:10, 1:10]
+  extract(spline3, "penalty")[1:10, 1:10]
 
   ## specify number of knots separately
   form2 <- y ~ bspatial(x1, x2, knots = list(x1 = 12, x2 = 12))
@@ -558,14 +559,14 @@ bl1 \%O\% bl2
   plot(y ~ x, col = z)
   ## specify main effect and interaction
   mod_glm <- gamboost(y ~ bols(x) + bols(x, by = z),
-                  control = boost_control(mstop = 1000))
+                  control = boost_control(mstop = 100))
   nd <- data.frame(x, z)
   nd <- nd[order(x),]
   nd$pred_glm <- predict(mod_glm, newdata = nd)
   for (i in seq(along = levels(z)))
       with(nd[nd$z == i,], lines(x, pred_glm, col = z))
-  mod_gam <- gamboost(y ~ bbs(x) + bbs(x, by = z),
-                      control = boost_control(mstop = 1000))
+  mod_gam <- gamboost(y ~ bbs(x) + bbs(x, by = z, df = 8),
+                      control = boost_control(mstop = 100))
   nd$pred_gam <- predict(mod_gam, newdata = nd)
   for (i in seq(along = levels(z)))
       with(nd[nd$z == i,], lines(x, pred_gam, col = z, lty = "dashed"))
@@ -580,26 +581,26 @@ bl1 \%O\% bl2
   mod <- gamboost(y ~ bols(int, intercept = FALSE) +
                       bols(x, intercept = FALSE),
                   data = tmpdata,
-                  control = boost_control(mstop = 2500))
+                  control = boost_control(mstop = 1000))
   cf <- unlist(coef(mod))
   ## add offset
   cf[1] <- cf[1] + mod$offset
-  cf
-  coef(lm(y ~ x, data = tmpdata))
+  signif(cf, 3)
+  signif(coef(lm(y ~ x, data = tmpdata)), 3)
 
-  ### quicker and better with (mean-) centering
+  ### much quicker and better with (mean-) centering
   tmpdata$x_center <- tmpdata$x - mean(tmpdata$x)
   mod_center <- gamboost(y ~ bols(int, intercept = FALSE) +
                              bols(x_center, intercept = FALSE),
                          data = tmpdata,
-                         control = boost_control(mstop = 500))
+                         control = boost_control(mstop = 100))
   cf_center <- unlist(coef(mod_center, which=1:2))
   ## due to the shift in x direction we need to subtract
   ## beta_1 * mean(x) to get the correct intercept
   cf_center[1] <- cf_center[1] + mod_center$offset -
                   cf_center[2] * mean(tmpdata$x)
-  cf_center
-  coef(lm(y ~ x, data = tmpdata))
+  signif(cf_center, 3)
+  signif(coef(lm(y ~ x, data = tmpdata)), 3)
 
 ## To speed up testing do not run this automatically.
 \dontrun{
@@ -697,15 +698,15 @@ bl1 \%O\% bl2
   volf <- matrix(fitted(mod), nrow = nrow(volcano))
   image(volf, main = "fitted")
 
-  ## the old-fashioned way, a waste of space and time
+\dontrun{  ## the old-fashioned way, a waste of space and time
   x <- expand.grid(x1, x2)
-  modx <- mboost(vol ~ bbs(Var2, df = 3, knots = 10)\%X\%
+  modx <- mboost(vol ~ bbs(Var2, df = 3, knots = 10) \%X\%
                        bbs(Var1, df = 3, knots = 10), data = x,
                        control = boost_control(nu = 0.25))
   modx[250]
 
   max(abs(fitted(mod) - fitted(modx)))
-
+}
 
   ### setting contrasts via contrasts.arg
   x <- as.factor(sample(1:4, 100, replace = TRUE))

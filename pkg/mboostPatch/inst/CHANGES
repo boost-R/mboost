@@ -1,3 +1,11 @@
+                CHANGES in `mboost' VERSION 2.2-2 (2013-XX-XX, rYYY)
+
+  o  speed up checking of manual by changing some computaions (e.g. reduce 
+     mstop) or exclude code from checking via \dontrun{}
+
+  o  small improvements in manual
+
+
                 CHANGES in `mboost' VERSION 2.2-2 (2013-02-08, r703)
 
   o  bbs(..., center = "spectralDecomp") computes the spectral decomposition
