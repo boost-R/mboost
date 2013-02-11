@@ -524,7 +524,8 @@ bl1 \%O\% bl2
   ### random intercept
   id <- factor(rep(1:10, each = 5))
   raneff <- brandom(id)
-  attributes(raneff)
+  extract(raneff, "design")
+  extract(raneff, "penalty")
 
   ## random intercept with non-observed category
   set.seed(1907)
@@ -541,7 +542,8 @@ bl1 \%O\% bl2
   ### random slope
   z <- runif(50)
   raneff <- brandom(id, by = z)
-  attributes(raneff)
+  extract(raneff, "design")
+  extract(raneff, "penalty")
 
   ### specify simple interaction model (with main effect)
   n <- 210
@@ -580,6 +582,7 @@ bl1 \%O\% bl2
                   data = tmpdata,
                   control = boost_control(mstop = 2500))
   cf <- unlist(coef(mod))
+  ## add offset
   cf[1] <- cf[1] + mod$offset
   cf
   coef(lm(y ~ x, data = tmpdata))
@@ -598,6 +601,8 @@ bl1 \%O\% bl2
   cf_center
   coef(lm(y ~ x, data = tmpdata))
 
+## To speed up testing do not run this automatically.
+\dontrun{
   ### large data set with ties
   nunique <- 100
   xindex <- sample(1:nunique, 1000000, replace = TRUE)
@@ -624,6 +629,7 @@ bl1 \%O\% bl2
 
   all.equal(c1, c2)
   all.equal(c1, c3)
+}
 
   ### cyclic P-splines
   set.seed(781)

@@ -387,3 +387,25 @@ p2 <- predict(m2, newdata = data.frame(x1 = c(0.2, 0.5), x2 = c(0.7, 0.3)))
 
 stopifnot(max(abs(p1 - p2)) < tol)
 
+### large data set with ties
+nunique <- 100
+xindex <- sample(1:nunique, 1000000, replace = TRUE)
+x <- runif(nunique)
+y <- rnorm(length(xindex))
+w <- rep.int(1, length(xindex))
+### brute force computations
+op <- options()
+options(mboost_indexmin = Inf, mboost_useMatrix = FALSE)
+## data pre-processing
+b1 <- bbs(x[xindex])$dpp(w)
+## model fitting
+c1 <- b1$fit(y)$model
+options(op)
+### automatic search for ties, faster
+b2 <- bbs(x[xindex])$dpp(w)
+c2 <- b2$fit(y)$model
+### manual specification of ties, even faster
+b3 <- bbs(x, index = xindex)$dpp(w)
+c3 <- b3$fit(y)$model
+stopifnot(all.equal(c1, c2))
+stopifnot(all.equal(c1, c3))
