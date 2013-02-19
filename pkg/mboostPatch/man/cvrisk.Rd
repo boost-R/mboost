@@ -1,12 +1,13 @@
 \name{cvrisk}
 \alias{cvrisk}
+\alias{cvrisk.mboost}
 \alias{cv}
 \title{ Cross-Validation }
 \description{
   Cross-validated estimation of the empirical risk for hyper-parameter selection.
 }
 \usage{
-cvrisk(object, folds = cv(model.weights(object)),
+\method{cvrisk}{mboost}(object, folds = cv(model.weights(object)),
        grid = 1:mstop(object),
        papply = mclapply,
        fun = NULL, ...)
