@@ -14,7 +14,7 @@ export(glmboost,
        boost_control, mstop, Family,
        GaussReg, Gaussian, GaussClass, Laplace, Binomial, Poisson, GammaReg, QuantReg,
        ExpectReg, NBinomial, PropOdds, Weibull, Loglog, Lognormal, AUC, mboost_fit,
-       Huber, AdaExp, Gehan, CoxPH, FP, IPCweights, cvrisk, cv, bbs, stabsel,
+       Huber, AdaExp, Gehan, CoxPH, Hurdle, FP, IPCweights, cvrisk, cv, bbs, stabsel,
        bols, bspatial, brandom, btree, bss, bns, brad, bmono, bmrf, buser, survFit, selected,
        nuisance, "%+%", "%X%", "%O%", extract)
        ###, basesel, fitsel)

@@ -19,6 +19,7 @@
 \alias{Lognormal}
 \alias{AUC}
 \alias{Gehan}
+\alias{Hurdle}
 \title{ Gradient Boosting Families }
 \description{
     \code{boost_family} objects provide a convenient way to specify loss functions
@@ -55,6 +56,7 @@ Weibull(nuirange = c(0, 100))
 Loglog(nuirange = c(0, 100))
 Lognormal(nuirange = c(0, 100))
 Gehan()
+Hurdle(nuirange = c(0, 100))
 }
 \arguments{
   \item{ngradient}{ a function with arguments \code{y}, \code{f} and \code{w} implementing the
@@ -187,6 +189,13 @@ distribution approximation used in Ma and Huang (2005).
   time (subject to censoring) and \code{delta} is the non-censoring indicator
   (see \code{\link{Surv}} for details). For details on \code{Gehan()} see
   Johnson and Long (2011). 
+  
+  Hurdle models for zero-inflated count data can be fitted by using a combination
+  of the \code{Binomial()} and \code{Hurdle()} families. While the \code{Binomial()}
+  family allows for fitting the zero-generating process of the Hurdle model,
+  \code{Hurdle()} fits a negative binomial regression model to the non-zero
+  counts. Note that the specification of the Hurdle model allows for using
+  \code{Binomial()} and \code{Hurdle()} independently of each other.
 }
 \section{Warning}{
   The coefficients resulting from boosting with family

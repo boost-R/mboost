@@ -827,3 +827,30 @@ Gehan <- function() {
            },
            name = "Gehan loss")
 }
+
+
+### Hurdle model, negative binomial non-zero component with log link
+Hurdle <- function(nuirange = c(0, 100)){
+    sigma <- 1
+    plloss <- function(sigma, y, f)
+                  - (y * (f - log(1 / sigma + exp(f))) -
+                  (log(1 / sigma + exp(f)) + log(sigma)) / sigma +
+                  lgamma(y + 1 / sigma) - lgamma(y + 1) - lgamma(1 / sigma) -
+                  log(1 - (1 + exp(f) * sigma)^{-1 / sigma}))
+    riskS <- function(sigma, y, fit, w = 1)
+                 sum(w * plloss(y = y, f = fit, sigma = sigma))
+    risk <- function(y, f, w = 1) sum(w * plloss(y = y, f = f, sigma = sigma))
+    ngradient = function(y, f, w = 1){
+                    sigma <<- optimize(riskS, interval = nuirange, y = y,
+                                       fit = f, w = w)$minimum
+                    y / sigma / (exp(f) + 1 / sigma) - 1 / sigma /
+                    (exp(-f) / sigma + 1) - exp(f) * (1 + exp(f) *
+                    sigma)^{-1 / sigma - 1} / (1 - (1 + exp(f) *
+                    sigma)^{-1 / sigma})
+                    }
+    Family(ngradient = ngradient, risk = risk, check_y = function(y) {
+               stopifnot(all.equal(unique(y - floor(y)), 0))
+               y}, nuisance = function() return(sigma),
+               name = "Hurdle model, negative binomial non-zero part",
+               response = function(f) exp(f))
+} 
