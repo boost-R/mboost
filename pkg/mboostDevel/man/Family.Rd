@@ -20,6 +20,7 @@
 \alias{AUC}
 \alias{Gehan}
 \alias{Hurdle}
+\alias{Multinomial}
 \title{ Gradient Boosting Families }
 \description{
     \code{boost_family} objects provide a convenient way to specify loss functions
@@ -57,6 +58,7 @@ Loglog(nuirange = c(0, 100))
 Lognormal(nuirange = c(0, 100))
 Gehan()
 Hurdle(nuirange = c(0, 100))
+Multinomial()
 }
 \arguments{
   \item{ngradient}{ a function with arguments \code{y}, \code{f} and \code{w} implementing the
@@ -196,6 +198,15 @@ distribution approximation used in Ma and Huang (2005).
   \code{Hurdle()} fits a negative binomial regression model to the non-zero
   counts. Note that the specification of the Hurdle model allows for using
   \code{Binomial()} and \code{Hurdle()} independently of each other.
+
+  Linear or additive multinomial logit models can be fitted using
+  \code{Multinomial()}; although is family requires some extra effort for
+  model specification (see example).  More specifically, the predictor must
+  be in the form of a linear array model (see \code{\link{\%O\%}}).  Note
+  that this family does not work with tree-based base-learners at the
+  moment.  The class corresponding to the last level of the factor coding
+  the response is uses as reference class.
+
 }
 \section{Warning}{
   The coefficients resulting from boosting with family
@@ -267,6 +278,21 @@ distribution approximation used in Ma and Huang (2005).
            Family(ngradient = function(y, f, w = 1) y - f,
            loss = function(y, f) (y - f)^2,
            name = "My Gauss Variant")
+    }
+
+    ### fitting multinomial logit model via a linear array model
+    X0 <- K0 <- diag(nlevels(iris$Species) - 1)
+    colnames(X0) <- levels(iris$Species)[-nlevels(iris$Species)]
+    mlm <- mboost(Species ~ bols(Sepal.Length, df = 2) \%O\%
+                            buser(X0, K0, df = 2), data = iris,
+                  family = Multinomial())
+    head(round(predict(mlm, type = "response"), 2))
+
+    \dontrun{
+    ### compare results with nnet::multinom
+    mlmn <- multinom(Species ~ Sepal.Length, data = iris)
+    max(abs(fitted(mlm[1000], type = "response") - 
+            fitted(mlmn, type = "prob")))
     }
 
 }
