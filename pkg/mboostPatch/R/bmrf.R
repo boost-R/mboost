@@ -97,7 +97,7 @@ function (mf, vary, args)
             data = mf)[, 2]
         X <- X * by
     }
-    if (!identical(args$center, FALSE)) {
+    if (isTRUE(args$center)) {
         ### L = \Gamma \Omega^1/2 in Section 2.3. of Fahrmeir et al. 
         ### (2004, Stat Sinica)
         SVD <- eigen(K, EISPACK = FALSE)

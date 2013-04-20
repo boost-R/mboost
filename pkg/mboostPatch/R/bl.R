@@ -189,7 +189,7 @@ hyper_bbs <- function(mf, vary, knots = 20, boundary.knots = NULL, degree = 3,
         stop("variable names and knot names must be the same")
     if (is.list(boundary.knots)) if(!all(names(boundary.knots) %in% nm))
         stop("variable names and boundary.knot names must be the same")
-    if (!identical(center, FALSE) && cyclic)
+    if (isTRUE(center) && cyclic)
         stop("centering of cyclic covariates not yet implemented")
     ret <- vector(mode = "list", length = length(nm))
     names(ret) <- nm
@@ -269,7 +269,7 @@ X_bbs <- function(mf, vary, args) {
         if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
                 suppressMessages(K <- kronecker(diag(ncol(by)), K))
         }
-        if (!identical(args$center, FALSE)) {
+        if (isTRUE(args$center)) {
             tmp <- attributes(X)[c("degree", "knots", "Boundary.knots")]
             center <- match.arg(as.character(args$center),
                                 choices = c("TRUE", "differenceMatrix", "spectralDecomp"))
@@ -346,7 +346,7 @@ X_bbs <- function(mf, vary, args) {
         if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
             suppressMessages(K <- kronecker(diag(ncol(by)), K))
         }
-        if (!identical(args$center, FALSE)) {
+        if (isTRUE(args$center)) {
             ### L = \Gamma \Omega^1/2 in Section 2.3. of Fahrmeir et al.
             ### (2004, Stat Sinica), always
             L <- eigen(K, symmetric = TRUE, EISPACK = FALSE)
