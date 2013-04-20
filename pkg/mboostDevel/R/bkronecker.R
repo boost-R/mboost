@@ -34,6 +34,9 @@ bl_lin_matrix <- function(blg, Xfun, args) {
 
     dpp <- function(weights) {
 
+        if (!is.null(attr(X$X1, "deriv")) || !is.null(attr(X$X2, "deriv"))) 
+            stop("fitting of derivatives of B-splines not implemented")
+
         W <- matrix(weights, nrow = n1, ncol = n2)
 
         ### X = kronecker(X2, X1)
@@ -60,12 +63,22 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         }
         XtX <- XtX + lambda * K
 
+        ### nnls
+        constr <- (!is.null(attr(X$X1, "constraint"))) + 
+                  (!is.null(attr(X$X2, "constraint")))
+
+        if (constr == 2) 
+            stop("only one dimension may be subject to constraints")
+        constr <- constr > 0
+
         ## matrizes of class dgeMatrix are dense generic matrices; they should
         ## be coerced to class matrix and handled in the standard way
         if (is(XtX, "Matrix") && !extends(class(XtX), "dgeMatrix")) {
             XtXC <- Cholesky(forceSymmetric(XtX))
             mysolve <- function(y) {
                 Y <- matrix(y, nrow = n1) * W
+                if (constr)
+                    return(nnls2D(X, as(XtXC, "matrix"), Y))
                 XWY <- as.vector(crossprod(X$X1, Y) %*% X$X2)
                 solve(XtXC, XWY)  ## special solve routine from
                                   ## package Matrix
@@ -77,6 +90,8 @@ bl_lin_matrix <- function(blg, Xfun, args) {
             }
             mysolve <- function(y) {
                 Y <- matrix(y, nrow = n1) * W
+                if (constr)
+                    return(nnls2D(X, as(XtX, "matrix"), Y))
                 XWY <- crossprod(X$X1, Y) %*% X$X2
                 solve(XtX, matrix(as(XWY, "matrix"), ncol = 1),
                       LINPACK = FALSE)
