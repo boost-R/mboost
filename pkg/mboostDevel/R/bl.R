@@ -582,7 +582,7 @@ cbs <- function (x, knots, boundary.knots, degree = 3, deriv) {
     X <- splineDesign(knots, x, ord, derivs = rep(deriv, length(x)), outer.ok = TRUE)
     x[ind] <- x[ind] - boundary.knots[2] + boundary.knots[1]
     if (sum(ind)) {
-        Xtmp <- splineDesign(knots, x[ind], ord, derivs = rep(deriv, length(ind)), 
+        Xtmp <- splineDesign(knots, x[ind], ord, derivs = rep(deriv, length(x[ind])), 
                              outer.ok = TRUE)
         X[ind, ] <- X[ind, ] + Xtmp
     }
