@@ -23,7 +23,8 @@ bols(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
      lambda = 0, contrasts.arg = "contr.treatment")
 bbs(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
     degree = 3, differences = 2, df = 4, lambda = NULL, center = FALSE,
-    cyclic = FALSE)
+    cyclic = FALSE, constraint = c("none", "increasing", "decreasing"), 
+    deriv = 0)
 bspatial(..., df = 6)
 brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
      covFun = stationary.cov,
@@ -165,7 +166,7 @@ bl1 \%O\% bl2
     or 2 (linear; default for all other effects).}
   \item{bnd}{
     Object of class \code{bnd}, in which the boundaries of a map are
-    defined and from which neighborhood relations can be construed. See
+    defined and from which neighborhood relations can be constructed. See
     \code{\link[BayesX]{read.bnd}}. If a boundary object is not
     available, the neighborhood matrix can also be given directly. }
   \item{X}{ design matrix as it should be used in the penalized least
@@ -344,7 +345,8 @@ bl1 \%O\% bl2
   with an additional asymmetric penalty enforcing monotonicity or
   convexity/concavity (see and Eilers, 2005). For more details in the
   boosting context and monotonic effects of ordinal factors see Hofner,
-  Mueller and Hothorn (2011b).
+  Mueller and Hothorn (2011b). Alternative monotonicity constraints 
+  are implemented via T-splines in \code{bbs()} (Beliakov, 2000).
 
   Two or more linear base-learners can be joined using \code{\%+\%}. A
   tensor product of two or more linear base-learners is returned by
@@ -447,6 +449,8 @@ bl1 \%O\% bl2
   Benjamin Hofner (2010), Model-based Boosting 2.0, \emph{Journal of
     Machine Learning Research}, \bold{11}, 2109--2113.
 
+  G. M. Beliakov (2000), Shape Preserving Approximation using Least Squares 
+    Splines, \emph{Approximation Theory and its Applications}, bold{16}(4), 80-98.
 
 }
 
