@@ -1,41 +1,73 @@
 
-stabsel <- function(object, FWER = 0.05, cutoff, q,
+stabsel <- function(object, cutoff, q, PFER,
                     folds = cv(model.weights(object), type = "subsampling", B = 100),
-                    papply = mclapply, verbose = TRUE, ...) {
+                    papply = mclapply, verbose = TRUE, FWER, ...) {
 
     p <- length(variable.names(object))
     ibase <- 1:p
 
-    if (!missing(q) && p < q)
-        stop("Average number of selected base-learners ", sQuote("q"),
-             " must be smaller \n  than the number of base-learners",
-             " specified in the model ", sQuote("object"))
+    ## only two of the four arguments can be specified
+    if ((nmiss <- sum(missing(PFER), missing(cutoff),
+                      missing(q), missing(FWER))) != 2) {
+        if (nmiss > 2)
+            stop("Two of the three argumnets ",
+                 sQuote("PFER"), ", ", sQuote("cutoff"), " and ", sQuote("q"),
+                 " must be specifed")
+        if (nmiss < 2)
+            stop("Only two of the three argumnets ",
+                 sQuote("PFER"), ", ", sQuote("cutoff"), " and ", sQuote("q"),
+                 " can be specifed at the same time")
+    }
 
-    if (!(FWER > 0 && FWER < 0.5))
-        stop(sQuote("FWER"), " must be between 0 and 0.5")
+    if (!missing(FWER)) {
+        if (!missing(PFER))
+            stop(sQuote("FWER"), " and ", sQuote("PFER"),
+                 " cannot be spefified at the same time")
+        PFER <- FWER
+        warning(sQuote("FWER"), " is deprecated. Use ", sQuote("PFER"),
+                " instead.")
+    }
 
-    if (! xor(missing(cutoff), missing(q)))
-        stop(" Either ", sQuote("cutoff"), " or ", sQuote("q"),
-             "must be specified (but not both).")
+    if ((!missing(PFER) || !missing(FWER)) && PFER < 0)
+        stop(sQuote("PFER"), " must be greater 0")
+
+    if (!missing(cutoff) && (cutoff < 0.5 | cutoff > 1))
+        stop(sQuote("cutoff"), " must be between 0.5 and 1")
+
+    if (!missing(q)) {
+        if (p < q)
+            stop("Average number of selected base-learners ", sQuote("q"),
+                 " must be smaller \n  than the number of base-learners",
+                 " specified in the model ", sQuote("object"))
+        if (q < 0)
+            stop("Average number of selected base-learners ", sQuote("q"),
+                 " must be greater 0")
+    }
 
     if (missing(cutoff)) {
-        cutoff <- min(0.9, tmp <- (q^2 / (FWER * p) + 1) / 2)
+        cutoff <- min(0.9, tmp <- (q^2 / (PFER * p) + 1) / 2)
         upperbound <- q^2 / p / (2 * cutoff - 1)
-        if (verbose && tmp > 0.9 && upperbound - FWER > FWER/2) {
-            warning("Upper bound for FWER >> ", FWER,
+        if (verbose && tmp > 0.9 && upperbound - PFER > PFER/2) {
+            warning("Upper bound for PFER > ", PFER,
                     " for the given value of ", sQuote("q"),
-                    " (true upper bound = ", min(1, round(upperbound, 2)), ")")
+                    " (true upper bound = ", round(upperbound, 2), ")")
         }
     }
-    if (missing(q)){
-        stopifnot(cutoff >= 0.5)
-        q <- ceiling(sqrt(FWER * (2 * cutoff - 1) * p))
+
+    if (missing(q)) {
+        q <- ceiling(sqrt(PFER * (2 * cutoff - 1) * p))
         upperbound <- q^2 / p / (2 * cutoff - 1)
-        if (verbose && upperbound - FWER > FWER/2)
-            warning("Upper bound for FWER >> ", FWER,
+        if (verbose && upperbound - PFER > PFER/2)
+            warning("Upper bound for PFER > ", PFER,
                     " for the given value of ", sQuote("cutoff"),
                     " (true upper bound = ", upperbound, ")")
     }
+
+    if (missing(PFER)) {
+        upperbound <- PFER <- q^2 / p / (2 * cutoff - 1)
+    }
+    if (verbose && PFER >= p)
+        warning("Upper bound for PFER larger than the number of base-learners.")
 
     fun <- function(model) {
         xs <- selected(model)
@@ -77,12 +109,12 @@ stabsel <- function(object, FWER = 0.05, cutoff, q,
     if (extends(class(object), "glmboost"))
         rownames(phat) <- variable.names(object)
     ret <- list(phat = phat, selected = which((mm <- apply(phat, 1, max)) >= cutoff),
-                max = mm, cutoff = cutoff, q = q)
+                max = mm, cutoff = cutoff, q = q, PFER = upperbound)
     class(ret) <- "stabsel"
     ret
 }
 
-print.stabsel <- function(x, ...) {
+print.stabsel <- function(x, decreasing = FALSE, ...) {
 
     cat("\tStability Selection\n")
     if (length(x$selected) > 0) {
@@ -92,9 +124,10 @@ print.stabsel <- function(x, ...) {
         cat("\nNo base-learner selected\n")
     }
     cat("\nSelection probabilities:\n")
-    print(x$max[x$max > 0])
+    print(sort(x$max[x$max > 0], decreasing = decreasing))
     cat("\nCutoff: ", x$cutoff, "; ", sep = "")
-    cat("q: ", x$q, "\n\n")
+    cat("q: ", x$q, "; ", sep = "")
+    cat("PFER: ", x$PFER, "\n\n")
     invisible(x)
 }
 

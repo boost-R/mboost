@@ -281,9 +281,9 @@ CoxPH <- function() {
                .Call("ngradientCoxPLik", time, event, f, w, package = "mboost")
            },
            risk = risk <- function(y, f, w = 1) -sum(plloss(y, f, w), na.rm = TRUE),
-           offset = function(y, w)
-               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)),
-                        y = y, w = w)$minimum,
+           offset = function(y, w = 1) 0, ## perhaps use something different
+                       ## Note: offset cannot be computed from Cox Partial LH as
+                       ## PLH doesn't depend on constant
            check_y = function(y) {
                if (!inherits(y, "Surv"))
                    stop("response is not an object of class ", sQuote("Surv"),
@@ -460,7 +460,7 @@ Weibull <- function(nuirange = c(0, 100)) {
 
     Family(ngradient = ngradient, risk = risk,
            offset = function(y, w)
-               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)),
+               optimize(risk, interval = c(0, max(log(y[,1]), na.rm = TRUE)),
                         y = y, w = w)$minimum,
            check_y = function(y) {
                if (!inherits(y, "Surv"))
@@ -513,7 +513,7 @@ Loglog <- function(nuirange = c(0, 100)) {
 
     Family(ngradient = ngradient, risk = risk,
            offset = function(y, w)
-               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)),
+               optimize(risk, interval = c(0, max(log(y[,1]), na.rm = TRUE)),
                         y = y, w = w)$minimum,
            check_y = function(y) {
                if (!inherits(y, "Surv"))
@@ -564,7 +564,7 @@ Lognormal <- function(nuirange = c(0, 100)) {
 
     Family(ngradient = ngradient, risk = risk,
            offset = function(y, w)
-               optimize(risk, interval = c(0, max(y[,1], na.rm = TRUE)),
+               optimize(risk, interval = c(0, max(log(y[,1]), na.rm = TRUE)),
                         y = y, w = w)$minimum,
            check_y = function(y) {
                if (!inherits(y, "Surv"))
@@ -816,7 +816,7 @@ Gehan <- function() {
            weights = "case",
            offset = function(y,w){
                optimize(risk,
-                        interval = c(0, max(y[,1], na.rm=TRUE)), y = y, w = w)$minimum
+                        interval = c(0, max(log(y[,1]), na.rm=TRUE)), y = y, w = w)$minimum
            },
            check_y = function(y) {
                if (!inherits(y,"Surv"))
