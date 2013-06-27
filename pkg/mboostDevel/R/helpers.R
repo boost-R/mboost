@@ -124,7 +124,7 @@ bhatmat <- function(n, H, xselect, fitm, fW) {
 
 nnls1D <- function(XtX, X, y) {
 
-    my <- switch(attr(X, "constraint"),  "increasing" = {
+    my <- switch(attr(X, "Ts_constraint"),  "increasing" = {
         ### first column is intercept
         stopifnot(max(abs(X[,1,drop = TRUE] - 1)) < sqrt(.Machine$double.eps))
         min(y)
@@ -133,21 +133,20 @@ nnls1D <- function(XtX, X, y) {
         max(y)
     })
     y <- y - my
-    stopifnot(require("nnls"))
     cf <- nnls(XtX, crossprod(X, y))$x
-    cf[1] <- cf[1] + switch(attr(X, "constraint"),  "increasing" = my,
+    cf[1] <- cf[1] + switch(attr(X, "Ts_constraint"),  "increasing" = my,
                                                     "decreasing" = -my)
     cf
 }
 
 nnls2D <- function(X, XtX, Y) {
 
-    constr <- which(c(!is.null(attr(X$X1, "constraint")),
-                      !is.null(attr(X$X2, "constraint"))))
+    constr <- which(c(!is.null(attr(X$X1, "Ts_constraint")),
+                      !is.null(attr(X$X2, "Ts_constraint"))))
     if (length(constr) == 2)
             stop("only one dimension may be subject to constraints")
     Xc <- paste("X", constr, sep = "")
-    my <- switch(attr(X[[Xc]], "constraint"),  "increasing" = {
+    my <- switch(attr(X[[Xc]], "Ts_constraint"),  "increasing" = {
         ### first column is intercept
         stopifnot(max(abs(X[[Xc]][,1,drop = TRUE] - 1)) < sqrt(.Machine$double.eps))
         min(y)
@@ -158,13 +157,12 @@ nnls2D <- function(X, XtX, Y) {
     Y <- Y - my
 
     XWY <- as.vector(crossprod(X$X1, Y) %*% X$X2)
-    stopifnot(require("nnls"))
     cf <- nnls(XtX, matrix(as(XWY, "matrix"), ncol = 1))$x
     cf <- matrix(cf, nrow = ncol(X$X1))
-    if (constr == 1) cf[1,] <- cf[1,] + switch(attr(X[[Xc]], "constraint"),  
+    if (constr == 1) cf[1,] <- cf[1,] + switch(attr(X[[Xc]], "Ts_constraint"),  
                                                "increasing" = my,
                                                "decreasing" = -my)
-    if (constr == 2) cf[,1] <- cf[,1] + switch(attr(X[[Xc]], "constraint"),  
+    if (constr == 2) cf[,1] <- cf[,1] + switch(attr(X[[Xc]], "Ts_constraint"),  
                                                "increasing" = my,
                                                "decreasing" = -my)
     cf

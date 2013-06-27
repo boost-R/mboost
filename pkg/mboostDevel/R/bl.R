@@ -167,8 +167,7 @@ X_ols <- function(mf, vary, args) {
 ### hyper parameters for P-splines baselearner (including tensor product P-splines)
 hyper_bbs <- function(mf, vary, knots = 20, boundary.knots = NULL, degree = 3,
                       differences = 2, df = 4, lambda = NULL, center = FALSE,
-                      cyclic = FALSE, constraint = c("none", "increasing", "decreasing"),
-                      deriv = 0L) {
+                      cyclic = FALSE, constraint = "none", deriv = 0L) {
 
     knotf <- function(x, knots, boundary.knots) {
         if (is.null(boundary.knots))
@@ -198,13 +197,12 @@ hyper_bbs <- function(mf, vary, knots = 20, boundary.knots = NULL, degree = 3,
         ret[[n]] <- knotf(mf[[n]], if (is.list(knots)) knots[[n]] else knots,
                           if (is.list(boundary.knots)) boundary.knots[[n]]
                           else boundary.knots)
-    constraint <- match.arg(constraint)
     if (cyclic & constraint != "none")
         stop("constraints not implemented for cyclic B-splines")
     stopifnot(is.numeric(deriv) & length(deriv) == 1)
     list(knots = ret, degree = degree, differences = differences,
          df = df, lambda = lambda, center = center, cyclic = cyclic,
-         constraint = constraint, deriv = deriv)
+         Ts_constraint = constraint, deriv = deriv)
 }
 
 ### model.matrix for P-splines baselearner (including tensor product P-splines)
@@ -216,7 +214,7 @@ X_bbs <- function(mf, vary, args) {
                       knots = args$knots[[i]]$knots,
                       boundary.knots = args$knots[[i]]$boundary.knots,
                       degree = args$degree,
-                      constraint = args$constraint,
+                      Ts_constraint = args$Ts_constraint,
                       deriv = args$deriv)
         if (args$cyclic) {
             X <- cbs(mf[[i]],
@@ -300,7 +298,7 @@ X_bbs <- function(mf, vary, args) {
         } else {
             K <- crossprod(K)
         }
-        if (!is.null(attr(X, "constraint"))) {
+        if (!is.null(attr(X, "Ts_constraint"))) {
             D <- attr(X, "D")
             K <- crossprod(D, K) %*% D
         }
@@ -556,7 +554,7 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
                       args = hyper_bbs(mf, vary, knots = knots, boundary.knots =
                       boundary.knots, degree = degree, differences = differences,
                       df = df, lambda = lambda, center = center, cyclic = cyclic,
-                      constraint = constraint, deriv = deriv))
+                      constraint = match.arg(constraint), deriv = deriv))
     return(ret)
 }
 
@@ -602,7 +600,7 @@ cbs <- function (x, knots, boundary.knots, degree = 3, deriv) {
     return(X)
 }
 
-bsplines <- function(x, knots, boundary.knots, degree, constraint, deriv){
+bsplines <- function(x, knots, boundary.knots, degree, Ts_constraint, deriv){
     nx <- names(x)
     x <- as.vector(x)
     ## handling of NAs
@@ -629,16 +627,16 @@ bsplines <- function(x, knots, boundary.knots, degree, constraint, deriv){
     ### constraints; experimental
     D <- diag(ncol(X))
     D[lower.tri(D)] <- 1
-    X <- switch(constraint, "none" = X,
+    X <- switch(Ts_constraint, "none" = X,
                             "increasing" = X %*% D,
                             "decreasing" = -X %*% D)
     ## add attributes
     attr(X, "degree") <- degree
     attr(X, "knots") <- knots
     attr(X, "boundary.knots") <- list(lower = bk_lower, upper = bk_upper)
-    if (constraint != "none")
-        attr(X, "constraint") <- constraint
-    if (constraint != "none")
+    if (Ts_constraint != "none")
+        attr(X, "Ts_constraint") <- Ts_constraint
+    if (Ts_constraint != "none")
         attr(X, "D") <- D
     if (deriv != 0)
         attr(X, "deriv") <- deriv
@@ -688,7 +686,7 @@ bl_lin <- function(blg, Xfun, args) {
         if (is(X, "Matrix") && !extends(class(XtX), "dgeMatrix")) {
             XtXC <- Cholesky(forceSymmetric(XtX))
             mysolve <- function(y) {
-                if (is.null(attr(X, "constraint")))
+                if (is.null(attr(X, "Ts_constraint")))
                     return(solve(XtXC, crossprod(X, y)))  ## special solve routine from
                                                           ## package Matrix
                 ### non-negative LS only at the moment
@@ -701,7 +699,7 @@ bl_lin <- function(blg, Xfun, args) {
                 XtX <- as(XtX, "matrix")
             }
             mysolve <- function(y) {
-                if (is.null(attr(X, "constraint")))
+                if (is.null(attr(X, "Ts_constraint")))
                     return(solve(XtX, crossprod(X, y), LINPACK = FALSE))
                 ### non-negative LS only at the moment
                 return(nnls1D(XtX, X, y))
