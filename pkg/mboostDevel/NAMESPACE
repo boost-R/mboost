@@ -17,7 +17,7 @@ export(glmboost,
        ExpectReg, NBinomial, PropOdds, Weibull, Loglog, Lognormal, AUC, mboost_fit,
        Huber, AdaExp, Gehan, CoxPH, Hurdle, Multinomial, FP, IPCweights, cvrisk, cv, bbs, stabsel,
        bols, bspatial, brandom, btree, bss, bns, brad, bmono, bmrf, buser, survFit, selected,
-       nuisance, "%+%", "%X%", "%O%", extract)
+       nuisance, "%+%", "%X%", "%O%", extract, "mstop<-")
        ###, basesel, fitsel)
 exportClasses("boost_family")
 exportMethods("show")

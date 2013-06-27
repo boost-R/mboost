@@ -216,6 +216,10 @@ logLik.mboost <- function(object, ...)
     invisible(NULL)
 }
 
+"mstop<-" <- function(x, value) {
+    return(x[value, return = TRUE])
+}
+
 mstop.mboost <- function(object, ...) object$mstop()
 
 update.mboost <- function(object, weights, ...)
