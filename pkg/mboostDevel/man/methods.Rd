@@ -15,6 +15,7 @@
 \alias{mstop.gbAIC}
 \alias{mstop.mboost}
 \alias{mstop.cvrisk}
+\alias{mstop<-}
 
 \alias{predict.mboost}
 \alias{predict.gamboost}
@@ -61,6 +62,7 @@
     aggregate = c("sum", "cumsum", "none"), off2int = FALSE, ...)
 
 \method{[}{mboost}(x, i, return = TRUE, ...)
+mstop(x) <- value
 
 \method{AIC}{mboost}(object, method = c("corrected", "classical", "gMDL"),
     df = c("trace", "actset"), ..., k = 2)
@@ -140,6 +142,7 @@
             If \code{i} is larger than the initial \code{mstop},
             additional boosting steps are performed until step \code{i}
             is reached. See details for more information. }
+  \item{value}{ integer. See \code{i}.}
   \item{return}{ a logical indicating whether the changed object is
                  returned. }
   \item{method}{ a character specifying if the corrected AIC criterion or
@@ -231,7 +234,8 @@
   index that is larger than the initial \code{mstop}, only the missing
   \code{i - mstop} steps are fitted. If the model is restricted, the
   spare steps are not dropped, i.e., if we increase \code{i} again,
-  these boosting steps are immediately available.
+  these boosting steps are immediately available. Alternatively, the
+  same operation can be done by \code{mstop(x) <- i}.
 
   The generic \code{extract} function can be used to extract various
   characteristics of a fitted model or a base-learner. Note that the
