@@ -64,15 +64,15 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
 
             if (ncol(data) == 1) {
                 if (!add){
-                    plot(sort(data[[1]]), pr[order(data[[1]])], type = type,
+                    plot(sort(data[[1]]), pr[order(data[[1]], na.last = NA)], type = type,
                          xlab = xl, ylab = yl, ylim = ylim, ...)
                     if (rug) rug(data[[1]], col = rugcol)
                 } else {
                     if (is.factor(data[[1]])){
-                        boxplot(pr[order(data[[1]])] ~ sort(data[[1]]),
+                        boxplot(pr[order(data[[1]], na.last = NA)] ~ sort(data[[1]]),
                                 add = TRUE, ...)
                     } else {
-                        lines(sort(data[[1]]), pr[order(data[[1]])], type =
+                        lines(sort(data[[1]]), pr[order(data[[1]], na.last = NA)], type =
                               type, ...)
                         if (rug){
                             rug(data[[1]], col = rugcol)
@@ -106,7 +106,7 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                         tmp[[v]] <- vv
                         mean(predict(x, newdata = tmp, which = w))
                     })
-                    plot(sort(data[[v]]), pardep[order(data[[v]])], type = type,
+                    plot(sort(data[[v]]), pardep[order(data[[v]], na.last = NA)], type = type,
                          xlab = v, ylab = "Partial Dependency", ylim = ylim, ...)
                 }
             }
