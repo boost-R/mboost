@@ -522,7 +522,7 @@ extract.blackboost <- function(object, ...)
 extract.blg <- function(object, what = c("design", "penalty", "index"),
                         asmatrix = FALSE, expand = FALSE, ...){
     what <- match.arg(what)
-    object <- object$dpp(rep(1, nrow(object$model.frame())))
+    object <- object$dpp(rep(1, NROW(object$model.frame())))
     return(extract(object, what = what,
                    asmatrix = asmatrix, expand = expand))
 }
