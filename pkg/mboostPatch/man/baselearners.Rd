@@ -110,10 +110,10 @@ bl1 \%O\% bl2
                  re-parameterized such that the unpenalized part of the fit is subtracted and
                  only the deviation effect is fitted. The unpenalized, parametric part has then
                  to be included in separate base-learners using \code{bols} (see the examples below).
-                 There are two possible ways to re-parameterization; 
-                 \code{center = "differenceMatrix"} is based on the difference matrix 
-                 (the default for \code{bbs} with one covariate only) 
-                 and \code{center = "spectralDecomp"} uses a spectral decomposition 
+                 There are two possible ways to re-parameterization;
+                 \code{center = "differenceMatrix"} is based on the difference matrix
+                 (the default for \code{bbs} with one covariate only)
+                 and \code{center = "spectralDecomp"} uses a spectral decomposition
                  of the penalty matrix (see Fahrmeir et al., 2004, Section 2.3 for details).
                  The latter option is the default (and currently only option) for \code{bbs}
                  with multiple covariates or \code{bmrf}.}
@@ -501,7 +501,7 @@ bl1 \%O\% bl2
                         control = boost_control(mstop = 50))
   coef(model, which = 1)   # one base-learner for x1 and x2
   coef(model, which = 2:3) # two separate base-learners for x1 and x2
-                           # zero because they were (not yet) selected. 
+                           # zero because they were (not yet) selected.
 
   ### example for bspatial
   x1 <- runif(250,-pi,pi)
@@ -510,17 +510,52 @@ bl1 \%O\% bl2
   y <- sin(x1) * sin(x2) + rnorm(250, sd = 0.4)
 
   spline3 <- bspatial(x1, x2, knots = 12)
-  extract(spline3, "design")[1:10, 1:10]
+  Xmat <- extract(spline3, "design")
+  ## 12 inner knots + 4 boundary knots = 16 knots per direction
+  ## THUS: 16 * 16 = 256 columns
+  dim(Xmat)
   extract(spline3, "penalty")[1:10, 1:10]
 
   ## specify number of knots separately
-  form2 <- y ~ bspatial(x1, x2, knots = list(x1 = 12, x2 = 12))
+  form1 <- y ~ bspatial(x1, x2, knots = list(x1 = 12, x2 = 14))
 
   ## decompose spatial effect into parametric part and
   ## deviation with one df
   form2 <- y ~ bols(x1) + bols(x2) + bols(x1, by = x2, intercept = FALSE) +
                bspatial(x1, x2, knots = 12, center = TRUE, df = 1)
 
+## To speed up testing do not run this automatically.
+\dontrun{  mod1 <- gamboost(form1)
+  plot(mod1)
+
+  mod2 <- gamboost(form2)
+  x11()
+  ## automated plot function:
+  plot(mod2)
+  ## plot sum of linear and smooth effects:
+  library(lattice)
+  df <- expand.grid(x1 = unique(x1), x2 = unique(x2))
+  df$pred <- predict(mod2, newdata = df)
+  levelplot(pred ~ x1 * x2, data = df)
+}
+
+  ## specify radial basis function base-learner for spatial effect
+  ## and use data-adaptive effective range (theta = NULL, see 'args')
+  form3 <- y ~ brad(x1, x2)
+  ## Now use different settings, e.g. 50 knots and theta fixed to 0.4
+  ## (not really a good setting)
+  form4 <- y ~ brad(x1, x2, knots = 50, args = list(theta = 0.4))
+
+## To speed up testing do not run this automatically.
+\dontrun{  mod3 <- gamboost(form3)
+plot(mod3)
+dim(extract(mod3, what = "design", which = "brad")[[1]])
+knots <- attr(extract(mod3, what = "design", which = "brad")[[1]], "knots")
+
+mod4 <- gamboost(form4)
+dim(extract(mod4, what = "design", which = "brad")[[1]])
+plot(mod4)
+}
 
   ### random intercept
   id <- factor(rep(1:10, each = 5))
@@ -603,8 +638,7 @@ bl1 \%O\% bl2
   signif(coef(lm(y ~ x, data = tmpdata)), 3)
 
 ## To speed up testing do not run this automatically.
-\dontrun{
-  ### large data set with ties
+\dontrun{  ### large data set with ties
   nunique <- 100
   xindex <- sample(1:nunique, 1000000, replace = TRUE)
   x <- runif(nunique)

@@ -11,7 +11,7 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
     which <- x$which(which, usedonly = is.null(which))
 
     pr <- predict(x, which = which, newdata = newdata)
-    if (is.null(ylim)) ylim <- range(pr)
+    if (is.null(ylim)) ylim <- range(pr, na.rm = TRUE)
     ## <FIXME> default ylim not suitable for plotting varying coefficient
     ##         base-learners; Users need to specify suitable values themselves
 
