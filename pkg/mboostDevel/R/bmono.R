@@ -1,6 +1,7 @@
 ### P-spline base-learner with (monotonicity) constraints
 bmono <- function(..., constraint = c("increasing", "decreasing",
-                                      "convex", "concave", "none"),
+                                      "convex", "concave", "none",
+                                      "positive", "negative"),
                   by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
                   degree = 3, differences = 2, df = 4,
                   lambda = NULL, lambda2 = 1e6, niter = 10,
@@ -118,14 +119,11 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
                 }
                 ## <fixme> was passiert bei bivariatem bmono? </fixme>
             }
+            ## diff_order for boundary constraints
             if(is.null(cons.arg$diff_order)){
                 ## use same difference order as defined by "constraint":
                 ## <FIXME> args$constraint may be a list of length 2 for spatial effects
-                if (args$constraint %in% c("increasing", "decreasing")){
-                    cons.arg$diff_order <- 1
-                } else { # i.e. args$constraint %in% c("convex", "concave")
-                    cons.arg$diff_order <- 2
-                }
+                cons.arg$diff_order <- which_diff(args$constraint)
             }
             if(is.null(cons.arg$lambda)){
                 cons.arg$lambda <- 1e6
@@ -169,20 +167,20 @@ bl_mono <- function(blg, Xfun, args) {
 
     if (length(args$constraint) == 1) {
 
-        if (args$constraint %in% c("increasing", "decreasing")){
-            diff_order <- 1
-        } else { # i.e. args$constraint %in% c("convex", "concave")
-            diff_order <- 2
-        }
+        diff_order <- which_diff(args$constraint)
 
         D <- V <- lambda2 <- vector(mode = "list", length =2)
 
-        if (is.factor(mf[[1]]) && args$intercept) {
+        ## set up difference matrix
+        if (diff_order > 0) {
             D[[1]] <- diff(diag(ncol(X)), differences = diff_order)
+        } else {
+            D[[1]] <- diag(ncol(X))
+        }
+
+        if (is.factor(mf[[1]]) && args$intercept) {
             D[[1]][1,1] <- 0
         } else {
-            D[[1]] <- diff(diag(ncol(X)), differences = diff_order)
-
             ## set up boundary constraints
             if (args$boundary.constraints){
                 cons.arg <- args$cons.arg
@@ -215,8 +213,7 @@ bl_mono <- function(blg, Xfun, args) {
         }
     }
     if (length(args$constraint) == 2) {
-        diff_order <- lapply(args$constraint, function(x){
-            ifelse( x %in% c("increasing", "decreasing"), 1, 2) } )
+        diff_order <- which_diff(args$constraint)
 
         if (is.factor(mf[[1]]))
             stop(paste("Bivariate monotonic effects currently not",
@@ -395,6 +392,12 @@ bl_mono <- function(blg, Xfun, args) {
 none <- function(diffs)
     diag(rep(0,length(diffs)))
 
+positive <- function(diffs)
+    diag(c(as.numeric(diffs)) <= 0)
+
+negative <- function(diffs)
+    diag(c(as.numeric(diffs)) <= 0)
+
 increasing <- function(diffs)
     diag(c(as.numeric(diffs)) <= 0)
 
@@ -406,3 +409,23 @@ convex <- function(diffs)
 
 concave <- function(diffs)
     diag(c(as.numeric(diffs)) >= 0)
+
+which_diff <- function(constraint) {
+    if (length(constraint) == 1) {
+        diff <- switch(constraint,
+                       positive = 0,
+                       increasing = 1,
+                       decreasing = 1,
+                       convex = 2,
+                       concave = 2)
+    } else {
+        diff <- lapply(constraint, function(x)
+                       switch(x,
+                              positive = 0,
+                              increasing = 1,
+                              decreasing = 1,
+                              convex = 2,
+                              concave = 2))
+    }
+    return(diff)
+}
