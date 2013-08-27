@@ -100,7 +100,11 @@ Laplace <- function()
 link2dist <- function(link, choices = c("logit", "probit"), ...) {
     i <- pmatch(link, choices, nomatch = 0L, duplicates.ok = TRUE)
     if (i[1] == 1) return("logit")
-    if (i[1] == 2) return(list(p = pnorm, d = dnorm, q = qnorm))
+    if (i[1] == 2) {
+        ret <- list(p = pnorm, d = dnorm, q = qnorm)
+        attr(ret, "link") <- link
+        return(ret)
+    }
     p <- get(paste("p", link, sep = ""))
     d <- get(paste("d", link, sep = ""))
     q <- get(paste("q", link, sep = ""))
