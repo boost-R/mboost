@@ -105,6 +105,7 @@ X_brad <- function(mf, vary, args) {
         X <- X * by
     }
     ### </FIXME>
+    attr(X, "knots") <- args$knots
     return(list(X = X, K = K))
 }
 

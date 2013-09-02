@@ -23,7 +23,7 @@ bols(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
      lambda = 0, contrasts.arg = "contr.treatment")
 bbs(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
     degree = 3, differences = 2, df = 4, lambda = NULL, center = FALSE,
-    cyclic = FALSE, constraint = c("none", "increasing", "decreasing"), 
+    cyclic = FALSE, constraint = c("none", "increasing", "decreasing"),
     deriv = 0)
 bspatial(..., df = 6)
 brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
@@ -34,7 +34,8 @@ btree(..., tree_controls = ctree_control(stump = TRUE,
                                          mincriterion = 0,
                                          savesplitstats = FALSE))
 bmono(...,
-      constraint = c("increasing", "decreasing", "convex", "concave", "none"),
+      constraint = c("increasing", "decreasing", "convex", "concave",
+                     "none", "positive", "negative"),
       by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
       degree = 3, differences = 2, df = 4, lambda = NULL,
       lambda2 = 1e6, niter=10, intercept = TRUE,
@@ -111,10 +112,10 @@ bl1 \%O\% bl2
                  re-parameterized such that the unpenalized part of the fit is subtracted and
                  only the deviation effect is fitted. The unpenalized, parametric part has then
                  to be included in separate base-learners using \code{bols} (see the examples below).
-                 There are two possible ways to re-parameterization; 
-                 \code{center = "differenceMatrix"} is based on the difference matrix 
-                 (the default for \code{bbs} with one covariate only) 
-                 and \code{center = "spectralDecomp"} uses a spectral decomposition 
+                 There are two possible ways to re-parameterization;
+                 \code{center = "differenceMatrix"} is based on the difference matrix
+                 (the default for \code{bbs} with one covariate only)
+                 and \code{center = "spectralDecomp"} uses a spectral decomposition
                  of the penalty matrix (see Fahrmeir et al., 2004, Section 2.3 for details).
                  The latter option is the default (and currently only option) for \code{bbs}
                  with multiple covariates or \code{bmrf}.}
@@ -345,7 +346,7 @@ bl1 \%O\% bl2
   with an additional asymmetric penalty enforcing monotonicity or
   convexity/concavity (see and Eilers, 2005). For more details in the
   boosting context and monotonic effects of ordinal factors see Hofner,
-  Mueller and Hothorn (2011b). Alternative monotonicity constraints 
+  Mueller and Hothorn (2011b). Alternative monotonicity constraints
   are implemented via T-splines in \code{bbs()} (Beliakov, 2000).
 
   Two or more linear base-learners can be joined using \code{\%+\%}. A
@@ -449,7 +450,7 @@ bl1 \%O\% bl2
   Benjamin Hofner (2010), Model-based Boosting 2.0, \emph{Journal of
     Machine Learning Research}, \bold{11}, 2109--2113.
 
-  G. M. Beliakov (2000), Shape Preserving Approximation using Least Squares 
+  G. M. Beliakov (2000), Shape Preserving Approximation using Least Squares
     Splines, \emph{Approximation Theory and its Applications}, bold{16}(4), 80-98.
 
 }

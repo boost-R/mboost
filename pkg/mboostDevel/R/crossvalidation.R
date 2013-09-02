@@ -4,7 +4,10 @@
 ## for boosting algorithms
 ##
 
-cvrisk <- function (object, folds = cv(model.weights(object)), grid = 1:mstop(object),
+cvrisk <- function(object, ...)
+    UseMethod("cvrisk")
+
+cvrisk.mboost <- function (object, folds = cv(model.weights(object)), grid = 1:mstop(object),
                     papply = mclapply, fun = NULL, ...){
     weights <- model.weights(object)
     if (any(weights == 0))

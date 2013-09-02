@@ -54,6 +54,11 @@ coef.mboost <- function(object, which = NULL,
     args <- list(...)
     if (length(args) > 0)
         warning("Arguments ", paste(names(args), sep = ", "), " unknown")
+    if (grepl("Negative Binomial Likelihood", object$family@name))
+        message("\nNOTE: Coefficients from a Binomial model are half the size of ",
+                "coefficients\n from a model fitted via ",
+                "glm(... , family = 'binomial').\n",
+                "See Warning section in ?coef.mboost\n")
     object$coef(which = which, aggregate = aggregate)
 }
 
@@ -269,6 +274,11 @@ coef.glmboost <- function(object, which = NULL,
     if (length(args) > 0)
         warning("Arguments ", paste(names(args), sep = ", "), " unknown")
 
+    if (grepl("Negative Binomial Likelihood", object$family@name))
+        message("\nNOTE: Coefficients from a Binomial model are half the size of ",
+                "coefficients\n from a model fitted via ",
+                "glm(... , family = 'binomial').\n",
+                "See Warning section in ?coef.mboost\n")
 
     aggregate <- match.arg(aggregate)
     cf <- object$coef(which = which, aggregate = aggregate)
@@ -449,7 +459,8 @@ extract <- function(object, ...)
     UseMethod("extract")
 
 extract.mboost <- function(object, what = c("design", "penalty", "lambda", "df",
-                                   "coefficients", "residuals", "bnames", "offset",
+                                   "coefficients", "residuals",
+                                   "variable.names", "bnames", "offset",
                                    "nuisance", "weights", "index", "control"),
                            which = NULL, ...){
     what <- match.arg(what)
@@ -461,25 +472,20 @@ extract.mboost <- function(object, what = c("design", "penalty", "lambda", "df",
         names(ret) <- extract(object, what = "bnames", which = which)
         return(ret)
     }
-    if (what == "coefficients")
-        return(coef(object, which = which))
-    if (what == "residuals")
-        return(residuals(object))
-    if (what == "bnames")
-        return(get("bnames", envir = environment(object$update))[which])
-    if (what == "offset")
-        return(object$offset)
-    if (what == "nuisance")
-        return(nuisance(object))
-    if (what == "weights")
-        return(model.weights(object))
-    if (what == "control")
-        return(object$control)
+    switch(what,
+           "coefficients" = return(coef(object, which = which)),
+           "residuals" = return(residuals(object)),
+           "variable.names" = return(variable.names(object)),
+           "bnames" = return(get("bnames", envir = environment(object$update))[which]),
+           "offset" = return(object$offset),
+           "nuisance" = return(nuisance(object)),
+           "weights" = return(model.weights(object)),
+           "control" = return(object$control))
 }
 
 extract.glmboost <- function(object, what = c("design", "coefficients", "residuals",
-                                     "bnames", "offset", "nuisance", "weights",
-                                     "control"),
+                                     "variable.names", "bnames", "offset",
+                                     "nuisance", "weights", "control"),
                              which = NULL, asmatrix = FALSE, ...){
     what <- match.arg(what)
     center <- get("center", envir = environment(object$newX))
@@ -495,29 +501,23 @@ extract.glmboost <- function(object, what = c("design", "coefficients", "residua
     } else {
         which <- object$which(which)
     }
+
     if (what == "design"){
         mat <- object$baselearner[[1]]$get_data()[,which]
         if (asmatrix)
             mat <- as.matrix(mat)
         return(mat)
     }
-    if (what == "coefficients")
-        return(coef(object, which = which))
-    if (what == "residuals")
-        return(residuals(object))
-    if (what == "bnames")
-        return(get("bnames", envir = environment(object$update))[which])
-    if (what == "offset")
-        return(object$offset)
-    if (what == "nuisance")
-        return(nuisance(object))
-    if (what == "weights")
-        return(model.weights(object))
-    ## index doensn't store the index as base-learners in gamboost do
-    #if (what == "index")
-    #    return(object$baselearner[[1]]$get_index())
-    if (what == "control")
-        return(object$control)
+
+    switch(what,
+           "coefficients" = return(coef(object, which = which)),
+           "residuals" = return(residuals(object)),
+           "variable.names" = return(variable.names(object)),
+           "bnames" = return(get("bnames", envir = environment(object$update))[which]),
+           "offset" = return(object$offset),
+           "nuisance" = return(nuisance(object)),
+           "weights" = return(model.weights(object)),
+           "control" = return(object$control))
 }
 
 extract.blackboost <- function(object, ...)
@@ -526,7 +526,7 @@ extract.blackboost <- function(object, ...)
 extract.blg <- function(object, what = c("design", "penalty", "index"),
                         asmatrix = FALSE, expand = FALSE, ...){
     what <- match.arg(what)
-    object <- object$dpp(rep(1, nrow(object$model.frame())))
+    object <- object$dpp(rep(1, NROW(object$model.frame())))
     return(extract(object, what = what,
                    asmatrix = asmatrix, expand = expand))
 }

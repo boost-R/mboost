@@ -165,7 +165,7 @@ bl1 \%O\% bl2
     or 2 (linear; default for all other effects).}
   \item{bnd}{
     Object of class \code{bnd}, in which the boundaries of a map are
-    defined and from which neighborhood relations can be construed. See
+    defined and from which neighborhood relations can be constructed. See
     \code{\link[BayesX]{read.bnd}}. If a boundary object is not
     available, the neighborhood matrix can also be given directly. }
   \item{X}{ design matrix as it should be used in the penalized least

@@ -54,7 +54,7 @@ coef.mboost <- function(object, which = NULL,
     args <- list(...)
     if (length(args) > 0)
         warning("Arguments ", paste(names(args), sep = ", "), " unknown")
-    if (grepl("Negative Binomial Likelihood", Binomial("probit")@name))
+    if (grepl("Negative Binomial Likelihood", object$family@name))
         message("\nNOTE: Coefficients from a Binomial model are half the size of ",
                 "coefficients\n from a model fitted via ",
                 "glm(... , family = 'binomial').\n",
@@ -270,7 +270,7 @@ coef.glmboost <- function(object, which = NULL,
     if (length(args) > 0)
         warning("Arguments ", paste(names(args), sep = ", "), " unknown")
 
-    if (grepl("Negative Binomial Likelihood", Binomial("probit")@name))
+    if (grepl("Negative Binomial Likelihood", object$family@name))
         message("\nNOTE: Coefficients from a Binomial model are half the size of ",
                 "coefficients\n from a model fitted via ",
                 "glm(... , family = 'binomial').\n",

@@ -182,3 +182,16 @@ modSubset <- glmboost(x = x[as.logical(wMat[, 1]),],
 ## different pre-processing? </FIXME>
 round(coef(modWeighted) - coef(modSubset), 3)
 }
+
+## Binomial
+y <- as.factor(sample(0:1, 100, replace = TRUE))
+x1 <- rnorm(100)
+x2 <- rnorm(100)
+
+mod <- glmboost(y ~ x1 + x2, family = Binomial())
+mod[500]
+coef(mod)
+
+glmMod <- glm(y ~ x1 + x2, family = 'binomial')
+coef(glmMod)
+stopifnot(all((coef(glmMod) - coef(mod, off2int = TRUE) * 2) < .Machine$double.eps))

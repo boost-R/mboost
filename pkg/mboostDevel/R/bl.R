@@ -789,8 +789,10 @@ bspatial <- function(..., df = 6) {
 ### random-effects (Ridge-penalized ANOVA) baselearner
 brandom <- function(..., contrasts.arg = "contr.dummy", df = 4) {
     cl <- cltmp <- match.call()
-    if (is.null(cl$df)) cl$df <- df
-    cl$intercept <- FALSE
+    if (is.null(cl$df))
+        cl$df <- df
+    if (is.null(cl$contrasts.arg))
+        cl$contrasts.arg <- contrasts.arg
     cl[[1L]] <- as.name("bols")
     ret <- eval(cl, parent.frame())
     cltmp[[1]] <- as.name("brandom")

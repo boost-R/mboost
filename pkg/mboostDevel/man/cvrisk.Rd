@@ -1,12 +1,13 @@
 \name{cvrisk}
 \alias{cvrisk}
+\alias{cvrisk.mboost}
 \alias{cv}
 \title{ Cross-Validation }
 \description{
   Cross-validated estimation of the empirical risk for hyper-parameter selection.
 }
 \usage{
-cvrisk(object, folds = cv(model.weights(object)),
+\method{cvrisk}{mboost}(object, folds = cv(model.weights(object)),
        grid = 1:mstop(object),
        papply = mclapply,
        fun = NULL, ...)
@@ -21,9 +22,13 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
                 using function \code{cv} and defaults to 25 bootstrap samples.}
   \item{grid}{ a vector of stopping parameters the empirical risk
                 is to be evaluated for. }
-  \item{papply}{ (parallel) apply function, defaults to  \code{\link[parallel]{mclapply}}.
-    Alternatively, \code{parLapply} can be used. In the
-    latter case, usually more setup is needed (see example for some details).}
+  \item{papply}{
+    (parallel) apply function, defaults to  \code{\link[parallel]{mclapply}}.
+    Alternatively, \code{\link[parallel]{parLapply}} can be used. In the
+    latter case, usually more setup is needed (see example for some
+    details). To run \code{cvrisk} sequentially (i.e. not in parallel),
+    one can use \code{\link{lapply}}.
+  }
   \item{fun}{ if \code{fun} is NULL, the out-of-sample risk is returned. \code{fun},
               as a function of \code{object}, may extract any other characteristic
               of the cross-validated models. These are returned as is.}
@@ -36,8 +41,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   \item{prob}{ percentage of observations to be included in the learning samples
                for subsampling.}
   \item{strata}{ a factor of the same length as \code{weights} for stratification.}
-  \item{...}{additional arguments passed to \code{\link[parallel]{mclapply}}
-             eventually.}
+  \item{...}{additional arguments passed to \code{\link[parallel]{mclapply}}.}
 }
 \details{
 

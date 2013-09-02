@@ -134,6 +134,10 @@ LazyData: \tab yes\cr
   Benjamin Hofner (2010), Model-based Boosting 2.0. \emph{Journal of
   Machine Learning Research}, \bold{11}, 2109--2113.
 
+  Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011),
+  A framework for unbiased model selection based on boosting.
+  \emph{Journal of Computational and Graphical Statistics}, \bold{20}, 956--971.
+
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
   (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
   Package mboost. \emph{Department of Statistics, Technical Report No. 120}.\cr

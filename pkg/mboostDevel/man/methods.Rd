@@ -25,6 +25,9 @@
 \alias{residuals.mboost}
 \alias{resid.mboost}
 
+\alias{variable.names.glmboost}
+\alias{variable.names.mboost}
+
 \alias{extract}
 \alias{extract.mboost}
 \alias{extract.gamboost}
@@ -59,7 +62,7 @@
 \method{coef}{mboost}(object, which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...)
 \method{coef}{glmboost}(object, which = NULL,
-    aggregate = c("sum", "cumsum", "none"), off2int = FALSE, ...)
+     aggregate = c("sum", "cumsum", "none"), off2int = FALSE, ...)
 
 \method{[}{mboost}(x, i, return = TRUE, ...)
 mstop(x) <- value
@@ -72,27 +75,31 @@ mstop(x) <- value
 \method{mstop}{cvrisk}(object, ...)
 
 \method{predict}{mboost}(object, newdata = NULL,
-    type = c("link", "response", "class"), which = NULL,
-    aggregate = c("sum", "cumsum", "none"), ...)
+        type = c("link", "response", "class"), which = NULL,
+        aggregate = c("sum", "cumsum", "none"), ...)
 \method{predict}{glmboost}(object, newdata = NULL,
-    type = c("link", "response", "class"), which = NULL,
-    aggregate = c("sum", "cumsum", "none"), ...)
+        type = c("link", "response", "class"), which = NULL,
+        aggregate = c("sum", "cumsum", "none"), ...)
 
 \method{fitted}{mboost}(object, ...)
 
 \method{residuals}{mboost}(object, ...)
 \method{resid}{mboost}(object, ...)
 
+\method{variable.names}{glmboost}(object, ...)
+\method{variable.names}{mboost}(object, ...)
+
 \method{extract}{mboost}(object, what = c("design", "penalty", "lambda", "df",
-                                   "coefficients", "residuals", "bnames", "offset",
-                                   "nuisance", "weights", "index", "control"),
-                         which = NULL, ...)
+                         "coefficients", "residuals",
+                         "variable.names", "bnames", "offset",
+                         "nuisance", "weights", "index", "control"),
+        which = NULL, ...)
 \method{extract}{glmboost}(object, what = c("design", "coefficients", "residuals",
-                                     "bnames", "offset", "nuisance",
-                                     "weights", "control"),
-                           which = NULL, asmatrix = FALSE, ...)
+                         "variable.names", "bnames", "offset",
+                         "nuisance", "weights", "control"),
+        which = NULL, asmatrix = FALSE, ...)
 \method{extract}{blg}(object, what = c("design", "penalty", "index"),
-                      asmatrix = FALSE, expand = FALSE, ...)
+        asmatrix = FALSE, expand = FALSE, ...)
 
 \method{logLik}{mboost}(object, ...)
 \method{hatvalues}{gamboost}(model, ...)
@@ -160,7 +167,8 @@ mstop(x) <- value
                \code{"penalty"} (penalty matrix),
                \code{"lambda"} (smoothing parameter), \code{"df"}
                (degrees of freedom), \code{"coefficients"},
-               \code{"residuals"}, \code{"bnames"} (names of the base-learners),
+               \code{"residuals"}, \code{"variable.names"},
+               \code{"bnames"} (names of the base-learners),
                \code{"offset"}, \code{"nuisance"}, \code{"weights"},
                \code{"index"} (index of ties used to expand the design
                matrix) and \code{"control"}. In future versions additional
@@ -223,10 +231,6 @@ mstop(x) <- value
   to the object via \code{attr(..., "offset")} as adding the offset to
   one of the marginal predictions doesn't make much sense.
 
-  The \code{residuals} function can be used to extract the residuals
-  (i.e., the negative gradient of the current iteration). \code{resid}
-  is is an alias for \code{residuals}.
-
   The \code{[.mboost} function can be used to enhance or restrict a given
   boosting model to the specified boosting iteration \code{i}. Note that
   in both cases the original \code{x} will be changed to reduce the
@@ -236,6 +240,15 @@ mstop(x) <- value
   spare steps are not dropped, i.e., if we increase \code{i} again,
   these boosting steps are immediately available. Alternatively, the
   same operation can be done by \code{mstop(x) <- i}.
+
+  The \code{residuals} function can be used to extract the residuals
+  (i.e., the negative gradient of the current iteration). \code{resid}
+  is is an alias for \code{residuals}.
+
+  Variable names (including those of interaction effects specified via
+  \code{by} in a base-learner) can be extracted using the generic
+  function \code{variable.names}, which has special methods for boosting
+  objects.
 
   The generic \code{extract} function can be used to extract various
   characteristics of a fitted model or a base-learner. Note that the
@@ -417,6 +430,10 @@ mstop(x) <- value
   extract(model, what = "penalty", which = "x1") # penalty matrices for x1
   extract(model, what = "lambda", which = "x1") # df and corresponding lambda for x1
        ## note that bols(x1, intercept = FALSE) is unpenalized
+
+  extract(model, what = "bnames")  ## name of complete base-learner
+  extract(model, what = "variable.names") ## only variable names
+  variable.names(model)            ## the same
 
   ### extract from base-learners
   extract(bbs(x1), what = "design")

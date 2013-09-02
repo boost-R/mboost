@@ -132,7 +132,7 @@ LazyData: \tab yes\cr
 
   Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Mattthias Schmid and
   Benjamin Hofner (2010), Model-based Boosting 2.0. \emph{Journal of
-    Machine Learning Research}, \bold{11}, 2109--2113.
+  Machine Learning Research}, \bold{11}, 2109--2113.
 
   Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011),
   A framework for unbiased model selection based on boosting.

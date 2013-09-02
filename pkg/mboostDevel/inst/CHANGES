@@ -8,8 +8,10 @@
 
   o  new argument deriv to bbs for computing derivatives of B-splines
 
+  o  new constraints added for positive and negative spline estimates
 
-                CHANGES in `mboost' VERSION 2.2-2 (2013-xx-yy, rzzz)
+
+                CHANGES in `mboost' VERSION 2.2-2 (2013-02-08, r703)
 
   o  bbs(..., center = "spectralDecomp") computes the spectral decomposition
      of the penalty matrix and the penalized part of the design matrix is
@@ -22,8 +24,14 @@
      For bbs(x, y, center = TRUE) or bmrf(x, center = TRUE), the spectral
      decomposition is (and was) always used.
 
-  o  fixed bug in stabsel: '...' was not passed to cvrisk and thus one could 
+  o  fixed bug in stabsel: '...' was not passed to cvrisk and thus one could
      not specify options for mclapply
+
+  o  fixed bug in brandom: now really use contrasts.arg = "contr.dummy" per
+     default.
+
+  o  removed tests/ folder and .Rout.save files for vignettes from the CRAN
+     release
 
   o  small improvements in manual
 
@@ -46,7 +54,7 @@
 
   o  updated vignette mboost_tutorial
 
-  o  updated mboost_package.Rd: 
+  o  updated mboost_package.Rd:
      now all important changes since mboost 2.0 are documented there
 
   o  changed roles of contributers to ctb
@@ -58,17 +66,17 @@
 
                 CHANGES in `mboost' VERSION 2.2-0 (2012-11-21, r680)
 
-  o  switch from packages `multicore' and `snow' to `parallel'
+  o  switch from packages `multicore' and`snow' to `parallel'
 
   o  changed behavior of bols(x, intercept = FALSE) when x is a factor:
-     now the intercept is simply dropped from the design matrix; 
+     now the intercept is simply dropped from the design matrix;
      coding can be specified as usually for factors.
 
-  o  changed default for options("mboost_dftraceS") to FALSE, i.e., 
-     degrees of freedom are now computed from smoothing parameter 
+  o  changed default for options("mboost_dftraceS") to FALSE, i.e.,
+     degrees of freedom are now computed from smoothing parameter
      as described in B. Hofner, T. Hothorn, T. Kneib, M. Schmid (2011).
 
-  o  changed computation of B-spline basis at the boundaries: 
+  o  changed computation of B-spline basis at the boundaries:
      now also use equidistant knots in the boundaries (per default)
 
   o  improved plot function when dealing with spatial plots
@@ -76,11 +84,11 @@
 
   o  increased default number of subsampling replicates in stabsel to 100
 
-  o  [experimental] bmono() now implements constraints at the boundaries of 
+  o  [experimental] bmono() now implements constraints at the boundaries of
      (monotonic) P-splines
 
   o  [experimental] added family Gehan() for rank-based estimation of survival models
-	   in an accelerated failure time framework (contributed by Brent Johnson 
+	   in an accelerated failure time framework (contributed by Brent Johnson
        <bajohn3@emory.edu>)
 
 
