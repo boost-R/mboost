@@ -17,7 +17,7 @@ Description: Functional gradient descent algorithm
   and interaction models to potentially high-dimensional data.
 Depends: R (>= 2.14.0), methods, stats, parallel
 Imports: Matrix, survival, splines, lattice
-Suggests: party (>= 1.0-3), ipred, MASS, fields,
+Suggests: party (>= 1.0-3), TH.data, MASS, fields,
   BayesX, gbm, mlbench, RColorBrewer, rpart (>= 4.0-3)
 LazyData: yes
 License: GPL-2
