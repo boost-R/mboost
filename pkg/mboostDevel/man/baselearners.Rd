@@ -176,6 +176,8 @@ bl1 \%O\% bl2
   \item{K}{ penalty matrix as it should be used in the penalized least
     squares estimation. If \code{NULL} (default), unpenalized estimation
     is used. }
+  \item{deriv}{an integer; the derivative of the spline of the given order 
+               at the data is computed, defaults to zero.}
   \item{bl1}{a linear base-learner or a list of linear base-learners.}
   \item{bl2}{a linear base-learner or a list of linear base-learners.}
 }
