@@ -1,4 +1,4 @@
-                CHANGES in `mboost' VERSION 2.2-3 (2013-XX-XX, rYYY)
+                CHANGES in `mboost' VERSION 2.2-3 (2013-09-05, rYYY)
 
   o  fixed bugs in survival families:
      -  offset in all survival families was based on max(survtime) instead
@@ -8,6 +8,8 @@
 
   o  speed up checking of manual by changing some computations (e.g. reduce
      mstop) or exclude code from checking via \dontrun{}
+
+  o  removed dependency on ipred (replaced with TH.data)
 
   o  small improvements in manual
 

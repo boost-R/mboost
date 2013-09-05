@@ -16,7 +16,7 @@
 Package: \tab mboost\cr
 Type: \tab Package\cr
 Version: \tab 2.2-3\cr
-Date: \tab 2013-XX-XX\cr
+Date: \tab 2013-09-05\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes\cr
@@ -58,17 +58,17 @@ LazyData: \tab yes\cr
   \code{options(mboost_dftraceS = TRUE)} (see also B. Hofner et al.,
   2011 and \code{\link{bols}}).
 
-  Other important changes inlclude:  
-  \itemize{    
+  Other important changes inlclude:
+  \itemize{
     \item We switched from packages \code{multicore} and \code{snow} to
     \code{parallel}
-    
+
     \item We changed the behavior of \code{bols(x, intercept = FALSE)}
     when \code{x} is a factor: now the intercept is simply dropped from
     the design matrix and the coding can be specified as usually for
     factors. Addtionally, a new contrast is introduced:
     \code{"contr.dummy"} (see \code{\link{bols}} for details).
-    
+
     \item We changed the computation of B-spline basis at the
     boundaries; B-splines now also use equidistant knots in the
     boundaries (per default).
@@ -88,7 +88,7 @@ LazyData: \tab yes\cr
   Starting from this version, we now also automatically center the
   variables in \code{\link{glmboost}} (argument \code{center = TRUE}).
 
-  A complete list of changes can be found in the NEWS file.      
+  A complete list of changes can be found in the NEWS file.
 }
 \section{NEWS in 2.0-series}{
 

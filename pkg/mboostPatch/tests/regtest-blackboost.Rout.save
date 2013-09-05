@@ -1,7 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.1 (2013-05-16) -- "Good Sport"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -20,7 +19,9 @@ Type 'q()' to quit R.
 > require("mboost")
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.2-2. See 'package?mboost' and the NEWS file
+Loading required package: survival
+Loading required package: splines
+This is mboost 2.2-3. See 'package?mboost' and the NEWS file
 for a complete list of changes.
 Note: The default for the computation of the degrees of freedom has changed.
       For details see section 'Global Options' of '?bols'.
@@ -132,48 +133,23 @@ Note: The default for the computation of the degrees of freedom has changed.
 + 
 + }
 Loading required package: party
-Loading required package: survival
-Loading required package: splines
 Loading required package: grid
-Loading required package: modeltools
-Loading required package: stats4
-Loading required package: coin
-Loading required package: mvtnorm
 Loading required package: zoo
 
 Attaching package: 'zoo'
 
-The following object(s) are masked from 'package:base':
+The following object is masked from 'package:base':
 
     as.Date, as.Date.numeric
 
 Loading required package: sandwich
 Loading required package: strucchange
-Loading required package: vcd
-Loading required package: MASS
-Loading required package: colorspace
+Loading required package: modeltools
+Loading required package: stats4
 [1] 2.367443
 Loading required package: gbm
 Loading required package: lattice
-Loaded gbm 1.6.3.2
-
-Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-     1       74.4121            -nan     0.1000      -nan
-     2       65.6474            -nan     0.1000      -nan
-     3       58.7034            -nan     0.1000      -nan
-     4       52.6088            -nan     0.1000      -nan
-     5       47.5788            -nan     0.1000      -nan
-     6       43.1559            -nan     0.1000      -nan
-     7       39.3997            -nan     0.1000      -nan
-     8       35.9511            -nan     0.1000      -nan
-     9       33.1632            -nan     0.1000      -nan
-    10       30.6850            -nan     0.1000      -nan
-   100        6.8694            -nan     0.1000      -nan
-   200        5.0890            -nan     0.1000      -nan
-   300        3.9605            -nan     0.1000      -nan
-   400        3.2681            -nan     0.1000      -nan
-   500        2.7537            -nan     0.1000      -nan
-
+Loaded gbm 2.1
 [1] 2.753747
 $surv
            [,1]
@@ -223,11 +199,9 @@ $n.event
 
 attr(,"class")
 [1] "survFit"
-Warning messages:
-1: In optimize(risk, interval = c(0, max(y[, 1], na.rm = TRUE)), y = y,  :
-  NA/Inf replaced by maximum positive value
-2: 'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
+Warning message:
+'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
 > 
 > proc.time()
    user  system elapsed 
- 11.452   0.168  11.797 
+ 10.684   0.112  10.942 

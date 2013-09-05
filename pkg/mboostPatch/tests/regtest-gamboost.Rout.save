@@ -1,7 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.1 (2013-05-16) -- "Good Sport"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -20,10 +19,13 @@ Type 'q()' to quit R.
 > require("mboost")
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.2-2. See 'package?mboost' and the NEWS file
+Loading required package: survival
+Loading required package: splines
+This is mboost 2.2-3. See 'package?mboost' and the NEWS file
 for a complete list of changes.
 Note: The default for the computation of the degrees of freedom has changed.
       For details see section 'Global Options' of '?bols'.
+> require("survival")
 > 
 > set.seed(290875)
 > 
@@ -193,26 +195,19 @@ In gamboost(fm2, data = tmp, base = "bss", dfbase = 3) :
 > fm2 <- y ~ x1 + x2
 > mod1 <- gamboost(fm1, data = tmp)
 Loading required package: party
-Loading required package: survival
-Loading required package: splines
 Loading required package: grid
-Loading required package: modeltools
-Loading required package: stats4
-Loading required package: coin
-Loading required package: mvtnorm
 Loading required package: zoo
 
 Attaching package: 'zoo'
 
-The following object(s) are masked from 'package:base':
+The following object is masked from 'package:base':
 
     as.Date, as.Date.numeric
 
 Loading required package: sandwich
 Loading required package: strucchange
-Loading required package: vcd
-Loading required package: MASS
-Loading required package: colorspace
+Loading required package: modeltools
+Loading required package: stats4
 > mod2 <- gamboost(fm2, data = tmp, base = "btree")
 > stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
 > stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
@@ -222,9 +217,6 @@ Loading required package: colorspace
 > fit2 <- gamboost(Surv(futime, fustat) ~ bbs(age) +
 +     bols(resid.ds) + bols(rx) + bols(ecog.ps), data = ovarian,
 +     family = CoxPH(), control = boost_control(mstop = 1000))
-Warning message:
-In optimize(risk, interval = c(0, max(y[, 1], na.rm = TRUE)), y = y,  :
-  NA/Inf replaced by maximum positive value
 > 
 > A2 <- survFit(fit2)
 > A2
@@ -408,6 +400,11 @@ Number of baselearners:  3
 +                  data = DF, baselearner = "bols", control=boost_control(mstop=5000))
 > logit <- glm(y ~ x1, data=DF, family=binomial)
 > stopifnot(coef(logitBoost)[[1]][2]*2 - coef(logit)[2]  < sqrt(.Machine$double.eps)) # * 2 as we use y = {-1, 1}
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
 > 
 > pr <- predict(logitBoost)
 > pr2 <- predict(logit)
@@ -511,4 +508,4 @@ Warning in Xfun(mf, vary, args) :
 > 
 > proc.time()
    user  system elapsed 
- 13.984   0.144  14.303 
+ 12.088   0.132  12.325 
