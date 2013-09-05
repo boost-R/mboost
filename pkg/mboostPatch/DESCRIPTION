@@ -15,8 +15,8 @@ Description: Functional gradient descent algorithm
   component-wise (penalised) least squares estimates or regression
   trees as base-learners for fitting generalized linear, additive
   and interaction models to potentially high-dimensional data.
-Depends: R (>= 2.14.0), methods, stats, parallel
-Imports: Matrix, survival, splines, lattice
+Depends: R (>= 2.14.0), methods, stats, parallel, survival
+Imports: Matrix, splines, lattice
 Suggests: party (>= 1.0-3), TH.data, MASS, fields,
   BayesX, gbm, mlbench, RColorBrewer, rpart (>= 4.0-3)
 LazyData: yes

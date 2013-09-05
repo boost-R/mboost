@@ -1,7 +1,7 @@
 
   ############################################################
   #  Standard operating procedures for `mboost' development  #
-  ############################################################ 
+  ############################################################
 
 
   Structure of the repository
@@ -31,12 +31,15 @@
     R CMD build --resave-data --compact-vignettes pkg/mboostPatch
     R CMD check --as-cran mboost_XXX.tar.gz
 
+    Run check with R-devel
+    (see section "Checking the package with latest development verstion of R")
+
     If differences to .Rout.save occure:
        - Manually check differences. You might want to use something like:
-            
+
         cd mboost.Rcheck/tests
 	    meld Examples/mboost-Ex.Rout.save ../mboost-Ex.Rout &
-	or 
+	or
 	    meld regtest-XXX.Rout.save regtest-XXX.Rout &
 
        - If ok, copy new .Rout files to .Rout.save:
@@ -47,9 +50,9 @@
 
             Rscript copy_Rout_to_Routsave.R "which='mboostPatch'" "vignettes=TRUE"
 
-	 For details see 
+	 For details see
          http://r.789695.n4.nabble.com/Generate-Rout-save-files-for-vignettes-td4652752.html
-    
+
     Gives no warnings / errors.
 
     Commit changes to pkg/mboostPatch/
@@ -87,6 +90,9 @@
     R CMD build --resave-data --compact-vignettes pkg/mboostDevel
     R CMD check --as-cran mboostDevel_XXX.tar.gz
 
+    Run check with R-devel
+    (see section "Checking the package with latest development verstion of R")
+
     If differences to .Rout.save occure:
        - Manually check differences
        - If ok, copy new .Rout files to .Rout.save:
@@ -97,7 +103,7 @@
 
             Rscript copy_Rout_to_Routsave.R "which='mboostDevel'" "vignettes=TRUE"
 
-	 For details see 
+	 For details see
          http://r.789695.n4.nabble.com/Generate-Rout-save-files-for-vignettes-td4652752.html
 
     Gives no warnings / errors.
@@ -108,8 +114,11 @@
         - Replace all occurences of mboostDevel with mboost:
 	     R CMD BATCH change_mboostDevel_to_mboost.R
 	     cat change_mboostDevel_to_mboost.Rout
-	- Run build and check again on mboost_XXX
-	  (*not* mboostDevel this time!)
+	- Run build and check again on mboost_XXX (*not* mboostDevel this time!)
+	  Build package without test folder to be submitted to CRAN
+	     R CMD buildCRAN --resave-data --compact-vignettes pkg/mboostPatch
+       	     R CMD check --as-cran mboost_XXX.tar.gz
+
 	- ATTENTION: Do NOT commit the new, modified files to mboostDevel
 	  	     (only to mboostPatch and CRAN)
 
@@ -132,4 +141,22 @@
 
     cd mboost
     svn copy pkg/mboostDevel ng/mboost_XXX
+
+
+  Checking the package with latest development verstion of R
+  ----------------------------------------------------------
+
+  Get source from
+    ftp://ftp.stat.math.ethz.ch/Software/R/
+
+  UnTar and install according to guide in INSTALL (source directory).
+
+  Go to mboost directory and call
+    ../relative/path/to/R-devel/bin/R
+
+  Run
+    install.packages(c("party", "TH.data", "fields", "BayesX", "gbm", "mlbench", "RColorBrewer"))
+
+  Quite R and run
+   ../relative/path/to/R-devel/bin/R CMD check --as-cran mboost_XXX.tar.gz
 
