@@ -1,8 +1,5 @@
                 CHANGES in `mboost' VERSION 2.2-3 (2013-XX-XX, rYYY)
 
-  o  stabsel was recoded and now uses different terminology and a better
-     tested code base
-
   o  fixed bugs in survival families:
      -  offset in all survival families was based on max(survtime) instead
      	of max(log(survtime));

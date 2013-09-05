@@ -11,7 +11,7 @@
 %%\usepackage{Sweave}
 
 %%\VignetteIndexEntry{Survival Ensembles}
-%%\VignetteDepends{mboostDevel, survival, rpart, ipred}
+%%\VignetteDepends{mboostDevel, survival, rpart, TH.data}
 
 \newcommand{\Rpackage}[1]{{\normalfont\fontseries{b}\selectfont #1}}
 \newcommand{\Robject}[1]{\texttt{#1}}
@@ -100,10 +100,12 @@ that have been implemented after the paper was printed.
 
 <<setup, echo = FALSE, results = hide>>=
 source("setup.R")
-if (!require("ipred"))
-    stop("cannot attach package ", sQuote("ipred"))
+if (!require("TH.data"))
+    stop("cannot attach package ", sQuote("TH.data"))
 if (!require("rpart"))
     stop("cannot attach package ", sQuote("rpart"))
+if (!require("survival"))
+    stop("cannot attach package ", sQuote("survival"))
 if (!require("party"))
     stop("cannot attach package ", sQuote("party"))
 
@@ -226,7 +228,7 @@ abline(h = Mmod, lty = 2)
 Compute IPC weights and set up learning sample:
 <<GBSG2-dpp, echo = TRUE>>=
 ### attach data
-data("GBSG2", package = "ipred")
+data("GBSG2", package = "TH.data")
 
 ### IPC weights
 GBSG2w <- IPCweights(Surv(GBSG2$time, GBSG2$cens))

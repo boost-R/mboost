@@ -1,6 +1,9 @@
 
                 CHANGES in `mboost' VERSION 2.3-0 (2013-XX-XX)
 
+  o  stabsel was recoded and now uses different terminology and a better
+     tested code base
+
   o  new replacement function mstop<- as an alternative to <mboost>[i]
      (suggested by Achim Zeileis).
 

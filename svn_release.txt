@@ -155,7 +155,8 @@
     ../relative/path/to/R-devel/bin/R
 
   Run
-    install.packages(c("party", "TH.data", "fields", "BayesX", "gbm", "mlbench", "RColorBrewer"))
+    install.packages(c("party", "TH.data", "fields", "BayesX", "gbm",
+                       "mlbench", "RColorBrewer", "mfp", "randomForest"))
 
   Quite R and run
    ../relative/path/to/R-devel/bin/R CMD check --as-cran mboost_XXX.tar.gz

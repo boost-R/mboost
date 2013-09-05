@@ -327,7 +327,7 @@ mod2 <- glmboost(y ~ x, family = Binomial(link = "probit"),
 coef(mod2, off2int = TRUE)
 stopifnot(all.equal(round(coef(mod), 2), round(coef(mod2, off2int = TRUE), 2)))
 
-data("GlaucomaM", package = "ipred")
+data("GlaucomaM", package = "TH.data")
 coef(mod3 <- glm(Class ~ varg, data = GlaucomaM, family = binomial(link = "probit")))
 coef(mod4 <- glmboost(Class ~ varg, data = GlaucomaM, family = Binomial(link = "probit"))[1000])
 stopifnot(all.equal(round(coef(mod3), 3), round(coef(mod4, off2int = TRUE), 3)))

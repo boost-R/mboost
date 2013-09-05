@@ -139,6 +139,7 @@ stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
 stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
 
 ## Cox model
+
 fit2 <- gamboost(Surv(futime, fustat) ~ bbs(age) +
     bols(resid.ds) + bols(rx) + bols(ecog.ps), data = ovarian,
     family = CoxPH(), control = boost_control(mstop = 1000))

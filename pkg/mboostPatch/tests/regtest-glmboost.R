@@ -38,7 +38,7 @@ mstop(aic)
 mydf.lm <- lm(y ~ ., data = mydf)
 
 ### compare coefficients
-which(abs(coef(mydf.lm)) < abs(coef(mydf.gb[mstop(aic)])))
+which(abs(coef(mydf.lm, which = "")) < abs(coef(mydf.gb[mstop(aic)], which = "")))
 
 #### check boosting hat matrix and subsetting / predict
 stopifnot(isTRUE(all.equal(drop(attr(ht, "hatmatrix") %*% mydf$y),
