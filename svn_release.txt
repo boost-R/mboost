@@ -28,16 +28,14 @@
     Update NEWS
     Update Date and Version in /man/mboost_package.Rd
 
-    R CMD build --resave-data --compact-vignettes pkg/mboostPatch
-    R CMD check --as-cran mboost_XXX.tar.gz
+    R CMD build --resave-data --compact-vignettes pkg/mboostPatch && R CMD check --as-cran mboost_XXX.tar.gz
 
     Run check with R-devel
     (see section "Checking the package with latest development verstion of R")
 
     If differences to .Rout.save occure:
        - Manually check differences. You might want to use something like:
-
-        cd mboost.Rcheck/tests
+            cd mboost.Rcheck/tests
 	    meld Examples/mboost-Ex.Rout.save ../mboost-Ex.Rout &
 	or
 	    meld regtest-XXX.Rout.save regtest-XXX.Rout &
@@ -60,10 +58,9 @@
     Add latest svn LATEST version to NEWS
 
     Now build package without test folder to be submitted to CRAN
-       R CMD buildCRAN --resave-data --compact-vignettes pkg/mboostPatch
-       R CMD check --as-cran mboost_XXX.tar.gz
+       R CMD buildCRAN --resave-data --compact-vignettes pkg/mboostPatch && R CMD check --as-cran mboost_XXX.tar.gz
 
-    Ftp source package to CRAN.
+    Ftp source package to CRAN or use web form at http://xmpalantir.wu.ac.at/cransubmit/.
 
     Merge changes to R code or documentation to pkg/mboostDevel/
         cd pkg/mboostDevel/R
@@ -122,7 +119,7 @@
 	- ATTENTION: Do NOT commit the new, modified files to mboostDevel
 	  	     (only to mboostPatch and CRAN)
 
-    Ftp source package to CRAN.
+    Ftp source package to CRAN or use web form at http://xmpalantir.wu.ac.at/cransubmit/.
 
     Merge changes to pkg/mboostPatch/
        (NOTE: This should not work that way as we didn't commit the name changes mboostDevel --> mboost.

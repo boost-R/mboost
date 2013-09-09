@@ -1,4 +1,4 @@
-                CHANGES in `mboost' VERSION 2.2-3 (2013-09-05, rYYY)
+                CHANGES in `mboost' VERSION 2.2-3 (2013-09-09, r733)
 
   o  fixed bugs in survival families:
      -  offset in all survival families was based on max(survtime) instead
