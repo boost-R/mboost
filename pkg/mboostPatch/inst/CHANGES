@@ -1,3 +1,8 @@
+                CHANGES in `mboost' VERSION 2.2-4 (2013-xx-yy, rXYZ)
+
+  o  fixed bug in AIC.mboost: df = "actset" can only be used with glmboost models
+
+
                 CHANGES in `mboost' VERSION 2.2-3 (2013-09-09, r733)
 
   o  fixed bugs in survival families:
