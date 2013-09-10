@@ -526,9 +526,16 @@ extract.blackboost <- function(object, ...)
 extract.blg <- function(object, what = c("design", "penalty", "index"),
                         asmatrix = FALSE, expand = FALSE, ...){
     what <- match.arg(what)
-    object <- object$dpp(rep(1, NROW(object$model.frame())))
-    return(extract(object, what = what,
-                   asmatrix = asmatrix, expand = expand))
+    #object <- object$dpp(rep(1, NROW(object$model.frame())))
+    # return(extract(object, what = what,
+    #               asmatrix = asmatrix, expand = expand))
+    if (what == "design")
+        mat <- get("X", envir = environment(object$dpp))
+    if (what == "penalty")
+        mat <- get("K", envir = environment(object$dpp))
+    if (what == "index")
+        mat <- get("index", envir = environment(object$dpp))
+    return(mat)
 }
 
 extract.bl_lin <- function(object, what = c("design", "penalty", "lambda", "df",

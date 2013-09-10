@@ -176,8 +176,10 @@ bl1 \%O\% bl2
   \item{K}{ penalty matrix as it should be used in the penalized least
     squares estimation. If \code{NULL} (default), unpenalized estimation
     is used. }
-  \item{deriv}{an integer; the derivative of the spline of the given order 
-               at the data is computed, defaults to zero.}
+  \item{deriv}{an integer; the derivative of the spline of the given order
+               at the data is computed, defaults to zero. Note that this
+	       argument is only used to set up the design matrix and
+	       cannot be used in the fitting process.}
   \item{bl1}{a linear base-learner or a list of linear base-learners.}
   \item{bl2}{a linear base-learner or a list of linear base-learners.}
 }
@@ -357,9 +359,10 @@ bl1 \%O\% bl2
   product of two matrices \code{X = kronecker(X2, X1)}, then \code{bl1
   \%O\% bl2} with design matrices X1 and X2, respectively, can be used
   to efficiently compute Ridge-estimates following Currie, Durban,
-  Eilers (2006). In cases the overall degrees of freedom of the combined
-  base-learner increase (additive or multiplicative, respectively).
-  These three features are experimental and for expert use only.
+  Eilers (2006). In all cases the overall degrees of freedom of the
+  combined base-learner increase (additive or multiplicative,
+  respectively). These three features are experimental and for expert
+  use only.
 
   \code{btree} fits a stump to one or more variables. Note that
   \code{\link{blackboost}} is more efficient for boosting stumps. For
