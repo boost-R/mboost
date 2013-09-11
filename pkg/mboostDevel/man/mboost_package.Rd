@@ -45,6 +45,12 @@ LazyData: \tab yes\cr
   Note that the model fitting procedures in this package DO NOT automatically
   determine an appropriate model complexity. This task is the responsibility
   of the data analyst.
+
+  Ben Taieba and Hyndman (2013) used this package for fitting their model in the
+  Kaggle Global Energy Forecasting Competition 2012. The corresponding research
+  paper is a very good starting point when you plan to analyse your data using
+  \code{mboost}.
+
 }
 \section{NEWS in 2.2-series}{
   Starting from version 2.2, the default for the degrees of freedom has
@@ -144,6 +150,10 @@ LazyData: \tab yes\cr
   \url{http://epub.ub.uni-muenchen.de/12754/}
 
   Available as vignette via: vignette(package = "mboostDevel", "mboost_tutorial")
+
+  Souhaib Ben Taieba and Rob J. Hyndman (2013),
+  A gradient boosting approach to the Kaggle load forecasting competition.
+  \emph{International Journal of Forecasting}, \url{http://dx.doi.org/10.1016/j.ijforecast.2013.07.00}
 
 }
 
