@@ -184,14 +184,14 @@ distribution approximation used in Ma and Huang (2005).
   models can be boosted using these families. For details see Schmid and
   Hothorn (2008) and Schmid et al. (2010).
 
-  \code{Gehan()} implements rank-based estimation of survival data in an  
+  \code{Gehan()} implements rank-based estimation of survival data in an
   accelerated failure time model. The loss function is defined as the sum
   of the pairwise absolute differences of residuals. The response needs to
   be defined as \code{Surv(y, delta)}, where \code{y} is the observed survial
   time (subject to censoring) and \code{delta} is the non-censoring indicator
   (see \code{\link{Surv}} for details). For details on \code{Gehan()} see
-  Johnson and Long (2011). 
-  
+  Johnson and Long (2011).
+
   Hurdle models for zero-inflated count data can be fitted by using a combination
   of the \code{Binomial()} and \code{Hurdle()} families. While the \code{Binomial()}
   family allows for fitting the zero-generating process of the Hurdle model,
@@ -252,14 +252,14 @@ distribution approximation used in Ma and Huang (2005).
     regression models with multidimensional prediction functions.
     \emph{Statistics and Computing}, \bold{20}, 139-150.
 
-  Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
-  (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
-  Package mboost. \emph{Department of Statistics, Technical Report No. 120}.\cr
-  \url{http://epub.ub.uni-muenchen.de/12754/}
+    Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
+    (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
+    Package mboost. \emph{Computational Statistics}.\cr
+    \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
 
-  Available as vignette via: vignette(package = "mboostDevel", "mboost_tutorial")
+    Available as vignette via: vignette(package = "mboostDevel", "mboost_tutorial")
 
-    Brent A. Johnson and Qi Long (2011) Survival ensembles by the sum of pairwise 
+    Brent A. Johnson and Qi Long (2011) Survival ensembles by the sum of pairwise
     differences with application to lung cancer microarray studies.
     \emph{Annals of Applied Statistics}, \bold{5}, 1081--1101.
 
@@ -291,7 +291,7 @@ distribution approximation used in Ma and Huang (2005).
     \dontrun{
     ### compare results with nnet::multinom
     mlmn <- multinom(Species ~ Sepal.Length, data = iris)
-    max(abs(fitted(mlm[1000], type = "response") - 
+    max(abs(fitted(mlm[1000], type = "response") -
             fitted(mlmn, type = "prob")))
     }
 

@@ -1,4 +1,4 @@
-\name{mboost}
+#\name{mboost}
 \alias{mboost}
 \alias{mboost_fit}
 \title{ Model-based Gradient Boosting }
@@ -106,8 +106,8 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
 
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
   (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
-  Package mboost. \emph{Department of Statistics, Technical Report No. 120}.\cr
-  \url{http://epub.ub.uni-muenchen.de/12754/}
+  Package mboost. \emph{Computational Statistics}.\cr
+  \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
 
   Available as vignette via: vignette(package = "mboostDevel", "mboost_tutorial")
 

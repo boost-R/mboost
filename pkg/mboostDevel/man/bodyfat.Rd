@@ -54,12 +54,12 @@
     Boosting algorithms: regularization, prediction and model fitting.
     \emph{Statistical Science}, \bold{22}(4), 477--505.
 
-  Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
-  (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
-  Package mboost. \emph{Department of Statistics, Technical Report No. 120}.\cr
-  \url{http://epub.ub.uni-muenchen.de/12754/}
+    Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
+    (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
+    Package mboost. \emph{Computational Statistics}.\cr
+    \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
 
-  Available as vignette via: vignette(package = "mboostDevel", "mboost_tutorial")
+    Available as vignette via: vignette(package = "mboostDevel", "mboost_tutorial")
 }
 \examples{
 

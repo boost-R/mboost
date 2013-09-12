@@ -79,8 +79,8 @@
 
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
   (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
-  Package mboost. \emph{Department of Statistics, Technical Report No. 120}.\cr
-  \url{http://epub.ub.uni-muenchen.de/12754/}
+  Package mboost. \emph{Computational Statistics}.\cr
+  \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
 
   Available as vignette via: vignette(package = "mboostDevel", "mboost_tutorial")
 }
@@ -103,7 +103,7 @@
     signif(cf, 3)
     signif(coef(lm(dist ~ speed, data = cars)), 3)
     ## almost converged. With higher mstop the results get even better
- 
+
     ### now we center the design matrix for
     ### much quicker "convergence"
     cars.gb_centered <- glmboost(dist ~ speed, data = cars,
