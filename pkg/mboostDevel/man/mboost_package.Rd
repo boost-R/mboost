@@ -46,9 +46,12 @@ LazyData: \tab yes\cr
   determine an appropriate model complexity. This task is the responsibility
   of the data analyst.
 
+  Hofner et al. (2013) present a comprehensive hands-on tutorial for using the
+  package \code{mbost}.
+
   Ben Taieba and Hyndman (2013) used this package for fitting their model in the
   Kaggle Global Energy Forecasting Competition 2012. The corresponding research
-  paper is a very good starting point when you plan to analyse your data using
+  paper is a good starting point when you plan to analyse your data using
   \code{mboost}.
 
 }
@@ -64,17 +67,17 @@ LazyData: \tab yes\cr
   \code{options(mboost_dftraceS = TRUE)} (see also B. Hofner et al.,
   2011 and \code{\link{bols}}).
 
-  Other important changes inlclude:  
-  \itemize{    
+  Other important changes inlclude:
+  \itemize{
     \item We switched from packages \code{multicore} and \code{snow} to
     \code{parallel}
-    
+
     \item We changed the behavior of \code{bols(x, intercept = FALSE)}
     when \code{x} is a factor: now the intercept is simply dropped from
     the design matrix and the coding can be specified as usually for
     factors. Addtionally, a new contrast is introduced:
     \code{"contr.dummy"} (see \code{\link{bols}} for details).
-    
+
     \item We changed the computation of B-spline basis at the
     boundaries; B-splines now also use equidistant knots in the
     boundaries (per default).
@@ -94,7 +97,7 @@ LazyData: \tab yes\cr
   Starting from this version, we now also automatically center the
   variables in \code{\link{glmboost}} (argument \code{center = TRUE}).
 
-  A complete list of changes can be found in the NEWS file.      
+  A complete list of changes can be found in the NEWS file.
 }
 \section{NEWS in 2.0-series}{
 
@@ -153,7 +156,8 @@ LazyData: \tab yes\cr
 
   Souhaib Ben Taieba and Rob J. Hyndman (2013),
   A gradient boosting approach to the Kaggle load forecasting competition.
-  \emph{International Journal of Forecasting}, \url{http://dx.doi.org/10.1016/j.ijforecast.2013.07.00}
+  \emph{International Journal of Forecasting},
+  \url{http://dx.doi.org/10.1016/j.ijforecast.2013.07.005}
 
 }
 

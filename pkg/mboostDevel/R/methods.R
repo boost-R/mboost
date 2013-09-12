@@ -534,7 +534,17 @@ extract.blg <- function(object, what = c("design", "penalty", "index"),
     if (what == "penalty")
         mat <- get("K", envir = environment(object$dpp))
     if (what == "index")
-        mat <- get("index", envir = environment(object$dpp))
+        return(get("index", envir = environment(object$dpp)))
+    ## only applicable for design and penalty matrix
+    if (asmatrix){
+        mat <- as.matrix(mat)
+    }
+    if (expand && !is.null(indx <- extract(object, what = "index"))){
+        a <- attributes(mat)
+        mat <- mat[indx,]
+        a[c("dim", "dimnames")] <- attributes(mat)[c("dim", "dimnames")]
+        attributes(mat) <- a
+    }
     return(mat)
 }
 
