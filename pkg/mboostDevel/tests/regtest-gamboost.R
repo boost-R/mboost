@@ -35,7 +35,7 @@ stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% cars$dist),
 
 ### check boosting hat matrix with multiple independent variables
 ### and weights
-data("bodyfat", package = "mboostDevel")
+data("bodyfat", package = "TH.data")
 bffm <- DEXfat ~ age + waistcirc + hipcirc + elbowbreadth + kneebreadth +
       anthro3a + anthro3b + anthro3c + anthro4
 indep <- names(bodyfat)[names(bodyfat) != "DEXfat"]
@@ -163,7 +163,7 @@ tmp <- max(abs(fitted(mod) - fitted(lm(y ~ x, data = df))))
 stopifnot(tmp < 1e-5)
 
 ### predictions:
-data("bodyfat", package = "mboostDevel")
+data("bodyfat", package = "TH.data")
 amod <- gamboost(DEXfat ~ hipcirc + anthro3a, data = bodyfat, baselearner = "bbs")
 
 agg <- c("none", "sum", "cumsum")
@@ -249,7 +249,7 @@ pr2 <- predict(logit, type="response")
 stopifnot(pr - pr2  < sqrt(.Machine$double.eps))
 
 ### coefficients:
-data("bodyfat", package = "mboostDevel")
+data("bodyfat", package = "TH.data")
 amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth,
                  data = bodyfat, baselearner = "bbs")
 stopifnot(length(coef(amod)) == 3)

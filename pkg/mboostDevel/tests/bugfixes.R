@@ -31,7 +31,7 @@ stopifnot(max(abs(p1 - predict(gb, newdata = X))) < sqrt(.Machine$double.eps))
 
 ### blackboost _did_ touch the response, arg!
 
-data("bodyfat", package = "mboostDevel")
+data("bodyfat", package = "TH.data")
 ctrl <- boost_control(mstop = 500, nu = 0.01)
 bb <- blackboost(DEXfat ~ ., data = bodyfat, control = ctrl)
 n <- nrow(bodyfat)
@@ -71,7 +71,7 @@ stopifnot(mstop(cv1) == mstop(cv2))
 if (FALSE){
 ### dfbase=1 was not working correctly for ssp
 ### spotted by Matthias Schmid <Matthias.Schmid@imbe.imed.uni-erlangen.de>
-data("bodyfat", package = "mboostDevel")
+data("bodyfat", package = "TH.data")
 ctrl <- boost_control(mstop = 100)
 ### COMMENT: Not using ssp here but P-splines
 ### Remove check!
@@ -148,7 +148,7 @@ for (cc in ctr) {
 
 ### check gamboost with weights (use weighted some of residuals
 ### for variable selection)
-data("bodyfat", package = "mboostDevel")
+data("bodyfat", package = "TH.data")
 
 set.seed(290875)
 n <- nrow(bodyfat)

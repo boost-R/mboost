@@ -137,7 +137,7 @@ model2$scale
 
 
 ### AUC
-data("wpbc", package = "mboostDevel")
+data("wpbc", package = "TH.data")
 wpbc[,colnames(wpbc) != "status"] <- scale(wpbc[,colnames(wpbc) != "status"])
 wpbc <- wpbc[complete.cases(wpbc), colnames(wpbc) != "time"]
 mAUC <- gamboost(status ~ ., data = wpbc, family = AUC())

@@ -139,7 +139,7 @@ truedf <- sum(diag(X %*%  solve(crossprod(X,X) + lambda * K) %*% t(X)))
 stopifnot(abs(truedf - 4) < sqrt(.Machine$double.eps))
 
 ### check accuracy of df2lambda
-data("bodyfat", package="mboostDevel")
+data("bodyfat", package="TH.data")
 diff_df <- matrix(NA, nrow=8, ncol=ncol(bodyfat))
 rownames(diff_df) <- paste("df", 3:10)
 colnames(diff_df) <- names(bodyfat)

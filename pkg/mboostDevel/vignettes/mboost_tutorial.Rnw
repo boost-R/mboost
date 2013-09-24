@@ -3,7 +3,7 @@
 \documentclass[10pt]{scrartcl}
 
 %%\VignetteIndexEntry{mboost Tutorial}
-%%\VignetteDepends{mboostDevel,lattice,RColorBrewer}
+%%\VignetteDepends{mboostDevel,lattice,RColorBrewer,TH.data}
 
 \usepackage{threeparttable}  % needed for \tnote (footnotes in table)
 \usepackage[utf8]{inputenc}
@@ -496,7 +496,7 @@ included in \textbf{mboost}. We first load the package and the data set.
 
 <<setup, echo = true, results = hide>>=
 library("mboostDevel")    ## load package
-data("bodyfat")      ## load data
+data("bodyfat", package = "TH.data")      ## load data
 @
 
 The response variable is the body fat measured by DXA (\R{DEXfat}), which can be
