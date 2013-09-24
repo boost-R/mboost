@@ -149,10 +149,10 @@ nnls2D <- function(X, XtX, Y) {
     my <- switch(attr(X[[Xc]], "Ts_constraint"),  "increasing" = {
         ### first column is intercept
         stopifnot(max(abs(X[[Xc]][,1,drop = TRUE] - 1)) < sqrt(.Machine$double.eps))
-        min(y)
+        min(Y)
     }, "decreasing" = {
         stopifnot(max(abs(X[[Xc]][,1,drop = TRUE] + 1)) < sqrt(.Machine$double.eps))
-        max(y)
+        max(Y)
     })
     Y <- Y - my
 
