@@ -1,4 +1,4 @@
-#\name{mboost}
+\name{mboost}
 \alias{mboost}
 \alias{mboost_fit}
 \title{ Model-based Gradient Boosting }
@@ -120,7 +120,7 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   \code{\link[mboostDevel]{methods}}. }
 \examples{
 
-  data("bodyfat", package = "mboostDevel")
+  data("bodyfat", package = "TH.data")
 
   ### formula interface: additive Gaussian model with
   ### a non-linear step-function in `age', a linear function in `waistcirc'

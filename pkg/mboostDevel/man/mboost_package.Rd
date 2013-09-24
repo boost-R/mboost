@@ -172,7 +172,7 @@ LazyData: \tab yes\cr
 \examples{
 
 
-  data("bodyfat")
+  data("bodyfat", package = "TH.data")
   set.seed(290875)
 
   ### model conditional expectation of DEXfat given

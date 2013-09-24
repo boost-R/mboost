@@ -91,7 +91,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   object.}
 \examples{
 
-  data("bodyfat", package = "mboostDevel")
+  data("bodyfat", package = "TH.data")
 
   ### fit linear model to data
   model <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)

@@ -66,7 +66,7 @@ stabsel(object, cutoff, q, PFER,
 }
 \examples{
 
-  data(bodyfat)
+  data("bodyfat", package = "TH.data")
 
   ### low-dimensional example
   mod <- glmboost(DEXfat ~ ., data = bodyfat)
