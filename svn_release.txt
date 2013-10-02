@@ -31,7 +31,7 @@
     R CMD build --resave-data --compact-vignettes pkg/mboostPatch && R CMD check --as-cran mboost_XXX.tar.gz
 
     Run check with R-devel
-    (see section "Checking the package with latest development verstion of R")
+    (see section "Checking the package with latest development version of R")
 
     If differences to .Rout.save occure:
        - Manually check differences. You might want to use something like:
@@ -90,7 +90,7 @@
     R CMD check --as-cran mboostDevel_XXX.tar.gz
 
     Run check with R-devel
-    (see section "Checking the package with latest development verstion of R")
+    (see section "Checking the package with latest development version of R")
 
     If differences to .Rout.save occure:
        - Manually check differences
@@ -157,6 +157,6 @@
     install.packages(c("party", "TH.data", "fields", "BayesX", "gbm",
                        "mlbench", "RColorBrewer", "mfp", "randomForest"))
 
-  Quite R and run
+  Quit R and run
    ../relative/path/to/R-devel/bin/R CMD check --as-cran mboost_XXX.tar.gz
 
