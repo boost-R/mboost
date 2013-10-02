@@ -46,10 +46,11 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         XtX <- array(XtX, c(c1, c1, c2, c2))
         XtX <- mymatrix(aperm(XtX, c(1, 3, 2, 4)), nrow = c1 * c2)
 
-        ### <FIXME> This does not happen in bl_lin / df2lambda.
-        ### For one base learner only, it makes sense to allow
-        ### for a direct choice of lambda (regardless of df)
-        ### </FIXME>
+        ### If lambda was given in both baselearners, we 
+        ### directly multiply the marginal penalty matrices by lambda
+        ### and then compute the total penalty as the kronecker sum.
+        ### args$lambda is NA in this case and we don't compute
+        ### the corresponding df's (unlike bl_lin)
         if (is.null(args$lambda)) {
 
             ### <FIXME>: is there a better way to feed XtX into lambdadf?
@@ -58,10 +59,12 @@ bl_lin_matrix <- function(blg, Xfun, args) {
                                   dmat = K, weights = weights, XtX = XtX)
             ### </FIXME>
             lambda <- lambdadf["lambda"]
+            K <- lambda * K
         } else {
-            lambda <- args$lambda
+            lambdadf <- args[c("lambda", "df")]
         }
-        XtX <- XtX + lambda * K
+        ### note: K already contains the lambda penalty parameter(s)
+        XtX <- XtX + K
 
         ### nnls
         constr <- (!is.null(attr(X$X1, "constraint"))) + 
@@ -223,8 +226,12 @@ bl_lin_matrix <- function(blg, Xfun, args) {
     args2 <- environment(bl2$dpp)$args
     l1 <- args1$lambda
     l2 <- args2$lambda
+    if (xor(is.null(l1), is.null(l2)))
+        stop("lambda needs to be given in both baselearners combined with ", 
+             sQuote("%O%"))
     if (!is.null(l1) && !is.null(l2)) {
-        args <- list(lambda = l1 + l2, df = NULL)
+        ### there is no common lambda!
+        args <- list(lambda = NA, df = NA)
     } else {
         args <- list(lambda = NULL,
             df = ifelse(is.null(args1$df), 1, args1$df) *
