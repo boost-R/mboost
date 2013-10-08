@@ -2,6 +2,7 @@
 bmono <- function(..., constraint = c("increasing", "decreasing",
                                       "convex", "concave", "none",
                                       "positive", "negative"),
+                  type = c("iterative", "lsei"),
                   by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
                   degree = 3, differences = 2, df = 4,
                   lambda = NULL, lambda2 = 1e6, niter = 10,
@@ -32,6 +33,8 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
             constraint <- list(constraint, constraint)
     }
     ##
+
+    type = match.arg(type)
 
     if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
         mf <- as.data.frame(mf[[1]])
@@ -105,10 +108,11 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
                           degree = degree, differences = differences,
                           df = df, lambda = lambda, center = FALSE)
         args$constraint <- constraint
+        args$type <- type
         args$lambda2 <- lambda2
         args$niter <- niter
         args$boundary.constraints <- boundary.constraints
-        if(boundary.constraints){
+        if(boundary.constraints) {
             if (is.null(cons.arg$n)){
                 ## use 10% of the knots on each side per default
                 cons.arg$n <- sapply(args$knots,
@@ -137,6 +141,7 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
                           intercept = intercept,
                           contrasts.arg = contrasts.arg)
         args$constraint <- constraint
+        args$type <- type
         args$lambda2 <- lambda2
         args$niter <- niter
         ## <FIXME> Was machen wir bei cat. Effekten? Da müsste das doch auch gehen!
@@ -169,7 +174,7 @@ bl_mono <- function(blg, Xfun, args) {
 
         diff_order <- which_diff(args$constraint)
 
-        D <- V <- lambda2 <- vector(mode = "list", length =2)
+        D <- V <- lambda2 <- vector(mode = "list", length = 2)
 
         ## set up difference matrix
         if (diff_order > 0) {
@@ -296,32 +301,37 @@ bl_mono <- function(blg, Xfun, args) {
                 y <- y * weights
             }
 
-            for (i in 1:args$niter){
-                coef <- mysolve(y, V)
-                ## compare old and new V
-                tmp1 <- do.call(args$constraint[[1]],
-                                args=list(D[[1]] %*% coef))
-                if (lambda2[[2]] != 0)
-                    tmp2 <- do.call(args$constraint[[2]],
-                                    args=list(D[[2]] %*% coef))
+            if (args$type == "iterative") {
+                for (i in 1:args$niter){
+                    coef <- mysolve(y, V)
+                    ## compare old and new V
+                    tmp1 <- do.call(args$constraint[[1]],
+                                    args=list(D[[1]] %*% coef))
+                    if (lambda2[[2]] != 0)
+                        tmp2 <- do.call(args$constraint[[2]],
+                                        args=list(D[[2]] %*% coef))
 
-                if ( all( V[[1]] == tmp1 ) &&
-                    ( lambda2[[2]] == 0 || all( V[[2]] == tmp2 ) ) )
-                    break    # if both are equal: done!
-                #if (args$boundary.constraints &&
-                #    all( V[[1]][-idxB, -idxB] == tmp1[-idxB, -idxB]) )
-                #    break   # if both are equal (without V for boundary
-                #            # constraints): done!
-                V[[1]] <- tmp1
-                #if (args$boundary.constraints) {
-                #    V[[1]][idxFlat, idxFlat] <- diag(rep(1, length(idxFlat)))
-                #}
-                if (lambda2[[2]] != 0)
-                    V[[2]] <- tmp2
-                if (i == args$niter)
-                    warning("no convergence of coef in bmono\n",
-                            "You could try increasing ", sQuote("niter"),
-                            " or ", sQuote("lambda2"))
+                    if ( all( V[[1]] == tmp1 ) &&
+                        ( lambda2[[2]] == 0 || all( V[[2]] == tmp2 ) ) )
+                        break    # if both are equal: done!
+                        #if (args$boundary.constraints &&
+                        #    all( V[[1]][-idxB, -idxB] == tmp1[-idxB, -idxB]) )
+                        #    break   # if both are equal (without V for boundary
+                        #            # constraints): done!
+                    V[[1]] <- tmp1
+                        #if (args$boundary.constraints) {
+                        #    V[[1]][idxFlat, idxFlat] <- diag(rep(1, length(idxFlat)))
+                        #}
+                    if (lambda2[[2]] != 0)
+                        V[[2]] <- tmp2
+                    if (i == args$niter)
+                        warning("no convergence of coef in bmono\n",
+                                "You could try increasing ", sQuote("niter"),
+                                " or ", sQuote("lambda2"))
+                }
+            } else {
+                coef <- solveLSEI(XtX, crossprod(X, y),
+                                  constraint = args$constraint)
             }
 
             ret <- list(model = coef,
@@ -396,7 +406,7 @@ positive <- function(diffs)
     diag(c(as.numeric(diffs)) <= 0)
 
 negative <- function(diffs)
-    diag(c(as.numeric(diffs)) <= 0)
+    diag(c(as.numeric(diffs)) >= 0)
 
 increasing <- function(diffs)
     diag(c(as.numeric(diffs)) <= 0)
@@ -414,6 +424,7 @@ which_diff <- function(constraint) {
     if (length(constraint) == 1) {
         diff <- switch(constraint,
                        positive = 0,
+                       negative = 0,
                        increasing = 1,
                        decreasing = 1,
                        convex = 2,
@@ -422,6 +433,7 @@ which_diff <- function(constraint) {
         diff <- lapply(constraint, function(x)
                        switch(x,
                               positive = 0,
+                              negative = 0,
                               increasing = 1,
                               decreasing = 1,
                               convex = 2,

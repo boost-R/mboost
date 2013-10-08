@@ -159,11 +159,60 @@ nnls2D <- function(X, XtX, Y) {
     XWY <- as.vector(crossprod(X$X1, Y) %*% X$X2)
     cf <- nnls(XtX, matrix(as(XWY, "matrix"), ncol = 1))$x
     cf <- matrix(cf, nrow = ncol(X$X1))
-    if (constr == 1) cf[1,] <- cf[1,] + switch(attr(X[[Xc]], "Ts_constraint"),  
+    if (constr == 1) cf[1,] <- cf[1,] + switch(attr(X[[Xc]], "Ts_constraint"),
                                                "increasing" = my,
                                                "decreasing" = -my)
-    if (constr == 2) cf[,1] <- cf[,1] + switch(attr(X[[Xc]], "Ts_constraint"),  
+    if (constr == 2) cf[,1] <- cf[,1] + switch(attr(X[[Xc]], "Ts_constraint"),
                                                "increasing" = my,
                                                "decreasing" = -my)
+    cf
+}
+
+differences_LSEI <- function(constraint, diff_mat = FALSE, ncol = NULL) {
+    if (length(constraint) == 1) {
+        diff <- switch(constraint,
+                       positive = 0,
+                       negative = 0,
+                       increasing = 1,
+                       decreasing = -1,
+                       convex = 2,
+                       concave = -2)
+    } else {
+        diff <- lapply(constraint, function(x)
+                       switch(x,
+                              positive = 0,
+                              negative = 0,
+                              increasing = 1,
+                              decreasing = -1,
+                              convex = 2,
+                              concave = -2))
+    }
+    if (!diff_mat) {
+        return(diff)
+    } else {
+        if (diff != 0) {
+            D <- sign(diff) * diff(diag(ncol), differences = abs(diff))
+        } else {
+            D <- ifelse(constraint == "positive", 1, -1) * diag(ncol)
+        }
+    }
+}
+
+
+## least squares with equalities and inequalities
+solveLSEI <- function(XtX, Xty, D = NULL, constraint = "none") {
+    if (constraint == "none" && is.null(D))
+        return(solve(XtX, Xty, LINPACK = FALSE))
+
+    if (is.null(D)) {
+        ## i.e., if constraint != "none"
+        D <- differences_LSEI(constraint, diff_mat = TRUE, ncol = ncol(XtX))
+    }
+
+    cf <- lsei(A= XtX, B = Xty, G = D, H = rep(0, nrow(D)), type = 1,
+               E = matrix(0, ncol(D), ncol(D)), F = rep(0, ncol(D)),
+               tol = .Machine$double.eps,
+               tolrank = c(.Machine$double.eps, .Machine$double.eps),
+               fulloutput = TRUE)$X
     cf
 }
