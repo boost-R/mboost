@@ -787,7 +787,7 @@ bspatial <- function(..., df = 6) {
 }
 
 ### random-effects (Ridge-penalized ANOVA) baselearner
-brandom <- function(..., by = NULL, index = NULL, df = 4,
+brandom <- function(..., by = NULL, index = NULL, df = 4, lambda = NULL,
                     contrasts.arg = "contr.dummy") {
     cl <- cltmp <- match.call()
     x <- list(...)
@@ -801,7 +801,7 @@ brandom <- function(..., by = NULL, index = NULL, df = 4,
         stop(sQuote("..."), " must be a factor or design matrix in ",
              sQuote("brandom"))
 
-    if (is.null(cl$df))
+    if (is.null(cl$df) && is.null(cl$lambda))
         cl$df <- df
     if (is.null(cl$contrasts.arg))
         cl$contrasts.arg <- contrasts.arg

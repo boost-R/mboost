@@ -471,3 +471,9 @@ extract(brandom(Z))
 extract(brandom(z1, z2))
 ## should throw an error
 try(extract(brandom(x1, by = x2, intercept = FALSE)))
+
+## check if one can specify either df or lambda
+round(extract(brandom(z1, df = 3)$dpp(rep(1, 100)), what = "lambda"), 2)
+round(extract(brandom(z1, df = 3)$dpp(rep(1, 100)), what = "df"), 2)
+round(extract(brandom(z1, lambda = 50.39)$dpp(rep(1, 100)), what = "lambda"), 2)
+round(extract(brandom(z1, lambda = 50.39)$dpp(rep(1, 100)), what = "df"), 2)

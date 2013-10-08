@@ -38,7 +38,8 @@ brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
      args = list(Covariance="Matern", smoothness = 1.5, theta=NULL))
 
 ## random effects base-learner
-brandom(..., by = NULL, index = NULL, df = 4, contrasts.arg = "contr.dummy")
+brandom(..., by = NULL, index = NULL, df = 4, lambda = NULL,
+        contrasts.arg = "contr.dummy")
 
 ## tree based base-learner
 btree(..., tree_controls = ctree_control(stump = TRUE,
