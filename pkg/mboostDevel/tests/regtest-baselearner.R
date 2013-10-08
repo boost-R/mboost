@@ -452,3 +452,22 @@ wireframe(p2 ~ x1 + x2, data = x)
 m3 <- mboost(I(-y) ~ bbs(x1, constraint = "decreasing", df = 10) %O% bbs(x2))
 x$p3 <- fitted(m3)
 wireframe(p3 ~ x1 + x2, data = x)
+
+
+### check brandom
+x1 <- rnorm(100)
+x2 <- rnorm(100)
+z1 <- as.factor(sample(1:10, 100, TRUE))
+z2 <- as.factor(sample(1:10, 100, TRUE))
+Zm <- model.matrix(~ z1 - 1)
+Z <- as.data.frame(Zm)
+
+extract(brandom(z1))
+extract(brandom(z1, by = x2))
+extract(brandom(Zm))
+## probably non-sense but ok...
+extract(brandom(Z))
+## not really useful but might be ok
+extract(brandom(z1, z2))
+## should throw an error
+try(extract(brandom(x1, by = x2, intercept = FALSE)))

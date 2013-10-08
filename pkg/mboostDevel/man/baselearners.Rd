@@ -19,20 +19,33 @@
   component-wise gradient boosting in function \code{mboost}.
 }
 \usage{
+## linear base-learner
 bols(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
      lambda = 0, contrasts.arg = "contr.treatment")
+
+## smooth P-spline base-learner
 bbs(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
     degree = 3, differences = 2, df = 4, lambda = NULL, center = FALSE,
     cyclic = FALSE, constraint = c("none", "increasing", "decreasing"),
     deriv = 0)
+
+## bivariate P-spline base-learner
 bspatial(..., df = 6)
+
+## radial basis functions base-learner
 brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
      covFun = stationary.cov,
      args = list(Covariance="Matern", smoothness = 1.5, theta=NULL))
-brandom(..., contrasts.arg = "contr.dummy", df = 4)
+
+## random effects base-learner
+brandom(..., by = NULL, index = NULL, df = 4, contrasts.arg = "contr.dummy")
+
+## tree based base-learner
 btree(..., tree_controls = ctree_control(stump = TRUE,
                                          mincriterion = 0,
                                          savesplitstats = FALSE))
+
+## constrained effects base-learner
 bmono(...,
       constraint = c("increasing", "decreasing", "convex", "concave",
                      "none", "positive", "negative"),
@@ -42,9 +55,16 @@ bmono(...,
       contrasts.arg = "contr.treatment",
       boundary.constraints = FALSE,
       cons.arg = list(lambda = 1e+06, n = NULL, diff_order = NULL))
+
+## Markov random field base-learner
 bmrf(..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
     center = FALSE)
+
+## user-specified base-learner
 buser(X, K = NULL, by = NULL, index = NULL, df = 4, lambda = NULL)
+
+## combining single base-learners to form new,
+## more complex base-learners
 bl1 \%+\% bl2
 bl1 \%X\% bl2
 bl1 \%O\% bl2
@@ -54,12 +74,12 @@ bl1 \%O\% bl2
               frame of predictor variables. For smooth base-learners,
 	      the number of predictor variables and the number of
 	      columns in the data frame / matrix must be less than or
-	      equal to 2. If a data frame or matrix (with at least 2
-	      columns) is given to \code{bols} or \code{brandom}, it
-	      is directly used as the design matrix. Especially, no
-	      intercept term is added reagrdless of argument
-	      \code{intercept}. If the argument has only one column, it
-	      is simplified to a vector and an intercept is added or not
+	      equal to 2. If a matrix (with at least 2 columns) is
+	      given to \code{bols} or \code{brandom}, it is directly
+	      used as the design matrix. Especially, no intercept term
+	      is added regardless of argument \code{intercept}.
+	      If the argument has only one column, it is simplified
+	      to a vector and an intercept is added or not
 	      according to the argmuent \code{intercept}.}
   \item{by}{ an optional variable defining varying coefficients,
              either a factor or numeric variable.
@@ -204,7 +224,9 @@ bl1 \%O\% bl2
   corresponding design matrix (which can be omitted using
   \code{intercept = FALSE}). It is \emph{strongly} advised to (mean-)
   center continuous covariates, if no intercept is used in \code{bols}
-  (see Hofner et al., 2011a). When \code{df} (or \code{lambda}) is
+  (see Hofner et al., 2011a). If \code{x} is a matrix, it is directly used
+  as the design matrix and no further preprocessing (such as addition of
+  an intercept) is conducted. When \code{df} (or \code{lambda}) is
   given, a ridge estimator with \code{df} degrees of freedom (see
   section \sQuote{Global Options}) is used as base-learner. Note that
   all variables are treated as a group, i.e., they enter the model
@@ -243,9 +265,9 @@ bl1 \%O\% bl2
   fitted, where the random effects variance is governed by the
   specification of the degrees of freedom \code{df} or \code{lambda}
   (see section \sQuote{Global Options}). Note that \code{brandom(...)}
-  is essentially a wrapper to \code{bols(..., df = 4)}, i.e., a wrapper
-  that utilizes ridge-penalized categorical effects. For possible
-  arguments and defaults see \code{bols}.
+  is essentially a wrapper to \code{bols(..., df = 4, contrasts.arg =
+  "contr.dummy")}, i.e., a wrapper that utilizes ridge-penalized
+  categorical effects. For possible arguments and defaults see \code{bols}.
 
   For all linear base-learners the amount of smoothing is determined by
   the trace of the hat matrix, as indicated by \code{df}.
@@ -333,7 +355,7 @@ bl1 \%O\% bl2
 
   For a categorical covariate with non-observed categories
   \code{bols(x)} and \code{brandom(x)} both assign a zero effect
-  these categories. However, the non-observed categories must be
+  to these categories. However, the non-observed categories must be
   listed in \code{levels(x)}. Thus, predictions are possible
   for new observations if they correspond to this category.
 

@@ -444,6 +444,7 @@ if (require("BayesX")) {
 y <- yNa <- rnorm(100)
 x1 <- rnorm(100)
 x2 <- rnorm(100)
+z1 <- as.factor(sample(1:10, 100, replace = TRUE))
 
 yNa[1] <- NA
 coef(mboost(yNa ~ x1))
@@ -453,6 +454,7 @@ yNa[2] <- NaN
 coef(mboost(yNa ~ x1))
 
 x1[1] <- NA
-mod <- mboost(y ~ bols(x1) + bbs(x1) + brandom(x1) +
+z1[1] <- NA
+mod <- mboost(y ~ bols(x1) + bbs(x1) + brandom(z1) +
                   bspatial(x1, x2) + brad(x1, x2, knots = 20) +
                   bmono(x1) +  buser(x1, K = 1, lambda = 0) + x2)

@@ -278,13 +278,13 @@ X_bbs <- function(mf, vary, args) {
         }
         if (!identical(args$center, FALSE)) {
             tmp <- attributes(X)[c("degree", "knots", "Boundary.knots")]
-            center <- match.arg(as.character(args$center), 
+            center <- match.arg(as.character(args$center),
                                 choices = c("TRUE", "differenceMatrix", "spectralDecomp"))
             if (center == "TRUE") center <- "differenceMatrix"
-            X <- switch(center, 
+            X <- switch(center,
                 ### L = t(D) in Section 2.3. of Fahrmeir et al. (2004, Stat Sinica)
                 "differenceMatrix" = tcrossprod(X, K) %*% solve(tcrossprod(K)),
-                ### L = \Gamma \Omega^1/2 in Section 2.3. of 
+                ### L = \Gamma \Omega^1/2 in Section 2.3. of
                 ### Fahrmeir et al. (2004, Stat Sinica)
                 "spectralDecomp" = {
                     SVD <- eigen(crossprod(K), symmetric = TRUE, EISPACK = FALSE)
@@ -358,7 +358,7 @@ X_bbs <- function(mf, vary, args) {
             suppressMessages(K <- kronecker(diag(ncol(by)), K))
         }
         if (!identical(args$center, FALSE)) {
-            ### L = \Gamma \Omega^1/2 in Section 2.3. of Fahrmeir et al. 
+            ### L = \Gamma \Omega^1/2 in Section 2.3. of Fahrmeir et al.
             ### (2004, Stat Sinica), always
             L <- eigen(K, symmetric = TRUE, EISPACK = FALSE)
             L$vectors <- L$vectors[,1:(ncol(X) - args$differences^2), drop = FALSE]
@@ -580,7 +580,7 @@ cbs <- function (x, knots, boundary.knots, degree = 3, deriv) {
     X <- splineDesign(knots, x, ord, derivs = rep(deriv, length(x)), outer.ok = TRUE)
     x[ind] <- x[ind] - boundary.knots[2] + boundary.knots[1]
     if (sum(ind)) {
-        Xtmp <- splineDesign(knots, x[ind], ord, derivs = rep(deriv, length(x[ind])), 
+        Xtmp <- splineDesign(knots, x[ind], ord, derivs = rep(deriv, length(x[ind])),
                              outer.ok = TRUE)
         X[ind, ] <- X[ind, ] + Xtmp
     }
@@ -616,7 +616,7 @@ bsplines <- function(x, knots, boundary.knots, degree, Ts_constraint, deriv){
     ## complete knot mesh
     k <- c(bk_lower, knots, bk_upper)
     ## construct design matrix
-    X <- splineDesign(k, x, degree + 1, derivs = rep(deriv, length(x)), 
+    X <- splineDesign(k, x, degree + 1, derivs = rep(deriv, length(x)),
                       outer.ok = TRUE)
     ## handling of NAs
     if (nas) {
@@ -787,8 +787,20 @@ bspatial <- function(..., df = 6) {
 }
 
 ### random-effects (Ridge-penalized ANOVA) baselearner
-brandom <- function(..., contrasts.arg = "contr.dummy", df = 4) {
+brandom <- function(..., by = NULL, index = NULL, df = 4,
+                    contrasts.arg = "contr.dummy") {
     cl <- cltmp <- match.call()
+    x <- list(...)
+    ## drop further arguments to be passed to bols
+    if (!is.null(names(x)))
+        x <- x[names(x) == ""]
+
+    if (!all(sapply(x, is.factor) |
+             sapply(x, is.matrix) |
+             sapply(x, is.data.frame)))
+        stop(sQuote("..."), " must be a factor or design matrix in ",
+             sQuote("brandom"))
+
     if (is.null(cl$df))
         cl$df <- df
     if (is.null(cl$contrasts.arg))
