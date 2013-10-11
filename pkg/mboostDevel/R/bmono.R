@@ -22,7 +22,7 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
     if (!is.list(constraint)) {
         constraint <- match.arg(constraint)
     } else {
-        c.args <- eval(formals(sys.function(sys.parent()))[["constraint"]])
+        c.args <- eval(formals(sys.function())[["constraint"]])
         constraint <- lapply(constraint, match.arg, choices = c.args)
     }
     if (length(mf) > 1){
@@ -127,7 +127,7 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
             if(is.null(cons.arg$diff_order)){
                 ## use same difference order as defined by "constraint":
                 ## <FIXME> args$constraint may be a list of length 2 for spatial effects
-                cons.arg$diff_order <- which_diff(args$constraint)
+                cons.arg$diff_order <- differences(args$constraint)
             }
             if(is.null(cons.arg$lambda)){
                 cons.arg$lambda <- 1e6
@@ -144,7 +144,7 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
         args$type <- type
         args$lambda2 <- lambda2
         args$niter <- niter
-        ## <FIXME> Was machen wir bei cat. Effekten? Da müsste das doch auch gehen!
+        ## <FIXME> Was machen wir bei kateg. Effekten? Da müsste das doch auch gehen!
         args$boundary.constraints <- boundary.constraints
         args$cons.arg$n <- cons.arg$n
         ret$dpp <- bl_mono(ret, Xfun = X_ols,
@@ -171,44 +171,34 @@ bl_mono <- function(blg, Xfun, args) {
     X <- X$X
 
     if (length(args$constraint) == 1) {
-
-        diff_order <- which_diff(args$constraint)
-
         D <- V <- lambda2 <- vector(mode = "list", length = 2)
-
         ## set up difference matrix
-        if (diff_order > 0) {
-            D[[1]] <- diff(diag(ncol(X)), differences = diff_order)
-        } else {
-            D[[1]] <- diag(ncol(X))
-        }
+        D[[1]] <- differences(args$constraint, ncol(X))
 
         if (is.factor(mf[[1]]) && args$intercept) {
             D[[1]][1,1] <- 0
-        } else {
-            ## set up boundary constraints
-            if (args$boundary.constraints){
-                cons.arg <- args$cons.arg
-                idx <- rep(0, ncol(X) - cons.arg$diff_order)
-                if (cons.arg$n[1] == 0) {
-                    lower <- 0
-                } else {
-                    lower <- 1:cons.arg$n[1]
-                }
-                if (cons.arg$n[2] == length(idx)) {
-                    upper <- 0
-                } else {
-                    upper <- length(idx) - 1:cons.arg$n[2] + 1
-                }
-                idx[c(lower, upper)] <- 1
-                V3 <- diag(idx)
-                D3 <- V3 %*% diff(diag(ncol(X)),
-                                  differences = cons.arg$diff_order)
-            }
         }
-        V[[1]] <- matrix(0, ncol = nrow(D[[1]]),
-                         nrow =  nrow(D[[1]]))
 
+        if (!is.factor(mf[[1]]) && args$boundary.constraints) {
+            ## set up boundary constraints
+            cons.arg <- args$cons.arg
+            idx <- rep(0, ncol(X) - cons.arg$diff_order)
+            if (cons.arg$n[1] == 0) {
+                lower <- 0
+            } else {
+                lower <- 1:cons.arg$n[1]
+            }
+            if (cons.arg$n[2] == length(idx)) {
+                upper <- 0
+            } else {
+                upper <- length(idx) - 1:cons.arg$n[2] + 1
+            }
+            idx[c(lower, upper)] <- 1
+            V3 <- diag(idx)
+            D3 <- V3 %*% diff(diag(ncol(X)), differences = cons.arg$diff_order)
+        }
+
+        V[[1]] <- matrix(0, ncol = nrow(D[[1]]), nrow =  nrow(D[[1]]))
         lambda2[[1]] <- args$lambda2
         lambda2[[2]] <- 0
         if (args$boundary.constraints) {
@@ -218,29 +208,20 @@ bl_mono <- function(blg, Xfun, args) {
         }
     }
     if (length(args$constraint) == 2) {
-        diff_order <- which_diff(args$constraint)
-
         if (is.factor(mf[[1]]))
             stop(paste("Bivariate monotonic effects currently not",
                        "implemented for ordered factors"))
         ## ncol1 = length(knots[[1]]) + degree + 1
-        ## ncol2 = length(knots[[1]]) + degree + 1
+        ## ncol2 = length(knots[[2]]) + degree + 1
         ## ncol(X) = ncol1 * ncol2
         ncoli <- lapply(args$knots, function(x)
                         length(x$knots) + args$degree + 1)
         stopifnot(ncoli[[1]] * ncoli[[2]] == ncol(X))
 
         D <- V <- lambda2 <- vector(mode = "list", length =2)
-        suppressMessages(
-            D[[1]] <- kronecker(diff(diag(ncoli[[1]]),
-                                     differences = diff_order[[1]]),
-                                diag(ncoli[[2]]))
-            )
-        suppressMessages(
-            D[[2]] <- kronecker(diag(ncoli[[1]]),
-                                diff(diag(ncoli[[2]]),
-                                     differences = diff_order[[2]]))
-            )
+        ## set up difference matrices
+        D <- differences(args$constraint, ncoli)
+
         V[[1]] <- matrix(0, ncol = nrow(D[[1]]), nrow =  nrow(D[[1]]))
         V[[2]] <- matrix(0, ncol = nrow(D[[2]]), nrow =  nrow(D[[2]]))
         if (length(args$lambda2) == 1) {
@@ -268,30 +249,11 @@ bl_mono <- function(blg, Xfun, args) {
         XtX <- crossprod(X * w, X)
         XtX <- XtX + lambda * K
 
-        ## Define solvers:
-        ## define function as text and eval(parse()) later.
-        l2txt <- "+ lambda2[[2]] * crossprod(D[[2]], V[[2]] %*% D[[2]])"
-        l3txt <- "+ lambda3 * crossprod(D3, V3 %*% D3)"
-        fct <- c("function(y, V) {",
-                 "    XtXC <- Cholesky(forceSymmetric(XtX +",
-                 "       lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]])",
-                 ## add if lambda2[[2]] != 0
-                 ifelse(lambda2[[2]] != 0, l2txt,""),
-                 ## add if lambda3 != 0
-                 ifelse(lambda3 != 0, l3txt,""),
-                 "                                   ))",
-                 "    solve(XtXC, crossprod(X, y), LINPACK = FALSE)",
-                 "}"
-                 )
-
-        if (!is(X, "Matrix")) {
-            ## some lines must be replaced in order to solve directly
-            fct[2] <- '    solve(XtX +'
-            fct[6] <- "          , crossprod(X, y),"
-            fct[7] <- '          LINPACK = FALSE)'
+        if (args$type == "iterative") {
+            fct <- define_solver(lambda2, lambda3, X)
+            ## deparsing and parsing again needed to tidy-up code.
+            mysolve <- eval(parse(text = deparse(eval(parse(text = fct)))))
         }
-        ## deparsing and parsing again needed to tidy-up code.
-        mysolve <- eval(parse(text = deparse(eval(parse(text = fct)))))
 
         fit <- function(y) {
             if (!is.null(index)) {
@@ -304,12 +266,13 @@ bl_mono <- function(blg, Xfun, args) {
             if (args$type == "iterative") {
                 for (i in 1:args$niter){
                     coef <- mysolve(y, V)
+                    if (args$constraint[[1]] == "none")
+                        break ## as there is no need to iterate
+
                     ## compare old and new V
-                    tmp1 <- do.call(args$constraint[[1]],
-                                    args=list(D[[1]] %*% coef))
+                    tmp1 <- violations(D[[1]] %*% coef)
                     if (lambda2[[2]] != 0)
-                        tmp2 <- do.call(args$constraint[[2]],
-                                        args=list(D[[2]] %*% coef))
+                        tmp2 <- violations(D[[2]] %*% coef)
 
                     if ( all( V[[1]] == tmp1 ) &&
                         ( lambda2[[2]] == 0 || all( V[[2]] == tmp2 ) ) )
@@ -329,9 +292,13 @@ bl_mono <- function(blg, Xfun, args) {
                                 "You could try increasing ", sQuote("niter"),
                                 " or ", sQuote("lambda2"))
                 }
-            } else {
-                coef <- solveLSEI(XtX, crossprod(X, y),
-                                  constraint = args$constraint)
+            } else {  ## i.e. type == "lsei"
+                if (lambda2[[2]] == 0) {
+                    coef <- solveLSEI(XtX, crossprod(X, y),
+                                      constraint = args$constraint)
+                } else {
+                    coef <- solveLSEI(XtX, crossprod(X, y), D = D)
+                }
             }
 
             ret <- list(model = coef,
@@ -399,45 +366,30 @@ bl_mono <- function(blg, Xfun, args) {
     return(dpp)
 }
 
-none <- function(diffs)
-    diag(rep(0,length(diffs)))
-
-positive <- function(diffs)
+violations <- function(diffs)
     diag(c(as.numeric(diffs)) <= 0)
 
-negative <- function(diffs)
-    diag(c(as.numeric(diffs)) >= 0)
+define_solver <- function(lambda2, lambda3, X) {
+    ## define function as text and eval(parse()) later.
+    l2txt <- "+ lambda2[[2]] * crossprod(D[[2]], V[[2]] %*% D[[2]])"
+    l3txt <- "+ lambda3 * crossprod(D3, V3 %*% D3)"
+    fct <- c("function(y, V) {",
+             "    XtXC <- Cholesky(forceSymmetric(XtX +",
+             "       lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]])",
+             ## add if lambda2[[2]] != 0
+             ifelse(lambda2[[2]] != 0, l2txt,""),
+             ## add if lambda3 != 0
+             ifelse(lambda3 != 0, l3txt,""),
+             "                                   ))",
+             "    solve(XtXC, crossprod(X, y), LINPACK = FALSE)",
+             "}"
+             )
 
-increasing <- function(diffs)
-    diag(c(as.numeric(diffs)) <= 0)
-
-decreasing <- function(diffs)
-    diag(c(as.numeric(diffs)) >= 0)
-
-convex <- function(diffs)
-    diag(c(as.numeric(diffs)) <= 0)
-
-concave <- function(diffs)
-    diag(c(as.numeric(diffs)) >= 0)
-
-which_diff <- function(constraint) {
-    if (length(constraint) == 1) {
-        diff <- switch(constraint,
-                       positive = 0,
-                       negative = 0,
-                       increasing = 1,
-                       decreasing = 1,
-                       convex = 2,
-                       concave = 2)
-    } else {
-        diff <- lapply(constraint, function(x)
-                       switch(x,
-                              positive = 0,
-                              negative = 0,
-                              increasing = 1,
-                              decreasing = 1,
-                              convex = 2,
-                              concave = 2))
+    if (!is(X, "Matrix")) {
+        ## some lines must be replaced in order to solve directly
+        fct[2] <- '    solve(XtX +'
+        fct[6] <- "          , crossprod(X, y),"
+        fct[7] <- '          LINPACK = FALSE)'
     }
-    return(diff)
+    fct
 }

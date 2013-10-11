@@ -168,9 +168,12 @@ nnls2D <- function(X, XtX, Y) {
     cf
 }
 
-differences_LSEI <- function(constraint, diff_mat = FALSE, ncol = NULL) {
+## function returns either differences or difference matrix
+## needed in bmono
+differences <- function(constraint, ncol = NULL) {
     if (length(constraint) == 1) {
         diff <- switch(constraint,
+                       none = NULL,
                        positive = 0,
                        negative = 0,
                        increasing = 1,
@@ -180,6 +183,7 @@ differences_LSEI <- function(constraint, diff_mat = FALSE, ncol = NULL) {
     } else {
         diff <- lapply(constraint, function(x)
                        switch(x,
+                              none = NULL,
                               positive = 0,
                               negative = 0,
                               increasing = 1,
@@ -187,15 +191,35 @@ differences_LSEI <- function(constraint, diff_mat = FALSE, ncol = NULL) {
                               convex = 2,
                               concave = -2))
     }
-    if (!diff_mat) {
+    if (is.null(ncol))
         return(diff)
-    } else {
+    #### and thus quit function
+
+    make_diffs <- function(diff, ncol) {
+        if (is.null(diff))
+            return(NULL)
         if (diff != 0) {
             D <- sign(diff) * diff(diag(ncol), differences = abs(diff))
         } else {
             D <- ifelse(constraint == "positive", 1, -1) * diag(ncol)
         }
+        return(D)
     }
+
+    if (length(diff) == 1)
+        return(make_diffs(diff, ncol))
+    #### and thus quit function
+
+    D <- vector(mode = "list", length =2)
+    tmpD <- make_diffs(diff[[1]], ncol[[1]])
+    if (!is.null(tmpD))
+        ## to make Matrix quiet
+        D[[1]] <- suppressMessages(kronecker(tmpD, diag(ncol[[2]])))
+    tmpD <- make_diffs(diff[[2]], ncol[[2]])
+    if (!is.null(tmpD))
+        ## to make Matrix quiet
+        D[[2]] <- suppressMessages(kronecker(diag(ncol[[1]]), tmpD))
+    return(D)
 }
 
 
@@ -206,11 +230,15 @@ solveLSEI <- function(XtX, Xty, D = NULL, constraint = "none") {
 
     if (is.null(D)) {
         ## i.e., if constraint != "none"
-        D <- differences_LSEI(constraint, diff_mat = TRUE, ncol = ncol(XtX))
+        D <- differences(constraint, ncol = ncol(XtX))
     }
 
+    if (!isMATRIX(D)) ## i.e. D is a list with 2 entries
+        D <- rbind(D[[1]], D[[2]])
+    ## NOTE: Currently both constraints get the same weight
+
     cf <- lsei(A= XtX, B = Xty, G = D, H = rep(0, nrow(D)), type = 1,
-               E = matrix(0, ncol(D), ncol(D)), F = rep(0, ncol(D)),
+               E = matrix(0, nrow(XtX), nrow(XtX)), F = rep(0, nrow(XtX)),
                tol = .Machine$double.eps,
                tolrank = c(.Machine$double.eps, .Machine$double.eps),
                fulloutput = TRUE)$X
