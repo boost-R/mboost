@@ -7,7 +7,7 @@ importFrom(survival, Surv, survfit)
 importFrom(splines, bs, splineDesign)
 importFrom(lattice, levelplot)
 importFrom(nnls, nnls)
-importFrom(limSolve, lsei)
+importFrom(quadprog, solve.QP)
 
 export(glmboost,
        gamboost,

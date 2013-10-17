@@ -237,10 +237,14 @@ solveLSEI <- function(XtX, Xty, D = NULL, constraint = "none") {
         D <- rbind(D[[1]], D[[2]])
     ## NOTE: Currently both constraints get the same weight
 
-    cf <- lsei(A= XtX, B = Xty, G = D, H = rep(0, nrow(D)), type = 1,
-               E = matrix(0, nrow(XtX), nrow(XtX)), F = rep(0, nrow(XtX)),
-               tol = .Machine$double.eps,
-               tolrank = c(.Machine$double.eps, .Machine$double.eps),
-               fulloutput = TRUE)$X
+## first we used package limSolve
+#    cf <- lsei(A= XtX, B = Xty, G = D, H = rep(0, nrow(D)), type = 1,
+#               E = matrix(0, nrow(XtX), nrow(XtX)), F = rep(0, nrow(XtX)),
+#               tol = .Machine$double.eps,
+#               tolrank = c(.Machine$double.eps, .Machine$double.eps),
+#               fulloutput = TRUE)$X
+## but to reduce computational overhead we directly use quadprog
+    cf <- solve.QP(Dmat = XtX, dvec = as.vector(Xty), Amat = t(D),
+                   bvec = rep(0, nrow(D)))$solution
     cf
 }

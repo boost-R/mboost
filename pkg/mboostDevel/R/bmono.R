@@ -2,7 +2,7 @@
 bmono <- function(..., constraint = c("increasing", "decreasing",
                                       "convex", "concave", "none",
                                       "positive", "negative"),
-                  type = c("iterative", "lsei"),
+                  type = c("iterative", "quad.prog"),
                   by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
                   degree = 3, differences = 2, df = 4,
                   lambda = NULL, lambda2 = 1e6, niter = 10,
@@ -295,7 +295,7 @@ bl_mono <- function(blg, Xfun, args) {
                                 "You could try increasing ", sQuote("niter"),
                                 " or ", sQuote("lambda2"))
                 }
-            } else {  ## i.e. type == "lsei"
+            } else {  ## i.e. type == "quad.prog"
                 if (lambda2[[2]] == 0) {
                     coef <- solveLSEI(XtX, crossprod(X, y),
                                       constraint = args$constraint)

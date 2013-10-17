@@ -50,6 +50,7 @@ btree(..., tree_controls = ctree_control(stump = TRUE,
 bmono(...,
       constraint = c("increasing", "decreasing", "convex", "concave",
                      "none", "positive", "negative"),
+      type = c("iterative", "quad.prog"),
       by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
       degree = 3, differences = 2, df = 4, lambda = NULL,
       lambda2 = 1e6, niter=10, intercept = TRUE,
@@ -170,6 +171,15 @@ bl1 \%O\% bl2
     or "concave". Additionally, "none" can be used to specify
     unconstrained P-splines. This is especially of interest in
     conjunction with \code{boundary.constraints = TRUE}.}
+  \item{type}{
+    determines how the constrained least squares problem should be
+    solved. If \code{type = "iterative"}, the iterative procedure
+    described in  Hofner et al. (2011b) is used. If \code{type =
+      "quad.prog"}, a numeric quadratic programming method (Goldfarb and
+    Idnani, 1982, 1983) is used (see \code{\link{solve.QP}} in package
+    \pkg{quadprog}). The quadratic programming approach is usually much
+    faster than the iterative approach.
+  }
   \item{lambda2}{ penalty parameter for the (monotonicity) constraint. }
   \item{niter}{ maximum number of iterations used to compute constraint
     estimates. Increase this number if a warning is displayed. }
@@ -458,13 +468,21 @@ bl1 \%O\% bl2
   Jan Gertheiss and Gerhard Tutz (2009), Penalized regression with ordinal
   predictors, \emph{International Statistical Review}, \bold{77}(3), 345--365.
 
+  D. Goldfarb and A. Idnani (1982),  Dual and Primal-Dual Methods
+  for Solving Strictly Convex Quadratic Programs.  In J. P. Hennart
+  (ed.), Numerical Analysis, Springer-Verlag, Berlin, pp. 226-239.
+
+  D. Goldfarb and A. Idnani (1983),  A numerically stable dual
+  method for solving strictly convex quadratic programs.
+  \emph{Mathematical Programming}, \bold{27}, 1--33.
+
   Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011a),
   A framework for unbiased model selection based on boosting.
   \emph{Journal of Computational and Graphical Statistics}, \bold{20}, 956--971.
 
   Benjamin Hofner, Joerg Mueller, and Torsten Hothorn (2011b),
   Monotonicity-Constrained Species Distribution Models,
-  \emph{Ecology}, 92:1895-1901.
+  \emph{Ecology}, \bold{92}, 1895--1901.
 
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable
   selection and model choice in geoadditive regression models,
@@ -479,8 +497,8 @@ bl1 \%O\% bl2
     Machine Learning Research}, \bold{11}, 2109--2113.
 
   G. M. Beliakov (2000), Shape Preserving Approximation using Least Squares
-    Splines, \emph{Approximation Theory and its Applications}, bold{16}(4), 80-98.
-
+  Splines, \emph{Approximation Theory and its Applications},
+  \bold{16}(4), 80--98.
 }
 
 \seealso{\code{\link{mboost}}}
