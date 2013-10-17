@@ -199,7 +199,7 @@ bl_mono <- function(blg, Xfun, args) {
         }
 
         V[[1]] <- matrix(0, ncol = nrow(D[[1]]), nrow =  nrow(D[[1]]))
-        lambda2[[1]] <- args$lambda2
+        lambda2[[1]] <- ifelse(args$constraint == "none", 0, args$lambda2)
         lambda2[[2]] <- 0
         if (args$boundary.constraints) {
             lambda3 <- cons.arg$lambda
@@ -221,14 +221,17 @@ bl_mono <- function(blg, Xfun, args) {
         D <- V <- lambda2 <- vector(mode = "list", length =2)
         ## set up difference matrices
         D <- differences(args$constraint, ncoli)
+        idx <- !sapply(D, is.null)
+        V[idx] <- lapply(D[idx], function(m) matrix(0, nrow(m), nrow(m)))
 
-        V[[1]] <- matrix(0, ncol = nrow(D[[1]]), nrow =  nrow(D[[1]]))
-        V[[2]] <- matrix(0, ncol = nrow(D[[2]]), nrow =  nrow(D[[2]]))
         if (length(args$lambda2) == 1) {
             lambda2[[1]] <- lambda2[[2]] <- args$lambda2
         } else {
             lambda2 <- args$lambda2
         }
+        ## set lambda2 = 0 if no constraint is used
+        if (any(none <- args$constraint == "none"))
+            lambda2[none] <- 0
         ## <FIXME> Boundary constraints for bivariate smooths are currently not
         ## implemented
         if (args$boundary.constraints)
