@@ -1,10 +1,14 @@
 
 stabsel <- function(object, cutoff, q, PFER,
-                    folds = cv(model.weights(object), type = "subsampling", B = 100),
-                    papply = mclapply, verbose = TRUE, FWER, ...) {
+                    folds = cv(model.weights(object), type = "subsampling",
+                               B = ifelse(error.bound = "MB", 100, 50)),
+                    papply = mclapply, verbose = TRUE, FWER,
+                    error.bound = c("MB", "SS"), ...) {
 
     p <- length(variable.names(object))
     ibase <- 1:p
+
+    error.bound <- match.args(error.bound)
 
     ## only two of the four arguments can be specified
     if ((nmiss <- sum(missing(PFER), missing(cutoff),
@@ -45,8 +49,18 @@ stabsel <- function(object, cutoff, q, PFER,
     }
 
     if (missing(cutoff)) {
-        cutoff <- min(0.9, tmp <- (q^2 / (PFER * p) + 1) / 2)
-        upperbound <- q^2 / p / (2 * cutoff - 1)
+        if (error.bound == "MB") {
+            cutoff <- min(0.9, tmp <- (q^2 / (PFER * p) + 1) / 2)
+            upperbound <- q^2 / p / (2 * cutoff - 1)
+        } else {
+            objective <- function(cutoff) {
+                PFER / p - minD(q, p, cutoff, B)
+            }
+            root <- uniroot(objective, lower = 0.5, upper = 0.9)$root
+            cutoff <- floor(root * 2 * B) / (2* B)
+            upperbound <- minD(q, p, cutoff, B) * p
+        }
+        upperbound <- signif(upperbound, 3)
         if (verbose && tmp > 0.9 && upperbound - PFER > PFER/2) {
             warning("Upper bound for PFER > ", PFER,
                     " for the given value of ", sQuote("q"),
@@ -55,8 +69,20 @@ stabsel <- function(object, cutoff, q, PFER,
     }
 
     if (missing(q)) {
-        q <- ceiling(sqrt(PFER * (2 * cutoff - 1) * p))
-        upperbound <- q^2 / p / (2 * cutoff - 1)
+        if (error.bound == "MB") {
+            q <- ceiling(sqrt(PFER * (2 * cutoff - 1) * p))
+            upperbound <- q^2 / p / (2 * cutoff - 1)
+        } else {
+            objective <- function(q) {
+                PFER / p - minD(q, p, cutoff, B)
+            }
+            root <- uniroot(objective, lower = 1,
+                            upper = min(sqrt((B - 1) / (2 * B) * p^2),
+                            (B - 1) / (2 * B) * p))$root
+            q <- ceiling(root)
+            upperbound <- minD(q, p, cutoff, B) * p
+        }
+        upperbound <- signif(upperbound, 3)
         if (verbose && upperbound - PFER > PFER/2)
             warning("Upper bound for PFER > ", PFER,
                     " for the given value of ", sQuote("cutoff"),
@@ -64,7 +90,12 @@ stabsel <- function(object, cutoff, q, PFER,
     }
 
     if (missing(PFER)) {
-        upperbound <- PFER <- q^2 / p / (2 * cutoff - 1)
+        if (error.bound == "MB") {
+            upperbound <- PFER <- q^2 / p / (2 * cutoff - 1)
+        } else {
+            upperbound <- PFER <- minD(q, p, cutoff, B) * p
+        }
+        upperbound <- signif(upperbound, 3)
     }
     if (verbose && PFER >= p)
         warning("Upper bound for PFER larger than the number of base-learners.")
@@ -75,9 +106,13 @@ stabsel <- function(object, cutoff, q, PFER,
         xs[qq > q] <- xs[1]
         xs
     }
-    ss <- cvrisk(object, fun  = fun,
+    if (error.bound == "SS") {
+        ## use complementary pairs
+        folds <- cbind(folds, model.weights(object) - folds)
+    }
+    ss <- cvrisk(object, fun = fun,
                  folds = folds,
-                 papply = papply, ...)
+                 papply = papply, ....)
 
     if (verbose){
         qq <- sapply(ss, function(x) length(unique(x)))
@@ -160,4 +195,72 @@ fitsel <- function(object, newdata = NULL, which = NULL, ...) {
         ret <- ret + sign(ss[[i]])
     ret <- abs(ret) / length(ss)
     ret
+}
+
+
+### Modified version of the code accompanying the paper:
+###   Shah, R. D. and Samworth, R. J. (2013), Variable selection with error
+###   control: Another look at Stability Selection, J. Roy. Statist. Soc., Ser.
+###   B, 75, 55-80. DOI: 10.1111/j.1467-9868.2011.01034.x
+###
+### Original code available from
+###   http://www.statslab.cam.ac.uk/~rds37/papers/r_concave_tail.R
+### or
+###   http://www.statslab.cam.ac.uk/~rjs57/r_concave_tail.R
+
+D <- function(theta, which, B, r) {
+    ## If pi = ceil{ B * 2 * eta} / B + 1/B,..., 1 return the tail probability.
+    ## If pi < ceil{ B * 2 * eta} / B return 1
+
+    if (which <= 0)
+        return(1)
+    ### pi muss ein vielfaches von 1/(2 * B) sein, oder?
+
+    s <- 1/r
+    thetaB <- theta * B
+    k_start <- (ceiling(2 * thetaB) + 1)
+    if(k_start > B)
+        stop("theta to large")
+
+    Find.a <- function(prev_a)
+        uniroot(Calc.a, lower = 0.0001, upper = prev_a,
+                tol = .Machine$double.eps^0.75)$root
+
+    Calc.a <- function(a) {
+        denom <- sum((a + 0:k)^s)
+        num <- sum((0:k) * (a + 0:k)^s)
+        num / denom - thetaB
+    }
+
+    OptimInt <- function(a) {
+        num <- (k + 1 - thetaB) * sum((a + 0:(t-1))^s)
+        denom <- sum((k + 1 - (0:k)) * (a + 0:k)^s)
+        1 - num / denom
+    }
+
+    ## initialize a
+    a_vec <- rep(100000, B)
+
+    ## compute a values
+    for(k in k_start:B)
+        a_vec[k] <- Find.a(a_vec[k-1])
+
+    t <- which
+    cur_optim <- rep(0, B)
+    for (k in k_start:(B-1))
+        cur_optim[k] <- optimize(f=OptimInt, lower = a_vec[k+1],
+                                 upper = a_vec[k], maximum  = TRUE)$objective
+    return(max(cur_optim))
+}
+
+minD <- function(q, p, pi, B, r = c(-1/2, -1/4)) {
+    which <- ceiling(signif(pi / (1/(2* B)), 10))
+    #if ((which) %% 1 != 0)
+    #    stop(sQuote("pi"), " must be a multiple of 1/(2 * B)")
+
+    maxQ <- min(sqrt((B - 1) / (2 * B) * p^2),
+                (B - 1) / (2 * B) * p)
+    if (q > maxQ)
+        stop(sQuote("q"), " must be <= ", maxQ)
+    min(c(1, D(q^2 / p^2, which - B, B, r[1]), D(q / p, which , 2*B, r[2])))
 }

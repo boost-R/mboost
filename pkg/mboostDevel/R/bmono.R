@@ -2,7 +2,7 @@
 bmono <- function(..., constraint = c("increasing", "decreasing",
                                       "convex", "concave", "none",
                                       "positive", "negative"),
-                  type = c("iterative", "quad.prog"),
+                  type = c("quad.prog", "iterative"),
                   by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
                   degree = 3, differences = 2, df = 4,
                   lambda = NULL, lambda2 = 1e6, niter = 10,
