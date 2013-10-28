@@ -1,14 +1,15 @@
 
 stabsel <- function(object, cutoff, q, PFER,
                     folds = cv(model.weights(object), type = "subsampling",
-                               B = ifelse(error.bound = "MB", 100, 50)),
+                               B = ifelse(error.bound == "MB", 100, 50)),
                     papply = mclapply, verbose = TRUE, FWER,
                     error.bound = c("MB", "SS"), ...) {
 
     p <- length(variable.names(object))
     ibase <- 1:p
 
-    error.bound <- match.args(error.bound)
+    error.bound <- match.arg(error.bound)
+    B <- ncol(folds)
 
     ## only two of the four arguments can be specified
     if ((nmiss <- sum(missing(PFER), missing(cutoff),
@@ -53,11 +54,11 @@ stabsel <- function(object, cutoff, q, PFER,
             cutoff <- min(0.9, tmp <- (q^2 / (PFER * p) + 1) / 2)
             upperbound <- q^2 / p / (2 * cutoff - 1)
         } else {
-            objective <- function(cutoff) {
+            objective_cf <- function(cutoff) {
                 PFER / p - minD(q, p, cutoff, B)
             }
-            root <- uniroot(objective, lower = 0.5, upper = 0.9)$root
-            cutoff <- floor(root * 2 * B) / (2* B)
+            root <- uniroot(objective_cf, lower = 0.5, upper = 0.9)$root
+            cutoff <- min(0.9, tmp <- floor(root * 2 * B) / (2* B))
             upperbound <- minD(q, p, cutoff, B) * p
         }
         upperbound <- signif(upperbound, 3)
@@ -73,10 +74,10 @@ stabsel <- function(object, cutoff, q, PFER,
             q <- ceiling(sqrt(PFER * (2 * cutoff - 1) * p))
             upperbound <- q^2 / p / (2 * cutoff - 1)
         } else {
-            objective <- function(q) {
+            objective_q <- function(q) {
                 PFER / p - minD(q, p, cutoff, B)
             }
-            root <- uniroot(objective, lower = 1,
+            root <- uniroot(objective_q, lower = 1,
                             upper = min(sqrt((B - 1) / (2 * B) * p^2),
                             (B - 1) / (2 * B) * p))$root
             q <- ceiling(root)
@@ -112,7 +113,7 @@ stabsel <- function(object, cutoff, q, PFER,
     }
     ss <- cvrisk(object, fun = fun,
                  folds = folds,
-                 papply = papply, ....)
+                 papply = papply, ...)
 
     if (verbose){
         qq <- sapply(ss, function(x) length(unique(x)))

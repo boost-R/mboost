@@ -232,6 +232,8 @@ bl_mono <- function(blg, Xfun, args) {
         ## set lambda2 = 0 if no constraint is used
         if (any(none <- args$constraint == "none"))
             lambda2[none] <- 0
+        if (any(none <- lambda2 == 0))
+            args$constraint[none] <- "none"
         ## <FIXME> Boundary constraints for bivariate smooths are currently not
         ## implemented
         if (args$boundary.constraints)
@@ -297,8 +299,7 @@ bl_mono <- function(blg, Xfun, args) {
                 }
             } else {  ## i.e. type == "quad.prog"
                 if (lambda2[[2]] == 0) {
-                    coef <- solveLSEI(XtX, crossprod(X, y),
-                                      constraint = args$constraint)
+                    coef <- solveLSEI(XtX, crossprod(X, y), D = D[[1]])
                 } else {
                     coef <- solveLSEI(XtX, crossprod(X, y), D = D)
                 }

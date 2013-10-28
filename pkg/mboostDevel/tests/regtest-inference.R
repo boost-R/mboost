@@ -90,7 +90,7 @@ for (i in 40:100) {
     bound[i - 39] <- minD(q, p, i/100, B) * p
 }
 points((40:100)/100, bound, col = "green")
-stopifnot(bound == bound_ss)
+stopifnot(all((bound - bound_ss) < sqrt(.Machine$double.eps)))
 
 ### computation of q from other values
 cutoff <- 0.6
@@ -124,8 +124,10 @@ round(minD(q, p, cutoff, B) * p, 3)
 round(minD(q, p, cutoff + 1e-5, B) * p, 3)
 
 
-weights <- c(2, 3, 2, rep(1, 90), rep(0, 10))
-folds <- cv(weights, type = "subsampling", B = 10)
-head(folds)
-tail(folds)
-rowSums(cbind(folds, weights - folds))
+### check stabsel interface
+data("bodyfat", package = "TH.data")
+mod <- glmboost(DEXfat ~ ., data = bodyfat)
+(sbody <- stabsel(mod, q = 3, PFER = 0.2))
+dim(sbody$phat)
+(sbody <- stabsel(mod, q = 3, PFER = 0.2, error.bound = "SS"))
+dim(sbody$phat)

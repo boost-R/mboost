@@ -8,8 +8,10 @@
 }
 \usage{
 stabsel(object, cutoff, q, PFER,
-        folds = cv(model.weights(object), type = "subsampling", B = 100),
-        papply = mclapply, verbose = TRUE, FWER, ...)
+        folds = cv(model.weights(object), type = "subsampling",
+                   B = ifelse(error.bound == "MB", 100, 50)),
+        papply = mclapply, verbose = TRUE, FWER,
+        error.bound = c("MB", "SS"), ...)
 }
 \arguments{
   \item{object}{an \code{mboost} object.}
@@ -29,6 +31,10 @@ stabsel(object, cutoff, q, PFER,
     \code{warnings} should be issued. }
   \item{FWER}{ deprecated. Only for compatibility with older versions,
     use PFER instead.}
+  \item{error.bound}{
+    use error bound of Meinshausen & Buehlmann (2010) (\dQuote{"MB"}) or
+    of Shah & Samworth (2013) (\dQuote{"SS"}).
+  }
   \item{\dots}{additional arguments to \code{\link{cvrisk}}.}
 }
 \details{
@@ -61,7 +67,11 @@ stabsel(object, cutoff, q, PFER,
 
   N. Meinshausen and P. Buehlmann (2010), Stability selection.
   \emph{Journal of the Royal Statistical Society, Series B},
-  \bold{72}(4).
+  \bold{72}:417--473.
+
+  R.D. Shah and R.J. Samworth (2013), Variable selection with error
+  control: another look at stability selection. \emph{Journal of the Royal
+  Statistical Society, Series B}, \bold{75}:55--80.
 
 }
 \examples{
