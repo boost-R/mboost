@@ -292,14 +292,20 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     ### some models are CHANGED!
     RET$subset <- function(i) {
         if (i <= mstop || i <= length(xselect)) {
-            mstop <<- i
-            fit <<- RET$predict()
-            u <<- ngradient(y, fit, weights)
+            ## no need to recompute everything if mstop isn't changed
+            if (i != mstop) {
+                mstop <<- i
+                fit <<- RET$predict()
+                u <<- ngradient(y, fit, weights)
+            }
         } else {
-            ## first increase to "old" mstop
-            mstop <<- length(xselect)
-            fit <<- RET$predict()
-            u <<- ngradient(y, fit, weights)
+            ## if prior reduction of mstop,
+            ## first increase mstop to old value first
+            if (mstop != length(xselect)) {
+                mstop <<- length(xselect)
+                fit <<- RET$predict()
+                u <<- ngradient(y, fit, weights)
+            }
             ## now fit the rest
             tmp <- boost(i - mstop)
         }
