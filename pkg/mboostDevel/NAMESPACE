@@ -16,7 +16,8 @@ export(glmboost,
        boost_control, mstop, Family,
        GaussReg, Gaussian, GaussClass, Laplace, Binomial, Poisson, GammaReg, QuantReg,
        ExpectReg, NBinomial, PropOdds, Weibull, Loglog, Lognormal, AUC, mboost_fit,
-       Huber, AdaExp, Gehan, CoxPH, Hurdle, Multinomial, FP, IPCweights, cvrisk, cv, bbs, stabsel,
+       Huber, AdaExp, Gehan, CoxPH, Hurdle, Multinomial, FP, IPCweights,
+       cvrisk, cv, bbs, stabsel, stabsel_parameters,
        bols, bspatial, brandom, btree, bss, bns, brad, bmono, bmrf, buser, survFit, selected,
        nuisance, "%+%", "%X%", "%O%", extract, "mstop<-")
        ###, basesel, fitsel)
@@ -69,7 +70,9 @@ S3method(cvrisk, mboost)
 # S3method(selected, glmboost)
 S3method(update, mboost)
 S3method(print, stabsel)
+S3method(print, stabsel_parameters)
 S3method(plot, stabsel)
+S3method(selected, stabsel)
 S3method(extract, mboost)
 S3method(extract, glmboost)
 S3method(extract, blackboost)

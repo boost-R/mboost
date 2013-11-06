@@ -11,95 +11,12 @@ stabsel <- function(object, cutoff, q, PFER,
     error.bound <- match.arg(error.bound)
     B <- ncol(folds)
 
-    ## only two of the four arguments can be specified
-    if ((nmiss <- sum(missing(PFER), missing(cutoff),
-                      missing(q), missing(FWER))) != 2) {
-        if (nmiss > 2)
-            stop("Two of the three argumnets ",
-                 sQuote("PFER"), ", ", sQuote("cutoff"), " and ", sQuote("q"),
-                 " must be specifed")
-        if (nmiss < 2)
-            stop("Only two of the three argumnets ",
-                 sQuote("PFER"), ", ", sQuote("cutoff"), " and ", sQuote("q"),
-                 " can be specifed at the same time")
-    }
-
-    if (!missing(FWER)) {
-        if (!missing(PFER))
-            stop(sQuote("FWER"), " and ", sQuote("PFER"),
-                 " cannot be spefified at the same time")
-        PFER <- FWER
-        warning(sQuote("FWER"), " is deprecated. Use ", sQuote("PFER"),
-                " instead.")
-    }
-
-    if ((!missing(PFER) || !missing(FWER)) && PFER < 0)
-        stop(sQuote("PFER"), " must be greater 0")
-
-    if (!missing(cutoff) && (cutoff < 0.5 | cutoff > 1))
-        stop(sQuote("cutoff"), " must be between 0.5 and 1")
-
-    if (!missing(q)) {
-        if (p < q)
-            stop("Average number of selected base-learners ", sQuote("q"),
-                 " must be smaller \n  than the number of base-learners",
-                 " specified in the model ", sQuote("object"))
-        if (q < 0)
-            stop("Average number of selected base-learners ", sQuote("q"),
-                 " must be greater 0")
-    }
-
-    if (missing(cutoff)) {
-        if (error.bound == "MB") {
-            cutoff <- min(0.9, tmp <- (q^2 / (PFER * p) + 1) / 2)
-            upperbound <- q^2 / p / (2 * cutoff - 1)
-        } else {
-            objective_cf <- function(cutoff) {
-                PFER / p - minD(q, p, cutoff, B)
-            }
-            root <- uniroot(objective_cf, lower = 0.5, upper = 0.9)$root
-            cutoff <- min(0.9, tmp <- floor(root * 2 * B) / (2* B))
-            upperbound <- minD(q, p, cutoff, B) * p
-        }
-        upperbound <- signif(upperbound, 3)
-        if (verbose && tmp > 0.9 && upperbound - PFER > PFER/2) {
-            warning("Upper bound for PFER > ", PFER,
-                    " for the given value of ", sQuote("q"),
-                    " (true upper bound = ", round(upperbound, 2), ")")
-        }
-    }
-
-    if (missing(q)) {
-        if (error.bound == "MB") {
-            q <- ceiling(sqrt(PFER * (2 * cutoff - 1) * p))
-            upperbound <- q^2 / p / (2 * cutoff - 1)
-        } else {
-            objective_q <- function(q) {
-                PFER / p - minD(q, p, cutoff, B)
-            }
-            root <- uniroot(objective_q, lower = 1,
-                            upper = min(sqrt((B - 1) / (2 * B) * p^2),
-                            (B - 1) / (2 * B) * p))$root
-            q <- ceiling(root)
-            upperbound <- minD(q, p, cutoff, B) * p
-        }
-        upperbound <- signif(upperbound, 3)
-        if (verbose && upperbound - PFER > PFER/2)
-            warning("Upper bound for PFER > ", PFER,
-                    " for the given value of ", sQuote("cutoff"),
-                    " (true upper bound = ", upperbound, ")")
-    }
-
-    if (missing(PFER)) {
-        if (error.bound == "MB") {
-            upperbound <- PFER <- q^2 / p / (2 * cutoff - 1)
-        } else {
-            upperbound <- PFER <- minD(q, p, cutoff, B) * p
-        }
-        upperbound <- signif(upperbound, 3)
-    }
-    if (verbose && PFER >= p)
-        warning("Upper bound for PFER larger than the number of base-learners.")
+    pars <- stabsel_parameters(cutoff = cutoff, q = q,
+                               PFER = PFER, p = p, B = B,
+                               verbose = verbose, error.bound = error.bound)
+    cutoff <- pars$cutoff
+    q <- pars$q
+    PFER <- pars$PFER
 
     fun <- function(model) {
         xs <- selected(model)
@@ -145,9 +62,103 @@ stabsel <- function(object, cutoff, q, PFER,
     if (extends(class(object), "glmboost"))
         rownames(phat) <- variable.names(object)
     ret <- list(phat = phat, selected = which((mm <- apply(phat, 1, max)) >= cutoff),
-                max = mm, cutoff = cutoff, q = q, PFER = upperbound)
+                max = mm, cutoff = cutoff, q = q, PFER = PFER, error.bound = error.bound)
     class(ret) <- "stabsel"
     ret
+}
+
+stabsel_parameters <- function(cutoff, q, PFER, p,
+                               B = ifelse(error.bound == "MB", 100, 50),
+                               verbose = FALSE, error.bound = c("MB", "SS"),
+                               FWER) {
+
+    error.bound <- match.arg(error.bound)
+
+    ## only two of the four arguments can be specified
+    if ((nmiss <- sum(missing(PFER), missing(cutoff),
+                      missing(q), missing(FWER))) != 2) {
+        if (nmiss > 2)
+            stop("Two of the three argumnets ",
+                 sQuote("PFER"), ", ", sQuote("cutoff"), " and ", sQuote("q"),
+                 " must be specifed")
+        if (nmiss < 2)
+            stop("Only two of the three argumnets ",
+                 sQuote("PFER"), ", ", sQuote("cutoff"), " and ", sQuote("q"),
+                 " can be specifed at the same time")
+    }
+
+    if (!missing(FWER)) {
+        if (!missing(PFER))
+            stop(sQuote("FWER"), " and ", sQuote("PFER"),
+                 " cannot be spefified at the same time")
+        PFER <- FWER
+        warning(sQuote("FWER"), " is deprecated. Use ", sQuote("PFER"),
+                " instead.")
+    }
+
+    if ((!missing(PFER) || !missing(FWER)) && PFER < 0)
+        stop(sQuote("PFER"), " must be greater 0")
+
+    if (!missing(cutoff) && (cutoff < 0.5 | cutoff > 1))
+        stop(sQuote("cutoff"), " must be between 0.5 and 1")
+
+    if (!missing(q)) {
+        if (p < q)
+            stop("Average number of selected base-learners ", sQuote("q"),
+                 " must be smaller \n  than the number of base-learners",
+                 " specified in the model ", sQuote("object"))
+        if (q < 0)
+            stop("Average number of selected base-learners ", sQuote("q"),
+                 " must be greater 0")
+    }
+
+    if (missing(cutoff)) {
+        if (error.bound == "MB") {
+            cutoff <- min(1, tmp <- (q^2 / (PFER * p) + 1) / 2)
+            upperbound <- q^2 / p / (2 * cutoff - 1)
+        } else {
+            cutoff <- optimal_cutoff(p, q, PFER, B)
+            upperbound <- minD(q, p, cutoff, B) * p
+        }
+        upperbound <- signif(upperbound, 3)
+        if (verbose && tmp > 0.9 && upperbound - PFER > PFER/2) {
+            warning("Upper bound for PFER > ", PFER,
+                    " for the given value of ", sQuote("q"),
+                    " (true upper bound = ", round(upperbound, 2), ")")
+        }
+    }
+
+    if (missing(q)) {
+        if (error.bound == "MB") {
+            q <- floor(sqrt(PFER * (2 * cutoff - 1) * p))
+            upperbound <- q^2 / p / (2 * cutoff - 1)
+        } else {
+            q <- optimal_q(p, cutoff, PFER, B)
+            upperbound <- minD(q, p, cutoff, B) * p
+        }
+        upperbound <- signif(upperbound, 3)
+        if (verbose && upperbound - PFER > PFER/2)
+            warning("Upper bound for PFER > ", PFER,
+                    " for the given value of ", sQuote("cutoff"),
+                    " (true upper bound = ", upperbound, ")")
+    }
+
+    if (missing(PFER)) {
+        if (error.bound == "MB") {
+            upperbound <- PFER <- q^2 / p / (2 * cutoff - 1)
+        } else {
+            upperbound <- PFER <- minD(q, p, cutoff, B) * p
+        }
+        upperbound <- signif(upperbound, 3)
+    }
+
+    if (verbose && PFER >= p)
+        warning("Upper bound for PFER larger than the number of base-learners.")
+
+    res <- list(cutoff = cutoff, q = q, PFER = upperbound,
+                error.bound = error.bound)
+    class(res) <- "stabsel_parameters"
+    res
 }
 
 print.stabsel <- function(x, decreasing = FALSE, ...) {
@@ -161,9 +172,20 @@ print.stabsel <- function(x, decreasing = FALSE, ...) {
     }
     cat("\nSelection probabilities:\n")
     print(sort(x$max[x$max > 0], decreasing = decreasing))
-    cat("\nCutoff: ", x$cutoff, "; ", sep = "")
+    cat("\n")
+    print.stabsel_parameters(x)
+    cat("\n")
+    invisible(x)
+}
+
+print.stabsel_parameters <- function(x, ...) {
+    cat("Cutoff: ", x$cutoff, "; ", sep = "")
     cat("q: ", x$q, "; ", sep = "")
-    cat("PFER: ", x$PFER, "\n\n")
+    if (x$error.bound == "MB")
+        cat("PFER: ", x$PFER, "\n")
+    else
+        cat("PFER(*): ", x$PFER,
+            "\n   (*) or expected number of low selection probability variables\n")
     invisible(x)
 }
 
@@ -208,7 +230,6 @@ fitsel <- function(object, newdata = NULL, which = NULL, ...) {
 ###   http://www.statslab.cam.ac.uk/~rds37/papers/r_concave_tail.R
 ### or
 ###   http://www.statslab.cam.ac.uk/~rjs57/r_concave_tail.R
-
 D <- function(theta, which, B, r) {
     ## If pi = ceil{ B * 2 * eta} / B + 1/B,..., 1 return the tail probability.
     ## If pi < ceil{ B * 2 * eta} / B return 1
@@ -220,7 +241,7 @@ D <- function(theta, which, B, r) {
     s <- 1/r
     thetaB <- theta * B
     k_start <- (ceiling(2 * thetaB) + 1)
-    if(k_start > B)
+    if(k_start >= B)
         stop("theta to large")
 
     Find.a <- function(prev_a)
@@ -254,14 +275,52 @@ D <- function(theta, which, B, r) {
     return(max(cur_optim))
 }
 
+## minD function for error bound in case of r-concavity
 minD <- function(q, p, pi, B, r = c(-1/2, -1/4)) {
     which <- ceiling(signif(pi / (1/(2* B)), 10))
-    #if ((which) %% 1 != 0)
-    #    stop(sQuote("pi"), " must be a multiple of 1/(2 * B)")
-
-    maxQ <- min(sqrt((B - 1) / (2 * B) * p^2),
-                (B - 1) / (2 * B) * p)
+    maxQ <- maxQ(p, B)
     if (q > maxQ)
         stop(sQuote("q"), " must be <= ", maxQ)
     min(c(1, D(q^2 / p^2, which - B, B, r[1]), D(q / p, which , 2*B, r[2])))
+}
+
+## function to find optimal cutoff in stabsel (when error.bound = "SS")
+optimal_cutoff <- function(p, q, PFER, B) {
+    ## cutoff values can only be multiples of 1/(2B)
+    cutoff <- (2*B):1/(2*B)
+    cutoff <- cfs[cfs >= 0.5]
+    for (i in 1:length(cutoff)) {
+        if (minD(q, p, cutoff[i], B) * p > PFER) {
+            if (i == 1)
+                cutoff <- cutoff[i]
+            else
+                cutoff <- cutoff[i - 1]
+            break
+        }
+    }
+    cutoff[length(cutoff)]
+}
+
+## function to find optimal q in stabsel (when error.bound = "SS")
+optimal_q <- function(p, cutoff, PFER, B) {
+    for (q in 1:maxQ(p, B)) {
+        if (minD(q, p, cutoff, B) * p > PFER) {
+            q <- q - 1
+            break
+        }
+    }
+    max(1, q)
+}
+
+## obtain maximal value possible for q
+maxQ <- function(p, B) {
+    if(B <= 1)
+        stop("B must be at least 2")
+
+    fact_1 <- 4 * B / p
+    tmpfct <- function(q)
+        ceiling(q * fact_1) + 1 - 2 * B
+
+    res <- tmpfct(1:p)
+    length(res[res < 0])
 }

@@ -131,3 +131,47 @@ mod <- glmboost(DEXfat ~ ., data = bodyfat)
 dim(sbody$phat)
 (sbody <- stabsel(mod, q = 3, PFER = 0.2, error.bound = "SS"))
 dim(sbody$phat)
+
+
+## check stabsel_parameters and (theoretical) error control
+cutoff <- 0.6
+for (i in 1:10) {
+    print(stabsel_parameters(cutoff = cutoff, q = i, p = 100, error.bound = "MB"))
+}
+for (i in 1:10) {
+    print(stabsel_parameters(cutoff = cutoff, q = i, p = 100, error.bound = "SS"))
+}
+
+## check if missing values are determined correctly (especially at the extreme values)
+p <- 100
+B <- 50
+cutoff <- 0.6
+# low PFER
+PFER <- 0.001
+(res <- stabsel_parameters(p = p, cutoff = cutoff, PFER = PFER, B = B, error.bound = "SS"))
+stabsel_parameters(p = p, cutoff = cutoff, q = res$q, B = B, error.bound = "SS")
+# high PFER
+PFER <- 50
+(res <- stabsel_parameters(p = p, cutoff = cutoff, PFER = PFER, B = B, error.bound = "SS"))
+stabsel_parameters(p = p, cutoff = cutoff, q = res$q, B = B, error.bound = "SS")
+# medium PFER
+PFER <- 1
+(res <- stabsel_parameters(p = p, cutoff = cutoff, PFER = PFER, B = B, error.bound = "SS"))
+stabsel_parameters(p = p, cutoff = cutoff, q = res$q, B = B, error.bound = "SS")
+stabsel_parameters(p = p, cutoff = cutoff, q = res$q + 1, B = B, error.bound = "SS")
+
+
+q <- 10
+# high PFER
+PFER <- 5
+(res <- stabsel_parameters(p = p, q = q, PFER = PFER, B = B, error.bound = "SS"))
+stabsel_parameters(p = p, cutoff = res$cutoff, q = q, B = B, error.bound = "SS")
+# low PFER
+PFER <- 0.001
+(res <- stabsel_parameters(p = p, q = q, PFER = PFER, B = B, error.bound = "SS"))
+stabsel_parameters(p = p, cutoff = res$cutoff, q = q, B = B, error.bound = "SS")
+# medium PFER
+PFER <- 1
+(res <- stabsel_parameters(p = p, q = q, PFER = PFER, B = B, error.bound = "SS"))
+stabsel_parameters(p = p, cutoff = res$cutoff, q = q, B = B, error.bound = "SS")
+stabsel_parameters(p = p, cutoff = res$cutoff - 0.01, q = q, B = B, error.bound = "SS")
