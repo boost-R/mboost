@@ -1,5 +1,6 @@
 \name{stabsel}
 \alias{stabsel}
+\alias{stabsel_parameters}
 \title{
     Stability Selection
 }
@@ -12,6 +13,13 @@ stabsel(object, cutoff, q, PFER,
                    B = ifelse(error.bound == "MB", 100, 50)),
         papply = mclapply, verbose = TRUE, FWER,
         error.bound = c("MB", "SS"), ...)
+
+## function to compute missing parameter from the other two parameters
+## (internally used within stabsel)
+stabsel_parameters(cutoff, q, PFER, p,
+                   B = ifelse(error.bound == "MB", 100, 50),
+                   verbose = FALSE, error.bound = c("MB", "SS"),
+                   FWER)
 }
 \arguments{
   \item{object}{an \code{mboost} object.}
@@ -22,7 +30,14 @@ stabsel(object, cutoff, q, PFER,
     specifies the amount of falsely selected base-learners, which is
     tolerated. See details.}
   \item{folds}{ a weight matrix with number of rows equal to the number
-                of observations, see \code{\link{cvrisk}}.}
+    of observations, see \code{\link{cvrisk}}.}
+  \item{B}{ number of subsampling replicates. Per default, this is 100
+    for the error bound derived in  Meinshausen & Buehlmann (2010) and
+    50 for the error bound of Shah & Samworth (2013). In the latter
+    case, complementray pairs are used, thus leading to \eqn{2B}
+    subsamples.}
+  \item{p}{ number of possible predictors (including intercept if
+    applicable) }.
   \item{papply}{ (parallel) apply function, defaults to  \code{\link[parallel]{mclapply}}.
     Alternatively, \code{parLapply} can be used. In the
     latter case, usually more setup is needed (see example for some
@@ -31,10 +46,8 @@ stabsel(object, cutoff, q, PFER,
     \code{warnings} should be issued. }
   \item{FWER}{ deprecated. Only for compatibility with older versions,
     use PFER instead.}
-  \item{error.bound}{
-    use error bound of Meinshausen & Buehlmann (2010) (\dQuote{"MB"}) or
-    of Shah & Samworth (2013) (\dQuote{"SS"}).
-  }
+  \item{error.bound}{ use error bound of Meinshausen & Buehlmann (2010)
+    ("MB") or of Shah & Samworth (2013) ("SS"). }
   \item{\dots}{additional arguments to \code{\link{cvrisk}}.}
 }
 \details{
@@ -80,8 +93,15 @@ stabsel(object, cutoff, q, PFER,
 
   ### low-dimensional example
   mod <- glmboost(DEXfat ~ ., data = bodyfat)
-  (sbody <- stabsel(mod, q = 3, PFER = 1,
-                    folds = cv(model.weights(mod), type = "subsampling", B = 100)))
+
+  ## compute cutoff ahead of running stabsel to see if it is a sensible
+  ## parameter choice.
+  ##   p = ncol(bodyfat) - 1 (= Outcome) + 1 ( = Intercept)
+  stabsel_parameters(q = 3, PFER = 1, p = ncol(bodyfat) - 1 + 1)
+
+  ## now run stability selection; to make results reproducible
+  set.seed(1234)
+  (sbody <- stabsel(mod, q = 3, PFER = 1))
   opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
   plot(sbody)
   par(opar)

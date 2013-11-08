@@ -5,6 +5,7 @@ stabsel <- function(object, cutoff, q, PFER,
                     papply = mclapply, verbose = TRUE, FWER,
                     error.bound = c("MB", "SS"), ...) {
 
+    call <- match.call()
     p <- length(variable.names(object))
     ibase <- 1:p
 
@@ -62,7 +63,8 @@ stabsel <- function(object, cutoff, q, PFER,
     if (extends(class(object), "glmboost"))
         rownames(phat) <- variable.names(object)
     ret <- list(phat = phat, selected = which((mm <- apply(phat, 1, max)) >= cutoff),
-                max = mm, cutoff = cutoff, q = q, PFER = PFER, error.bound = error.bound)
+                max = mm, cutoff = cutoff, q = q, PFER = PFER, error.bound = error.bound,
+                call = call)
     class(ret) <- "stabsel"
     ret
 }
@@ -118,7 +120,7 @@ stabsel_parameters <- function(cutoff, q, PFER, p,
             upperbound <- q^2 / p / (2 * cutoff - 1)
         } else {
             cutoff <- optimal_cutoff(p, q, PFER, B)
-            upperbound <- minD(q, p, cutoff, B) * p
+            upperbound <- tmp <- minD(q, p, cutoff, B) * p
         }
         upperbound <- signif(upperbound, 3)
         if (verbose && tmp > 0.9 && upperbound - PFER > PFER/2) {
@@ -231,21 +233,22 @@ fitsel <- function(object, newdata = NULL, which = NULL, ...) {
 ### or
 ###   http://www.statslab.cam.ac.uk/~rjs57/r_concave_tail.R
 D <- function(theta, which, B, r) {
-    ## If pi = ceil{ B * 2 * eta} / B + 1/B,..., 1 return the tail probability.
-    ## If pi < ceil{ B * 2 * eta} / B return 1
-
-    if (which <= 0)
-        return(1)
-    ### pi muss ein vielfaches von 1/(2 * B) sein, oder?
+    ## compute upper tail of r-concave distribution function
+    ## If q = ceil{ B * 2 * theta} / B + 1/B,..., 1 return the tail probability.
+    ## If q < ceil{ B * 2 * theta} / B return 1
 
     s <- 1/r
     thetaB <- theta * B
     k_start <- (ceiling(2 * thetaB) + 1)
-    if(k_start >= B)
+
+    if (which < k_start)
+        return(1)
+
+    if(k_start > B)
         stop("theta to large")
 
     Find.a <- function(prev_a)
-        uniroot(Calc.a, lower = 0.0001, upper = prev_a,
+        uniroot(Calc.a, lower = 0.00001, upper = prev_a,
                 tol = .Machine$double.eps^0.75)$root
 
     Calc.a <- function(a) {
@@ -254,7 +257,7 @@ D <- function(theta, which, B, r) {
         num / denom - thetaB
     }
 
-    OptimInt <- function(a) {
+    OptimInt <- function(a, t, k, thetaB, s) {
         num <- (k + 1 - thetaB) * sum((a + 0:(t-1))^s)
         denom <- sum((k + 1 - (0:k)) * (a + 0:k)^s)
         1 - num / denom
@@ -267,16 +270,19 @@ D <- function(theta, which, B, r) {
     for(k in k_start:B)
         a_vec[k] <- Find.a(a_vec[k-1])
 
-    t <- which
     cur_optim <- rep(0, B)
     for (k in k_start:(B-1))
         cur_optim[k] <- optimize(f=OptimInt, lower = a_vec[k+1],
-                                 upper = a_vec[k], maximum  = TRUE)$objective
+                                 upper = a_vec[k],
+                                 t = which, k = k, thetaB = thetaB, s = s,
+                                 maximum  = TRUE)$objective
     return(max(cur_optim))
 }
 
 ## minD function for error bound in case of r-concavity
 minD <- function(q, p, pi, B, r = c(-1/2, -1/4)) {
+    ## get the integer valued multiplier W of
+    ##   pi = W * 1/(2 * B)
     which <- ceiling(signif(pi / (1/(2* B)), 10))
     maxQ <- maxQ(p, B)
     if (q > maxQ)
@@ -288,7 +294,7 @@ minD <- function(q, p, pi, B, r = c(-1/2, -1/4)) {
 optimal_cutoff <- function(p, q, PFER, B) {
     ## cutoff values can only be multiples of 1/(2B)
     cutoff <- (2*B):1/(2*B)
-    cutoff <- cfs[cfs >= 0.5]
+    cutoff <- cutoff[cutoff >= 0.5]
     for (i in 1:length(cutoff)) {
         if (minD(q, p, cutoff[i], B) * p > PFER) {
             if (i == 1)

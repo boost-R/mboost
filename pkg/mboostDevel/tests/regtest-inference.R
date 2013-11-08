@@ -15,13 +15,14 @@ r.TailProbs <- function(eta, B, r) {
     ## If pi < ceil{ B * 2 * eta} / B return 1
 
     MAXa <- 100000
-    MINa <- 0.0001
+    MINa <- 0.00001
 
     s <- -1/r
     etaB <- eta * B
     k_start <- (ceiling(2 * etaB) + 1)
-    if(k_start > B)
-        stop("eta is too large")
+    output <- rep(1, B)
+    if (k_start > B)
+        return(output)
 
     a_vec <- rep(MAXa,B)
 
@@ -38,20 +39,22 @@ r.TailProbs <- function(eta, B, r) {
     for(k in k_start:B)
         a_vec[k] <- Find.a(a_vec[k-1])
 
+    # NB this function makes use of several gloabl variables
     OptimInt <- function(a) {
         num <- (k + 1 - etaB) * sum((a + 0:(t-1))^(-s))
         denom <- sum((k + 1 - (0:k)) * (a + 0:k)^(-s))
         1 - num / denom
     }
 
-    output <- rep(1, B)
-
     prev_k <- k_start
     for(t in k_start:B) {
         cur_optim <- rep(0, B)
-        for (k in prev_k:(B-1))
-            cur_optim[k] <- optimize(f=OptimInt, lower = a_vec[k+1],
-                                     upper = a_vec[k], maximum  = TRUE)$objective
+        cur_optim[B] <- OptimInt(a_vec[B])
+        if (prev_k <= (B-1)) {
+            for (k in prev_k:(B-1))
+                cur_optim[k] <- optimize(f=OptimInt, lower = a_vec[k+1],
+                                         upper = a_vec[k], maximum  = TRUE)$objective
+        }
         output[t] <- max(cur_optim)
         prev_k <- which.max(cur_optim)
     }
@@ -92,21 +95,35 @@ for (i in 40:100) {
 points((40:100)/100, bound, col = "green")
 stopifnot(all((bound - bound_ss) < sqrt(.Machine$double.eps)))
 
+## test r-concave bound
+B <- 50
+x <- (1:(2 * B))/(2 * B)
+p <- 1000
+q <- 490
+theta <- q/p
+
+## r-concave bound of Shah & Samworth (2013)
+bound_ss <- (pminD(theta, B) * p)[40:100]
+plot(x[40:100], bound_ss, xlab = "pi")
+## Bound of Meinshausen & Buehlmann (2010)
+points(x[40:100], q^2 / (2 * x[40:100] - 1) / p, col = "red")
+## now our implementation
+bound <- rep(NA, 61)
+for (i in 40:100) {
+    bound[i - 39] <- minD(q, p, i/100, B) * p
+}
+points((40:100)/100, bound, col = "green")
+stopifnot(all((bound - bound_ss) < sqrt(.Machine$double.eps)))
+
 ### computation of q from other values
 cutoff <- 0.6
 PFER <- 0.2
 B <- 50
 p <- 200
-objective <- function(q) {
-    PFER / p - minD(q, p, cutoff, B)
-}
-root <- uniroot(objective, lower = 1,
-                upper = min(sqrt((B - 1) / (2 * B) * p^2),
-                            (B - 1) / (2 * B) * p))$root
-(q <- ceiling(root))
+(q <- optimal_q(p = p, cutoff = cutoff, PFER = PFER, B = B))
 # check:
-round(minD(q - 1, p, cutoff, B) * p, 3)
 round(minD(q, p, cutoff, B) * p, 3)
+round(minD(q + 1, p, cutoff, B) * p, 3)
 
 
 ### computation of cutoff from other values
@@ -114,14 +131,10 @@ PFER <- 0.2
 B <- 50
 p <- 200
 q <- 7
-objective <- function(cutoff) {
-    PFER / p - minD(q, p, cutoff, B)
-}
-root <- uniroot(objective, lower = 0.5, upper = 0.9)$root
-(cutoff <- floor(root * 2 * B) / (2* B))
+(cutoff <- optimal_cutoff(p = p, q = q, PFER = PFER, B = B))
 # check:
 round(minD(q, p, cutoff, B) * p, 3)
-round(minD(q, p, cutoff + 1e-5, B) * p, 3)
+round(minD(q, p, cutoff - 1e-2, B) * p, 3)
 
 
 ### check stabsel interface
