@@ -8,6 +8,13 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     risk <- control$risk
     nu <- control$nu
     trace <- control$trace
+    stopintern <- control$trace
+    if (is.numeric(stopintern)) {
+        stopeps <- stopintern
+        stopintern <- TRUE
+    } else {
+        stopeps <- 0
+    }
     tracestep <- options("width")$width / 2
 
     ### extract negative gradient and risk functions
@@ -134,6 +141,11 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             if (trace)
                 do_trace(m, mstop = mstop, risk = mrisk,
                          step = tracestep, width = niter)
+
+            ### internal stopping (for oobag risk only)
+            if (stopintern & (m > 1)) {
+                if ((mrisk[m] - mrisk[m - 1]) > stopeps) break
+            }
         }
         mstop <<- mstop + niter
         return(TRUE)
