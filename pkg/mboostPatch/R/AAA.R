@@ -30,14 +30,14 @@
     vers <- vers[grep("Version", vers)]
     vers <- gsub("(Version.* )([0-9]+\\.[0-9]+-[0-9]+)", "\\2", vers)
 
-    packageStartupMessage(paste("This is mboost ", vers, ". ",
-                                "See ", sQuote("package?mboost"), " and the NEWS file\n",
-                                "for a complete list of changes.\n",
-                                "Note: The default for the computation",
-                                " of the degrees of freedom has changed.\n",
-                                "      For details see section ",
-                                sQuote("Global Options"), " of ",
-                                sQuote("?bols"), ".", sep =""))
+    packageStartupMessage("This is mboostDevel ", vers, ". ", "See ",
+                          sQuote("package?mboostDevel"), " and the NEWS file\n",
+                          "for a complete list of changes.\n",
+                          "Note: The default for the computation",
+                          " of the degrees of freedom has changed.\n",
+                          "      For details see section ",
+                          sQuote("Global Options"), " of ",
+                          sQuote("?bols"), ".", appendLF = TRUE)
     return(TRUE)
 }
 
