@@ -62,7 +62,7 @@ function (mf, vary, bnd = NULL, df = 4, lambda = NULL, center = FALSE)
         K <- bnd2gra(bnd)
     else if (isMATRIX(bnd) &&
              nrow(bnd) == ncol(bnd) &&
-             nlevels(mf[[1]]) == nrow(bnd) &&
+             nlevels(mf[[1]]) <= nrow(bnd) &&
              sum(bnd) == 0 &&
              all(levels(mf[[1]]) %in% rownames(bnd)))
         K <- bnd
@@ -98,10 +98,10 @@ function (mf, vary, args)
         X <- X * by
     }
     if (isTRUE(args$center)) {
-        ### L = \Gamma \Omega^1/2 in Section 2.3. of Fahrmeir et al. 
+        ### L = \Gamma \Omega^1/2 in Section 2.3. of Fahrmeir et al.
         ### (2004, Stat Sinica)
         SVD <- eigen(K, EISPACK = FALSE)
-        ev <- SVD$vectors[, -dim(SVD$vectors)[2]] 
+        ev <- SVD$vectors[, -dim(SVD$vectors)[2]]
         ew <- SVD$values[-length(SVD$values)]
         X <- as(X %*% ev %*% diag(1/sqrt(ew)), "matrix")
         K <- as(diag(ncol(X)), "matrix")
