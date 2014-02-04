@@ -26,9 +26,7 @@
 .onAttach <- function(libname, pkgname) {
 
     ## get package version
-    vers <- library(help = "mboostDevel")$info[[1]]
-    vers <- vers[grep("Version", vers)]
-    vers <- gsub("(Version.* )([0-9]+\\.[0-9]+-[0-9]+)", "\\2", vers)
+    vers <- packageDescription("mboostDevel")[["Version"]]
 
     packageStartupMessage("This is mboostDevel ", vers, ". ", "See ",
                           sQuote("package?mboostDevel"), " and the NEWS file\n",
