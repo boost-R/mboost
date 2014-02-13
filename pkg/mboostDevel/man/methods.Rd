@@ -86,8 +86,8 @@ mstop(x) <- value
 \method{residuals}{mboost}(object, ...)
 \method{resid}{mboost}(object, ...)
 
-\method{variable.names}{glmboost}(object, ...)
-\method{variable.names}{mboost}(object, ...)
+\method{variable.names}{glmboost}(object, which = NULL, usedonly = FALSE, ...)
+\method{variable.names}{mboost}(object, which = NULL, usedonly = FALSE, ...)
 
 \method{extract}{mboost}(object, what = c("design", "penalty", "lambda", "df",
                          "coefficients", "residuals",
@@ -122,6 +122,8 @@ mstop(x) <- value
                 predictions or coefficients. If \code{which} is given
                 (as an integer vector or characters corresponding
                  to base-learners) a list or matrix is returned.}
+  \item{usedonly}{ logical. Indicating whether all variable names should
+     be returned or only those selected in the boosting algorithm.}
   \item{type}{ the type of prediction required.  The default is on the scale
           of the predictors; the alternative \code{"response"} is on
           the scale of the response variable.  Thus for a
@@ -140,7 +142,7 @@ mstop(x) <- value
                     of the base-learner of the \eqn{j}th boosting
                     iteration (and zero if the base-learner is not
                     selected in this iteration).}
-  \item{off2int}{ logical indicating whether the offset should be
+  \item{off2int}{ logical. Indicating whether the offset should be
                      added to the intercept (if there is any)
                      or if the offset is returned as attribute of
                      the coefficient (default).}

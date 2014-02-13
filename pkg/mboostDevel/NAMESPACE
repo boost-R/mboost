@@ -8,6 +8,7 @@ importFrom(splines, bs, splineDesign)
 importFrom(lattice, levelplot)
 importFrom(nnls, nnls)
 importFrom(quadprog, solve.QP)
+importFrom(utils, packageDescription)
 
 export(glmboost,
        gamboost,

@@ -395,7 +395,9 @@ print.glmboost <- function(x, ...) {
     invisible(x)
 }
 
-variable.names.mboost <- function(object, ...) {
+variable.names.mboost <- function(object, which = NULL, usedonly = FALSE, ...) {
+
+    which <- object$which(which, usedonly = usedonly)
 
     args <- list(...)
     if (length(args) > 0)
@@ -406,10 +408,24 @@ variable.names.mboost <- function(object, ...) {
                   paste(x$get_names(), collapse = ", "))
     ### </FIXME>
     if (is.matrix(ret)) ret <- ret[, , drop = TRUE]
-    ret
+    ret[which]
 }
 
-variable.names.glmboost <- function(object, ...) {
+variable.names.glmboost <- function(object, which = NULL, usedonly = FALSE, ...) {
+
+    if (usedonly) {
+        which <- object$which(usedonly = TRUE)
+        ## if center = TRUE for model fitting intercept is implicitly selected
+        center <- get("center", envir = environment(object$newX))
+        if (center){
+            intercept <- which(object$assign == 0)
+            INTERCEPT <- sum(object$assign == 0) == 1
+            if (INTERCEPT && !intercept %in% which)
+                which <- c(intercept, which)
+        }
+    } else {
+        which <- object$which(which)
+    }
 
     args <- list(...)
     if (length(args) > 0)
@@ -417,7 +433,7 @@ variable.names.glmboost <- function(object, ...) {
 
     ret <- object$baselearner[[1]]$get_names()
     names(ret) <- ret
-    ret
+    ret[which]
 }
 
 
@@ -478,7 +494,7 @@ extract.mboost <- function(object, what = c("design", "penalty", "lambda", "df",
     switch(what,
            "coefficients" = return(coef(object, which = which)),
            "residuals" = return(residuals(object)),
-           "variable.names" = return(variable.names(object)),
+           "variable.names" = return(variable.names(object, which)),
            "bnames" = return(get("bnames", envir = environment(object$update))[which]),
            "offset" = return(object$offset),
            "nuisance" = return(nuisance(object)),
@@ -515,7 +531,7 @@ extract.glmboost <- function(object, what = c("design", "coefficients", "residua
     switch(what,
            "coefficients" = return(coef(object, which = which)),
            "residuals" = return(residuals(object)),
-           "variable.names" = return(variable.names(object)),
+           "variable.names" = return(variable.names(object, which)),
            "bnames" = return(get("bnames", envir = environment(object$update))[which]),
            "offset" = return(object$offset),
            "nuisance" = return(nuisance(object)),

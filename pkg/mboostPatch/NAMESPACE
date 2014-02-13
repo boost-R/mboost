@@ -6,6 +6,7 @@ import(Matrix)
 importFrom(survival, Surv, survfit)
 importFrom(splines, bs, splineDesign)
 importFrom(lattice, levelplot)
+importFrom(utils, packageDescription)
 
 export(glmboost,
        gamboost,
