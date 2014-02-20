@@ -1,20 +1,27 @@
 
 stabsel <- function(object, cutoff, q, PFER,
                     folds = cv(model.weights(object), type = "subsampling",
-                               B = ifelse(error.bound == "MB", 100, 50)),
-                    papply = mclapply, verbose = TRUE, FWER,
-                    error.bound = c("MB", "SS"), ...) {
+                               B = ifelse(sampling.type == "MB", 100, 50)),
+                    assumption = c("unimodal", "r-concave", "none"),
+                    sampling.type = c("SS", "MB"),
+                    papply = mclapply, verbose = TRUE, FWER, ...) {
 
     call <- match.call()
     p <- length(variable.names(object))
     ibase <- 1:p
 
-    error.bound <- match.arg(error.bound)
+    sampling.type <- match.arg(sampling.type)
+    if (sampling.type == "MB")
+        assumption <- "none"
+    else
+        assumption <- match.arg(assumption)
+
     B <- ncol(folds)
 
     pars <- stabsel_parameters(cutoff = cutoff, q = q,
                                PFER = PFER, p = p, B = B,
-                               verbose = verbose, error.bound = error.bound)
+                               verbose = verbose, sampling.type = sampling.type,
+                               assumption = assumption)
     cutoff <- pars$cutoff
     q <- pars$q
     PFER <- pars$PFER
@@ -25,7 +32,7 @@ stabsel <- function(object, cutoff, q, PFER,
         xs[qq > q] <- xs[1]
         xs
     }
-    if (error.bound == "SS") {
+    if (sampling.type == "SS") {
         ## use complementary pairs
         folds <- cbind(folds, model.weights(object) - folds)
     }
@@ -63,18 +70,25 @@ stabsel <- function(object, cutoff, q, PFER,
     if (extends(class(object), "glmboost"))
         rownames(phat) <- variable.names(object)
     ret <- list(phat = phat, selected = which((mm <- apply(phat, 1, max)) >= cutoff),
-                max = mm, cutoff = cutoff, q = q, PFER = PFER, error.bound = error.bound,
+                max = mm, cutoff = cutoff, q = q, PFER = PFER,
+                sampling.type = sampling.type, assumption = assumption,
                 call = call)
     class(ret) <- "stabsel"
     ret
 }
 
 stabsel_parameters <- function(cutoff, q, PFER, p,
-                               B = ifelse(error.bound == "MB", 100, 50),
-                               verbose = FALSE, error.bound = c("MB", "SS"),
-                               FWER) {
+                               B = ifelse(sampling.type == "MB", 100, 50),
+                               assumption = c("unimodal", "r-concave", "none"),
+                               sampling.type = c("SS", "MB"),
+                               verbose = FALSE, FWER) {
 
-    error.bound <- match.arg(error.bound)
+    sampling.type <- match.arg(sampling.type)
+    if (sampling.type == "MB")
+        assumption <- "none"
+    else
+        assumption <- match.arg(assumption)
+
 
     ## only two of the four arguments can be specified
     if ((nmiss <- sum(missing(PFER), missing(cutoff),
@@ -115,12 +129,19 @@ stabsel_parameters <- function(cutoff, q, PFER, p,
     }
 
     if (missing(cutoff)) {
-        if (error.bound == "MB") {
+        if (assumption == "none") {
             cutoff <- min(1, tmp <- (q^2 / (PFER * p) + 1) / 2)
             upperbound <- q^2 / p / (2 * cutoff - 1)
         } else {
-            cutoff <- optimal_cutoff(p, q, PFER, B)
-            upperbound <- tmp <- minD(q, p, cutoff, B) * p
+            if (assumption == "unimodal") {
+                cutoff <- tmp <- optimal_cutoff(p, q, PFER, B,
+                                                assumption = assumption)
+                upperbound <- q^2 / p / um_const(cutoff, B, theta = q/p)
+            } else {
+                cutoff <- tmp <- optimal_cutoff(p, q, PFER, B,
+                                                assumption = assumption)
+                upperbound <- minD(q, p, cutoff, B) * p
+            }
         }
         upperbound <- signif(upperbound, 3)
         if (verbose && tmp > 0.9 && upperbound - PFER > PFER/2) {
@@ -131,12 +152,17 @@ stabsel_parameters <- function(cutoff, q, PFER, p,
     }
 
     if (missing(q)) {
-        if (error.bound == "MB") {
+        if (assumption == "none") {
             q <- floor(sqrt(PFER * (2 * cutoff - 1) * p))
             upperbound <- q^2 / p / (2 * cutoff - 1)
         } else {
-            q <- optimal_q(p, cutoff, PFER, B)
-            upperbound <- minD(q, p, cutoff, B) * p
+            if (assumption == "unimodal") {
+                q <- optimal_q(p, cutoff, PFER, B, assumption = assumption)
+                upperbound <- q^2 / p / um_const(cutoff, B, theta = q/p)
+            } else {
+                q <- optimal_q(p, cutoff, PFER, B, assumption = assumption)
+                upperbound <- minD(q, p, cutoff, B) * p
+            }
         }
         upperbound <- signif(upperbound, 3)
         if (verbose && upperbound - PFER > PFER/2)
@@ -146,10 +172,14 @@ stabsel_parameters <- function(cutoff, q, PFER, p,
     }
 
     if (missing(PFER)) {
-        if (error.bound == "MB") {
+        if (assumption == "none") {
             upperbound <- PFER <- q^2 / p / (2 * cutoff - 1)
         } else {
-            upperbound <- PFER <- minD(q, p, cutoff, B) * p
+            if (assumption == "unimodal") {
+                upperbound <- PFER <- q^2 / p / um_const(cutoff, B, theta = q/p)
+            } else {
+                upperbound <- PFER <- minD(q, p, cutoff, B) * p
+            }
         }
         upperbound <- signif(upperbound, 3)
     }
@@ -158,14 +188,20 @@ stabsel_parameters <- function(cutoff, q, PFER, p,
         warning("Upper bound for PFER larger than the number of base-learners.")
 
     res <- list(cutoff = cutoff, q = q, PFER = upperbound,
-                error.bound = error.bound)
+                sampling.type = sampling.type, assumption = assumption)
     class(res) <- "stabsel_parameters"
     res
 }
 
 print.stabsel <- function(x, decreasing = FALSE, ...) {
 
-    cat("\tStability Selection\n")
+    cat("\tStability Selection")
+    if (x$assumption == "none")
+        cat(" without further assumptions\n")
+    if (x$assumption == "unimodal")
+        cat(" with unimodality assumption\n")
+    if (x$assumption == "r-concave")
+        cat(" with r-concavity assumption\n")
     if (length(x$selected) > 0) {
         cat("\nSelected base-learners:\n")
         print(x$selected)
@@ -175,15 +211,24 @@ print.stabsel <- function(x, decreasing = FALSE, ...) {
     cat("\nSelection probabilities:\n")
     print(sort(x$max[x$max > 0], decreasing = decreasing))
     cat("\n")
-    print.stabsel_parameters(x)
+    print.stabsel_parameters(x, heading = FALSE)
     cat("\n")
     invisible(x)
 }
 
-print.stabsel_parameters <- function(x, ...) {
+print.stabsel_parameters <- function(x, heading = TRUE, ...) {
+    if (heading) {
+        cat("Stability Selection")
+        if (x$assumption == "none")
+            cat(" without further assumptions\n")
+        if (x$assumption == "unimodal")
+            cat(" with unimodality assumption\n")
+        if (x$assumption == "r-concave")
+            cat(" with r-concavity assumption\n")
+    }
     cat("Cutoff: ", x$cutoff, "; ", sep = "")
     cat("q: ", x$q, "; ", sep = "")
-    if (x$error.bound == "MB")
+    if (x$sampling.type == "MB")
         cat("PFER: ", x$PFER, "\n")
     else
         cat("PFER(*): ", x$PFER,
@@ -290,32 +335,59 @@ minD <- function(q, p, pi, B, r = c(-1/2, -1/4)) {
     min(c(1, D(q^2 / p^2, which - B, B, r[1]), D(q / p, which , 2*B, r[2])))
 }
 
-## function to find optimal cutoff in stabsel (when error.bound = "SS")
-optimal_cutoff <- function(p, q, PFER, B) {
-    ## cutoff values can only be multiples of 1/(2B)
-    cutoff <- (2*B):1/(2*B)
-    cutoff <- cutoff[cutoff >= 0.5]
-    for (i in 1:length(cutoff)) {
-        if (minD(q, p, cutoff[i], B) * p > PFER) {
-            if (i == 1)
-                cutoff <- cutoff[i]
-            else
-                cutoff <- cutoff[i - 1]
-            break
+## function to find optimal cutoff in stabsel (when sampling.type = "SS")
+optimal_cutoff <- function(p, q, PFER, B, assumption = "unimodal") {
+    if (assumption == "unimodal") {
+        ## cutoff values can only be multiples of 1/(2B)
+        cutoffgrid <- 1/2 + (2:B)/(2*B)
+        c_min <- min(0.5 + (q/p)^2, 0.5 + 1/(2*B) + 0.75 * (q/p)^2)
+        cutoffgrid <- cutoffgrid[cutoffgrid > c_min]
+        upperbound <- rep(NA, length(cutoffgrid))
+        for (i in 1:length(cutoffgrid))
+            upperbound[i] <- q^2 / p / um_const(cutoffgrid[i], B, theta = q/p)
+        cutoff <- cutoffgrid[upperbound < PFER][1]
+        return(cutoff)
+    } else {
+        ## cutoff values can only be multiples of 1/(2B)
+        cutoff <- (2*B):1/(2*B)
+        cutoff <- cutoff[cutoff >= 0.5]
+        for (i in 1:length(cutoff)) {
+            if (minD(q, p, cutoff[i], B) * p > PFER) {
+                if (i == 1)
+                    cutoff <- cutoff[i]
+                else
+                    cutoff <- cutoff[i - 1]
+                break
+            }
         }
+        return(tail(cutoff, 1))
     }
-    cutoff[length(cutoff)]
 }
 
-## function to find optimal q in stabsel (when error.bound = "SS")
-optimal_q <- function(p, cutoff, PFER, B) {
-    for (q in 1:maxQ(p, B)) {
-        if (minD(q, p, cutoff, B) * p > PFER) {
-            q <- q - 1
-            break
+## function to find optimal q in stabsel (when sampling.type = "SS")
+optimal_q <- function(p, cutoff, PFER, B, assumption = "unimodal") {
+    if (assumption == "unimodal") {
+        if (cutoff <= 0.75) {
+            upper_q <- max(p * sqrt(cutoff - 0.5),
+                           p * sqrt(4/3 * (cutoff - 0.5 - 1/(2*B))))
+            ## q must be an integer < upper_q
+            upper_q <- ceiling(upper_q - 1)
+        } else {
+            upper_q <- p
         }
+        q <- uniroot(function(q)
+                     q^2 / p / um_const(cutoff, B, theta = q/p) - PFER,
+                     lower = 1, upper = upper_q)$root
+        return(floor(q))
+    } else {
+        for (q in 1:maxQ(p, B)) {
+            if (minD(q, p, cutoff, B) * p > PFER) {
+                q <- q - 1
+                break
+            }
+        }
+        return(max(1, q))
     }
-    max(1, q)
 }
 
 ## obtain maximal value possible for q
@@ -329,4 +401,17 @@ maxQ <- function(p, B) {
 
     res <- tmpfct(1:p)
     length(res[res < 0])
+}
+
+## obtain constant for unimodal bound
+um_const <- function(cutoff, B, theta) {
+    if (cutoff <= 3/4) {
+        if (cutoff < 1/2 + min(theta^2, 1 / (2*B) + 3/4 * theta^2))
+            stop ("cutoff out of bounds")
+        return( 2 * (2 * cutoff - 1 - 1/(2*B)) )
+    } else {
+        if (cutoff > 1)
+            stop ("cutoff out of bounds")
+        return( (1 + 1/B)/(4 * (1 - cutoff + 1 / (2*B))) )
+    }
 }

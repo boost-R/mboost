@@ -424,7 +424,7 @@ variable.names.glmboost <- function(object, which = NULL, usedonly = FALSE, ...)
                 which <- c(intercept, which)
         }
     } else {
-        which <- object$which(which)
+        which <- object$which(which, usedonly = usedonly)
     }
 
     args <- list(...)

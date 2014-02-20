@@ -120,39 +120,52 @@ cutoff <- 0.6
 PFER <- 0.2
 B <- 50
 p <- 200
-(q <- optimal_q(p = p, cutoff = cutoff, PFER = PFER, B = B))
+(q <- optimal_q(p = p, cutoff = cutoff, PFER = PFER, B = B,
+                assumption = "r-concave"))
 # check:
-round(minD(q, p, cutoff, B) * p, 3)
-round(minD(q + 1, p, cutoff, B) * p, 3)
+(a <- round(minD(q, p, cutoff, B) * p, 3))
+(b <- round(minD(q + 1, p, cutoff, B) * p, 3))
+stopifnot(a < PFER && b > PFER)
 
+## same for unimodal bound
+(q <- optimal_q(p = p, cutoff = cutoff, PFER = PFER, B = B,
+                assumption = "unimodal"))
 
 ### computation of cutoff from other values
 PFER <- 0.2
 B <- 50
 p <- 200
 q <- 7
-(cutoff <- optimal_cutoff(p = p, q = q, PFER = PFER, B = B))
+(cutoff <- optimal_cutoff(p = p, q = q, PFER = PFER, B = B,
+                          assumption = "r-concave"))
 # check:
-round(minD(q, p, cutoff, B) * p, 3)
-round(minD(q, p, cutoff - 1e-2, B) * p, 3)
+(a <- round(minD(q, p, cutoff, B) * p, 3))
+(b <- round(minD(q, p, cutoff - 1e-2, B) * p, 3))
+stopifnot(a < PFER && b > PFER)
 
+## same for unimodal bound
+(cutoff <- optimal_cutoff(p = p, q = q, PFER = PFER, B = B,
+                          assumption = "unimodal"))
 
 ### check stabsel interface
 data("bodyfat", package = "TH.data")
 mod <- glmboost(DEXfat ~ ., data = bodyfat)
-(sbody <- stabsel(mod, q = 3, PFER = 0.2))
+(sbody <- stabsel(mod, q = 3, PFER = 0.2, sampling.type = "MB"))
 dim(sbody$phat)
-(sbody <- stabsel(mod, q = 3, PFER = 0.2, error.bound = "SS"))
+(sbody <- stabsel(mod, q = 3, PFER = 0.2, sampling.type = "SS"))
 dim(sbody$phat)
 
 
 ## check stabsel_parameters and (theoretical) error control
 cutoff <- 0.6
 for (i in 1:10) {
-    print(stabsel_parameters(cutoff = cutoff, q = i, p = 100, error.bound = "MB"))
+    print(stabsel_parameters(cutoff = cutoff, q = i, p = 100, sampling.type = "MB"))
 }
 for (i in 1:10) {
-    print(stabsel_parameters(cutoff = cutoff, q = i, p = 100, error.bound = "SS"))
+    print(stabsel_parameters(cutoff = cutoff, q = i, p = 100, sampling.type = "SS",
+                             assumption = "unimodal"))
+    print(stabsel_parameters(cutoff = cutoff, q = i, p = 100, sampling.type = "SS",
+                             assumption = "r-concave"))
 }
 
 ## check if missing values are determined correctly (especially at the extreme values)
@@ -161,30 +174,44 @@ B <- 50
 cutoff <- 0.6
 # low PFER
 PFER <- 0.001
-(res <- stabsel_parameters(p = p, cutoff = cutoff, PFER = PFER, B = B, error.bound = "SS"))
-stabsel_parameters(p = p, cutoff = cutoff, q = res$q, B = B, error.bound = "SS")
+(res <- stabsel_parameters(p = p, cutoff = cutoff, PFER = PFER, B = B,
+                           sampling.type = "SS", assumption = "r-concave"))
+stabsel_parameters(p = p, cutoff = cutoff, q = res$q, B = B,
+                   sampling.type = "SS", assumption = "r-concave")
 # high PFER
 PFER <- 50
-(res <- stabsel_parameters(p = p, cutoff = cutoff, PFER = PFER, B = B, error.bound = "SS"))
-stabsel_parameters(p = p, cutoff = cutoff, q = res$q, B = B, error.bound = "SS")
+(res <- stabsel_parameters(p = p, cutoff = cutoff, PFER = PFER, B = B,
+                           sampling.type = "SS", assumption = "r-concave"))
+stabsel_parameters(p = p, cutoff = cutoff, q = res$q, B = B,
+                   sampling.type = "SS", assumption = "r-concave")
 # medium PFER
 PFER <- 1
-(res <- stabsel_parameters(p = p, cutoff = cutoff, PFER = PFER, B = B, error.bound = "SS"))
-stabsel_parameters(p = p, cutoff = cutoff, q = res$q, B = B, error.bound = "SS")
-stabsel_parameters(p = p, cutoff = cutoff, q = res$q + 1, B = B, error.bound = "SS")
+(res <- stabsel_parameters(p = p, cutoff = cutoff, PFER = PFER, B = B,
+                           sampling.type = "SS", assumption = "r-concave"))
+stabsel_parameters(p = p, cutoff = cutoff, q = res$q, B = B,
+                   sampling.type = "SS", assumption = "r-concave")
+stabsel_parameters(p = p, cutoff = cutoff, q = res$q + 1, B = B,
+                   sampling.type = "SS", assumption = "r-concave")
 
 
 q <- 10
 # high PFER
 PFER <- 5
-(res <- stabsel_parameters(p = p, q = q, PFER = PFER, B = B, error.bound = "SS"))
-stabsel_parameters(p = p, cutoff = res$cutoff, q = q, B = B, error.bound = "SS")
+(res <- stabsel_parameters(p = p, q = q, PFER = PFER, B = B,
+                           sampling.type = "SS", assumption = "r-concave"))
+stabsel_parameters(p = p, cutoff = res$cutoff, q = q, B = B,
+                   sampling.type = "SS", assumption = "r-concave")
 # low PFER
 PFER <- 0.001
-(res <- stabsel_parameters(p = p, q = q, PFER = PFER, B = B, error.bound = "SS"))
-stabsel_parameters(p = p, cutoff = res$cutoff, q = q, B = B, error.bound = "SS")
+(res <- stabsel_parameters(p = p, q = q, PFER = PFER, B = B,
+                           sampling.type = "SS", assumption = "r-concave"))
+stabsel_parameters(p = p, cutoff = res$cutoff, q = q, B = B,
+                   sampling.type = "SS", assumption = "r-concave")
 # medium PFER
 PFER <- 1
-(res <- stabsel_parameters(p = p, q = q, PFER = PFER, B = B, error.bound = "SS"))
-stabsel_parameters(p = p, cutoff = res$cutoff, q = q, B = B, error.bound = "SS")
-stabsel_parameters(p = p, cutoff = res$cutoff - 0.01, q = q, B = B, error.bound = "SS")
+(res <- stabsel_parameters(p = p, q = q, PFER = PFER, B = B,
+                           sampling.type = "SS", assumption = "r-concave"))
+stabsel_parameters(p = p, cutoff = res$cutoff, q = q, B = B,
+                   sampling.type = "SS", assumption = "r-concave")
+stabsel_parameters(p = p, cutoff = res$cutoff - 0.01, q = q, B = B,
+                   sampling.type = "SS", assumption = "r-concave")

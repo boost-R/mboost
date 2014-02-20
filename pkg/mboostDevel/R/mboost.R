@@ -200,7 +200,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
 
     ### figure out which baselearners are requested
     thiswhich <- function(which = NULL, usedonly = FALSE) {
-        if (is.null(which)) which <- 1:max(RET$xselect())
+        if (is.null(which)) which <- 1:length(bnames)
         if (is.character(which)) {
             i <- sapply(which, function(w) {
                 wi <- grep(w, bnames, fixed = TRUE)
