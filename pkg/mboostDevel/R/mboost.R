@@ -1,14 +1,15 @@
 
 mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
-                       offset = NULL, family = Gaussian(), control =
-                       boost_control(), oobweights = as.numeric(weights == 0)) {
+                       offset = NULL, family = Gaussian(),
+                       control = boost_control(),
+                       oobweights = as.numeric(weights == 0)) {
 
     ### hyper parameters
     mstop <- 0
     risk <- control$risk
     nu <- control$nu
     trace <- control$trace
-    stopintern <- control$trace
+    stopintern <- control$stopintern
     if (is.numeric(stopintern)) {
         stopeps <- stopintern
         stopintern <- TRUE
