@@ -1,6 +1,8 @@
 \name{stabsel}
 \alias{stabsel}
 \alias{stabsel_parameters}
+\alias{stabsel_parameters.default}
+\alias{stabsel_parameters.mboost}
 \title{
     Stability Selection
 }
@@ -13,11 +15,11 @@ stabsel(object, cutoff, q, PFER,
                    B = ifelse(sampling.type == "MB", 100, 50)),
         assumption = c("unimodal", "r-concave", "none"),
         sampling.type = c("SS", "MB"),
-        papply = mclapply, verbose = TRUE, FWER, ...)
+        papply = mclapply, verbose = TRUE, FWER, eval = TRUE, ...)
 
 ## function to compute missing parameter from the other two parameters
 ## (internally used within stabsel)
-stabsel_parameters(cutoff, q, PFER, p,
+stabsel_parameters(p, cutoff, q, PFER,
                    B = ifelse(sampling.type == "MB", 100, 50),
                    assumption = c("unimodal", "r-concave", "none"),
                    sampling.type = c("SS", "MB"),
@@ -56,9 +58,11 @@ stabsel_parameters(cutoff, q, PFER, p,
     \code{warnings} should be issued. }
   \item{FWER}{ deprecated. Only for compatibility with older versions,
     use PFER instead.}
-  \item{\dots}{additional arguments to \code{\link{cvrisk}} and
-    further arguments to parallel apply methods such as
-    \code{\link{mclapply}}.}
+  \item{eval}{ logical. Determines whether stability selection is
+    evaluated (\code{eval = TRUE}; default) or if only the parameter
+    combination is returned.}
+  \item{\dots}{additional arguments to \code{\link{cvrisk}} and further
+    arguments to parallel apply methods such as \code{\link{mclapply}}.}
 }
 \details{
 
@@ -116,6 +120,8 @@ stabsel_parameters(cutoff, q, PFER, p,
   ##   p = ncol(bodyfat) - 1 (= Outcome) + 1 ( = Intercept)
   stabsel_parameters(q = 3, PFER = 1, p = ncol(bodyfat) - 1 + 1,
                      sampling.type = "MB")
+  ## the same:
+  stabsel(mod, q = 3, PFER = 1, sampling.type = "MB", eval = FALSE)
 
   ## now run stability selection; to make results reproducible
   set.seed(1234)

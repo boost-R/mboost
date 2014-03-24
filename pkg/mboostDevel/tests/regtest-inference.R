@@ -155,6 +155,9 @@ dim(sbody$phat)
 (sbody <- stabsel(mod, q = 3, PFER = 0.2, sampling.type = "SS"))
 dim(sbody$phat)
 
+## check interface of stabsel_parameters
+stabsel(mod, q = 3, PFER = 0.2, sampling.type = "SS", eval = FALSE)
+
 
 ## check stabsel_parameters and (theoretical) error control
 cutoff <- 0.6

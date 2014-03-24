@@ -4,7 +4,7 @@ stabsel <- function(object, cutoff, q, PFER,
                                B = ifelse(sampling.type == "MB", 100, 50)),
                     assumption = c("unimodal", "r-concave", "none"),
                     sampling.type = c("SS", "MB"),
-                    papply = mclapply, verbose = TRUE, FWER, ...) {
+                    papply = mclapply, verbose = TRUE, FWER, eval = TRUE, ...) {
 
     call <- match.call()
     p <- length(variable.names(object))
@@ -18,10 +18,14 @@ stabsel <- function(object, cutoff, q, PFER,
 
     B <- ncol(folds)
 
-    pars <- stabsel_parameters(cutoff = cutoff, q = q,
-                               PFER = PFER, p = p, B = B,
+    pars <- stabsel_parameters(p = p, cutoff = cutoff, q = q,
+                               PFER = PFER, B = B,
                                verbose = verbose, sampling.type = sampling.type,
                                assumption = assumption)
+    ## return parameter combination only if eval == FALSE
+    if (!eval)
+        return(pars)
+
     cutoff <- pars$cutoff
     q <- pars$q
     PFER <- pars$PFER
@@ -77,7 +81,7 @@ stabsel <- function(object, cutoff, q, PFER,
     ret
 }
 
-stabsel_parameters <- function(cutoff, q, PFER, p,
+stabsel_parameters <- function(p, cutoff, q, PFER,
                                B = ifelse(sampling.type == "MB", 100, 50),
                                assumption = c("unimodal", "r-concave", "none"),
                                sampling.type = c("SS", "MB"),
