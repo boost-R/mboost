@@ -20,7 +20,7 @@ export(glmboost,
        Huber, AdaExp, Gehan, CoxPH, Hurdle, Multinomial, FP, IPCweights,
        cvrisk, cv, bbs, stabsel, stabsel_parameters,
        bols, bspatial, brandom, btree, bss, bns, brad, bmono, bmrf, buser, survFit, selected,
-       nuisance, "%+%", "%X%", "%O%", extract, "mstop<-")
+       nuisance, "%+%", "%X%", "%O%", extract, risk, "mstop<-")
        ###, basesel, fitsel)
 exportClasses("boost_family")
 exportMethods("show")
@@ -81,5 +81,6 @@ S3method(extract, blg)
 S3method(extract, bl_lin)
 S3method(extract, bl_tree)
 S3method(residuals, mboost)
+S3method(risk, mboost)
 
 useDynLib(mboostDevel)

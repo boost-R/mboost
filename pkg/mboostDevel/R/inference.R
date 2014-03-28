@@ -240,18 +240,55 @@ print.stabsel_parameters <- function(x, heading = TRUE, ...) {
     invisible(x)
 }
 
-plot.stabsel <- function(x, main = deparse(x$call), col = NULL, ...) {
+plot.stabsel <- function(x, main = deparse(x$call), type = c("paths", "maxsel"),
+                         col = NULL, ymargin = 10, np = sum(x$max > 0),
+                         labels = NULL, ...) {
 
-    h <- x$phat
-    h <- h[rowSums(h) > 0, , drop = FALSE]
+    type <- match.arg(type)
+
+
     if (is.null(col))
-        col <- hcl(h = 40, l = 50, c = h[,ncol(h)] / max(h) * 490)
-    matplot(t(h), type = "l", lty = 1, xlab = "Number of boosting iterations",
-            ylab = "Selection Probability", main = main, col = col, ylim = c(0, 1), ...)
-    abline(h = x$cutoff, lty = 1, col = "lightgray")
-    axis(4, at = x$phat[rowSums(x$phat) > 0, ncol(x$phat)],
-         labels = rownames(x$phat)[rowSums(x$phat) > 0], las = 1)
+        col <- hcl(h = 40, l = 50, c = x$max / max(x$max) * 490)
+
+    if (type == "paths") {
+        ## if par(mar) not set by user ahead of plotting
+        if (all(par()[["mar"]] == c(5, 4, 4, 2) + 0.1))
+            ..old.par <- par(mar = c(5, 4, 4, ymargin) + 0.1)
+        h <- x$phat
+        h <- h[rowSums(h) > 0, , drop = FALSE]
+        matplot(t(h), type = "l", lty = 1,
+                xlab = "Number of boosting iterations",
+                ylab = "Selection probability",
+                main = main, col = col[x$max > 0], ylim = c(0, 1), ...)
+        abline(h = x$cutoff, lty = 1, col = "lightgray")
+        if (is.null(labels))
+            rownames(x$phat)
+        axis(4, at = x$phat[rowSums(x$phat) > 0, ncol(x$phat)],
+             labels = labels[rowSums(x$phat) > 0], las = 1)
+    } else {
+        ## if par(mar) not set by user ahead of plotting
+        if (all(par()[["mar"]] == c(5, 4, 4, 2) + 0.1))
+            ..old.par <- par(mar = c(5, ymargin, 4, 2) + 0.1)
+        if (np > length(x$max))
+            stop(sQuote("np"), "is set too large")
+        inc_freq <- x$max  ## inclusion frequency
+        plot(tail(sort(inc_freq), np), 1:np,
+             type = "n", yaxt = "n", xlim = c(0, 1),
+             ylab = "", xlab = expression(hat(pi)),
+             main = main, ...)
+        abline(h = 1:np, lty = "dotted", col = "grey")
+        points(tail(sort(inc_freq), np), 1:np, pch = 19,
+               col = col[tail(order(inc_freq), np)])
+        if (is.null(labels))
+            labels <- names(x$max)
+        axis(2, at = 1:np, labels[tail(order(inc_freq), np)], las = 2)
+        ## add cutoff
+        abline(v = x$cutoff, col = "grey")
+    }
+    if (exists("..old.par"))
+        par(..old.par) # reset plotting settings
 }
+
 
 
 fitsel <- function(object, newdata = NULL, which = NULL, ...) {

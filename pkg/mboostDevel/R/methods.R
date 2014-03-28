@@ -611,3 +611,10 @@ residuals.mboost <- function(object, ...){
     stop(sQuote("residuals()"), " only implemented for ",
          sQuote("family = Gaussian()"))
 }
+
+risk <- function(object, ...)
+    UseMethod("risk")
+
+risk.mboost <- function(object, ...) {
+    object$risk()
+}

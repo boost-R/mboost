@@ -3,6 +3,7 @@
 \alias{stabsel_parameters}
 \alias{stabsel_parameters.default}
 \alias{stabsel_parameters.mboost}
+\alias{plot.stabsel}
 \title{
     Stability Selection
 }
@@ -24,6 +25,10 @@ stabsel_parameters(p, cutoff, q, PFER,
                    assumption = c("unimodal", "r-concave", "none"),
                    sampling.type = c("SS", "MB"),
                    verbose = FALSE, FWER)
+
+\method{plot}{stabsel}(x, main = deparse(x$call), type = c("paths", "maxsel"),
+     col = NULL, ymargin = 10, np = sum(x$max > 0),
+     labels = NULL, ...)
 }
 \arguments{
   \item{object}{an \code{mboost} object.}
@@ -61,8 +66,28 @@ stabsel_parameters(p, cutoff, q, PFER,
   \item{eval}{ logical. Determines whether stability selection is
     evaluated (\code{eval = TRUE}; default) or if only the parameter
     combination is returned.}
+  \item{x}{object of class \code{stabsel}.}
+  \item{main}{main title for the plot.}
+  \item{type}{plot type; either stability paths (\code{"paths"}) or a
+    plot of the maximum selection frequency (\code{"maxsel"}).}
+  \item{col}{a vector of colors; Typically, one can specify a single
+     color or one color for each variable. Per default, colors depend on
+     the maximal selection frequency of the variable and range from grey
+     to red.}
+  \item{ymargin}{(temporarily) specifies the y margin of of the plot in
+    lines (see argument \code{"mar"} of function \code{\link{par}}).
+    This only affects the right margin for \code{type = "paths"} and
+    the left margin for \code{type = "maxsel"}. Explicit user specified
+    margins are kept and are not overwritten.}
+  \item{np}{number of variables to plot for the maximum selection
+    frequency plot (\code{type = "maxsel"}); the first \code{np}
+    variables with highest selection frequency are plotted.}
+  \item{labels}{variable labels for the plot; one label per base-learner
+    must be specified. Per default, names of base-learners are used.}
   \item{\dots}{additional arguments to \code{\link{cvrisk}} and further
-    arguments to parallel apply methods such as \code{\link{mclapply}}.}
+    arguments to parallel apply methods such as \code{\link{mclapply}}
+    or additional arguments to plot functions.}
+
 }
 \details{
 
@@ -130,5 +155,6 @@ stabsel_parameters(p, cutoff, q, PFER,
   plot(sbody)
   par(opar)
 
+  plot(sbody, type = "maxsel", ymargin = 6)
 }
 \keyword{nonparametric}

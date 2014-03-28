@@ -28,6 +28,9 @@
 \alias{variable.names.glmboost}
 \alias{variable.names.mboost}
 
+\alias{risk}
+\alias{risk.mboost}
+
 \alias{extract}
 \alias{extract.mboost}
 \alias{extract.gamboost}
@@ -106,6 +109,8 @@ mstop(x) <- value
 \method{hatvalues}{glmboost}(model, ...)
 
 \method{selected}{mboost}(object, ...)
+
+\method{risk}{mboost}(object, ...)
 
 \method{nuisance}{mboost}(object)
 }
@@ -269,7 +274,10 @@ mstop(x) <- value
   extracted using \code{selected()}. The \code{nuisance()} method
   extracts nuisance parameters from the fit that are handled internally
   by the corresponding family object, see
-  \code{"\linkS4class{boost_family}"}.
+  \code{"\linkS4class{boost_family}"}. The \code{risk()} function can be
+  used to extract the computed risk (either the \code{"inbag"} risk or
+  the \code{"oobag"} risk, depending on the control argument; see
+  \code{\link{boost_control}}).
 
   For (generalized) linear and additive models, the \code{AIC} function
   can be used to compute both the classical AIC (only available for
