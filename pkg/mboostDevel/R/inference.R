@@ -246,7 +246,6 @@ plot.stabsel <- function(x, main = deparse(x$call), type = c("paths", "maxsel"),
 
     type <- match.arg(type)
 
-
     if (is.null(col))
         col <- hcl(h = 40, l = 50, c = x$max / max(x$max) * 490)
 
@@ -262,7 +261,7 @@ plot.stabsel <- function(x, main = deparse(x$call), type = c("paths", "maxsel"),
                 main = main, col = col[x$max > 0], ylim = c(0, 1), ...)
         abline(h = x$cutoff, lty = 1, col = "lightgray")
         if (is.null(labels))
-            rownames(x$phat)
+            labels <- rownames(x$phat)
         axis(4, at = x$phat[rowSums(x$phat) > 0, ncol(x$phat)],
              labels = labels[rowSums(x$phat) > 0], las = 1)
     } else {
