@@ -495,7 +495,7 @@ of 71 German women are available with the data set \R{bodyfat} \citep{garcia}
 included in \textbf{mboost}. We first load the package and the data set.
 
 <<setup, echo = true, results = hide>>=
-library("mboostDevel")    ## load package
+library("mboostDevel")                         ## load package
 data("bodyfat", package = "TH.data")      ## load data
 @
 

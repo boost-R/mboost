@@ -789,7 +789,7 @@ plot(mod4)
 
 \donttest{  ## the old-fashioned way, a waste of space and time
   x <- expand.grid(x1, x2)
-  modx <- mboost(vol ~ bbs(Var2, df = 3, knots = 10)\%X\%
+  modx <- mboost(vol ~ bbs(Var2, df = 3, knots = 10) \%X\%
                        bbs(Var1, df = 3, knots = 10), data = x,
                        control = boost_control(nu = 0.25))
   modx[250]

@@ -123,7 +123,6 @@ bhatmat <- function(n, H, xselect, fitm, fW) {
 }
 
 nnls1D <- function(XtX, X, y) {
-
     my <- switch(attr(X, "Ts_constraint"),  "increasing" = {
         ### first column is intercept
         stopifnot(max(abs(X[,1,drop = TRUE] - 1)) < sqrt(.Machine$double.eps))

@@ -123,7 +123,6 @@ stabsel_parameters(p, cutoff, q, PFER,
 }
 \references{
 
-
   N. Meinshausen and P. Buehlmann (2010), Stability selection.
   \emph{Journal of the Royal Statistical Society, Series B},
   \bold{72}, 417--473.
