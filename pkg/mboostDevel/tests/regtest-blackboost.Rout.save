@@ -1,7 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.1.0 (2014-04-10) -- "Spring Dance"
+Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -22,34 +21,13 @@ Loading required package: mboostDevel
 Loading required package: parallel
 This is mboostDevel 2.3-0. See 'package?mboostDevel' and the NEWS file
 for a complete list of changes.
-Note: The default for the computation of the degrees of freedom has changed.
-      For details see section 'Global Options' of '?bols'.
-> library("party")
-Loading required package: survival
-Loading required package: splines
-Loading required package: grid
-Loading required package: modeltools
-Loading required package: stats4
-Loading required package: coin
-Loading required package: mvtnorm
-Loading required package: zoo
 
-Attaching package: 'zoo'
-
-The following object(s) are masked from 'package:base':
-
-    as.Date, as.Date.numeric
-
-Loading required package: sandwich
-Loading required package: strucchange
-Loading required package: vcd
-Loading required package: MASS
-Loading required package: colorspace
-> 
-> set.seed(290875)
-> 
-> tst <- try(data("BostonHousing", package = "mlbench"))
-> if (!inherits(tst, "try-error")) {
+> if (require("party")) {
++ 
++ set.seed(290875)
++ 
++ tst <- try(data("BostonHousing", package = "mlbench"))
++ if (!inherits(tst, "try-error")) {
 + 
 +     system.time(a <- blackboost(medv ~ ., data = BostonHousing,
 +         tree_controls = ctree_control(teststat = "max",
@@ -66,7 +44,7 @@ Loading required package: colorspace
 + 
 +     ### attach `gbm', quietly
 +     sink("tmpfile")
-+     require("gbm")
++     if (require("gbm")) cat()
 +     sink()
 +     file.remove("tmpfile")
 + 
@@ -83,47 +61,95 @@ Loading required package: colorspace
 +     stopifnot(ae < be)
 +     }
 + }
++ 
++ ### check different interfaces
++ x <- as.matrix(BostonHousing[,colnames(BostonHousing) != "medv"])
++ y <- BostonHousing$medv
++ p2 <- predict(blackboost(medv ~ ., data = BostonHousing, family = Laplace()),
++               newdata = BostonHousing)
++ 
++ ## Cox model
++ library("survival")
++ 
++ fit2 <- blackboost(Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps,
++     data = ovarian, family = CoxPH(), control = boost_control(mstop = 1000))
++ 
++ A2 <- survFit(fit2)
++ print(A2)
++ 
++ newdata <- ovarian[c(1,3,12),]
++ A2 <- survFit(fit2, newdata = newdata)
++ print(A2)
++ 
++ ### predictions:
++ set.seed(1907)
++ x1 <- rnorm(100)
++ x2 <- rnorm(100)
++ x3 <- rnorm(100)
++ y <- rnorm(100, mean = 3 * x1, sd = 2)
++ DF <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
++ 
++ amod <- blackboost(y ~ -1 + x1 + x2, data = DF)
++ agg <- c("none", "sum", "cumsum")
++ whi <- list(NULL, 1)
++ for (i in 1:2){
++     pred <- vector("list", length=3)
++     for (j in 1:3){
++         pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
++     }
++     if (i == 1){
++         stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
++         if ((pred[[2]] - rowSums(pred[[1]]))[1] - amod$offset < sqrt(.Machine$double.eps))
++             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
++         stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - amod$offset))   < sqrt(.Machine$double.eps))
++     } else {
++         stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
++         stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
++     }
++ }
++ 
++ stopifnot(all(predict(amod, which=1) + amod$offset  - predict(amod) < sqrt(.Machine$double.eps)))
++ 
++ 
++ # check type argument
++ set.seed(1907)
++ x1 <- rnorm(100)
++ p <- 1/(1 + exp(- 3 * x1))
++ y <- as.factor(runif(100) < p)
++ DF <- data.frame(y = y, x1 = x1)
++ 
++ mod <- blackboost(y ~ x1, family = Binomial(),
++                   data = DF,  control=boost_control(mstop=5000))
++ 
++ pr <- predict(mod)
++ pr <- predict(mod, type="class")
++ foo <- table(pr, y)
++ stopifnot(foo[1,2] + foo[2,1] == 0)
++ pr <- predict(mod, type="response")
++ # <FIXME> How do we check "correctness" of results?</FIXME>
++ 
++ }
+Loading required package: party
+Loading required package: grid
+Loading required package: zoo
+
+Attaching package: 'zoo'
+
+The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric
+
+Loading required package: sandwich
+Loading required package: strucchange
+Loading required package: modeltools
+Loading required package: stats4
 [1] 2.367443
 Loading required package: gbm
+Loading required package: survival
+Loading required package: splines
 Loading required package: lattice
-Loaded gbm 1.6.3.2
-
-Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-     1       74.4121            -nan     0.1000      -nan
-     2       65.6474            -nan     0.1000      -nan
-     3       58.7034            -nan     0.1000      -nan
-     4       52.6088            -nan     0.1000      -nan
-     5       47.5788            -nan     0.1000      -nan
-     6       43.1559            -nan     0.1000      -nan
-     7       39.3997            -nan     0.1000      -nan
-     8       35.9511            -nan     0.1000      -nan
-     9       33.1632            -nan     0.1000      -nan
-    10       30.6850            -nan     0.1000      -nan
-   100        6.8694            -nan     0.1000      -nan
-   200        5.0890            -nan     0.1000      -nan
-   300        3.9605            -nan     0.1000      -nan
-   400        3.2681            -nan     0.1000      -nan
-   500        2.7537            -nan     0.1000      -nan
-
+Loaded gbm 2.1
 [1] 2.753747
-> 
-> ### check different interfaces
-> x <- as.matrix(BostonHousing[,colnames(BostonHousing) != "medv"])
-> y <- BostonHousing$medv
-> p2 <- predict(blackboost(medv ~ ., data = BostonHousing, family = Laplace()),
-+               newdata = BostonHousing)
-> 
-> ## Cox model
-> library("survival")
-> 
-> fit2 <- blackboost(Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps,
-+     data = ovarian, family = CoxPH(), control = boost_control(mstop = 1000))
-Warning message:
-In optimize(risk, interval = c(0, max(y[, 1], na.rm = TRUE)), y = y,  :
-  NA/Inf replaced by maximum positive value
-> 
-> A2 <- survFit(fit2)
-> A2
 $surv
            [,1]
  [1,] 0.9841918
@@ -148,10 +174,6 @@ $n.event
 
 attr(,"class")
 [1] "survFit"
-> 
-> newdata <- ovarian[c(1,3,12),]
-> A2 <- survFit(fit2, newdata = newdata)
-> A2
 $surv
                 1           3        12
  [1,] 0.892791971 0.890891580 0.9963054
@@ -176,56 +198,9 @@ $n.event
 
 attr(,"class")
 [1] "survFit"
-> 
-> ### predictions:
-> set.seed(1907)
-> x1 <- rnorm(100)
-> x2 <- rnorm(100)
-> x3 <- rnorm(100)
-> y <- rnorm(100, mean = 3 * x1, sd = 2)
-> DF <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
-> 
-> amod <- blackboost(y ~ -1 + x1 + x2, data = DF)
-> agg <- c("none", "sum", "cumsum")
-> whi <- list(NULL, 1)
-> for (i in 1:2){
-+     pred <- vector("list", length=3)
-+     for (j in 1:3){
-+         pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
-+     }
-+     if (i == 1){
-+         stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
-+         if ((pred[[2]] - rowSums(pred[[1]]))[1] - amod$offset < sqrt(.Machine$double.eps))
-+             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
-+         stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - amod$offset))   < sqrt(.Machine$double.eps))
-+     } else {
-+         stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
-+         stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
-+     }
-+ }
 Warning message:
 'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
 > 
-> stopifnot(all(predict(amod, which=1) + amod$offset  - predict(amod) < sqrt(.Machine$double.eps)))
-> 
-> 
-> # check type argument
-> set.seed(1907)
-> x1 <- rnorm(100)
-> p <- 1/(1 + exp(- 3 * x1))
-> y <- as.factor(runif(100) < p)
-> DF <- data.frame(y = y, x1 = x1)
-> 
-> mod <- blackboost(y ~ x1, family = Binomial(),
-+                   data = DF,  control=boost_control(mstop=5000))
-> 
-> pr <- predict(mod)
-> pr <- predict(mod, type="class")
-> foo <- table(pr, y)
-> stopifnot(foo[1,2] + foo[2,1] == 0)
-> pr <- predict(mod, type="response")
-> # <FIXME> How do we check "correctness" of results?</FIXME>
-> 
 > proc.time()
    user  system elapsed 
- 10.956   0.116  11.216 
+  8.812   0.192   9.230 

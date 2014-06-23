@@ -26,7 +26,7 @@ Note: The default for the computation of the degrees of freedom has changed.
 
 > library("mboostDevel")
 
-> data("bodyfat")
+> data("bodyfat", package = "TH.data")
 
 > lm1 <- lm(DEXfat ~ hipcirc + kneebreadth + anthro3a, 
 +     data = bodyfat)
@@ -647,5 +647,5 @@ pdf
 
  *** Run successfully completed ***
 > proc.time()
-       User      System verstrichen 
-     12.280       0.160      12.663 
+   user  system elapsed 
+ 13.604   0.468  12.654 

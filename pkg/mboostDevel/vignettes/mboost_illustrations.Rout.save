@@ -80,7 +80,7 @@ attr(,"offset")
 
 \setkeys{Gin}{width = 0.95\textwidth}
 > bf_gam <- gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss")
-Warnung in gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss") :
+Warning in gamboost(DEXfat ~ ., data = bodyfat, baselearner = "bss") :
   bss and bns are deprecated, bbs is used instead
 
 > mstop(aic <- AIC(bf_gam))
@@ -142,7 +142,7 @@ DEXfat ~ bs(age) + bs(waistcirc) + bs(hipcirc) + bs(elbowbreadth) +
 	%%%% DON'T EDIT THIS FILE
 
 \setkeys{Gin}{width = 0.95\textwidth}
-> data("Westbc", package = "mboostDevel")
+> data("Westbc", package = "TH.data")
 
 > westbc <- Westbc
 
@@ -176,13 +176,13 @@ DEXfat ~ bs(age) + bs(waistcirc) + bs(hipcirc) + bs(elbowbreadth) +
 
 > time <- system.time(west_glm <- glmboost(x, yfit, 
 +     family = L2fm, center = TRUE, control = boost_control(mstop = 200)))[1]
-Warnung in glmboost.matrix(x, yfit, family = L2fm, center = TRUE, control = boost_control(mstop = 200)) :
+Warning in glmboost.matrix(x, yfit, family = L2fm, center = TRUE, control = boost_control(mstop = 200)) :
   model with centered covariates does not contain intercept
 
 > x <- t(exprs(westbc) - rowMeans(exprs(westbc)))
 
 > aic <- AIC(west_glm, method = "classical")
-Warnung in hatvalues.gamboost(model) :
+Warning in hatvalues.gamboost(model) :
   AIC might not be reasonable for family user-specified
 
 > mstop(aic)
@@ -243,6 +243,16 @@ Degrees of freedom (for mstop = 260): 7.0319
 > wpbc_glm <- wpbc_glm[mstop(aic)]
 
 > coef(wpbc_glm)[abs(coef(wpbc_glm)) > 0]
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
      (Intercept)     mean_texture    mean_symmetry 
       2.3013e-01      -2.4215e-02      -3.3878e+00 
  mean_fractaldim       SE_texture     SE_perimeter 
@@ -258,7 +268,7 @@ Degrees of freedom (for mstop = 260): 7.0319
 
 > wpbc_gam <- gamboost(status ~ ., data = wpbc2, family = Binomial(), 
 +     baselearner = "bss")
-Warnung in gamboost(status ~ ., data = wpbc2, family = Binomial(), baselearner = "bss") :
+Warning in gamboost(status ~ ., data = wpbc2, family = Binomial(), baselearner = "bss") :
   bss and bns are deprecated, bbs is used instead
 
 > mopt <- mstop(aic <- AIC(wpbc_gam, "classical"))
@@ -317,5 +327,5 @@ Degrees of freedom (for mstop = 86): 11.348
 
  *** Run successfully completed ***
 > proc.time()
-       User      System verstrichen 
-     13.856       0.160      14.092 
+   user  system elapsed 
+ 14.368   0.292  14.935 

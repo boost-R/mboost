@@ -10,50 +10,35 @@ Note: The default for the computation of the degrees of freedom has changed.
 	%%%% DON'T EDIT THIS FILE
 
 \setkeys{Gin}{width = 0.95\textwidth}
-> if (!require("ipred")) stop("cannot attach package ", 
-+     sQuote("ipred"))
-Loading required package: ipred
-Loading required package: rpart
-Loading required package: MASS
-Loading required package: survival
-Loading required package: splines
-Loading required package: nnet
-Loading required package: class
-Loading required package: prodlim
-Loading required package: KernSmooth
-KernSmooth 2.23 loaded
-Copyright M. P. Wand 1997-2009
-
-Attaching package: ‘ipred’
-
-The following object(s) are masked from ‘package:mboostDevel’:
-
-    cv
-
+> if (!require("TH.data")) stop("cannot attach package ", 
++     sQuote("TH.data"))
+Loading required package: TH.data
 
 > if (!require("rpart")) stop("cannot attach package ", 
 +     sQuote("rpart"))
+Loading required package: rpart
+
+> if (!require("survival")) stop("cannot attach package ", 
++     sQuote("survival"))
+Loading required package: survival
+Loading required package: splines
 
 > if (!require("party")) stop("cannot attach package ", 
 +     sQuote("party"))
 Loading required package: party
 Loading required package: grid
-Loading required package: modeltools
-Loading required package: stats4
-Loading required package: coin
-Loading required package: mvtnorm
 Loading required package: zoo
 
 Attaching package: ‘zoo’
 
-The following object(s) are masked from ‘package:base’:
+The following objects are masked from ‘package:base’:
 
     as.Date, as.Date.numeric
 
 Loading required package: sandwich
 Loading required package: strucchange
-Loading required package: vcd
-Loading required package: colorspace
+Loading required package: modeltools
+Loading required package: stats4
 
 > set.seed(290875)
 
@@ -173,7 +158,7 @@ Loading required package: colorspace
 
 > abline(h = Mmod, lty = 2)
 
-> data("GBSG2", package = "ipred")
+> data("GBSG2", package = "TH.data")
 
 > GBSG2w <- IPCweights(Surv(GBSG2$time, GBSG2$cens))
 
@@ -232,12 +217,10 @@ Loading required package: colorspace
 
 > mdplot(GBSG2learn$ltime, predict(TRmod), cex = GBSG2w/4, 
 +     main = "Tree", ylim = c(-3, 3), xlim = c(5, 8))
-Warnung in obs + pred :
-  Länge des längeren Objektes
- 	 ist kein Vielfaches der Länge des kürzeren Objektes
-Warnung in obs - pred :
-  Länge des längeren Objektes
- 	 ist kein Vielfaches der Länge des kürzeren Objektes
+Warning in obs + pred :
+  longer object length is not a multiple of shorter object length
+Warning in obs - pred :
+  longer object length is not a multiple of shorter object length
 
 > mdplot(GBSG2learn$ltime, predict(RFmod, newdata = GBSG2learn), 
 +     cex = GBSG2w/4, main = "Random Forest", ylim = c(-3, 3), 
@@ -342,5 +325,5 @@ Warnung in obs - pred :
 
  *** Run successfully completed ***
 > proc.time()
-       User      System verstrichen 
-      9.652       0.156      10.015 
+   user  system elapsed 
+  8.888   0.280   9.427 

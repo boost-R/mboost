@@ -1,6 +1,8 @@
 require("mboostDevel")
 attach(asNamespace("mboostDevel"))
 
+set.seed(1907)
+
 ### (Slightly) modified version of the code accompanying the paper:
 ###   Shah, R. D. and Samworth, R. J. (2013), Variable selection with error
 ###   control: Another look at Stability Selection, J. Roy. Statist. Soc., Ser.

@@ -39,6 +39,7 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)), grid = 1:m
             fun(mod)
         }
     }
+    ## use case weights as out-of-bag weights (but set inbag to 0)
     OOBweights <- matrix(rep(weights, ncol(folds)), ncol = ncol(folds))
     OOBweights[folds > 0] <- 0
     oobrisk <- papply(1:ncol(folds),

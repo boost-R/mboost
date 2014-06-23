@@ -1,7 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.1.0 (2014-04-10) -- "Spring Dance"
+Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -21,20 +20,32 @@ Type 'q()' to quit R.
 > pkgname <- "mboostDevel"
 > source(file.path(R.home("share"), "R", "examples-header.R"))
 > options(warn = 1)
+> base::assign(".ExTimings", "mboostDevel-Ex.timings", pos = 'CheckExEnv')
+> base::cat("name\tuser\tsystem\telapsed\n", file=base::get(".ExTimings", pos = 'CheckExEnv'))
+> base::assign(".format_ptime",
++ function(x) {
++   if(!is.na(x[4L])) x[1L] <- x[1L] + x[4L]
++   if(!is.na(x[5L])) x[2L] <- x[2L] + x[5L]
++   options(OutDec = '.')
++   format(x[1L:3L], digits = 7L)
++ },
++ pos = 'CheckExEnv')
+> 
+> ### * </HEADER>
 > library('mboostDevel')
 Loading required package: parallel
 This is mboostDevel 2.3-0. See ‘package?mboostDevel’ and the NEWS file
 for a complete list of changes.
-Note: The default for the computation of the degrees of freedom has changed.
-      For details see section ‘Global Options’ of ‘?bols’.
+
 > 
-> assign(".oldSearch", search(), pos = 'CheckExEnv')
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
 > cleanEx()
 > nameEx("FP")
 > ### * FP
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: FP
 > ### Title: Fractional Polynomials
 > ### Aliases: FP
@@ -43,7 +54,7 @@ Note: The default for the computation of the degrees of freedom has changed.
 > ### ** Examples
 > 
 > 
->     data("bodyfat", package = "mboostDevel")
+>     data("bodyfat", package = "TH.data")
 >     tbodyfat <- bodyfat
 > 
 >     ### map covariates into [1, 2]
@@ -121,17 +132,20 @@ FP(elbowbreadth, scaling = FALSE)log(elbowbreadth)elbowbreadth^-2
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("FP", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("Family")
 > ### * Family
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: Family
 > ### Title: Gradient Boosting Families
 > ### Aliases: Family AdaExp Binomial GaussClass GaussReg Gaussian Huber
 > ###   Laplace Poisson GammaReg CoxPH QuantReg ExpectReg NBinomial PropOdds
-> ###   Weibull Loglog Lognormal AUC Gehan
+> ###   Weibull Loglog Lognormal AUC Gehan Hurdle Multinomial
 > ### Keywords: models
 > 
 > ### ** Examples
@@ -150,40 +164,34 @@ Loss function: abs(y - f)
 +            name = "My Gauss Variant")
 +     }
 > 
+>     ### fitting multinomial logit model via a linear array model
+>     X0 <- K0 <- diag(nlevels(iris$Species) - 1)
+>     colnames(X0) <- levels(iris$Species)[-nlevels(iris$Species)]
+>     mlm <- mboost(Species ~ bols(Sepal.Length, df = 2) %O%
++                             buser(X0, K0, df = 2), data = iris,
++                   family = Multinomial())
+>     head(round(predict(mlm, type = "response"), 2))
+     setosa versicolor virginica
+[1,]   0.61       0.23      0.16
+[2,]   0.69       0.19      0.12
+[3,]   0.76       0.15      0.09
+[4,]   0.79       0.13      0.08
+[5,]   0.65       0.21      0.14
+[6,]   0.48       0.30      0.23
 > 
 > 
 > 
-> cleanEx()
-> nameEx("Westbc")
-> ### * Westbc
-> 
-> flush(stderr()); flush(stdout())
-> 
-> ### Name: Westbc
-> ### Title: Breast Cancer Gene Expression
-> ### Aliases: Westbc
-> ### Keywords: datasets
-> 
-> ### ** Examples
 > 
 > 
->   ## Not run: 
-> ##D     library("Biobase")
-> ##D     data("Westbc", package = "mboostDevel")
-> ##D     westbc <- new("ExpressionSet",
-> ##D           phenoData = new("AnnotatedDataFrame", data = Westbc$pheno),
-> ##D           assayData = assayDataNew(exprs = Westbc$assay))
-> ##D   
-> ## End(Not run)
-> 
-> 
-> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("Family", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("baselearners")
 > ### * baselearners
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: baselearners
 > ### Title: Base-learners for Gradient Boosting
 > ### Aliases: bols bbs bspatial brad brandom btree bmono bmrf buser bns bss
@@ -205,42 +213,94 @@ Loss function: abs(y - f)
 > 
 >   ### set up base-learners
 >   spline1 <- bbs(x1, knots = 20, df = 4)
->   attributes(spline1)
-$names
-[1] "model.frame" "get_call"    "get_data"    "get_index"   "get_vary"   
-[6] "get_names"   "set_names"   "dpp"        
-
-$class
-[1] "blg"
-
-> 
+>   extract(spline1, "design")[1:10, 1:10]
+      1 2 3 4          5          6            7           8           9
+ [1,] 0 0 0 0 0.00000000 0.00000000 0.000000e+00 0.000000000 0.000000000
+ [2,] 0 0 0 0 0.00000000 0.00000000 0.000000e+00 0.000000000 0.000000000
+ [3,] 0 0 0 0 0.00000000 0.00000000 0.000000e+00 0.000000000 0.000000000
+ [4,] 0 0 0 0 0.00000000 0.00000000 0.000000e+00 0.000000000 0.000000000
+ [5,] 0 0 0 0 0.01490533 0.44554054 5.113987e-01 0.028155480 0.000000000
+ [6,] 0 0 0 0 0.00000000 0.00000000 0.000000e+00 0.000000000 0.000000000
+ [7,] 0 0 0 0 0.00000000 0.06481227 6.035695e-01 0.328334430 0.003283771
+ [8,] 0 0 0 0 0.00000000 0.00000000 0.000000e+00 0.000000000 0.000000000
+ [9,] 0 0 0 0 0.00000000 0.00000000 1.551197e-09 0.167720617 0.666662247
+[10,] 0 0 0 0 0.00000000 0.00000000 0.000000e+00 0.009196839 0.401902997
+             10
+ [1,] 0.0000000
+ [2,] 0.0000000
+ [3,] 0.0000000
+ [4,] 0.0000000
+ [5,] 0.0000000
+ [6,] 0.0000000
+ [7,] 0.0000000
+ [8,] 0.0000000
+ [9,] 0.1656171
+[10,] 0.5493155
+>   extract(spline1, "penalty")
+      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
+ [1,]    1   -2    1    0    0    0    0    0    0     0     0     0     0
+ [2,]   -2    5   -4    1    0    0    0    0    0     0     0     0     0
+ [3,]    1   -4    6   -4    1    0    0    0    0     0     0     0     0
+ [4,]    0    1   -4    6   -4    1    0    0    0     0     0     0     0
+ [5,]    0    0    1   -4    6   -4    1    0    0     0     0     0     0
+ [6,]    0    0    0    1   -4    6   -4    1    0     0     0     0     0
+ [7,]    0    0    0    0    1   -4    6   -4    1     0     0     0     0
+ [8,]    0    0    0    0    0    1   -4    6   -4     1     0     0     0
+ [9,]    0    0    0    0    0    0    1   -4    6    -4     1     0     0
+[10,]    0    0    0    0    0    0    0    1   -4     6    -4     1     0
+[11,]    0    0    0    0    0    0    0    0    1    -4     6    -4     1
+[12,]    0    0    0    0    0    0    0    0    0     1    -4     6    -4
+[13,]    0    0    0    0    0    0    0    0    0     0     1    -4     6
+[14,]    0    0    0    0    0    0    0    0    0     0     0     1    -4
+[15,]    0    0    0    0    0    0    0    0    0     0     0     0     1
+[16,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[17,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[18,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[19,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[20,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[21,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[22,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[23,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+[24,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+      [,14] [,15] [,16] [,17] [,18] [,19] [,20] [,21] [,22] [,23] [,24]
+ [1,]     0     0     0     0     0     0     0     0     0     0     0
+ [2,]     0     0     0     0     0     0     0     0     0     0     0
+ [3,]     0     0     0     0     0     0     0     0     0     0     0
+ [4,]     0     0     0     0     0     0     0     0     0     0     0
+ [5,]     0     0     0     0     0     0     0     0     0     0     0
+ [6,]     0     0     0     0     0     0     0     0     0     0     0
+ [7,]     0     0     0     0     0     0     0     0     0     0     0
+ [8,]     0     0     0     0     0     0     0     0     0     0     0
+ [9,]     0     0     0     0     0     0     0     0     0     0     0
+[10,]     0     0     0     0     0     0     0     0     0     0     0
+[11,]     0     0     0     0     0     0     0     0     0     0     0
+[12,]     1     0     0     0     0     0     0     0     0     0     0
+[13,]    -4     1     0     0     0     0     0     0     0     0     0
+[14,]     6    -4     1     0     0     0     0     0     0     0     0
+[15,]    -4     6    -4     1     0     0     0     0     0     0     0
+[16,]     1    -4     6    -4     1     0     0     0     0     0     0
+[17,]     0     1    -4     6    -4     1     0     0     0     0     0
+[18,]     0     0     1    -4     6    -4     1     0     0     0     0
+[19,]     0     0     0     1    -4     6    -4     1     0     0     0
+[20,]     0     0     0     0     1    -4     6    -4     1     0     0
+[21,]     0     0     0     0     0     1    -4     6    -4     1     0
+[22,]     0     0     0     0     0     0     1    -4     6    -4     1
+[23,]     0     0     0     0     0     0     0     1    -4     5    -2
+[24,]     0     0     0     0     0     0     0     0     1    -2     1
 >   knots.x2 <- quantile(x2, c(0.25, 0.5, 0.75))
 >   spline2 <- bbs(x2, knots = knots.x2, df = 5)
->   attributes(spline2)
-$names
-[1] "model.frame" "get_call"    "get_data"    "get_index"   "get_vary"   
-[6] "get_names"   "set_names"   "dpp"        
+>   ols3 <- bols(x3)
+>   extract(ols3)
+  (Intercept) x31
+1           1   0
+3           1   1
+attr(,"assign")
+[1] 0 1
+attr(,"contrasts")
+attr(,"contrasts")$x3
+[1] "contr.treatment"
 
-$class
-[1] "blg"
-
-> 
->   attributes(ols3 <- bols(x3))
-$names
-[1] "model.frame" "get_call"    "get_data"    "get_index"   "get_names"  
-[6] "get_vary"    "set_names"   "dpp"        
-
-$class
-[1] "blg"
-
->   attributes(ols4 <- bols(x4))
-$names
-[1] "model.frame" "get_call"    "get_data"    "get_index"   "get_names"  
-[6] "get_vary"    "set_names"   "dpp"        
-
-$class
-[1] "blg"
-
+>   ols4 <- bols(x4)
 > 
 >   ### compute base-models
 >   drop(ols3$dpp(weights)$fit(y)$model) ## same as:
@@ -265,7 +325,7 @@ $class
 +                      bbs(x2, knots = knots.x2, df = 5) +
 +                      bols(x3) + bols(x4), weights = weights)
 >   all.equal(coef(mod1), coef(mod2))
-[1] "names for current but not for target"
+[1] TRUE
 > 
 > 
 >   ### grouped linear effects
@@ -275,25 +335,26 @@ $class
 >   model <- gamboost(y ~ bols(x1, x2, intercept = FALSE) +
 +                         bols(x1, intercept = FALSE) +
 +                         bols(x2, intercept = FALSE),
-+                         control = boost_control(mstop = 400))
++                         control = boost_control(mstop = 50))
 >   coef(model, which = 1)   # one base-learner for x1 and x2
 $`bols(x1, x2, intercept = FALSE)`
          x1          x2 
- 1.82015195 -0.02260988 
+ 1.81077137 -0.02249335 
 
 attr(,"offset")
 [1] 1.334042
 >   coef(model, which = 2:3) # two separate base-learners for x1 and x2
 $`bols(x1, intercept = FALSE)`
-          x1 
-7.571584e-08 
+x1 
+ 0 
 
 $`bols(x2, intercept = FALSE)`
-          x2 
-2.815168e-13 
+x2 
+ 0 
 
 attr(,"offset")
 [1] 1.334042
+>                            # zero because they were (not yet) selected.
 > 
 >   ### example for bspatial
 >   x1 <- runif(250,-pi,pi)
@@ -302,17 +363,27 @@ attr(,"offset")
 >   y <- sin(x1) * sin(x2) + rnorm(250, sd = 0.4)
 > 
 >   spline3 <- bspatial(x1, x2, knots = 12)
->   attributes(spline3)
-$names
-[1] "model.frame" "get_call"    "get_data"    "get_index"   "get_vary"   
-[6] "get_names"   "set_names"   "dpp"        
-
-$class
-[1] "blg"
-
+>   Xmat <- extract(spline3, "design")
+>   ## 12 inner knots + 4 boundary knots = 16 knots per direction
+>   ## THUS: 16 * 16 = 256 columns
+>   dim(Xmat)
+[1] 250 256
+>   extract(spline3, "penalty")[1:10, 1:10]
+10 x 10 sparse Matrix of class "dgTMatrix"
+                                   
+ [1,]  2 -2  1  .  .  .  .  .  .  .
+ [2,] -2  6 -4  1  .  .  .  .  .  .
+ [3,]  1 -4  7 -4  1  .  .  .  .  .
+ [4,]  .  1 -4  7 -4  1  .  .  .  .
+ [5,]  .  .  1 -4  7 -4  1  .  .  .
+ [6,]  .  .  .  1 -4  7 -4  1  .  .
+ [7,]  .  .  .  .  1 -4  7 -4  1  .
+ [8,]  .  .  .  .  .  1 -4  7 -4  1
+ [9,]  .  .  .  .  .  .  1 -4  7 -4
+[10,]  .  .  .  .  .  .  .  1 -4  7
 > 
 >   ## specify number of knots separately
->   form2 <- y ~ bspatial(x1, x2, knots = list(x1 = 12, x2 = 12))
+>   form1 <- y ~ bspatial(x1, x2, knots = list(x1 = 12, x2 = 14))
 > 
 >   ## decompose spatial effect into parametric part and
 >   ## deviation with one df
@@ -320,17 +391,47 @@ $class
 +                bspatial(x1, x2, knots = 12, center = TRUE, df = 1)
 > 
 > 
+>   ## specify radial basis function base-learner for spatial effect
+>   ## and use data-adaptive effective range (theta = NULL, see 'args')
+>   form3 <- y ~ brad(x1, x2)
+>   ## Now use different settings, e.g. 50 knots and theta fixed to 0.4
+>   ## (not really a good setting)
+>   form4 <- y ~ brad(x1, x2, knots = 50, args = list(theta = 0.4))
+> 
+> 
 >   ### random intercept
 >   id <- factor(rep(1:10, each = 5))
 >   raneff <- brandom(id)
->   attributes(raneff)
-$names
-[1] "model.frame" "get_call"    "get_data"    "get_index"   "get_names"  
-[6] "get_vary"    "set_names"   "dpp"        
+>   extract(raneff, "design")
+   id1 id2 id3 id4 id5 id6 id7 id8 id9 id10
+1    1   0   0   0   0   0   0   0   0    0
+6    0   1   0   0   0   0   0   0   0    0
+11   0   0   1   0   0   0   0   0   0    0
+16   0   0   0   1   0   0   0   0   0    0
+21   0   0   0   0   1   0   0   0   0    0
+26   0   0   0   0   0   1   0   0   0    0
+31   0   0   0   0   0   0   1   0   0    0
+36   0   0   0   0   0   0   0   1   0    0
+41   0   0   0   0   0   0   0   0   1    0
+46   0   0   0   0   0   0   0   0   0    1
+attr(,"assign")
+ [1] 1 1 1 1 1 1 1 1 1 1
+attr(,"contrasts")
+attr(,"contrasts")$id
+[1] "contr.dummy"
 
-$class
-[1] "blg"
-
+>   extract(raneff, "penalty")
+      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+ [1,]    1    0    0    0    0    0    0    0    0     0
+ [2,]    0    1    0    0    0    0    0    0    0     0
+ [3,]    0    0    1    0    0    0    0    0    0     0
+ [4,]    0    0    0    1    0    0    0    0    0     0
+ [5,]    0    0    0    0    1    0    0    0    0     0
+ [6,]    0    0    0    0    0    1    0    0    0     0
+ [7,]    0    0    0    0    0    0    1    0    0     0
+ [8,]    0    0    0    0    0    0    0    1    0     0
+ [9,]    0    0    0    0    0    0    0    0    1     0
+[10,]    0    0    0    0    0    0    0    0    0     1
 > 
 >   ## random intercept with non-observed category
 >   set.seed(1907)
@@ -341,10 +442,10 @@ $class
 >   model <- gamboost(y ~ brandom(id), weights = obs)
 >   coef(model)
 $`brandom(id)`
-       id2        id3        id4        id5        id6        id7        id8 
--0.2048302  0.8687702  0.9059585  0.6728108 -0.7326978  0.5056362  0.8295553 
-       id9       id10 
--1.2953884  0.0000000 
+       id1        id2        id3        id4        id5        id6        id7 
+-1.5095486 -0.1995084  0.8461985  0.8824206  0.6553304 -0.7136614  0.4924992 
+       id8        id9       id10 
+ 0.8080024 -1.2617327  0.0000000 
 
 attr(,"offset")
 [1] -0.6983303
@@ -357,14 +458,121 @@ attr(,"offset")
 >   ### random slope
 >   z <- runif(50)
 >   raneff <- brandom(id, by = z)
->   attributes(raneff)
-$names
-[1] "model.frame" "get_call"    "get_data"    "get_index"   "get_names"  
-[6] "get_vary"    "set_names"   "dpp"        
-
-$class
-[1] "blg"
-
+>   extract(raneff, "design")
+        id1:z      id2:z     id3:z     id4:z     id5:z     id6:z     id7:z
+1  0.50259942 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+2  0.05583988 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+3  0.69006339 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+4  0.81483211 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+5  0.32146322 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+6  0.00000000 0.06694633 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+7  0.00000000 0.51190172 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+8  0.00000000 0.31822576 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+9  0.00000000 0.33315184 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+10 0.00000000 0.93195969 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+11 0.00000000 0.00000000 0.7186267 0.0000000 0.0000000 0.0000000 0.0000000
+12 0.00000000 0.00000000 0.3441995 0.0000000 0.0000000 0.0000000 0.0000000
+13 0.00000000 0.00000000 0.2515360 0.0000000 0.0000000 0.0000000 0.0000000
+14 0.00000000 0.00000000 0.9205251 0.0000000 0.0000000 0.0000000 0.0000000
+15 0.00000000 0.00000000 0.3082208 0.0000000 0.0000000 0.0000000 0.0000000
+16 0.00000000 0.00000000 0.0000000 0.4106751 0.0000000 0.0000000 0.0000000
+17 0.00000000 0.00000000 0.0000000 0.5614606 0.0000000 0.0000000 0.0000000
+18 0.00000000 0.00000000 0.0000000 0.6550415 0.0000000 0.0000000 0.0000000
+19 0.00000000 0.00000000 0.0000000 0.9282509 0.0000000 0.0000000 0.0000000
+20 0.00000000 0.00000000 0.0000000 0.4750425 0.0000000 0.0000000 0.0000000
+21 0.00000000 0.00000000 0.0000000 0.0000000 0.7181429 0.0000000 0.0000000
+22 0.00000000 0.00000000 0.0000000 0.0000000 0.5509939 0.0000000 0.0000000
+23 0.00000000 0.00000000 0.0000000 0.0000000 0.9027612 0.0000000 0.0000000
+24 0.00000000 0.00000000 0.0000000 0.0000000 0.9100466 0.0000000 0.0000000
+25 0.00000000 0.00000000 0.0000000 0.0000000 0.2095783 0.0000000 0.0000000
+26 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.4098701 0.0000000
+27 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.5335995 0.0000000
+28 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.3361951 0.0000000
+29 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.9611161 0.0000000
+30 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.7673629 0.0000000
+31 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.5994378
+32 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.1352137
+33 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.2643471
+34 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.4921034
+35 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.8945813
+36 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+37 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+38 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+39 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+40 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+41 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+42 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+43 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+44 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+45 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+46 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+47 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+48 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+49 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+50 0.00000000 0.00000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000
+       id8:z      id9:z     id10:z
+1  0.0000000 0.00000000 0.00000000
+2  0.0000000 0.00000000 0.00000000
+3  0.0000000 0.00000000 0.00000000
+4  0.0000000 0.00000000 0.00000000
+5  0.0000000 0.00000000 0.00000000
+6  0.0000000 0.00000000 0.00000000
+7  0.0000000 0.00000000 0.00000000
+8  0.0000000 0.00000000 0.00000000
+9  0.0000000 0.00000000 0.00000000
+10 0.0000000 0.00000000 0.00000000
+11 0.0000000 0.00000000 0.00000000
+12 0.0000000 0.00000000 0.00000000
+13 0.0000000 0.00000000 0.00000000
+14 0.0000000 0.00000000 0.00000000
+15 0.0000000 0.00000000 0.00000000
+16 0.0000000 0.00000000 0.00000000
+17 0.0000000 0.00000000 0.00000000
+18 0.0000000 0.00000000 0.00000000
+19 0.0000000 0.00000000 0.00000000
+20 0.0000000 0.00000000 0.00000000
+21 0.0000000 0.00000000 0.00000000
+22 0.0000000 0.00000000 0.00000000
+23 0.0000000 0.00000000 0.00000000
+24 0.0000000 0.00000000 0.00000000
+25 0.0000000 0.00000000 0.00000000
+26 0.0000000 0.00000000 0.00000000
+27 0.0000000 0.00000000 0.00000000
+28 0.0000000 0.00000000 0.00000000
+29 0.0000000 0.00000000 0.00000000
+30 0.0000000 0.00000000 0.00000000
+31 0.0000000 0.00000000 0.00000000
+32 0.0000000 0.00000000 0.00000000
+33 0.0000000 0.00000000 0.00000000
+34 0.0000000 0.00000000 0.00000000
+35 0.0000000 0.00000000 0.00000000
+36 0.9221916 0.00000000 0.00000000
+37 0.7830943 0.00000000 0.00000000
+38 0.1455074 0.00000000 0.00000000
+39 0.5827876 0.00000000 0.00000000
+40 0.2746886 0.00000000 0.00000000
+41 0.0000000 0.02663745 0.00000000
+42 0.0000000 0.16163030 0.00000000
+43 0.0000000 0.24233143 0.00000000
+44 0.0000000 0.73402096 0.00000000
+45 0.0000000 0.77306128 0.00000000
+46 0.0000000 0.00000000 0.64768759
+47 0.0000000 0.00000000 0.58947778
+48 0.0000000 0.00000000 0.03172592
+49 0.0000000 0.00000000 0.99806980
+50 0.0000000 0.00000000 0.90622781
+>   extract(raneff, "penalty")
+      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+ [1,]    1    0    0    0    0    0    0    0    0     0
+ [2,]    0    1    0    0    0    0    0    0    0     0
+ [3,]    0    0    1    0    0    0    0    0    0     0
+ [4,]    0    0    0    1    0    0    0    0    0     0
+ [5,]    0    0    0    0    1    0    0    0    0     0
+ [6,]    0    0    0    0    0    1    0    0    0     0
+ [7,]    0    0    0    0    0    0    1    0    0     0
+ [8,]    0    0    0    0    0    0    0    1    0     0
+ [9,]    0    0    0    0    0    0    0    0    1     0
+[10,]    0    0    0    0    0    0    0    0    0     1
 > 
 >   ### specify simple interaction model (with main effect)
 >   n <- 210
@@ -379,32 +587,20 @@ $class
 >   plot(y ~ x, col = z)
 >   ## specify main effect and interaction
 >   mod_glm <- gamboost(y ~ bols(x) + bols(x, by = z),
-+                   control = boost_control(mstop = 1000))
++                   control = boost_control(mstop = 100))
 >   nd <- data.frame(x, z)
 >   nd <- nd[order(x),]
 >   nd$pred_glm <- predict(mod_glm, newdata = nd)
 >   for (i in seq(along = levels(z)))
 +       with(nd[nd$z == i,], lines(x, pred_glm, col = z))
->   mod_gam <- gamboost(y ~ bbs(x) + bbs(x, by = z),
-+                       control = boost_control(mstop = 1000))
-Warning in Xfun(mf, vary, args) :
-  ‘df’ equal to rank of null space (unpenalized part of P-spline);
-  Consider larger value for ‘df’ or set ‘center = TRUE’.
+>   mod_gam <- gamboost(y ~ bbs(x) + bbs(x, by = z, df = 8),
++                       control = boost_control(mstop = 100))
 >   nd$pred_gam <- predict(mod_gam, newdata = nd)
-Warning in Xfun(mf, vary, args) :
-  ‘df’ equal to rank of null space (unpenalized part of P-spline);
-  Consider larger value for ‘df’ or set ‘center = TRUE’.
 >   for (i in seq(along = levels(z)))
 +       with(nd[nd$z == i,], lines(x, pred_gam, col = z, lty = "dashed"))
 >   ### convenience function for plotting
 >   par(mfrow = c(1,3))
 >   plot(mod_gam)
-Warning in Xfun(mf, vary, args) :
-  ‘df’ equal to rank of null space (unpenalized part of P-spline);
-  Consider larger value for ‘df’ or set ‘center = TRUE’.
-Warning in Xfun(mf, vary, args) :
-  ‘df’ equal to rank of null space (unpenalized part of P-spline);
-  Consider larger value for ‘df’ or set ‘center = TRUE’.
 > 
 > 
 >   ### remove intercept from base-learner
@@ -413,66 +609,39 @@ Warning in Xfun(mf, vary, args) :
 >   mod <- gamboost(y ~ bols(int, intercept = FALSE) +
 +                       bols(x, intercept = FALSE),
 +                   data = tmpdata,
-+                   control = boost_control(mstop = 2500))
++                   control = boost_control(mstop = 1000))
 Warning in bols(x, intercept = FALSE) :
   covariates should be (mean-) centered if ‘intercept = FALSE’
 >   cf <- unlist(coef(mod))
+>   ## add offset
 >   cf[1] <- cf[1] + mod$offset
->   cf
+>   signif(cf, 3)
 bols(int, intercept = FALSE).int     bols(x, intercept = FALSE).x 
-                   -0.1298897900                     0.0003555856 
->   coef(lm(y ~ x, data = tmpdata))
-  (Intercept)             x 
--0.1298898174  0.0003555861 
+                       -0.130000                         0.000355 
+>   signif(coef(lm(y ~ x, data = tmpdata)), 3)
+(Intercept)           x 
+  -0.130000    0.000356 
 > 
->   ### quicker and better with (mean-) centering
+>   ### much quicker and better with (mean-) centering
 >   tmpdata$x_center <- tmpdata$x - mean(tmpdata$x)
 >   mod_center <- gamboost(y ~ bols(int, intercept = FALSE) +
 +                              bols(x_center, intercept = FALSE),
 +                          data = tmpdata,
-+                          control = boost_control(mstop = 500))
++                          control = boost_control(mstop = 100))
 >   cf_center <- unlist(coef(mod_center, which=1:2))
 >   ## due to the shift in x direction we need to subtract
 >   ## beta_1 * mean(x) to get the correct intercept
 >   cf_center[1] <- cf_center[1] + mod_center$offset -
 +                   cf_center[2] * mean(tmpdata$x)
->   cf_center
+>   signif(cf_center, 3)
           bols(int, intercept = FALSE).int 
-                             -0.1298898010 
+                                 -0.130000 
 bols(x_center, intercept = FALSE).x_center 
-                              0.0003555858 
->   coef(lm(y ~ x, data = tmpdata))
-  (Intercept)             x 
--0.1298898174  0.0003555861 
+                                  0.000356 
+>   signif(coef(lm(y ~ x, data = tmpdata)), 3)
+(Intercept)           x 
+  -0.130000    0.000356 
 > 
->   ### large data set with ties
->   nunique <- 100
->   xindex <- sample(1:nunique, 1000000, replace = TRUE)
->   x <- runif(nunique)
->   y <- rnorm(length(xindex))
->   w <- rep.int(1, length(xindex))
-> 
->   ### brute force computations
->   op <- options()
->   options(mboost_indexmin = Inf, mboost_useMatrix = FALSE)
->   ## data pre-processing
->   b1 <- bbs(x[xindex])$dpp(w)
->   ## model fitting
->   c1 <- b1$fit(y)$model
->   options(op)
-> 
->   ### automatic search for ties, faster
->   b2 <- bbs(x[xindex])$dpp(w)
->   c2 <- b2$fit(y)$model
-> 
->   ### manual specification of ties, even faster
->   b3 <- bbs(x, index = xindex)$dpp(w)
->   c3 <- b3$fit(y)$model
-> 
->   all.equal(c1, c2)
-[1] TRUE
->   all.equal(c1, c3)
-[1] TRUE
 > 
 >   ### cyclic P-splines
 >   set.seed(781)
@@ -558,33 +727,6 @@ Number of baselearners:  1
 > 
 >   volf <- matrix(fitted(mod), nrow = nrow(volcano))
 >   image(volf, main = "fitted")
-> 
->   ## the old-fashioned way, a waste of space and time
->   x <- expand.grid(x1, x2)
->   modx <- mboost(vol ~ bbs(Var2, df = 3, knots = 10)%X%
-+                        bbs(Var1, df = 3, knots = 10), data = x,
-+                        control = boost_control(nu = 0.25))
->   modx[250]
-
-	 Model-based Boosting
-
-Call:
-mboost(formula = vol ~ bbs(Var2, df = 3, knots = 10) %X% bbs(Var1,     df = 3, knots = 10), data = x, control = boost_control(nu = 0.25))
-
-
-	 Squared Error (Regression) 
-
-Loss function: (y - f)^2 
- 
-
-Number of boosting iterations: mstop = 250 
-Step size:  0.25 
-Offset:  130.1879 
-Number of baselearners:  1 
-
-> 
->   max(abs(fitted(mod) - fitted(modx)))
-[1] 1.907665e-10
 > 
 > 
 >   ### setting contrasts via contrasts.arg
@@ -697,6 +839,8 @@ attr(,"contrasts")$x
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("baselearners", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("blackboost")
@@ -704,6 +848,7 @@ attr(,"contrasts")$x
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: blackboost
 > ### Title: Gradient Boosting with Regression Trees
 > ### Aliases: blackboost
@@ -716,26 +861,19 @@ attr(,"contrasts")$x
 >     cars.gb <- blackboost(dist ~ speed, data = cars,
 +                           control = boost_control(mstop = 50))
 Loading required package: party
-Loading required package: survival
-Loading required package: splines
 Loading required package: grid
-Loading required package: modeltools
-Loading required package: stats4
-Loading required package: coin
-Loading required package: mvtnorm
 Loading required package: zoo
 
 Attaching package: ‘zoo’
 
-The following object(s) are masked from ‘package:base’:
+The following objects are masked from ‘package:base’:
 
     as.Date, as.Date.numeric
 
 Loading required package: sandwich
 Loading required package: strucchange
-Loading required package: vcd
-Loading required package: MASS
-Loading required package: colorspace
+Loading required package: modeltools
+Loading required package: stats4
 >     cars.gb
 
 	 Model-based Boosting
@@ -774,51 +912,20 @@ Number of baselearners:  1
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("blackboost", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
-  ‘package:MASS’, ‘package:strucchange’, ‘package:sandwich’,
-  ‘package:zoo’, ‘package:coin’, ‘package:mvtnorm’,
-  ‘package:modeltools’, ‘package:stats4’, ‘package:grid’,
-  ‘package:survival’, ‘package:splines’
+detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
+  ‘package:strucchange’, ‘package:sandwich’, ‘package:zoo’,
+  ‘package:grid’
 
-> nameEx("bodyfat")
-> ### * bodyfat
-> 
-> flush(stderr()); flush(stdout())
-> 
-> ### Name: bodyfat
-> ### Title: Prediction of Body Fat by Skinfold Thickness, Circumferences,
-> ###   and Bone Breadths
-> ### Aliases: bodyfat
-> ### Keywords: datasets
-> 
-> ### ** Examples
-> 
-> 
->     data("bodyfat", package = "mboostDevel")
-> 
->     ### final model proposed by Garcia et al. (2005)
->     fmod <- lm(DEXfat ~ hipcirc + anthro3a + kneebreadth, data = bodyfat)
->     coef(fmod)
-(Intercept)     hipcirc    anthro3a kneebreadth 
--75.2347840   0.5115264   8.9096375   1.9019904 
-> 
->     ### plot additive model for same variables
->     amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth,
-+                      data = bodyfat, baselearner = "bbs")
->     layout(matrix(1:3, ncol = 3))
->     plot(amod[mstop(AIC(amod, "corrected"))], ask = FALSE)
-> 
-> 
-> 
-> 
-> cleanEx()
 > nameEx("boost_family-class")
 > ### * boost_family-class
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: boost_family-class
 > ### Title: Class "boost\_family": Gradient Boosting Family
 > ### Aliases: boost_family-class show,boost_family-method
@@ -837,21 +944,24 @@ Loss function: abs(y - f)
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("boost_family-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("cvrisk")
 > ### * cvrisk
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: cvrisk
 > ### Title: Cross-Validation
-> ### Aliases: cvrisk cv
+> ### Aliases: cvrisk cvrisk.mboost cv
 > ### Keywords: models regression
 > 
 > ### ** Examples
 > 
 > 
->   data("bodyfat", package = "mboostDevel")
+>   data("bodyfat", package = "TH.data")
 > 
 >   ### fit linear model to data
 >   model <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)
@@ -995,26 +1105,19 @@ Degrees of freedom (for mstop = 45): 1.917234
 >   ### trees
 >   blackbox <- blackboost(DEXfat ~ ., data = bodyfat)
 Loading required package: party
-Loading required package: survival
-Loading required package: splines
 Loading required package: grid
-Loading required package: modeltools
-Loading required package: stats4
-Loading required package: coin
-Loading required package: mvtnorm
 Loading required package: zoo
 
 Attaching package: ‘zoo’
 
-The following object(s) are masked from ‘package:base’:
+The following objects are masked from ‘package:base’:
 
     as.Date, as.Date.numeric
 
 Loading required package: sandwich
 Loading required package: strucchange
-Loading required package: vcd
-Loading required package: MASS
-Loading required package: colorspace
+Loading required package: modeltools
+Loading required package: stats4
 >   cvtree <- cvrisk(blackbox, papply = lapply)
 >   plot(cvtree)
 > 
@@ -1046,20 +1149,21 @@ Loading required package: colorspace
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("cvrisk", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 
-detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
-  ‘package:MASS’, ‘package:strucchange’, ‘package:sandwich’,
-  ‘package:zoo’, ‘package:coin’, ‘package:mvtnorm’,
-  ‘package:modeltools’, ‘package:stats4’, ‘package:grid’,
-  ‘package:survival’, ‘package:splines’
+detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
+  ‘package:strucchange’, ‘package:sandwich’, ‘package:zoo’,
+  ‘package:grid’
 
 > nameEx("gamboost")
 > ### * gamboost
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: gamboost
 > ### Title: Gradient Boosting with Smooth Components
 > ### Aliases: gamboost
@@ -1115,12 +1219,15 @@ Degrees of freedom (for mstop = 26): 3.905132
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("gamboost", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("glmboost")
 > ### * glmboost
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: glmboost
 > ### Title: Gradient Boosting with Component-wise Linear Models
 > ### Aliases: glmboost glmboost.formula glmboost.matrix glmboost.default
@@ -1132,14 +1239,14 @@ Degrees of freedom (for mstop = 26): 3.905132
 > 
 >     ### a simple two-dimensional example: cars data
 >     cars.gb <- glmboost(dist ~ speed, data = cars,
-+                         control = boost_control(mstop = 5000),
++                         control = boost_control(mstop = 2000),
 +                         center = FALSE)
 >     cars.gb
 
 	 Generalized Linear Models Fitted via Gradient Boosting
 
 Call:
-glmboost.formula(formula = dist ~ speed, data = cars, center = FALSE,     control = boost_control(mstop = 5000))
+glmboost.formula(formula = dist ~ speed, data = cars, center = FALSE,     control = boost_control(mstop = 2000))
 
 
 	 Squared Error (Regression) 
@@ -1147,51 +1254,53 @@ glmboost.formula(formula = dist ~ speed, data = cars, center = FALSE,     contro
 Loss function: (y - f)^2 
  
 
-Number of boosting iterations: mstop = 5000 
+Number of boosting iterations: mstop = 2000 
 Step size:  0.1 
 Offset:  42.98 
 
 Coefficients: 
 (Intercept)       speed 
- -60.559044    3.932406 
+ -60.331204    3.918359 
 attr(,"offset")
 [1] 42.98
 
 > 
 >     ### coefficients should coincide
->     coef(cars.gb) + c(cars.gb$offset, 0)
+>     cf <- coef(cars.gb, off2int = TRUE)     ## add offset to intercept
+>     coef(cars.gb) + c(cars.gb$offset, 0)    ## add offset to intercept (by hand)
 (Intercept)       speed 
- -17.579044    3.932406 
+ -17.351204    3.918359 
 attr(,"offset")
 [1] 42.98
->     coef(lm(dist ~ speed, data = cars))
+>     signif(cf, 3)
 (Intercept)       speed 
- -17.579095    3.932409 
-> 
->     ### plot fit
->     layout(matrix(1:2, ncol = 2))
->     plot(dist ~ speed, data = cars)
->     lines(cars$speed, predict(cars.gb), col = "red")
+     -17.40        3.92 
+>     signif(coef(lm(dist ~ speed, data = cars)), 3)
+(Intercept)       speed 
+     -17.60        3.93 
+>     ## almost converged. With higher mstop the results get even better
 > 
 >     ### now we center the design matrix for
 >     ### much quicker "convergence"
 >     cars.gb_centered <- glmboost(dist ~ speed, data = cars,
 +                                  control = boost_control(mstop = 2000),
 +                                  center = TRUE)
->     par(mfrow=c(1,2))
+> 
+>     ## plot coefficient paths oth glmboost
+>     par(mfrow=c(1,2), mai = par("mai") * c(1, 1, 1, 2.5))
 >     plot(cars.gb, main="without centering")
 >     plot(cars.gb_centered, main="with centering")
 > 
 >     ### alternative loss function: absolute loss
 >     cars.gbl <- glmboost(dist ~ speed, data = cars,
-+                          control = boost_control(mstop = 5000),
++                          control = boost_control(mstop = 1000),
 +                          family = Laplace())
 >     cars.gbl
 
 	 Generalized Linear Models Fitted via Gradient Boosting
 
 Call:
-glmboost.formula(formula = dist ~ speed, data = cars, control = boost_control(mstop = 5000),     family = Laplace())
+glmboost.formula(formula = dist ~ speed, data = cars, control = boost_control(mstop = 1000),     family = Laplace())
 
 
 	 Absolute Error 
@@ -1199,40 +1308,39 @@ glmboost.formula(formula = dist ~ speed, data = cars, control = boost_control(ms
 Loss function: abs(y - f) 
  
 
-Number of boosting iterations: mstop = 5000 
+Number of boosting iterations: mstop = 1000 
 Step size:  0.1 
 Offset:  35.99999 
 
 Coefficients: 
 (Intercept)       speed 
-      -47.6         3.4 
+ -47.631025    3.402015 
 attr(,"offset")
 [1] 35.99999
 
-> 
->     coef(cars.gbl) + c(cars.gbl$offset, 0)
+>     coef(cars.gbl, off2int = TRUE)
 (Intercept)       speed 
-  -11.60001     3.40000 
-attr(,"offset")
-[1] 35.99999
->     lines(cars$speed, predict(cars.gbl), col = "green")
+ -11.631038    3.402015 
+> 
+>     ### plot fit
+>     par(mfrow = c(1,1))
+>     plot(dist ~ speed, data = cars)
+>     lines(cars$speed, predict(cars.gb), col = "red")     ## quadratic loss
+>     lines(cars$speed, predict(cars.gbl), col = "green")  ## absolute loss
 > 
 >     ### Huber loss with adaptive choice of delta
 >     cars.gbh <- glmboost(dist ~ speed, data = cars,
-+                          control = boost_control(mstop = 5000),
++                          control = boost_control(mstop = 1000),
 +                          family = Huber())
 > 
->     lines(cars$speed, predict(cars.gbh), col = "blue")
+>     lines(cars$speed, predict(cars.gbh), col = "blue")   ## Huber loss
 >     legend("topleft", col = c("red", "green", "blue"), lty = 1,
 +            legend = c("Gaussian", "Laplace", "Huber"), bty = "n")
 > 
->     ### plot coefficient path of glmboost
->     par(mai = par("mai") * c(1, 1, 1, 2.5))
->     plot(cars.gb)
-> 
->     ### sparse high-dimensional example
+>     ### sparse high-dimensional example that makes use of the matrix
+>     ### interface of glmboost and uses the matrix representation from
+>     ### package Matrix
 >     library("Matrix")
-Loading required package: lattice
 >     n <- 100
 >     p <- 10000
 >     ptrue <- 10
@@ -1255,16 +1363,19 @@ attr(,"offset")
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("glmboost", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 
-detaching ‘package:Matrix’, ‘package:lattice’
+detaching ‘package:Matrix’
 
 > nameEx("mboost")
 > ### * mboost
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: mboost
 > ### Title: Model-based Gradient Boosting
 > ### Aliases: mboost mboost_fit
@@ -1273,7 +1384,7 @@ detaching ‘package:Matrix’, ‘package:lattice’
 > ### ** Examples
 > 
 > 
->   data("bodyfat", package = "mboostDevel")
+>   data("bodyfat", package = "TH.data")
 > 
 >   ### formula interface: additive Gaussian model with
 >   ### a non-linear step-function in `age', a linear function in `waistcirc'
@@ -1281,26 +1392,19 @@ detaching ‘package:Matrix’, ‘package:lattice’
 >   mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc),
 +                 data = bodyfat)
 Loading required package: party
-Loading required package: survival
-Loading required package: splines
 Loading required package: grid
-Loading required package: modeltools
-Loading required package: stats4
-Loading required package: coin
-Loading required package: mvtnorm
 Loading required package: zoo
 
 Attaching package: ‘zoo’
 
-The following object(s) are masked from ‘package:base’:
+The following objects are masked from ‘package:base’:
 
     as.Date, as.Date.numeric
 
 Loading required package: sandwich
 Loading required package: strucchange
-Loading required package: vcd
-Loading required package: MASS
-Loading required package: colorspace
+Loading required package: modeltools
+Loading required package: stats4
 >   layout(matrix(1:6, nc = 3, byrow = TRUE))
 >   plot(mod, ask = FALSE, main = "formula")
 > 
@@ -1312,19 +1416,20 @@ Loading required package: colorspace
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("mboost", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
-  ‘package:MASS’, ‘package:strucchange’, ‘package:sandwich’,
-  ‘package:zoo’, ‘package:coin’, ‘package:mvtnorm’,
-  ‘package:modeltools’, ‘package:stats4’, ‘package:grid’,
-  ‘package:survival’, ‘package:splines’
+detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
+  ‘package:strucchange’, ‘package:sandwich’, ‘package:zoo’,
+  ‘package:grid’
 
 > nameEx("mboost_package")
 > ### * mboost_package
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: mboostDevel-package
 > ### Title: mboostDevel: Model-Based Boosting
 > ### Aliases: mboostDevel-package
@@ -1334,7 +1439,7 @@ detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
 > 
 > 
 > 
->   data("bodyfat")
+>   data("bodyfat", package = "TH.data")
 >   set.seed(290875)
 > 
 >   ### model conditional expectation of DEXfat given
@@ -1345,26 +1450,19 @@ detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
 +       bbs(kneebreadth),           ### a smooth function of kneebreadth
 +       data = bodyfat, control = boost_control(mstop = 100))
 Loading required package: party
-Loading required package: survival
-Loading required package: splines
 Loading required package: grid
-Loading required package: modeltools
-Loading required package: stats4
-Loading required package: coin
-Loading required package: mvtnorm
 Loading required package: zoo
 
 Attaching package: ‘zoo’
 
-The following object(s) are masked from ‘package:base’:
+The following objects are masked from ‘package:base’:
 
     as.Date, as.Date.numeric
 
 Loading required package: sandwich
 Loading required package: strucchange
-Loading required package: vcd
-Loading required package: MASS
-Loading required package: colorspace
+Loading required package: modeltools
+Loading required package: stats4
 > 
 >   ### bootstrap for assessing `optimal' number of boosting iterations
 >   cvm <- cvrisk(model, papply = lapply)
@@ -1398,29 +1496,31 @@ NULL
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("mboost_package", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:party’, ‘package:vcd’, ‘package:colorspace’,
-  ‘package:MASS’, ‘package:strucchange’, ‘package:sandwich’,
-  ‘package:zoo’, ‘package:coin’, ‘package:mvtnorm’,
-  ‘package:modeltools’, ‘package:stats4’, ‘package:grid’,
-  ‘package:survival’, ‘package:splines’
+detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
+  ‘package:strucchange’, ‘package:sandwich’, ‘package:zoo’,
+  ‘package:grid’
 
 > nameEx("methods")
 > ### * methods
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: methods
 > ### Title: Methods for Gradient Boosting Objects
 > ### Aliases: print.glmboost print.mboost summary.mboost coef.mboost
 > ###   coef.glmboost [.mboost AIC.mboost mstop mstop.gbAIC mstop.mboost
-> ###   mstop.cvrisk predict.mboost predict.gamboost predict.blackboost
-> ###   predict.glmboost fitted.mboost residuals.mboost resid.mboost extract
-> ###   extract.mboost extract.gamboost extract.glmboost extract.blackboost
-> ###   extract.blg extract.bl_lin extract.bl_tree logLik.mboost
-> ###   hatvalues.gamboost hatvalues.glmboost selected selected.mboost
-> ###   nuisance nuisance.mboost
+> ###   mstop.cvrisk mstop<- predict.mboost predict.gamboost
+> ###   predict.blackboost predict.glmboost fitted.mboost residuals.mboost
+> ###   resid.mboost variable.names.glmboost variable.names.mboost risk
+> ###   risk.mboost extract extract.mboost extract.gamboost extract.glmboost
+> ###   extract.blackboost extract.blg extract.bl_lin extract.bl_tree
+> ###   logLik.mboost hatvalues.gamboost hatvalues.glmboost selected
+> ###   selected.mboost nuisance nuisance.mboost
 > ### Keywords: methods
 > 
 > ### ** Examples
@@ -2391,6 +2491,22 @@ lambda
 
 >        ## note that bols(x1, intercept = FALSE) is unpenalized
 > 
+>   extract(model, what = "bnames")  ## name of complete base-learner
+[1] "bols(int, intercept = FALSE)"   "bbs(x1, df = 1, center = TRUE)"
+[3] "bols(x1, intercept = FALSE)"    "bols(x2, intercept = FALSE)"   
+>   extract(model, what = "variable.names") ## only variable names
+  bols(int, intercept = FALSE) bbs(x1, df = 1, center = TRUE) 
+                         "int"                           "x1" 
+   bols(x1, intercept = FALSE)    bols(x2, intercept = FALSE) 
+                          "x1"                           "x2" 
+>   variable.names(model)            ## the same
+  bols(int, intercept = FALSE) bbs(x1, df = 1, center = TRUE) 
+                         "int"                           "x1" 
+   bols(x1, intercept = FALSE)    bols(x2, intercept = FALSE) 
+                          "x1"                           "x2" 
+   bols(x3, intercept = FALSE)    bols(x4, intercept = FALSE) 
+                          "x3"                           "x4" 
+> 
 >   ### extract from base-learners
 >   extract(bbs(x1), what = "design")
                  1            2           3          4            5
@@ -2971,47 +3087,68 @@ attr(,"boundary.knots")$upper
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("methods", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("stabsel")
 > ### * stabsel
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: stabsel
 > ### Title: Stability Selection
-> ### Aliases: stabsel
+> ### Aliases: stabsel stabsel_parameters stabsel_parameters.default
+> ###   stabsel_parameters.mboost plot.stabsel
 > ### Keywords: nonparametric
 > 
 > ### ** Examples
 > 
 > 
->   data(bodyfat)
+>   data("bodyfat", package = "TH.data")
 > 
->   ### (too) low-dimensional example
+>   ### low-dimensional example
 >   mod <- glmboost(DEXfat ~ ., data = bodyfat)
->   (sbody <- stabsel(mod, q = 3,
-+                     folds = cv(model.weights(mod), type = "subsampling", B = 25)))
-Warning in stabsel(mod, q = 3, folds = cv(model.weights(mod), type = "subsampling",  :
-  Upper bound for FWER > 0.05 (by at least 0.025) for the given value of ‘q’
-	Stability Selection
+> 
+>   ## compute cutoff ahead of running stabsel to see if it is a sensible
+>   ## parameter choice.
+>   ##   p = ncol(bodyfat) - 1 (= Outcome) + 1 ( = Intercept)
+>   stabsel_parameters(q = 3, PFER = 1, p = ncol(bodyfat) - 1 + 1,
++                      sampling.type = "MB")
+Stability Selection without further assumptions
+Cutoff: 0.95; q: 3; PFER:  1 
+>   ## the same:
+>   stabsel(mod, q = 3, PFER = 1, sampling.type = "MB", eval = FALSE)
+Stability Selection without further assumptions
+Cutoff: 0.95; q: 3; PFER:  1 
+> 
+>   ## now run stability selection; to make results reproducible
+>   set.seed(1234)
+>   (sbody <- stabsel(mod, q = 3, PFER = 1, sampling.type = "MB"))
+	Stability Selection without further assumptions
 
 Selected base-learners:
 waistcirc   hipcirc 
         3         4 
 
 Selection probabilities:
-waistcirc   hipcirc  anthro3a  anthro3b  anthro3c   anthro4 
-     1.00      0.96      0.48      0.08      0.28      0.20 
+kneebreadth    anthro3c    anthro3b     anthro4    anthro3a   waistcirc 
+       0.02        0.10        0.12        0.18        0.64        0.95 
+    hipcirc 
+       0.99 
 
-Cutoff: 0.9; q:  3 
+Cutoff: 0.95; q: 3; PFER:  1 
 
 >   opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
 >   plot(sbody)
 >   par(opar)
 > 
+>   plot(sbody, type = "maxsel", ymargin = 6)
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("stabsel", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("survFit")
@@ -3019,6 +3156,7 @@ Cutoff: 0.9; q:  3
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: survFit
 > ### Title: Survival Curves for a Cox Proportional Hazards Model
 > ### Aliases: survFit survFit.mboost plot.survFit
@@ -3033,8 +3171,6 @@ Loading required package: splines
 > fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps
 > fit <- glmboost(fm, data = ovarian, family = CoxPH(),
 +     control=boost_control(mstop = 500))
-Warning in optimize(risk, interval = c(0, max(y[, 1], na.rm = TRUE)), y = y,  :
-  NA/Inf replaced by maximum positive value
 > 
 > S1 <- survFit(fit)
 > S1
@@ -3094,44 +3230,13 @@ attr(,"class")
 > 
 > 
 > 
-> cleanEx()
-
-detaching ‘package:survival’, ‘package:splines’
-
-> nameEx("wpbc")
-> ### * wpbc
-> 
-> flush(stderr()); flush(stdout())
-> 
-> ### Name: wpbc
-> ### Title: Wisconsin Prognostic Breast Cancer Data
-> ### Aliases: wpbc
-> ### Keywords: datasets
-> 
-> ### ** Examples
-> 
-> 
->     data("wpbc", package = "mboostDevel")
-> 
->     ### fit logistic regression model with 100 boosting iterations
->     coef(glmboost(status ~ ., data = wpbc[,colnames(wpbc) != "time"],
-+                   family = Binomial()))
-     (Intercept)     mean_texture    mean_symmetry  mean_fractaldim 
-   -1.498492e-01    -1.884622e-02    -2.459159e+00    -9.692265e+00 
-    SE_perimeter SE_concavepoints     worst_radius  worst_perimeter 
-    2.147472e-02    -1.054597e+01     1.778602e-02     1.065506e-03 
-      worst_area worst_smoothness            tsize           pnodes 
-    1.585303e-04     5.677908e+00     3.078694e-02     2.126638e-02 
-attr(,"offset")
-[1] -0.5835661
-> 
-> 
-> 
-> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("survFit", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > ### * <FOOTER>
 > ###
-> cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  31.437 0.768 32.842 0 0 
+> options(digits = 7L)
+> base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  15.148 0.38 17.41 1.34 0.14 
 > grDevices::dev.off()
 null device 
           1 

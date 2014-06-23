@@ -1,7 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.1.0 (2014-04-10) -- "Spring Dance"
+Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -22,11 +21,9 @@ Loading required package: mboostDevel
 Loading required package: parallel
 This is mboostDevel 2.3-0. See 'package?mboostDevel' and the NEWS file
 for a complete list of changes.
-Note: The default for the computation of the degrees of freedom has changed.
-      For details see section 'Global Options' of '?bols'.
+
 > require("Matrix")
 Loading required package: Matrix
-Loading required package: lattice
 > 
 > set.seed(290875)
 > 
@@ -35,26 +32,19 @@ Loading required package: lattice
 > pr <- predict(blackboost(y ~ x, data = dummy, family = Binomial()),
 +               newdata = dummy, type = "class")
 Loading required package: party
-Loading required package: survival
-Loading required package: splines
 Loading required package: grid
-Loading required package: modeltools
-Loading required package: stats4
-Loading required package: coin
-Loading required package: mvtnorm
 Loading required package: zoo
 
 Attaching package: 'zoo'
 
-The following object(s) are masked from 'package:base':
+The following objects are masked from 'package:base':
 
     as.Date, as.Date.numeric
 
 Loading required package: sandwich
 Loading required package: strucchange
-Loading required package: vcd
-Loading required package: MASS
-Loading required package: colorspace
+Loading required package: modeltools
+Loading required package: stats4
 > stopifnot(is.factor(pr) && all(levels(pr) %in% levels(dummy$y)))
 > 
 > ### predict for g{al}mboost.matrix did not work
@@ -74,11 +64,16 @@ Loading required package: colorspace
 > gb <- glmboost(x = X, y = dummy$y, family = Binomial(),
 +                control = ctrl, center=TRUE)
 > p1 <- X %*% coef(gb)
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
 > stopifnot(max(abs(p1 - predict(gb, newdata = X))) < sqrt(.Machine$double.eps))
 > 
 > ### blackboost _did_ touch the response, arg!
 > 
-> data("bodyfat", package = "mboostDevel")
+> data("bodyfat", package = "TH.data")
 > ctrl <- boost_control(mstop = 500, nu = 0.01)
 > bb <- blackboost(DEXfat ~ ., data = bodyfat, control = ctrl)
 > n <- nrow(bodyfat)
@@ -118,7 +113,7 @@ Loading required package: colorspace
 > if (FALSE){
 + ### dfbase=1 was not working correctly for ssp
 + ### spotted by Matthias Schmid <Matthias.Schmid@imbe.imed.uni-erlangen.de>
-+ data("bodyfat", package = "mboostDevel")
++ data("bodyfat", package = "TH.data")
 + ctrl <- boost_control(mstop = 100)
 + ### COMMENT: Not using ssp here but P-splines
 + ### Remove check!
@@ -146,7 +141,22 @@ Loading required package: colorspace
 +                family = Binomial())
 > g <- glmboost(y ~ xnm, center = FALSE, family = Binomial())
 > cgc <- coef(gc, off2int = TRUE)
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
 > cg <- coef(g, off2int = TRUE) - c(mean(xn) * coef(g)[2], 0)
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
 > names(cgc) <- NULL
 > names(cg) <- NULL
 > stopifnot(all.equal(cgc, cg))
@@ -191,11 +201,31 @@ Loading required package: colorspace
 +     stopifnot(max(abs(predict(modlm) - predict(modT) * 2))
 +                       < .Machine$double.eps^(1/3))
 + }
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
 > 
 > 
 > ### check gamboost with weights (use weighted some of residuals
 > ### for variable selection)
-> data("bodyfat", package = "mboostDevel")
+> data("bodyfat", package = "TH.data")
 > 
 > set.seed(290875)
 > n <- nrow(bodyfat)
@@ -413,8 +443,18 @@ Error in object$newX(newdata) :
 +                control = boost_control(mstop = 1000))
 > cf1 <- coef(m1)
 > a <- coef(m2); a[1] <- a[1] + m2$offset;
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
 > cf2 <- as.vector(a) * 2
 > b <- coef(m3); b[[1]][1] <- b[[1]][1] + m3$offset;
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
 > cf3 <- b[[1]] * 2
 > 
 > stopifnot(max(abs(cf1 - cf2)) < sqrt(.Machine$double.eps))
@@ -534,48 +574,53 @@ Number of baselearners:  2
 > 
 > ### check if bmrf works correctly
 > ## (if not all locations are observed)
-> require("BayesX")
+> if (require("BayesX")) {
++     germany <- read.bnd(system.file("examples/germany.bnd", package="BayesX"))
++     districts <- attr(germany, "regions")
++     set.seed(1907)
++     regions <- sample(districts, 400, replace = TRUE)
++     B <- bmrf(regions, bnd = germany)
++     X <- extract(B)
++     K <- extract(B, what = "pen")
++     Xs <- colSums(as.matrix(X))
++     names(Xs) <- rownames(K)
++     stopifnot(all(Xs[Xs > 0] == table(regions)[names(Xs[Xs > 0])]))
++ 
++     ## check against old, slower code:
++     Xold <- matrix(0, nrow = length(regions), ncol = ncol(K))
++     for (i in 1:length(regions))
++         Xold[i, which(districts == regions[i])] <- 1
++     stopifnot(all(X == Xold))
++ }
 Loading required package: BayesX
-Loading required package: akima
 Loading required package: shapefiles
 Loading required package: foreign
 
 Attaching package: 'shapefiles'
 
-The following object(s) are masked from 'package:foreign':
+The following objects are masked from 'package:foreign':
 
     read.dbf, write.dbf
 
-> germany <- read.bnd(system.file("examples/germany.bnd", package="BayesX"))
+Note: Function plotsurf depends on akima which has
+ a restricted licence that explicitly forbids commercial use.
+ akima is therefore disabled by default and may be enabled by
+ akimaPermit(). Calling this function includes your agreement to
+ akima`s licence restrictions.
 Read 8852 records
 Note: map consists of 310 polygons
 Note: map consists of 309 regions
 Reading map ... finished
-> districts <- attr(germany, "regions")
-> set.seed(1907)
-> regions <- sample(districts, 400, replace = TRUE)
-> B <- bmrf(regions, bnd = germany)
 Start neighbor search ...
 progress: 50%
 progress: 100%
 Neighbor search finished.
-> X <- extract(B)
-> K <- extract(B, what = "pen")
-> Xs <- colSums(as.matrix(X))
-> names(Xs) <- rownames(K)
-> stopifnot(all(Xs[Xs > 0] == table(regions)[names(Xs[Xs > 0])]))
-> 
-> ## check against old, slower code:
-> Xold <- matrix(0, nrow = length(regions), ncol = ncol(K))
-> for (i in 1:length(regions))
-+     Xold[i, which(districts == regions[i])] <- 1
-> stopifnot(all(X == Xold))
-> 
 > 
 > ## check handling of missing values
 > y <- yNa <- rnorm(100)
 > x1 <- rnorm(100)
 > x2 <- rnorm(100)
+> z1 <- as.factor(sample(1:10, 100, replace = TRUE))
 > 
 > yNa[1] <- NA
 > coef(mboost(yNa ~ x1))
@@ -619,12 +664,13 @@ In mboost_fit(bl, response = response, ...) :
  weights of corresponding observations are set to zero and thus these observations are not used for fitting
 > 
 > x1[1] <- NA
-> mod <- mboost(y ~ bols(x1) + bbs(x1) + brandom(x1) +
+> z1[1] <- NA
+> mod <- mboost(y ~ bols(x1) + bbs(x1) + brandom(z1) +
 +                   bspatial(x1, x2) + brad(x1, x2, knots = 20) +
 +                   bmono(x1) +  buser(x1, K = 1, lambda = 0) + x2)
 Loading required package: fields
 Loading required package: spam
-Spam version 0.29-2 (2012-08-17) is loaded.
+Spam version 0.41-0 (2014-02-26) is loaded.
 Type 'help( Spam)' or 'demo( spam)' for a short introduction 
 and overview of this package.
 Help for individual functions is also obtained by adding the
@@ -632,24 +678,25 @@ suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
 
 Attaching package: 'spam'
 
-The following object(s) are masked _by_ '.GlobalEnv':
+The following object is masked _by_ '.GlobalEnv':
 
     germany
 
-The following object(s) are masked from 'package:stats4':
+The following object is masked from 'package:stats4':
 
     mle
 
-The following object(s) are masked from 'package:base':
+The following objects are masked from 'package:base':
 
     backsolve, forwardsolve
 
+Loading required package: maps
 Warning messages:
 1: In bols(x1) : base-learner contains missing values;
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 2: In bbs(x1) : base-learner contains missing values;
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
-3: In bols(x1, df = 4, intercept = FALSE) :
+3: In bols(z1, df = 4, contrasts.arg = "contr.dummy") :
   base-learner contains missing values;
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 4: In bbs(x1, x2, df = 6) : base-learner contains missing values;
@@ -663,6 +710,29 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 8: In buser(x1, K = 1, lambda = 0) : base-learner contains missing values;
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > 
+> ## check handling of lists without names
+> n <- 100
+> x1 <- rnorm(n)
+> x2 <- rnorm(n) + 0.25 * x1
+> y <- 3 * sin(x1) + x2^2 + rnorm(n)
+> spline1 <- bbs(x1, knots = 20, df = 4)
+> spline2 <- bbs(x2, knots = 10, df = 5)
+> mod1 <- mboost_fit(list(spline1, spline2), y)
+> mod2 <- mboost_fit(list(spline1), y)
+> mod3 <- mboost_fit(list(s1 = spline1, s2 = spline2), y)
+> names(coef(mod1))
+[1] "bbs(x1, knots = 20, df = 4)" "bbs(x2, knots = 10, df = 5)"
+> names(coef(mod2))
+[1] "bbs(x1, knots = 20, df = 4)"
+> names(coef(mod3))
+[1] "s1" "s2"
+> extract(mod1, "bnames")
+[1] "bbs(x1, knots = 20, df = 4)" "bbs(x2, knots = 10, df = 5)"
+> extract(mod2, "bnames")
+[1] "bbs(x1, knots = 20, df = 4)"
+> extract(mod3, "bnames")
+[1] "s1" "s2"
+> 
 > proc.time()
    user  system elapsed 
- 30.245   0.112  30.610 
+ 27.537   0.400  28.366 

@@ -30,9 +30,6 @@
 
     R CMD build --resave-data --compact-vignettes pkg/mboostPatch && R CMD check --as-cran mboost_XXX.tar.gz
 
-    Run check with R-devel
-    (see section "Checking the package with latest development version of R")
-
     If differences to .Rout.save occure:
        - Manually check differences. You might want to use something like:
             cd mboost.Rcheck/tests
@@ -40,16 +37,23 @@
 	or
 	    meld regtest-XXX.Rout.save regtest-XXX.Rout &
 
-       - If ok, copy new .Rout files to .Rout.save:
+       - If ok, copy new .Rout files to .Rout.save [1,2]:
 
        	    Rscript copy_Rout_to_Routsave.R "which='mboostPatch'" "vignettes=FALSE"
 
-       - Update vignette .Rout.save files if necessary
+       - Update vignette .Rout.save files if necessary [1,2]:
 
             Rscript copy_Rout_to_Routsave.R "which='mboostPatch'" "vignettes=TRUE"
 
-	 For details see
-         http://r.789695.n4.nabble.com/Generate-Rout-save-files-for-vignettes-td4652752.html
+	 [1] For details see
+             http://r.789695.n4.nabble.com/Generate-Rout-save-files-for-vignettes-td4652752.html
+         [2] NOTE: Reference output should be produced without having the --timings option set.
+
+    Run check with R-devel
+    (see section "Checking the package with latest development version of R")
+
+    Run checks on WinBuilder (temporarily change maintainer's email address!):
+       upload package to http://win-builder.r-project.org/
 
     Gives no warnings / errors.
 
@@ -59,6 +63,9 @@
 
     Now build package without test folder to be submitted to CRAN
        R CMD buildCRAN --resave-data --compact-vignettes pkg/mboostPatch && R CMD check --as-cran mboost_XXX.tar.gz
+    To use the script copy it to R RHOME (< enter this in the console) /bin and make it executable.
+
+    Check that reverse dependencies don't break.
 
     Ftp source package to CRAN or use web form at http://xmpalantir.wu.ac.at/cransubmit/.
 
@@ -89,21 +96,25 @@
     R CMD build --resave-data --compact-vignettes pkg/mboostDevel
     R CMD check --as-cran mboostDevel_XXX.tar.gz
 
-    Run check with R-devel
-    (see section "Checking the package with latest development version of R")
-
     If differences to .Rout.save occure:
        - Manually check differences
-       - If ok, copy new .Rout files to .Rout.save:
+       - If ok, copy new .Rout files to .Rout.save [3,4]:
 
        	    Rscript copy_Rout_to_Routsave.R "which='mboostDevel'" "vignettes=FALSE"
 
-       - Update vignette .Rout.save files if necessary
+       - Update vignette .Rout.save files if necessary [3,4]:
 
             Rscript copy_Rout_to_Routsave.R "which='mboostDevel'" "vignettes=TRUE"
 
-	 For details see
-         http://r.789695.n4.nabble.com/Generate-Rout-save-files-for-vignettes-td4652752.html
+	 [3] For details see
+             http://r.789695.n4.nabble.com/Generate-Rout-save-files-for-vignettes-td4652752.html
+         [4] NOTE: Reference output should be produced without having the --timings option set.
+
+    Run check with R-devel
+    (see section "Checking the package with latest development version of R")
+
+    Run checks on WinBuilder (temporarily change maintainer's email address!):
+       upload package to http://win-builder.r-project.org/
 
     Gives no warnings / errors.
 
@@ -117,9 +128,12 @@
 	  Build package without test folder to be submitted to CRAN
 	     R CMD buildCRAN --resave-data --compact-vignettes pkg/mboostPatch
        	     R CMD check --as-cran mboost_XXX.tar.gz
+          To use the script copy it to R RHOME (< enter this in the console) /bin and make it executable.
 
 	- ATTENTION: Do NOT commit the new, modified files to mboostDevel
 	  	     (only to mboostPatch and CRAN)
+
+    Check that reverse dependencies don't break.
 
     Ftp source package to CRAN or use web form at http://xmpalantir.wu.ac.at/cransubmit/.
 

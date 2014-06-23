@@ -1,7 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.1.0 (2014-04-10) -- "Spring Dance"
+Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -22,8 +21,10 @@ Loading required package: mboostDevel
 Loading required package: parallel
 This is mboostDevel 2.3-0. See 'package?mboostDevel' and the NEWS file
 for a complete list of changes.
-Note: The default for the computation of the degrees of freedom has changed.
-      For details see section 'Global Options' of '?bols'.
+
+> require("survival")
+Loading required package: survival
+Loading required package: splines
 > 
 > set.seed(290875)
 > 
@@ -78,7 +79,7 @@ Degrees of freedom (for mstop = 37): 4.37119
 > 
 > ### check boosting hat matrix with multiple independent variables
 > ### and weights
-> data("bodyfat", package = "mboostDevel")
+> data("bodyfat", package = "TH.data")
 > bffm <- DEXfat ~ age + waistcirc + hipcirc + elbowbreadth + kneebreadth +
 +       anthro3a + anthro3b + anthro3c + anthro4
 > indep <- names(bodyfat)[names(bodyfat) != "DEXfat"]
@@ -193,26 +194,19 @@ In gamboost(fm2, data = tmp, base = "bss", dfbase = 3) :
 > fm2 <- y ~ x1 + x2
 > mod1 <- gamboost(fm1, data = tmp)
 Loading required package: party
-Loading required package: survival
-Loading required package: splines
 Loading required package: grid
-Loading required package: modeltools
-Loading required package: stats4
-Loading required package: coin
-Loading required package: mvtnorm
 Loading required package: zoo
 
 Attaching package: 'zoo'
 
-The following object(s) are masked from 'package:base':
+The following objects are masked from 'package:base':
 
     as.Date, as.Date.numeric
 
 Loading required package: sandwich
 Loading required package: strucchange
-Loading required package: vcd
-Loading required package: MASS
-Loading required package: colorspace
+Loading required package: modeltools
+Loading required package: stats4
 > mod2 <- gamboost(fm2, data = tmp, base = "btree")
 > stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
 > stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
@@ -222,9 +216,6 @@ Loading required package: colorspace
 > fit2 <- gamboost(Surv(futime, fustat) ~ bbs(age) +
 +     bols(resid.ds) + bols(rx) + bols(ecog.ps), data = ovarian,
 +     family = CoxPH(), control = boost_control(mstop = 1000))
-Warning message:
-In optimize(risk, interval = c(0, max(y[, 1], na.rm = TRUE)), y = y,  :
-  NA/Inf replaced by maximum positive value
 > 
 > A2 <- survFit(fit2)
 > A2
@@ -294,7 +285,7 @@ In bols(x, intercept = FALSE) :
 > stopifnot(tmp < 1e-5)
 > 
 > ### predictions:
-> data("bodyfat", package = "mboostDevel")
+> data("bodyfat", package = "TH.data")
 > amod <- gamboost(DEXfat ~ hipcirc + anthro3a, data = bodyfat, baselearner = "bbs")
 > 
 > agg <- c("none", "sum", "cumsum")
@@ -408,6 +399,11 @@ Number of baselearners:  3
 +                  data = DF, baselearner = "bols", control=boost_control(mstop=5000))
 > logit <- glm(y ~ x1, data=DF, family=binomial)
 > stopifnot(coef(logitBoost)[[1]][2]*2 - coef(logit)[2]  < sqrt(.Machine$double.eps)) # * 2 as we use y = {-1, 1}
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
 > 
 > pr <- predict(logitBoost)
 > pr2 <- predict(logit)
@@ -423,7 +419,7 @@ Number of baselearners:  3
 > stopifnot(pr - pr2  < sqrt(.Machine$double.eps))
 > 
 > ### coefficients:
-> data("bodyfat", package = "mboostDevel")
+> data("bodyfat", package = "TH.data")
 > amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth,
 +                  data = bodyfat, baselearner = "bbs")
 > stopifnot(length(coef(amod)) == 3)
@@ -502,7 +498,7 @@ Number of baselearners:  3
 +                  control = boost_control(mstop = 1000))
 Warning in Xfun(mf, vary, args) :
   'df' equal to rank of null space (unpenalized part of P-spline);
-  Consider larger value for 'df' or set 'center = TRUE'.
+  Consider larger value for 'df' or set 'center != FALSE'.
 > X <- extract(bbs(x))
 > K <- extract(bbs(x), "penalty")
 > mod10 <- gamboost(y ~  buser(X, K) + buser(X, K, by = z),
@@ -511,4 +507,4 @@ Warning in Xfun(mf, vary, args) :
 > 
 > proc.time()
    user  system elapsed 
- 13.428   0.096  13.663 
+ 11.304   0.216  11.760 

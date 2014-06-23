@@ -1,0 +1,5 @@
+demo
+to_do_list.txt
+test
+^\..*
+vignettes/.*\.Rout\.save$

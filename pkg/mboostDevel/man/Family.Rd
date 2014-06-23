@@ -253,11 +253,11 @@ distribution approximation used in Ma and Huang (2005).
     \emph{Statistics and Computing}, \bold{20}, 139-150.
 
     Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
-    (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
-    Package mboost. \emph{Computational Statistics}.\cr
+    (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
+    Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
     \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
 
-    Available as vignette via: vignette(package = "mboostDevel", "mboost_tutorial")
+    Available as vignette via: \code{vignette(package = "mboostDevel", "mboost_tutorial")}
 
     Brent A. Johnson and Qi Long (2011) Survival ensembles by the sum of pairwise
     differences with application to lung cancer microarray studies.
@@ -288,7 +288,7 @@ distribution approximation used in Ma and Huang (2005).
                   family = Multinomial())
     head(round(predict(mlm, type = "response"), 2))
 
-    \dontrun{
+    \donttest{
     ### compare results with nnet::multinom
     mlmn <- multinom(Species ~ Sepal.Length, data = iris)
     max(abs(fitted(mlm[1000], type = "response") -

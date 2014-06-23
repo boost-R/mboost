@@ -7,7 +7,7 @@
 \description{
   Functional gradient descent algorithm
   (boosting) for optimizing general risk functions utilizing
-  component-wise (penalised) least squares estimates or regression
+  component-wise (penalized) least squares estimates or regression
   trees as base-learners for fitting generalized linear, additive
   and interaction models to potentially high-dimensional data.
 }
@@ -16,13 +16,13 @@
 Package: \tab mboostDevel\cr
 Type: \tab Package\cr
 Version: \tab 2.3-0\cr
-Date: \tab 2013-XX-XX\cr
+Date: \tab 2014-06-23\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes\cr
 }
 
-  This package is intended for modern regression modelling and stands
+  This package is intended for modern regression modeling and stands
   in-between classical generalized linear and additive models, as for example
   implemented by \code{\link{lm}}, \code{\link{glm}}, or \code{\link[mgcv]{gam}},
   and machine-learning approaches for complex interactions models,
@@ -46,15 +46,41 @@ LazyData: \tab yes\cr
   determine an appropriate model complexity. This task is the responsibility
   of the data analyst.
 
-  Hofner et al. (2012) present a comprehensive hands-on tutorial for using the
-  package \code{mbost}.
+  Hofner et al. (2014) present a comprehensive hands-on tutorial for using the
+  package \code{mboost}, which is also available as
+  \code{vignette(package = "mboostDevel", "mboost_tutorial")}.
 
   Ben Taieba and Hyndman (2013) used this package for fitting their model in the
   Kaggle Global Energy Forecasting Competition 2012. The corresponding research
-  paper is a good starting point when you plan to analyse your data using
+  paper is a good starting point when you plan to analyze your data using
   \code{mboost}.
 
 }
+
+\section{NEWS in 2.3-series}{
+
+  The stability selection procedure has been completely rewritten and
+  improved. The code base is now extensively tested. New options allow
+  for a less conservative error control.
+
+  Constrained effects can now be fitted using quadratic programming
+  methods using the option \code{type = "quad.prog"} (default) for
+  highly improved speed. Additionally, new constraints have been added.
+
+  Other important changes include:
+  \itemize{
+    \item A new replacement function \code{mstop(mod) <- i} as an alternative to
+    \code{mod[i]} was added (as suggested by Achim Zeileis).
+
+    \item We added new families \code{Hurdle} and \code{Multinomial}.
+
+    \item We added a new argument \code{stopintern} for internal stopping
+     (based on out-of-bag data) during fitting to \code{boost_control}.
+  }
+
+  For more changes see NEWS file.
+}
+
 \section{NEWS in 2.2-series}{
   Starting from version 2.2, the default for the degrees of freedom has
   changed. Now the degrees of freedom are (per default) defined as
@@ -67,7 +93,7 @@ LazyData: \tab yes\cr
   \code{options(mboost_dftraceS = TRUE)} (see also B. Hofner et al.,
   2011 and \code{\link{bols}}).
 
-  Other important changes inlclude:
+  Other important changes include:
   \itemize{
     \item We switched from packages \code{multicore} and \code{snow} to
     \code{parallel}
@@ -75,7 +101,7 @@ LazyData: \tab yes\cr
     \item We changed the behavior of \code{bols(x, intercept = FALSE)}
     when \code{x} is a factor: now the intercept is simply dropped from
     the design matrix and the coding can be specified as usually for
-    factors. Addtionally, a new contrast is introduced:
+    factors. Additionally, a new contrast is introduced:
     \code{"contr.dummy"} (see \code{\link{bols}} for details).
 
     \item We changed the computation of B-spline basis at the
@@ -139,7 +165,7 @@ LazyData: \tab yes\cr
   Boosting algorithms: regularization, prediction and model fitting.
   \emph{Statistical Science}, \bold{22}(4), 477--505.
 
-  Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Mattthias Schmid and
+  Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Matthias Schmid and
   Benjamin Hofner (2010), Model-based Boosting 2.0. \emph{Journal of
   Machine Learning Research}, \bold{11}, 2109--2113.
 
@@ -148,15 +174,16 @@ LazyData: \tab yes\cr
   \emph{Journal of Computational and Graphical Statistics}, \bold{20}, 956--971.
 
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
-  (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
-  Package mboost. \emph{Computational Statistics}.\cr
+  (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
+  Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
   \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
 
-  Available as vignette via: vignette(package = "mboostDevel", "mboost_tutorial")
+  Available as vignette via: \code{vignette(package = "mboostDevel",
+    "mboost_tutorial")}
 
-  Souhaib Ben Taieba and Rob J. Hyndman (2013),
+  Souhaib Ben Taieba and Rob J. Hyndman (2014),
   A gradient boosting approach to the Kaggle load forecasting competition.
-  \emph{International Journal of Forecasting},
+  \emph{International Journal of Forecasting}, \bold{30}, 382--394.\cr
   \url{http://dx.doi.org/10.1016/j.ijforecast.2013.07.005}
 
 }

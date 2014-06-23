@@ -173,12 +173,13 @@ bl1 \%O\% bl2
     conjunction with \code{boundary.constraints = TRUE}.}
   \item{type}{
     determines how the constrained least squares problem should be
-    solved. If \code{type = "iterative"}, the iterative procedure
-    described in  Hofner et al. (2011b) is used. If \code{type =
-      "quad.prog"}, a numeric quadratic programming method (Goldfarb and
-    Idnani, 1982, 1983) is used (see \code{\link{solve.QP}} in package
-    \pkg{quadprog}). The quadratic programming approach is usually much
-    faster than the iterative approach.
+    solved. If \code{type = "quad.prog"}, a numeric quadratic
+    programming method (Goldfarb and Idnani, 1982, 1983) is used
+    (see \code{\link{solve.QP}} in package \pkg{quadprog}). If
+    \code{type = "iterative"}, the iterative procedure described in
+    Hofner et al. (2011b) is used. The quadratic programming approach is
+    usually much faster than the iterative approach. For details see
+    Hofner et al. (2014).
   }
   \item{lambda2}{ penalty parameter for the (monotonicity) constraint. }
   \item{niter}{ maximum number of iterations used to compute constraint
@@ -383,8 +384,10 @@ bl1 \%O\% bl2
   with an additional asymmetric penalty enforcing monotonicity or
   convexity/concavity (see and Eilers, 2005). For more details in the
   boosting context and monotonic effects of ordinal factors see Hofner,
-  Mueller and Hothorn (2011b). Alternative monotonicity constraints
-  are implemented via T-splines in \code{bbs()} (Beliakov, 2000).
+  Mueller and Hothorn (2011b). The quadratic-programming based algorithm
+  is described in Hofner et al. (2014). Alternative monotonicity
+  constraints are implemented via T-splines in \code{bbs()} (Beliakov,
+  2000).
 
   Two or more linear base-learners can be joined using \code{\%+\%}. A
   tensor product of two or more linear base-learners is returned by
@@ -484,6 +487,10 @@ bl1 \%O\% bl2
   Monotonicity-Constrained Species Distribution Models,
   \emph{Ecology}, \bold{92}, 1895--1901.
 
+  Benjamin Hofner, Thomas Kneib, and Torsten Hothorn (2014),
+  A Unified Framework of Constrained Regression,
+  \emph{Technical Report}, \url{http://arxiv.org/abs/1403.7118}.
+
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable
   selection and model choice in geoadditive regression models,
   \emph{Biometrics}, \bold{65}(2), 626--634.
@@ -517,14 +524,13 @@ bl1 \%O\% bl2
 
   ### set up base-learners
   spline1 <- bbs(x1, knots = 20, df = 4)
-  attributes(spline1)
-
+  extract(spline1, "design")[1:10, 1:10]
+  extract(spline1, "penalty")
   knots.x2 <- quantile(x2, c(0.25, 0.5, 0.75))
   spline2 <- bbs(x2, knots = knots.x2, df = 5)
-  attributes(spline2)
-
-  attributes(ols3 <- bols(x3))
-  attributes(ols4 <- bols(x4))
+  ols3 <- bols(x3)
+  extract(ols3)
+  ols4 <- bols(x4)
 
   ### compute base-models
   drop(ols3$dpp(weights)$fit(y)$model) ## same as:
@@ -550,9 +556,10 @@ bl1 \%O\% bl2
   model <- gamboost(y ~ bols(x1, x2, intercept = FALSE) +
                         bols(x1, intercept = FALSE) +
                         bols(x2, intercept = FALSE),
-                        control = boost_control(mstop = 400))
+                        control = boost_control(mstop = 50))
   coef(model, which = 1)   # one base-learner for x1 and x2
   coef(model, which = 2:3) # two separate base-learners for x1 and x2
+                           # zero because they were (not yet) selected.
 
   ### example for bspatial
   x1 <- runif(250,-pi,pi)
@@ -561,21 +568,56 @@ bl1 \%O\% bl2
   y <- sin(x1) * sin(x2) + rnorm(250, sd = 0.4)
 
   spline3 <- bspatial(x1, x2, knots = 12)
-  attributes(spline3)
+  Xmat <- extract(spline3, "design")
+  ## 12 inner knots + 4 boundary knots = 16 knots per direction
+  ## THUS: 16 * 16 = 256 columns
+  dim(Xmat)
+  extract(spline3, "penalty")[1:10, 1:10]
 
   ## specify number of knots separately
-  form2 <- y ~ bspatial(x1, x2, knots = list(x1 = 12, x2 = 12))
+  form1 <- y ~ bspatial(x1, x2, knots = list(x1 = 12, x2 = 14))
 
   ## decompose spatial effect into parametric part and
   ## deviation with one df
   form2 <- y ~ bols(x1) + bols(x2) + bols(x1, by = x2, intercept = FALSE) +
                bspatial(x1, x2, knots = 12, center = TRUE, df = 1)
 
+\donttest{  mod1 <- gamboost(form1)
+  plot(mod1)
+
+  mod2 <- gamboost(form2)
+  x11()
+  ## automated plot function:
+  plot(mod2)
+  ## plot sum of linear and smooth effects:
+  library(lattice)
+  df <- expand.grid(x1 = unique(x1), x2 = unique(x2))
+  df$pred <- predict(mod2, newdata = df)
+  levelplot(pred ~ x1 * x2, data = df)
+}
+
+  ## specify radial basis function base-learner for spatial effect
+  ## and use data-adaptive effective range (theta = NULL, see 'args')
+  form3 <- y ~ brad(x1, x2)
+  ## Now use different settings, e.g. 50 knots and theta fixed to 0.4
+  ## (not really a good setting)
+  form4 <- y ~ brad(x1, x2, knots = 50, args = list(theta = 0.4))
+
+\donttest{  mod3 <- gamboost(form3)
+plot(mod3)
+dim(extract(mod3, what = "design", which = "brad")[[1]])
+knots <- attr(extract(mod3, what = "design", which = "brad")[[1]], "knots")
+
+mod4 <- gamboost(form4)
+dim(extract(mod4, what = "design", which = "brad")[[1]])
+plot(mod4)
+}
 
   ### random intercept
   id <- factor(rep(1:10, each = 5))
   raneff <- brandom(id)
-  attributes(raneff)
+  extract(raneff, "design")
+  extract(raneff, "penalty")
 
   ## random intercept with non-observed category
   set.seed(1907)
@@ -592,7 +634,8 @@ bl1 \%O\% bl2
   ### random slope
   z <- runif(50)
   raneff <- brandom(id, by = z)
-  attributes(raneff)
+  extract(raneff, "design")
+  extract(raneff, "penalty")
 
   ### specify simple interaction model (with main effect)
   n <- 210
@@ -607,14 +650,14 @@ bl1 \%O\% bl2
   plot(y ~ x, col = z)
   ## specify main effect and interaction
   mod_glm <- gamboost(y ~ bols(x) + bols(x, by = z),
-                  control = boost_control(mstop = 1000))
+                  control = boost_control(mstop = 100))
   nd <- data.frame(x, z)
   nd <- nd[order(x),]
   nd$pred_glm <- predict(mod_glm, newdata = nd)
   for (i in seq(along = levels(z)))
       with(nd[nd$z == i,], lines(x, pred_glm, col = z))
-  mod_gam <- gamboost(y ~ bbs(x) + bbs(x, by = z),
-                      control = boost_control(mstop = 1000))
+  mod_gam <- gamboost(y ~ bbs(x) + bbs(x, by = z, df = 8),
+                      control = boost_control(mstop = 100))
   nd$pred_gam <- predict(mod_gam, newdata = nd)
   for (i in seq(along = levels(z)))
       with(nd[nd$z == i,], lines(x, pred_gam, col = z, lty = "dashed"))
@@ -629,27 +672,28 @@ bl1 \%O\% bl2
   mod <- gamboost(y ~ bols(int, intercept = FALSE) +
                       bols(x, intercept = FALSE),
                   data = tmpdata,
-                  control = boost_control(mstop = 2500))
+                  control = boost_control(mstop = 1000))
   cf <- unlist(coef(mod))
+  ## add offset
   cf[1] <- cf[1] + mod$offset
-  cf
-  coef(lm(y ~ x, data = tmpdata))
+  signif(cf, 3)
+  signif(coef(lm(y ~ x, data = tmpdata)), 3)
 
-  ### quicker and better with (mean-) centering
+  ### much quicker and better with (mean-) centering
   tmpdata$x_center <- tmpdata$x - mean(tmpdata$x)
   mod_center <- gamboost(y ~ bols(int, intercept = FALSE) +
                              bols(x_center, intercept = FALSE),
                          data = tmpdata,
-                         control = boost_control(mstop = 500))
+                         control = boost_control(mstop = 100))
   cf_center <- unlist(coef(mod_center, which=1:2))
   ## due to the shift in x direction we need to subtract
   ## beta_1 * mean(x) to get the correct intercept
   cf_center[1] <- cf_center[1] + mod_center$offset -
                   cf_center[2] * mean(tmpdata$x)
-  cf_center
-  coef(lm(y ~ x, data = tmpdata))
+  signif(cf_center, 3)
+  signif(coef(lm(y ~ x, data = tmpdata)), 3)
 
-  ### large data set with ties
+\donttest{  ### large data set with ties
   nunique <- 100
   xindex <- sample(1:nunique, 1000000, replace = TRUE)
   x <- runif(nunique)
@@ -675,6 +719,7 @@ bl1 \%O\% bl2
 
   all.equal(c1, c2)
   all.equal(c1, c3)
+}
 
   ### cyclic P-splines
   set.seed(781)
@@ -742,7 +787,7 @@ bl1 \%O\% bl2
   volf <- matrix(fitted(mod), nrow = nrow(volcano))
   image(volf, main = "fitted")
 
-  ## the old-fashioned way, a waste of space and time
+\donttest{  ## the old-fashioned way, a waste of space and time
   x <- expand.grid(x1, x2)
   modx <- mboost(vol ~ bbs(Var2, df = 3, knots = 10)\%X\%
                        bbs(Var1, df = 3, knots = 10), data = x,
@@ -750,7 +795,7 @@ bl1 \%O\% bl2
   modx[250]
 
   max(abs(fitted(mod) - fitted(modx)))
-
+}
 
   ### setting contrasts via contrasts.arg
   x <- as.factor(sample(1:4, 100, replace = TRUE))

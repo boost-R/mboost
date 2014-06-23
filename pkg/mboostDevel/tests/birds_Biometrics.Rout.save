@@ -1,7 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.1.0 (2014-04-10) -- "Spring Dance"
+Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -21,9 +20,8 @@ Type 'q()' to quit R.
 Loading required package: parallel
 This is mboostDevel 2.3-0. See 'package?mboostDevel' and the NEWS file
 for a complete list of changes.
-Note: The default for the computation of the degrees of freedom has changed.
-      For details see section 'Global Options' of '?bols'.
-> data("birds", package = "mboostDevel")
+
+> data("birds", package = "TH.data")
 > 
 > # define characteristics of the boosting algorithm
 > bcr <- boost_control(mstop=200, trace=TRUE)
@@ -316,4 +314,4 @@ Final risk: 497.9626
 > 
 > proc.time()
    user  system elapsed 
- 19.085   0.208  19.343 
+ 19.933   0.284  20.781 

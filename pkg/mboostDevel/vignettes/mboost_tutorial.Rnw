@@ -121,7 +121,7 @@ if (!file.exists("graphics"))
 \begin{center}
   \small
   \textbf{This is an extended and slightly modified version of the manuscript}\\
-  Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Mattthias Schmid (2012),
+  Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Mattthias Schmid (2014),
   Model-based Boosting in \textsf{R} - A Hands-on Tutorial Using the \textsf{R}
   Package mboost. \emph{Computational Statistics}, 29:3-35.\\
   DOI \href{http://dx.doi.org/10.1007/s00180-012-0382-5}{10.1007/s00180-012-0382-5}.\\

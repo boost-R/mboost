@@ -99,6 +99,12 @@ AIC.mboost <- function(object, method = c("corrected", "classical", "gMDL"),
                        df = c("trace", "actset"), ..., k = 2) {
 
     df <- match.arg(df)
+    if (df == "actset" && !inherits(object, "glmboost")) {
+        df <- "trace"
+        warning("df = ", dQuote("actset"), " can only be used with ",
+                sQuote("glmboost"), " models. df = ", dQuote("trace"),
+                " is used instead.")
+    }
     if (df == "trace") {
         hatval <- hatvalues(object)
         RET <- AICboost(object, method = method,

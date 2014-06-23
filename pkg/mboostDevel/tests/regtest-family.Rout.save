@@ -1,7 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.1.0 (2014-04-10) -- "Spring Dance"
+Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -21,8 +20,7 @@ Type 'q()' to quit R.
 Loading required package: parallel
 This is mboostDevel 2.3-0. See 'package?mboostDevel' and the NEWS file
 for a complete list of changes.
-Note: The default for the computation of the degrees of freedom has changed.
-      For details see section 'Global Options' of '?bols'.
+
 > 
 > set.seed(290875)
 > x <- rnorm(100)
@@ -275,7 +273,7 @@ Loading required package: splines
 > 
 > 
 > ### AUC
-> data("wpbc", package = "mboostDevel")
+> data("wpbc", package = "TH.data")
 > wpbc[,colnames(wpbc) != "status"] <- scale(wpbc[,colnames(wpbc) != "status"])
 > wpbc <- wpbc[complete.cases(wpbc), colnames(wpbc) != "time"]
 > mAUC <- gamboost(status ~ ., data = wpbc, family = AUC())
@@ -340,8 +338,69 @@ intercept        x1        x2        x3        x4        x5        x6        x7
        x8 
    -0.005 
 attr(,"offset")
-[1] 353.4646
+[1] 5.867733
+> 
+> ## Binomial
+> y <- as.factor(sample(0:1, 100, replace = TRUE))
+> x1 <- rnorm(100)
+> x2 <- rnorm(100)
+> 
+> mod <- glmboost(y ~ x1 + x2, family = Binomial())
+> mod[500]
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ x1 + x2, family = Binomial())
+
+
+	 Negative Binomial Likelihood 
+
+Loss function: { 
+     f <- pmin(abs(f), 36) * sign(f) 
+     p <- exp(f)/(exp(f) + exp(-f)) 
+     y <- (y + 1)/2 
+     -y * log(p) - (1 - y) * log(1 - p) 
+ } 
+ 
+
+Number of boosting iterations: mstop = 500 
+Step size:  0.1 
+Offset:  -0.06007216 
+
+Coefficients: 
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+(Intercept)          x1          x2 
+-0.01576318 -0.06878163 -0.14595322 
+attr(,"offset")
+[1] -0.06007216
+
+> coef(mod)
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+(Intercept)          x1          x2 
+-0.01576318 -0.06878163 -0.14595322 
+attr(,"offset")
+[1] -0.06007216
+> 
+> glmMod <- glm(y ~ x1 + x2, family = 'binomial')
+> coef(glmMod)
+(Intercept)          x1          x2 
+ -0.1516707  -0.1375633  -0.2919064 
+> stopifnot(all((coef(glmMod) - coef(mod, off2int = TRUE) * 2) < .Machine$double.eps))
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
 > 
 > proc.time()
    user  system elapsed 
- 21.617   0.076  21.735 
+ 16.089   0.132  16.405 

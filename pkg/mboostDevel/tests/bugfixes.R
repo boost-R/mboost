@@ -458,3 +458,20 @@ z1[1] <- NA
 mod <- mboost(y ~ bols(x1) + bbs(x1) + brandom(z1) +
                   bspatial(x1, x2) + brad(x1, x2, knots = 20) +
                   bmono(x1) +  buser(x1, K = 1, lambda = 0) + x2)
+
+## check handling of lists without names
+n <- 100
+x1 <- rnorm(n)
+x2 <- rnorm(n) + 0.25 * x1
+y <- 3 * sin(x1) + x2^2 + rnorm(n)
+spline1 <- bbs(x1, knots = 20, df = 4)
+spline2 <- bbs(x2, knots = 10, df = 5)
+mod1 <- mboost_fit(list(spline1, spline2), y)
+mod2 <- mboost_fit(list(spline1), y)
+mod3 <- mboost_fit(list(s1 = spline1, s2 = spline2), y)
+names(coef(mod1))
+names(coef(mod2))
+names(coef(mod3))
+extract(mod1, "bnames")
+extract(mod2, "bnames")
+extract(mod3, "bnames")

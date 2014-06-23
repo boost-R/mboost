@@ -1,7 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.1.0 (2014-04-10) -- "Spring Dance"
+Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -22,8 +21,7 @@ Loading required package: mboostDevel
 Loading required package: parallel
 This is mboostDevel 2.3-0. See 'package?mboostDevel' and the NEWS file
 for a complete list of changes.
-Note: The default for the computation of the degrees of freedom has changed.
-      For details see section 'Global Options' of '?bols'.
+
 > 
 > set.seed(290875)
 > 
@@ -63,22 +61,9 @@ Note: The default for the computation of the degrees of freedom has changed.
 > mydf.lm <- lm(y ~ ., data = mydf)
 > 
 > ### compare coefficients
-> which(abs(coef(mydf.lm)) < abs(coef(mydf.gb[mstop(aic)])))
-(Intercept)          X1          X2          X4          X5          X6 
-          1           2           3           5           6           7 
-         X7          X8          X9         X11         X12         X13 
-          8           9          10          12          13          14 
-        X14         X15         X16         X17         X19         X20 
-         15          16          17          18          20          21 
-        X21         X22         X23         X24         X25         X27 
-         22          23          24          25          26          28 
-        X29         X30         X31         X33         X34         X35 
-         30          31          32          34          35          36 
-        X37         X38         X39 
-         38          39          40 
-Warning message:
-In abs(coef(mydf.lm)) < abs(coef(mydf.gb[mstop(aic)])) :
-  longer object length is not a multiple of shorter object length
+> which(abs(coef(mydf.lm, which = "")) < abs(coef(mydf.gb[mstop(aic)], which = "")))
+(Intercept)          X1         X10         X14         X37 
+          1           2          11          15          38 
 > 
 > #### check boosting hat matrix and subsetting / predict
 > stopifnot(isTRUE(all.equal(drop(attr(ht, "hatmatrix") %*% mydf$y),
@@ -134,6 +119,11 @@ attr(,"offset")
 > stopifnot(max(abs(predict(gmod, type = "link")/2 - fitted(bmod))) <
 +                   sqrt(.Machine$double.eps))
 > cfb <- coef(bmod, off2int = TRUE) * 2
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
 > stopifnot(all.equal(cfb, coef(gmod)))
 > aic <- AIC(bmod, "classical")
 > stopifnot(abs(AIC(gmod) - attr(aic, "AIC")[mstop(bmod)]) < 1e-5)
@@ -210,16 +200,11 @@ Loading required package: splines
 > fit <- coxph(fmSurv, data = ovarian)
 > fit2 <- glmboost(fm, data = ovarian, family = CoxPH(),
 +     control=boost_control(mstop = 1000), center = TRUE)
-Warning messages:
-1: In glmboost.formula(fm, data = ovarian, family = CoxPH(), control = boost_control(mstop = 1000),  :
+Warning message:
+In glmboost.formula(fm, data = ovarian, family = CoxPH(), control = boost_control(mstop = 1000),  :
   model with centered covariates does not contain intercept
-2: In optimize(risk, interval = c(0, max(y[, 1], na.rm = TRUE)), y = y,  :
-  NA/Inf replaced by maximum positive value
 > fit3 <- glmboost(fm, data = ovarian, family = CoxPH(),
 +     control=boost_control(mstop = 1000), center = FALSE)
-Warning message:
-In optimize(risk, interval = c(0, max(y[, 1], na.rm = TRUE)), y = y,  :
-  NA/Inf replaced by maximum positive value
 > 
 > A1 <- survfit(fit, censor = FALSE)
 > A2 <- survFit(fit2)
@@ -398,6 +383,11 @@ attr(,"offset")
 +                  data = DF,  control=boost_control(mstop=5000))
 > logit <- glm(y ~ x1, data=DF, family=binomial)
 > stopifnot(coef(logitBoost)[2]*2 - coef(logit)[2] < 1e-5) # * 2 as we use y = {-1, 1}
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
 > 
 > pr <- predict(logitBoost)
 > pr2 <- predict(logit)
@@ -484,22 +474,42 @@ y
 > mod2 <- glmboost(y ~ x, family = Binomial(link = "probit"),
 +                  control = boost_control(nu = 0.5, mstop = 1000))
 > coef(mod2, off2int = TRUE)
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
 (Intercept)           x 
  0.09211252  3.10050675 
 > stopifnot(all.equal(round(coef(mod), 2), round(coef(mod2, off2int = TRUE), 2)))
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
 > 
-> data("GlaucomaM", package = "ipred")
+> data("GlaucomaM", package = "TH.data")
 > coef(mod3 <- glm(Class ~ varg, data = GlaucomaM, family = binomial(link = "probit")))
 (Intercept)        varg 
   -1.857396    6.689428 
 > coef(mod4 <- glmboost(Class ~ varg, data = GlaucomaM, family = Binomial(link = "probit"))[1000])
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
 (Intercept)        varg 
   -1.857388    6.689372 
 attr(,"offset")
 [1] 0
 > stopifnot(all.equal(round(coef(mod3), 3), round(coef(mod4, off2int = TRUE), 3)))
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
 > 
 > 
 > proc.time()
    user  system elapsed 
- 17.101   0.088  17.232 
+ 15.232   0.176  15.561 

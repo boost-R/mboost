@@ -126,11 +126,11 @@ stabsel_parameters(p, cutoff, q, PFER,
 
   N. Meinshausen and P. Buehlmann (2010), Stability selection.
   \emph{Journal of the Royal Statistical Society, Series B},
-  \bold{72}:417--473.
+  \bold{72}, 417--473.
 
   R.D. Shah and R.J. Samworth (2013), Variable selection with error
   control: another look at stability selection. \emph{Journal of the Royal
-  Statistical Society, Series B}, \bold{75}:55--80.
+  Statistical Society, Series B}, \bold{75}, 55--80.
 
 }
 \examples{
