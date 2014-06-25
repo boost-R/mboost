@@ -560,7 +560,7 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
 
 ### cyclic B-splines
 ### adapted version of mgcv:cSplineDes from S.N. Wood
-cbs <- function (x, knots, boundary.knots, degree = 3, deriv) {
+cbs <- function (x, knots, boundary.knots, degree = 3, deriv = 0L) {
     # require(splines)
     nx <- names(x)
     x <- as.vector(x)
@@ -600,7 +600,8 @@ cbs <- function (x, knots, boundary.knots, degree = 3, deriv) {
     return(X)
 }
 
-bsplines <- function(x, knots, boundary.knots, degree, Ts_constraint, deriv){
+bsplines <- function(x, knots, boundary.knots, degree,
+                     Ts_constraint = "none", deriv = 0L){
     nx <- names(x)
     x <- as.vector(x)
     ## handling of NAs
