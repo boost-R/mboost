@@ -36,8 +36,10 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   \item{family}{a \code{\link{Family}} object.}
   \item{control}{ a list of parameters controlling the algorithm. For
     more details see \code{\link{boost_control}}. }
-  \item{oobweights}{ an additional vector of out-of-bag weights (used internally
-    by \code{cvrisk}).}
+  \item{oobweights}{ an additional vector of out-of-bag weights, which is
+    used for the out-of-bag risk (i.e., if \code{boost_control(risk =
+      "oobag")}). This argument is also used internally by
+    \code{cvrisk}. }
   \item{\dots}{  additional arguments passed to \code{\link{mboost_fit}},
     including \code{weights}, \code{offset}, \code{family} and
     \code{control}. }
@@ -105,11 +107,11 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   \emph{The Annals of Statistics}, \bold{29}, 1189--1232.
 
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
-  (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
-  Package mboost. \emph{Department of Statistics, Technical Report No. 120}.\cr
-  \url{http://epub.ub.uni-muenchen.de/12754/}
+  (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
+  Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
+  \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
 
-  Available as vignette via: vignette(package = "mboost", "mboost_tutorial")
+  Available as vignette via: \code{vignette(package = "mboost", "mboost_tutorial")}
 
 }
 \seealso{\code{\link{glmboost}} for boosted linear models and
@@ -120,7 +122,7 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   \code{\link[mboost]{methods}}. }
 \examples{
 
-  data("bodyfat", package = "mboost")
+  data("bodyfat", package = "TH.data")
 
   ### formula interface: additive Gaussian model with
   ### a non-linear step-function in `age', a linear function in `waistcirc'

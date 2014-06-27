@@ -19,6 +19,8 @@
 \alias{Lognormal}
 \alias{AUC}
 \alias{Gehan}
+\alias{Hurdle}
+\alias{Multinomial}
 \title{ Gradient Boosting Families }
 \description{
     \code{boost_family} objects provide a convenient way to specify loss functions
@@ -55,6 +57,8 @@ Weibull(nuirange = c(0, 100))
 Loglog(nuirange = c(0, 100))
 Lognormal(nuirange = c(0, 100))
 Gehan()
+Hurdle(nuirange = c(0, 100))
+Multinomial()
 }
 \arguments{
   \item{ngradient}{ a function with arguments \code{y}, \code{f} and \code{w} implementing the
@@ -180,13 +184,29 @@ distribution approximation used in Ma and Huang (2005).
   models can be boosted using these families. For details see Schmid and
   Hothorn (2008) and Schmid et al. (2010).
 
-  \code{Gehan()} implements rank-based estimation of survival data in an  
+  \code{Gehan()} implements rank-based estimation of survival data in an
   accelerated failure time model. The loss function is defined as the sum
   of the pairwise absolute differences of residuals. The response needs to
   be defined as \code{Surv(y, delta)}, where \code{y} is the observed survial
   time (subject to censoring) and \code{delta} is the non-censoring indicator
   (see \code{\link{Surv}} for details). For details on \code{Gehan()} see
-  Johnson and Long (2011). 
+  Johnson and Long (2011).
+
+  Hurdle models for zero-inflated count data can be fitted by using a combination
+  of the \code{Binomial()} and \code{Hurdle()} families. While the \code{Binomial()}
+  family allows for fitting the zero-generating process of the Hurdle model,
+  \code{Hurdle()} fits a negative binomial regression model to the non-zero
+  counts. Note that the specification of the Hurdle model allows for using
+  \code{Binomial()} and \code{Hurdle()} independently of each other.
+
+  Linear or additive multinomial logit models can be fitted using
+  \code{Multinomial()}; although is family requires some extra effort for
+  model specification (see example).  More specifically, the predictor must
+  be in the form of a linear array model (see \code{\link{\%O\%}}).  Note
+  that this family does not work with tree-based base-learners at the
+  moment.  The class corresponding to the last level of the factor coding
+  the response is uses as reference class.
+
 }
 \section{Warning}{
   The coefficients resulting from boosting with family
@@ -232,14 +252,14 @@ distribution approximation used in Ma and Huang (2005).
     regression models with multidimensional prediction functions.
     \emph{Statistics and Computing}, \bold{20}, 139-150.
 
-  Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
-  (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
-  Package mboost. \emph{Department of Statistics, Technical Report No. 120}.\cr
-  \url{http://epub.ub.uni-muenchen.de/12754/}
+    Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
+    (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
+    Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
+    \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
 
-  Available as vignette via: vignette(package = "mboost", "mboost_tutorial")
+    Available as vignette via: \code{vignette(package = "mboost", "mboost_tutorial")}
 
-    Brent A. Johnson and Qi Long (2011) Survival ensembles by the sum of pairwise 
+    Brent A. Johnson and Qi Long (2011) Survival ensembles by the sum of pairwise
     differences with application to lung cancer microarray studies.
     \emph{Annals of Applied Statistics}, \bold{5}, 1081--1101.
 
@@ -258,6 +278,21 @@ distribution approximation used in Ma and Huang (2005).
            Family(ngradient = function(y, f, w = 1) y - f,
            loss = function(y, f) (y - f)^2,
            name = "My Gauss Variant")
+    }
+
+    ### fitting multinomial logit model via a linear array model
+    X0 <- K0 <- diag(nlevels(iris$Species) - 1)
+    colnames(X0) <- levels(iris$Species)[-nlevels(iris$Species)]
+    mlm <- mboost(Species ~ bols(Sepal.Length, df = 2) \%O\%
+                            buser(X0, K0, df = 2), data = iris,
+                  family = Multinomial())
+    head(round(predict(mlm, type = "response"), 2))
+
+    \donttest{
+    ### compare results with nnet::multinom
+    mlmn <- multinom(Species ~ Sepal.Length, data = iris)
+    max(abs(fitted(mlm[1000], type = "response") -
+            fitted(mlmn, type = "prob")))
     }
 
 }

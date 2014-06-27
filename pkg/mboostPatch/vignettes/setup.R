@@ -29,5 +29,5 @@ perfplot <- function(x, grid, alpha = NULL, border = 1,
   lines(colMeans(x))
 }
 
-data("bodyfat", package = "mboost")
-data("wpbc", package = "mboost")
+data("bodyfat", package = "TH.data")
+data("wpbc", package = "TH.data")

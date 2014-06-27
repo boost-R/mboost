@@ -6,7 +6,7 @@
 \newcommand{\argmin}{\operatorname{argmin}\displaylimits}
 
 %%\VignetteIndexEntry{mboost}
-%%\VignetteDepends{mboost, party}
+%%\VignetteDepends{mboost, party, TH.data}
 
 %% software markup
 \let\proglang=\textsf
@@ -229,6 +229,7 @@ if (file.exists("model.Rda")) {
 <<mboost-bodyfat-setup, echo = FALSE>>=
 ### set-up model formula
 ### names of features
+data("bodyfat", package = "TH.data")
 features <- names(bodyfat)[-2]
 ### set up model structure:
 fml <- paste("bols(", features, ")", collapse = " + ") ### linear functions

@@ -7,7 +7,7 @@
 }
 \usage{
 boost_control(mstop = 100, nu = 0.1,
-              risk = c("inbag", "oobag", "none"),
+              risk = c("inbag", "oobag", "none"), stopintern = FALSE,
               center = TRUE, trace = FALSE)
 }
 \arguments{
@@ -20,6 +20,10 @@ boost_control(mstop = 100, nu = 0.1,
                risks computed for the learning sample (i.e., all non-zero weights),
                \code{oobag} to risks based on the out-of-bag (all observations with
                zero weights) and \code{none} to no risk computations at all.}
+  \item{stopintern}{ a logical that defines if the boosting algorithm stops internally
+                     when the out-of-bag risk in one iteration is larger than the 
+                     out-of-bag risk in the iteration before. Can also be a positive
+                     number giving the risk difference that needs to be exceeded.}
   \item{center}{ deprecated. A logical indicating if the numerical covariates should be mean
                  centered before fitting. Only implemented for
 		 \code{\link{glmboost}}. In \code{\link{blackboost}}

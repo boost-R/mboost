@@ -1,6 +1,8 @@
 ### P-spline base-learner with (monotonicity) constraints
 bmono <- function(..., constraint = c("increasing", "decreasing",
-                                      "convex", "concave", "none"),
+                                      "convex", "concave", "none",
+                                      "positive", "negative"),
+                  type = c("quad.prog", "iterative"),
                   by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
                   degree = 3, differences = 2, df = 4,
                   lambda = NULL, lambda2 = 1e6, niter = 10,
@@ -20,7 +22,7 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
     if (!is.list(constraint)) {
         constraint <- match.arg(constraint)
     } else {
-        c.args <- eval(formals(sys.function(sys.parent()))[["constraint"]])
+        c.args <- eval(formals(sys.function())[["constraint"]])
         constraint <- lapply(constraint, match.arg, choices = c.args)
     }
     if (length(mf) > 1){
@@ -31,6 +33,8 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
             constraint <- list(constraint, constraint)
     }
     ##
+
+    type = match.arg(type)
 
     if (length(mf) == 1 && (is.matrix(mf[[1]]) || is.data.frame(mf[[1]]))) {
         mf <- as.data.frame(mf[[1]])
@@ -104,10 +108,11 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
                           degree = degree, differences = differences,
                           df = df, lambda = lambda, center = FALSE)
         args$constraint <- constraint
+        args$type <- type
         args$lambda2 <- lambda2
         args$niter <- niter
         args$boundary.constraints <- boundary.constraints
-        if(boundary.constraints){
+        if(boundary.constraints) {
             if (is.null(cons.arg$n)){
                 ## use 10% of the knots on each side per default
                 cons.arg$n <- sapply(args$knots,
@@ -118,14 +123,11 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
                 }
                 ## <fixme> was passiert bei bivariatem bmono? </fixme>
             }
+            ## diff_order for boundary constraints
             if(is.null(cons.arg$diff_order)){
                 ## use same difference order as defined by "constraint":
                 ## <FIXME> args$constraint may be a list of length 2 for spatial effects
-                if (args$constraint %in% c("increasing", "decreasing")){
-                    cons.arg$diff_order <- 1
-                } else { # i.e. args$constraint %in% c("convex", "concave")
-                    cons.arg$diff_order <- 2
-                }
+                cons.arg$diff_order <- differences(args$constraint)
             }
             if(is.null(cons.arg$lambda)){
                 cons.arg$lambda <- 1e6
@@ -139,9 +141,10 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
                           intercept = intercept,
                           contrasts.arg = contrasts.arg)
         args$constraint <- constraint
+        args$type <- type
         args$lambda2 <- lambda2
         args$niter <- niter
-        ## <FIXME> Was machen wir bei cat. Effekten? Da müsste das doch auch gehen!
+        ## <FIXME> Was machen wir bei kateg. Effekten? Da müsste das doch auch gehen!
         args$boundary.constraints <- boundary.constraints
         args$cons.arg$n <- cons.arg$n
         ret$dpp <- bl_mono(ret, Xfun = X_ols,
@@ -168,45 +171,35 @@ bl_mono <- function(blg, Xfun, args) {
     X <- X$X
 
     if (length(args$constraint) == 1) {
-
-        if (args$constraint %in% c("increasing", "decreasing")){
-            diff_order <- 1
-        } else { # i.e. args$constraint %in% c("convex", "concave")
-            diff_order <- 2
-        }
-
-        D <- V <- lambda2 <- vector(mode = "list", length =2)
+        D <- V <- lambda2 <- vector(mode = "list", length = 2)
+        ## set up difference matrix
+        D[[1]] <- differences(args$constraint, ncol(X))
 
         if (is.factor(mf[[1]]) && args$intercept) {
-            D[[1]] <- diff(diag(ncol(X)), differences = diff_order)
             D[[1]][1,1] <- 0
-        } else {
-            D[[1]] <- diff(diag(ncol(X)), differences = diff_order)
-
-            ## set up boundary constraints
-            if (args$boundary.constraints){
-                cons.arg <- args$cons.arg
-                idx <- rep(0, ncol(X) - cons.arg$diff_order)
-                if (cons.arg$n[1] == 0) {
-                    lower <- 0
-                } else {
-                    lower <- 1:cons.arg$n[1]
-                }
-                if (cons.arg$n[2] == length(idx)) {
-                    upper <- 0
-                } else {
-                    upper <- length(idx) - 1:cons.arg$n[2] + 1
-                }
-                idx[c(lower, upper)] <- 1
-                V3 <- diag(idx)
-                D3 <- V3 %*% diff(diag(ncol(X)),
-                                  differences = cons.arg$diff_order)
-            }
         }
-        V[[1]] <- matrix(0, ncol = nrow(D[[1]]),
-                         nrow =  nrow(D[[1]]))
 
-        lambda2[[1]] <- args$lambda2
+        if (!is.factor(mf[[1]]) && args$boundary.constraints) {
+            ## set up boundary constraints
+            cons.arg <- args$cons.arg
+            idx <- rep(0, ncol(X) - cons.arg$diff_order)
+            if (cons.arg$n[1] == 0) {
+                lower <- 0
+            } else {
+                lower <- 1:cons.arg$n[1]
+            }
+            if (cons.arg$n[2] == length(idx)) {
+                upper <- 0
+            } else {
+                upper <- length(idx) - 1:cons.arg$n[2] + 1
+            }
+            idx[c(lower, upper)] <- 1
+            V3 <- diag(idx)
+            D3 <- V3 %*% diff(diag(ncol(X)), differences = cons.arg$diff_order)
+        }
+
+        V[[1]] <- matrix(0, ncol = nrow(D[[1]]), nrow =  nrow(D[[1]]))
+        lambda2[[1]] <- ifelse(args$constraint == "none", 0, args$lambda2)
         lambda2[[2]] <- 0
         if (args$boundary.constraints) {
             lambda3 <- cons.arg$lambda
@@ -215,37 +208,32 @@ bl_mono <- function(blg, Xfun, args) {
         }
     }
     if (length(args$constraint) == 2) {
-        diff_order <- lapply(args$constraint, function(x){
-            ifelse( x %in% c("increasing", "decreasing"), 1, 2) } )
-
         if (is.factor(mf[[1]]))
             stop(paste("Bivariate monotonic effects currently not",
                        "implemented for ordered factors"))
         ## ncol1 = length(knots[[1]]) + degree + 1
-        ## ncol2 = length(knots[[1]]) + degree + 1
+        ## ncol2 = length(knots[[2]]) + degree + 1
         ## ncol(X) = ncol1 * ncol2
         ncoli <- lapply(args$knots, function(x)
                         length(x$knots) + args$degree + 1)
         stopifnot(ncoli[[1]] * ncoli[[2]] == ncol(X))
 
         D <- V <- lambda2 <- vector(mode = "list", length =2)
-        suppressMessages(
-            D[[1]] <- kronecker(diff(diag(ncoli[[1]]),
-                                     differences = diff_order[[1]]),
-                                diag(ncoli[[2]]))
-            )
-        suppressMessages(
-            D[[2]] <- kronecker(diag(ncoli[[1]]),
-                                diff(diag(ncoli[[2]]),
-                                     differences = diff_order[[2]]))
-            )
-        V[[1]] <- matrix(0, ncol = nrow(D[[1]]), nrow =  nrow(D[[1]]))
-        V[[2]] <- matrix(0, ncol = nrow(D[[2]]), nrow =  nrow(D[[2]]))
+        ## set up difference matrices
+        D <- differences(args$constraint, ncoli)
+        idx <- !sapply(D, is.null)
+        V[idx] <- lapply(D[idx], function(m) matrix(0, nrow(m), nrow(m)))
+
         if (length(args$lambda2) == 1) {
             lambda2[[1]] <- lambda2[[2]] <- args$lambda2
         } else {
             lambda2 <- args$lambda2
         }
+        ## set lambda2 = 0 if no constraint is used
+        if (any(none <- args$constraint == "none"))
+            lambda2[none] <- 0
+        if (any(none <- lambda2 == 0))
+            args$constraint[none] <- "none"
         ## <FIXME> Boundary constraints for bivariate smooths are currently not
         ## implemented
         if (args$boundary.constraints)
@@ -266,30 +254,11 @@ bl_mono <- function(blg, Xfun, args) {
         XtX <- crossprod(X * w, X)
         XtX <- XtX + lambda * K
 
-        ## Define solvers:
-        ## define function as text and eval(parse()) later.
-        l2txt <- "+ lambda2[[2]] * crossprod(D[[2]], V[[2]] %*% D[[2]])"
-        l3txt <- "+ lambda3 * crossprod(D3, V3 %*% D3)"
-        fct <- c("function(y, V) {",
-                 "    XtXC <- Cholesky(forceSymmetric(XtX +",
-                 "       lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]])",
-                 ## add if lambda2[[2]] != 0
-                 ifelse(lambda2[[2]] != 0, l2txt,""),
-                 ## add if lambda3 != 0
-                 ifelse(lambda3 != 0, l3txt,""),
-                 "                                   ))",
-                 "    solve(XtXC, crossprod(X, y), LINPACK = FALSE)",
-                 "}"
-                 )
-
-        if (!is(X, "Matrix")) {
-            ## some lines must be replaced in order to solve directly
-            fct[2] <- '    solve(XtX +'
-            fct[6] <- "          , crossprod(X, y),"
-            fct[7] <- '          LINPACK = FALSE)'
+        if (args$type == "iterative") {
+            fct <- define_solver(lambda2, lambda3, X)
+            ## deparsing and parsing again needed to tidy-up code.
+            mysolve <- eval(parse(text = deparse(eval(parse(text = fct)))))
         }
-        ## deparsing and parsing again needed to tidy-up code.
-        mysolve <- eval(parse(text = deparse(eval(parse(text = fct)))))
 
         fit <- function(y) {
             if (!is.null(index)) {
@@ -299,32 +268,41 @@ bl_mono <- function(blg, Xfun, args) {
                 y <- y * weights
             }
 
-            for (i in 1:args$niter){
-                coef <- mysolve(y, V)
-                ## compare old and new V
-                tmp1 <- do.call(args$constraint[[1]],
-                                args=list(D[[1]] %*% coef))
-                if (lambda2[[2]] != 0)
-                    tmp2 <- do.call(args$constraint[[2]],
-                                    args=list(D[[2]] %*% coef))
+            if (args$type == "iterative") {
+                for (i in 1:args$niter){
+                    coef <- mysolve(y, V)
+                    if (args$constraint[[1]] == "none")
+                        break ## as there is no need to iterate
 
-                if ( all( V[[1]] == tmp1 ) &&
-                    ( lambda2[[2]] == 0 || all( V[[2]] == tmp2 ) ) )
-                    break    # if both are equal: done!
-                #if (args$boundary.constraints &&
-                #    all( V[[1]][-idxB, -idxB] == tmp1[-idxB, -idxB]) )
-                #    break   # if both are equal (without V for boundary
-                #            # constraints): done!
-                V[[1]] <- tmp1
-                #if (args$boundary.constraints) {
-                #    V[[1]][idxFlat, idxFlat] <- diag(rep(1, length(idxFlat)))
-                #}
-                if (lambda2[[2]] != 0)
-                    V[[2]] <- tmp2
-                if (i == args$niter)
-                    warning("no convergence of coef in bmono\n",
-                            "You could try increasing ", sQuote("niter"),
-                            " or ", sQuote("lambda2"))
+                    ## compare old and new V
+                    tmp1 <- violations(D[[1]] %*% coef)
+                    if (lambda2[[2]] != 0)
+                        tmp2 <- violations(D[[2]] %*% coef)
+
+                    if ( all( V[[1]] == tmp1 ) &&
+                        ( lambda2[[2]] == 0 || all( V[[2]] == tmp2 ) ) )
+                        break    # if both are equal: done!
+                        #if (args$boundary.constraints &&
+                        #    all( V[[1]][-idxB, -idxB] == tmp1[-idxB, -idxB]) )
+                        #    break   # if both are equal (without V for boundary
+                        #            # constraints): done!
+                    V[[1]] <- tmp1
+                        #if (args$boundary.constraints) {
+                        #    V[[1]][idxFlat, idxFlat] <- diag(rep(1, length(idxFlat)))
+                        #}
+                    if (lambda2[[2]] != 0)
+                        V[[2]] <- tmp2
+                    if (i == args$niter)
+                        warning("no convergence of coef in bmono\n",
+                                "You could try increasing ", sQuote("niter"),
+                                " or ", sQuote("lambda2"))
+                }
+            } else {  ## i.e. type == "quad.prog"
+                if (lambda2[[2]] == 0) {
+                    coef <- solveLSEI(XtX, crossprod(X, y), D = D[[1]])
+                } else {
+                    coef <- solveLSEI(XtX, crossprod(X, y), D = D)
+                }
             }
 
             ret <- list(model = coef,
@@ -392,17 +370,30 @@ bl_mono <- function(blg, Xfun, args) {
     return(dpp)
 }
 
-none <- function(diffs)
-    diag(rep(0,length(diffs)))
-
-increasing <- function(diffs)
+violations <- function(diffs)
     diag(c(as.numeric(diffs)) <= 0)
 
-decreasing <- function(diffs)
-    diag(c(as.numeric(diffs)) >= 0)
+define_solver <- function(lambda2, lambda3, X) {
+    ## define function as text and eval(parse()) later.
+    l2txt <- "+ lambda2[[2]] * crossprod(D[[2]], V[[2]] %*% D[[2]])"
+    l3txt <- "+ lambda3 * crossprod(D3, V3 %*% D3)"
+    fct <- c("function(y, V) {",
+             "    XtXC <- Cholesky(forceSymmetric(XtX +",
+             "       lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]])",
+             ## add if lambda2[[2]] != 0
+             ifelse(lambda2[[2]] != 0, l2txt,""),
+             ## add if lambda3 != 0
+             ifelse(lambda3 != 0, l3txt,""),
+             "                                   ))",
+             "    solve(XtXC, crossprod(X, y), LINPACK = FALSE)",
+             "}"
+             )
 
-convex <- function(diffs)
-    diag(c(as.numeric(diffs)) <= 0)
-
-concave <- function(diffs)
-    diag(c(as.numeric(diffs)) >= 0)
+    if (!is(X, "Matrix")) {
+        ## some lines must be replaced in order to solve directly
+        fct[2] <- '    solve(XtX +'
+        fct[6] <- "          , crossprod(X, y),"
+        fct[7] <- '          LINPACK = FALSE)'
+    }
+    fct
+}

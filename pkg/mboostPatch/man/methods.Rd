@@ -15,6 +15,7 @@
 \alias{mstop.gbAIC}
 \alias{mstop.mboost}
 \alias{mstop.cvrisk}
+\alias{mstop<-}
 
 \alias{predict.mboost}
 \alias{predict.gamboost}
@@ -26,6 +27,9 @@
 
 \alias{variable.names.glmboost}
 \alias{variable.names.mboost}
+
+\alias{risk}
+\alias{risk.mboost}
 
 \alias{extract}
 \alias{extract.mboost}
@@ -64,6 +68,7 @@
      aggregate = c("sum", "cumsum", "none"), off2int = FALSE, ...)
 
 \method{[}{mboost}(x, i, return = TRUE, ...)
+mstop(x) <- value
 
 \method{AIC}{mboost}(object, method = c("corrected", "classical", "gMDL"),
     df = c("trace", "actset"), ..., k = 2)
@@ -84,8 +89,8 @@
 \method{residuals}{mboost}(object, ...)
 \method{resid}{mboost}(object, ...)
 
-\method{variable.names}{glmboost}(object, ...)
-\method{variable.names}{mboost}(object, ...)
+\method{variable.names}{glmboost}(object, which = NULL, usedonly = FALSE, ...)
+\method{variable.names}{mboost}(object, which = NULL, usedonly = FALSE, ...)
 
 \method{extract}{mboost}(object, what = c("design", "penalty", "lambda", "df",
                          "coefficients", "residuals",
@@ -105,6 +110,8 @@
 
 \method{selected}{mboost}(object, ...)
 
+\method{risk}{mboost}(object, ...)
+
 \method{nuisance}{mboost}(object)
 }
 \arguments{
@@ -120,6 +127,8 @@
                 predictions or coefficients. If \code{which} is given
                 (as an integer vector or characters corresponding
                  to base-learners) a list or matrix is returned.}
+  \item{usedonly}{ logical. Indicating whether all variable names should
+     be returned or only those selected in the boosting algorithm.}
   \item{type}{ the type of prediction required.  The default is on the scale
           of the predictors; the alternative \code{"response"} is on
           the scale of the response variable.  Thus for a
@@ -138,7 +147,7 @@
                     of the base-learner of the \eqn{j}th boosting
                     iteration (and zero if the base-learner is not
                     selected in this iteration).}
-  \item{off2int}{ logical indicating whether the offset should be
+  \item{off2int}{ logical. Indicating whether the offset should be
                      added to the intercept (if there is any)
                      or if the offset is returned as attribute of
                      the coefficient (default).}
@@ -147,6 +156,7 @@
             If \code{i} is larger than the initial \code{mstop},
             additional boosting steps are performed until step \code{i}
             is reached. See details for more information. }
+  \item{value}{ integer. See \code{i}.}
   \item{return}{ a logical indicating whether the changed object is
                  returned. }
   \item{method}{ a character specifying if the corrected AIC criterion or
@@ -228,15 +238,15 @@
   to the object via \code{attr(..., "offset")} as adding the offset to
   one of the marginal predictions doesn't make much sense.
 
-  The \code{[.mboost} function can be used to enhance or restrict a
-  given boosting model to the specified boosting iteration \code{i}.
-  Note that in both cases the original \code{x} will be changed to
-  reduce the memory footprint (see also Note below). If the boosting
-  model is enhanced by specifying an index that is larger than the
-  initial \code{mstop}, only the missing \code{i - mstop} steps are
-  fitted. If the model is restricted, the spare steps are not dropped,
-  i.e., if we increase \code{i} again, these boosting steps are
-  immediately available.
+  The \code{[.mboost} function can be used to enhance or restrict a given
+  boosting model to the specified boosting iteration \code{i}. Note that
+  in both cases the original \code{x} will be changed to reduce the
+  memory footprint. If the boosting model is enhanced by specifying an
+  index that is larger than the initial \code{mstop}, only the missing
+  \code{i - mstop} steps are fitted. If the model is restricted, the
+  spare steps are not dropped, i.e., if we increase \code{i} again,
+  these boosting steps are immediately available. Alternatively, the
+  same operation can be done by \code{mstop(x) <- i}.
 
   The \code{residuals} function can be used to extract the residuals
   (i.e., the negative gradient of the current iteration). \code{resid}
@@ -264,7 +274,10 @@
   extracted using \code{selected()}. The \code{nuisance()} method
   extracts nuisance parameters from the fit that are handled internally
   by the corresponding family object, see
-  \code{"\linkS4class{boost_family}"}.
+  \code{"\linkS4class{boost_family}"}. The \code{risk()} function can be
+  used to extract the computed risk (either the \code{"inbag"} risk or
+  the \code{"oobag"} risk, depending on the control argument; see
+  \code{\link{boost_control}}).
 
   For (generalized) linear and additive models, the \code{AIC} function
   can be used to compute both the classical AIC (only available for
@@ -322,7 +335,8 @@
   Andreas Mayr, Benjamin Hofner, and Matthias Schmid (2012). The
   importance of knowing when to stop - a sequential stopping rule for
   component-wise gradient boosting. \emph{Methods of Information in
-  Medicine}, DOI: \url{http://dx.doi.org/10.3414/ME11-02-0030}
+    Medicine}, \bold{51}, 178--186. \cr
+  DOI: \url{http://dx.doi.org/10.3414/ME11-02-0030}
 
 }
 \seealso{ \code{\link{gamboost}}, \code{\link{glmboost}} and

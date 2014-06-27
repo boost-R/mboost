@@ -1,5 +1,9 @@
 \name{stabsel}
 \alias{stabsel}
+\alias{stabsel_parameters}
+\alias{stabsel_parameters.default}
+\alias{stabsel_parameters.mboost}
+\alias{plot.stabsel}
 \title{
     Stability Selection
 }
@@ -7,62 +11,149 @@
     Selection of influential variables or model components with error control.
 }
 \usage{
-stabsel(object, FWER = 0.05, cutoff, q,
-        folds = cv(model.weights(object), type = "subsampling", B = 100),
-        papply = mclapply, verbose = TRUE, ...)
+stabsel(object, cutoff, q, PFER,
+        folds = cv(model.weights(object), type = "subsampling",
+                   B = ifelse(sampling.type == "MB", 100, 50)),
+        assumption = c("unimodal", "r-concave", "none"),
+        sampling.type = c("SS", "MB"),
+        papply = mclapply, verbose = TRUE, FWER, eval = TRUE, ...)
+
+## function to compute missing parameter from the other two parameters
+## (internally used within stabsel)
+stabsel_parameters(p, cutoff, q, PFER,
+                   B = ifelse(sampling.type == "MB", 100, 50),
+                   assumption = c("unimodal", "r-concave", "none"),
+                   sampling.type = c("SS", "MB"),
+                   verbose = FALSE, FWER)
+
+\method{plot}{stabsel}(x, main = deparse(x$call), type = c("paths", "maxsel"),
+     col = NULL, ymargin = 10, np = sum(x$max > 0),
+     labels = NULL, ...)
 }
 \arguments{
   \item{object}{an \code{mboost} object.}
-  \item{FWER}{family-wise error rate to be controlled by the selection procedure.}
-  \item{cutoff}{cutoff between 0.5 and 1.}
-  \item{q}{average number of selected base-learners.}
+  \item{cutoff}{cutoff between 0.5 and 1. Preferably a value between 0.6
+    and 0.9 should be used.}
+  \item{q}{number of (unique) selected base-learners per boosting run.}
+  \item{PFER}{upper bound for the per-family error rate. This
+    specifies the amount of falsely selected base-learners, which is
+    tolerated. See details.}
   \item{folds}{ a weight matrix with number of rows equal to the number
-                of observations, see \code{\link{cvrisk}}.}
-  \item{papply}{ (parallel) apply function, defaults to  \code{\link[parallel]{mclapply}}.
-    Alternatively, \code{parLapply} can be used. In the
-    latter case, usually more setup is needed (see example for some
-    details).}
+    of observations, see \code{\link{cvrisk}}.}
+  \item{assumption}{ Defines the type of assumptions on the
+    distributions of the selection probabilities and simultaneous
+    selection probabilities. Only applicable for
+    \code{sampling.type = "SS"}. For \code{sampling.type = "MB"} we
+    always use code{"none"}.}
+  \item{sampling.type}{ use sampling scheme of of Shah & Samworth
+    (2013), i.e., with complementarty pairs (\code{sampling.type = "SS"}),
+    or the original sampling scheme of Meinshausen & Buehlmann (2010).}
+  \item{p}{ number of possible predictors (including intercept if
+    applicable).}
+  \item{B}{ number of subsampling replicates. Per default, we use 50
+    complementary pairs for the error bounds of Shah & Samworth (2013)
+    and 100 for the error bound derived in  Meinshausen & Buehlmann
+    (2010). As we use \eqn{B} complementray pairs in the former case
+    this leads to \eqn{2B} subsamples.}
+  \item{papply}{ (parallel) apply function, defaults to
+    \code{\link[parallel]{mclapply}}. Alternatively, \code{parLapply}
+    can be used. In the latter case, usually more setup is needed (see
+    example of \code{\link{cvrisk}} for some details).}
   \item{verbose}{ logical (default: \code{TRUE}) that determines wether
     \code{warnings} should be issued. }
-  \item{\dots}{additional arguments to \code{\link{cvrisk}}.}
+  \item{FWER}{ deprecated. Only for compatibility with older versions,
+    use PFER instead.}
+  \item{eval}{ logical. Determines whether stability selection is
+    evaluated (\code{eval = TRUE}; default) or if only the parameter
+    combination is returned.}
+  \item{x}{object of class \code{stabsel}.}
+  \item{main}{main title for the plot.}
+  \item{type}{plot type; either stability paths (\code{"paths"}) or a
+    plot of the maximum selection frequency (\code{"maxsel"}).}
+  \item{col}{a vector of colors; Typically, one can specify a single
+     color or one color for each variable. Per default, colors depend on
+     the maximal selection frequency of the variable and range from grey
+     to red.}
+  \item{ymargin}{(temporarily) specifies the y margin of of the plot in
+    lines (see argument \code{"mar"} of function \code{\link{par}}).
+    This only affects the right margin for \code{type = "paths"} and
+    the left margin for \code{type = "maxsel"}. Explicit user specified
+    margins are kept and are not overwritten.}
+  \item{np}{number of variables to plot for the maximum selection
+    frequency plot (\code{type = "maxsel"}); the first \code{np}
+    variables with highest selection frequency are plotted.}
+  \item{labels}{variable labels for the plot; one label per base-learner
+    must be specified. Per default, names of base-learners are used.}
+  \item{\dots}{additional arguments to \code{\link{cvrisk}} and further
+    arguments to parallel apply methods such as \code{\link{mclapply}}
+    or additional arguments to plot functions.}
+
 }
 \details{
 
-  This function implements the "stability selection" procedure
-  by Meinshausen and Buehlmann (2010).
+  This function implements the stability selection procedure
+  by Meinshausen and Buehlmann (2010) and the improved error bounds by
+  Shah and Samworth (2013).
 
-  Either \code{cutoff} or \code{q} must be specified. The probability
-  of selecting at least one non-influential variable (or model component)
-  is less than \code{FWER}.
+  Two of the three arguments \code{cutoff}, \code{q} and \code{PFER}
+  \emph{must} be specified. The per-family error rate (PFER), i.e., the
+  expected number of false positives \eqn{E(V)}, where \eqn{V} is the
+  number of false positives, is bounded by the argument \code{PFER}.
+
+  As controlling the PFER is more conservative as controlling the
+  family-wise error rate (FWER), the procedure also controlls the FWER,
+  i.e., the probability of selecting at least one non-influential
+  variable (or model component) is less than \code{PFER}.
 
 }
 \value{
-  An object of class \code{stabsel} with elements
-  \item{phat }{selection probabilities.}
-  \item{selected }{elements with maximal selection probability greater \code{cutoff}.}
-  \item{max }{maximum of selection probabilities.}
-  \item{cutoff }{cutoff used.}
-  \item{q }{average number of selected variables used.}
-  \item{FWER }{family-wise error rate.}
+  An object of class \code{stabsel} with a special \code{print} method.
+  The object has the following elements:
+  \item{phat}{selection probabilities.}
+  \item{selected}{elements with maximal selection probability greater
+    \code{cutoff}.}
+  \item{max}{maximum of selection probabilities.}
+  \item{cutoff}{cutoff used.}
+  \item{q}{average number of selected variables used.}
+  \item{PFER}{per-family error rate.}
+  \item{sampling.type}{the sampling type used for stability selection.}
+  \item{assumption}{the assumptions made on the selection
+    probabilities.}
+  \item{call}{the call.}
 }
 \references{
 
   N. Meinshausen and P. Buehlmann (2010), Stability selection.
   \emph{Journal of the Royal Statistical Society, Series B},
-  \bold{72}(4).
+  \bold{72}, 417--473.
+
+  R.D. Shah and R.J. Samworth (2013), Variable selection with error
+  control: another look at stability selection. \emph{Journal of the Royal
+  Statistical Society, Series B}, \bold{75}, 55--80.
 
 }
 \examples{
 
-  data(bodyfat)
+  data("bodyfat", package = "TH.data")
 
-  ### (too) low-dimensional example
+  ### low-dimensional example
   mod <- glmboost(DEXfat ~ ., data = bodyfat)
-  (sbody <- stabsel(mod, q = 3,
-                    folds = cv(model.weights(mod), type = "subsampling", B = 25)))
+
+  ## compute cutoff ahead of running stabsel to see if it is a sensible
+  ## parameter choice.
+  ##   p = ncol(bodyfat) - 1 (= Outcome) + 1 ( = Intercept)
+  stabsel_parameters(q = 3, PFER = 1, p = ncol(bodyfat) - 1 + 1,
+                     sampling.type = "MB")
+  ## the same:
+  stabsel(mod, q = 3, PFER = 1, sampling.type = "MB", eval = FALSE)
+
+  ## now run stability selection; to make results reproducible
+  set.seed(1234)
+  (sbody <- stabsel(mod, q = 3, PFER = 1, sampling.type = "MB"))
   opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
   plot(sbody)
   par(opar)
 
+  plot(sbody, type = "maxsel", ymargin = 6)
 }
 \keyword{nonparametric}

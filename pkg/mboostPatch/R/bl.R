@@ -167,7 +167,7 @@ X_ols <- function(mf, vary, args) {
 ### hyper parameters for P-splines baselearner (including tensor product P-splines)
 hyper_bbs <- function(mf, vary, knots = 20, boundary.knots = NULL, degree = 3,
                       differences = 2, df = 4, lambda = NULL, center = FALSE,
-                      cyclic = FALSE) {
+                      cyclic = FALSE, constraint = "none", deriv = 0L) {
 
     knotf <- function(x, knots, boundary.knots) {
         if (is.null(boundary.knots))
@@ -189,7 +189,7 @@ hyper_bbs <- function(mf, vary, knots = 20, boundary.knots = NULL, degree = 3,
         stop("variable names and knot names must be the same")
     if (is.list(boundary.knots)) if(!all(names(boundary.knots) %in% nm))
         stop("variable names and boundary.knot names must be the same")
-    if (isTRUE(center) && cyclic)
+    if (!identical(center, FALSE) && cyclic)
         stop("centering of cyclic covariates not yet implemented")
     ret <- vector(mode = "list", length = length(nm))
     names(ret) <- nm
@@ -197,8 +197,12 @@ hyper_bbs <- function(mf, vary, knots = 20, boundary.knots = NULL, degree = 3,
         ret[[n]] <- knotf(mf[[n]], if (is.list(knots)) knots[[n]] else knots,
                           if (is.list(boundary.knots)) boundary.knots[[n]]
                           else boundary.knots)
+    if (cyclic & constraint != "none")
+        stop("constraints not implemented for cyclic B-splines")
+    stopifnot(is.numeric(deriv) & length(deriv) == 1)
     list(knots = ret, degree = degree, differences = differences,
-         df = df, lambda = lambda, center = center, cyclic = cyclic)
+         df = df, lambda = lambda, center = center, cyclic = cyclic,
+         Ts_constraint = constraint, deriv = deriv)
 }
 
 ### model.matrix for P-splines baselearner (including tensor product P-splines)
@@ -209,12 +213,15 @@ X_bbs <- function(mf, vary, args) {
         X <- bsplines(mf[[i]],
                       knots = args$knots[[i]]$knots,
                       boundary.knots = args$knots[[i]]$boundary.knots,
-                      degree = args$degree)
+                      degree = args$degree,
+                      Ts_constraint = args$Ts_constraint,
+                      deriv = args$deriv)
         if (args$cyclic) {
             X <- cbs(mf[[i]],
                      knots = args$knots[[i]]$knots,
                      boundary.knots = args$knots[[i]]$boundary.knots,
-                     degree = args$degree)
+                     degree = args$degree,
+                     deriv = args$deriv)
         }
         class(X) <- "matrix"
         return(X)
@@ -269,7 +276,7 @@ X_bbs <- function(mf, vary, args) {
         if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
                 suppressMessages(K <- kronecker(diag(ncol(by)), K))
         }
-        if (isTRUE(args$center)) {
+        if (!identical(args$center, FALSE)) {
             tmp <- attributes(X)[c("degree", "knots", "Boundary.knots")]
             center <- match.arg(as.character(args$center),
                                 choices = c("TRUE", "differenceMatrix", "spectralDecomp"))
@@ -290,6 +297,10 @@ X_bbs <- function(mf, vary, args) {
             K <- diag(ncol(X))
         } else {
             K <- crossprod(K)
+        }
+        if (!is.null(attr(X, "Ts_constraint"))) {
+            D <- attr(X, "D")
+            K <- crossprod(D, K) %*% D
         }
     }
     if (length(mm) == 2) {
@@ -346,7 +357,7 @@ X_bbs <- function(mf, vary, args) {
         if (vary != "" && ncol(by) > 1){       # build block diagonal penalty
             suppressMessages(K <- kronecker(diag(ncol(by)), K))
         }
-        if (isTRUE(args$center)) {
+        if (!identical(args$center, FALSE)) {
             ### L = \Gamma \Omega^1/2 in Section 2.3. of Fahrmeir et al.
             ### (2004, Stat Sinica), always
             L <- eigen(K, symmetric = TRUE, EISPACK = FALSE)
@@ -467,7 +478,8 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
 ### P-spline (and tensor-product spline) baselearner
 bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
                 degree = 3, differences = 2, df = 4, lambda = NULL, center = FALSE,
-                cyclic = FALSE) {
+                cyclic = FALSE, constraint = c("none", "increasing", "decreasing"),
+                deriv = 0) {
 
     if (!is.null(lambda)) df <- NULL
 
@@ -541,13 +553,14 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
     ret$dpp <- bl_lin(ret, Xfun = X_bbs,
                       args = hyper_bbs(mf, vary, knots = knots, boundary.knots =
                       boundary.knots, degree = degree, differences = differences,
-                      df = df, lambda = lambda, center = center, cyclic = cyclic))
+                      df = df, lambda = lambda, center = center, cyclic = cyclic,
+                      constraint = match.arg(constraint), deriv = deriv))
     return(ret)
 }
 
 ### cyclic B-splines
 ### adapted version of mgcv:cSplineDes from S.N. Wood
-cbs <- function (x, knots, boundary.knots, degree = 3) {
+cbs <- function (x, knots, boundary.knots, degree = 3, deriv = 0L) {
     # require(splines)
     nx <- names(x)
     x <- as.vector(x)
@@ -564,10 +577,11 @@ cbs <- function (x, knots, boundary.knots, degree = 3) {
                (boundary.knots[2] - knots[(nKnots - ord + 1):(nKnots - 1)]),
                knots)
     ind <- x > xc
-    X <- splineDesign(knots, x, ord, outer.ok = TRUE)
+    X <- splineDesign(knots, x, ord, derivs = rep(deriv, length(x)), outer.ok = TRUE)
     x[ind] <- x[ind] - boundary.knots[2] + boundary.knots[1]
     if (sum(ind)) {
-        Xtmp <- splineDesign(knots, x[ind], ord, outer.ok = TRUE)
+        Xtmp <- splineDesign(knots, x[ind], ord, derivs = rep(deriv, length(x[ind])),
+                             outer.ok = TRUE)
         X[ind, ] <- X[ind, ] + Xtmp
     }
     ## handling of NAs
@@ -580,11 +594,14 @@ cbs <- function (x, knots, boundary.knots, degree = 3) {
     attr(X, "degree") <- degree
     attr(X,"knots") <- knots
     attr(X,"boundary.knots") <- boundary.knots
+    if (deriv != 0)
+        attr(X, "deriv") <- deriv
     dimnames(X) <- list(nx, 1L:ncol(X))
     return(X)
 }
 
-bsplines <- function(x, knots, boundary.knots, degree){
+bsplines <- function(x, knots, boundary.knots, degree,
+                     Ts_constraint = "none", deriv = 0L){
     nx <- names(x)
     x <- as.vector(x)
     ## handling of NAs
@@ -600,17 +617,30 @@ bsplines <- function(x, knots, boundary.knots, degree){
     ## complete knot mesh
     k <- c(bk_lower, knots, bk_upper)
     ## construct design matrix
-    X <- splineDesign(k, x, degree + 1, outer.ok = TRUE)
+    X <- splineDesign(k, x, degree + 1, derivs = rep(deriv, length(x)),
+                      outer.ok = TRUE)
     ## handling of NAs
     if (nas) {
         tmp <- matrix(NA, length(nax), ncol(X))
         tmp[!nax, ] <- X
         X <- tmp
     }
+    ### constraints; experimental
+    D <- diag(ncol(X))
+    D[lower.tri(D)] <- 1
+    X <- switch(Ts_constraint, "none" = X,
+                            "increasing" = X %*% D,
+                            "decreasing" = -X %*% D)
     ## add attributes
     attr(X, "degree") <- degree
-    attr(X,"knots") <- knots
-    attr(X,"boundary.knots") <- list(lower = bk_lower, upper = bk_upper)
+    attr(X, "knots") <- knots
+    attr(X, "boundary.knots") <- list(lower = bk_lower, upper = bk_upper)
+    if (Ts_constraint != "none")
+        attr(X, "Ts_constraint") <- Ts_constraint
+    if (Ts_constraint != "none")
+        attr(X, "D") <- D
+    if (deriv != 0)
+        attr(X, "deriv") <- deriv
     dimnames(X) <- list(nx, 1L:ncol(X))
     return(X)
 }
@@ -639,6 +669,9 @@ bl_lin <- function(blg, Xfun, args) {
 
     dpp <- function(weights) {
 
+        if (!is.null(attr(X, "deriv")))
+            stop("fitting of derivatives of B-splines not implemented")
+
         weights[!Complete.cases(mf)] <- 0
         w <- weights
         if (!is.null(index))
@@ -653,17 +686,25 @@ bl_lin <- function(blg, Xfun, args) {
         ## be coerced to class matrix and handled in the standard way
         if (is(X, "Matrix") && !extends(class(XtX), "dgeMatrix")) {
             XtXC <- Cholesky(forceSymmetric(XtX))
-            mysolve <- function(y)
-                solve(XtXC, crossprod(X, y))  ## special solve routine from
-                                              ## package Matrix
+            mysolve <- function(y) {
+                if (is.null(attr(X, "Ts_constraint")))
+                    return(solve(XtXC, crossprod(X, y)))  ## special solve routine from
+                                                          ## package Matrix
+                ### non-negative LS only at the moment
+                return(nnls1D(as(XtX, "matrix"), as(X, "matrix"), y))
+            }
         } else {
             if (is(X, "Matrix")) {
                 ## coerce Matrix to matrix
                 X <- as(X, "matrix")
                 XtX <- as(XtX, "matrix")
             }
-            mysolve <- function(y)
-                solve(XtX, crossprod(X, y), LINPACK = FALSE)
+            mysolve <- function(y) {
+                if (is.null(attr(X, "Ts_constraint")))
+                    return(solve(XtX, crossprod(X, y), LINPACK = FALSE))
+                ### non-negative LS only at the moment
+                return(nnls1D(XtX, X, y))
+            }
         }
 
         fit <- function(y) {
@@ -747,9 +788,21 @@ bspatial <- function(..., df = 6) {
 }
 
 ### random-effects (Ridge-penalized ANOVA) baselearner
-brandom <- function (..., contrasts.arg = "contr.dummy", df = 4) {
+brandom <- function(..., by = NULL, index = NULL, df = 4, lambda = NULL,
+                    contrasts.arg = "contr.dummy") {
     cl <- cltmp <- match.call()
-    if (is.null(cl$df))
+    x <- list(...)
+    ## drop further arguments to be passed to bols
+    if (!is.null(names(x)))
+        x <- x[names(x) == ""]
+
+    if (!all(sapply(x, is.factor) |
+             sapply(x, is.matrix) |
+             sapply(x, is.data.frame)))
+        stop(sQuote("..."), " must be a factor or design matrix in ",
+             sQuote("brandom"))
+
+    if (is.null(cl$df) && is.null(cl$lambda))
         cl$df <- df
     if (is.null(cl$contrasts.arg))
         cl$contrasts.arg <- contrasts.arg

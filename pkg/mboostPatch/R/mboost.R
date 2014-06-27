@@ -1,13 +1,21 @@
 
 mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
-                       offset = NULL, family = Gaussian(), control =
-                       boost_control(), oobweights = as.numeric(weights == 0)) {
+                       offset = NULL, family = Gaussian(),
+                       control = boost_control(),
+                       oobweights = as.numeric(weights == 0)) {
 
     ### hyper parameters
     mstop <- 0
     risk <- control$risk
     nu <- control$nu
     trace <- control$trace
+    stopintern <- control$stopintern
+    if (is.numeric(stopintern)) {
+        stopeps <- stopintern
+        stopintern <- TRUE
+    } else {
+        stopeps <- 0
+    }
     tracestep <- options("width")$width / 2
 
     ### extract negative gradient and risk functions
@@ -35,7 +43,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     ### <FIXME> is this correct with zero weights??? </FIXME>
     weights <- rescale_weights(weights)
     if (is.null(oobweights))
-    oobweights <- as.numeric(weights == 0)
+        oobweights <- as.numeric(weights == 0)
     if (control$risk == "oobag") {
         triskfct <- function(y, f) riskfct(y, f, oobweights)
     } else {
@@ -100,6 +108,10 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
         }
     }
 
+    ## if names are missing try to get these from the calls
+    if (is.null(bnames) && !cwlin)
+        names(blg) <- names(bl) <- bnames <- sapply(blg, function(x) x$get_call())
+
 
     ### set up a function for boosting
     boost <- function(niter) {
@@ -134,6 +146,11 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             if (trace)
                 do_trace(m, mstop = mstop, risk = mrisk,
                          step = tracestep, width = niter)
+
+            ### internal stopping (for oobag risk only)
+            if (stopintern & (m > 1)) {
+                if ((mrisk[m] - mrisk[m - 1]) > stopeps) break
+            }
         }
         mstop <<- mstop + niter
         return(TRUE)
@@ -188,7 +205,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
 
     ### figure out which baselearners are requested
     thiswhich <- function(which = NULL, usedonly = FALSE) {
-        if (is.null(which)) which <- 1:max(RET$xselect())
+        if (is.null(which)) which <- 1:length(bnames)
         if (is.character(which)) {
             i <- sapply(which, function(w) {
                 wi <- grep(w, bnames, fixed = TRUE)

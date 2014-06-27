@@ -6,16 +6,16 @@
 > if (any(is.na(pd))) {
 +     install.packages("mboost", repos = "http://cran.at.r-project.org")
 +     pd <- packageDescription("mboost")
-+ }
++  .... [TRUNCATED] 
 
 > if (compareVersion(pd$Version, "2.1-0") < 0) {
 +     warning("Current version of mboost is installed!")
-+     install.packages("mboost", repos = "ht ..." ... [TRUNCATED] 
++     install.packages("mboost", repos  .... [TRUNCATED] 
 
 > require("mboost")
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.2-2. See ‘package?mboost’ and the NEWS file
+This is mboost 2.3-0. See ‘package?mboost’ and the NEWS file
 for a complete list of changes.
 Note: The default for the computation of the degrees of freedom has changed.
       For details see section ‘Global Options’ of ‘?bols’.
@@ -26,7 +26,7 @@ Note: The default for the computation of the degrees of freedom has changed.
 
 > library("mboost")
 
-> data("bodyfat")
+> data("bodyfat", package = "TH.data")
 
 > lm1 <- lm(DEXfat ~ hipcirc + kneebreadth + anthro3a, 
 +     data = bodyfat)
@@ -647,5 +647,5 @@ pdf
 
  *** Run successfully completed ***
 > proc.time()
-       User      System verstrichen 
-     12.644       0.176      13.064 
+   user  system elapsed 
+ 13.604   0.468  12.654 

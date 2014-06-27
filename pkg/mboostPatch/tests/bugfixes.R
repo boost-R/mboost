@@ -31,7 +31,7 @@ stopifnot(max(abs(p1 - predict(gb, newdata = X))) < sqrt(.Machine$double.eps))
 
 ### blackboost _did_ touch the response, arg!
 
-data("bodyfat", package = "mboost")
+data("bodyfat", package = "TH.data")
 ctrl <- boost_control(mstop = 500, nu = 0.01)
 bb <- blackboost(DEXfat ~ ., data = bodyfat, control = ctrl)
 n <- nrow(bodyfat)
@@ -71,7 +71,7 @@ stopifnot(mstop(cv1) == mstop(cv2))
 if (FALSE){
 ### dfbase=1 was not working correctly for ssp
 ### spotted by Matthias Schmid <Matthias.Schmid@imbe.imed.uni-erlangen.de>
-data("bodyfat", package = "mboost")
+data("bodyfat", package = "TH.data")
 ctrl <- boost_control(mstop = 100)
 ### COMMENT: Not using ssp here but P-splines
 ### Remove check!
@@ -148,7 +148,7 @@ for (cc in ctr) {
 
 ### check gamboost with weights (use weighted some of residuals
 ### for variable selection)
-data("bodyfat", package = "mboost")
+data("bodyfat", package = "TH.data")
 
 set.seed(290875)
 n <- nrow(bodyfat)
@@ -444,6 +444,7 @@ if (require("BayesX")) {
 y <- yNa <- rnorm(100)
 x1 <- rnorm(100)
 x2 <- rnorm(100)
+z1 <- as.factor(sample(1:10, 100, replace = TRUE))
 
 yNa[1] <- NA
 coef(mboost(yNa ~ x1))
@@ -453,6 +454,24 @@ yNa[2] <- NaN
 coef(mboost(yNa ~ x1))
 
 x1[1] <- NA
-mod <- mboost(y ~ bols(x1) + bbs(x1) + brandom(x1) +
+z1[1] <- NA
+mod <- mboost(y ~ bols(x1) + bbs(x1) + brandom(z1) +
                   bspatial(x1, x2) + brad(x1, x2, knots = 20) +
                   bmono(x1) +  buser(x1, K = 1, lambda = 0) + x2)
+
+## check handling of lists without names
+n <- 100
+x1 <- rnorm(n)
+x2 <- rnorm(n) + 0.25 * x1
+y <- 3 * sin(x1) + x2^2 + rnorm(n)
+spline1 <- bbs(x1, knots = 20, df = 4)
+spline2 <- bbs(x2, knots = 10, df = 5)
+mod1 <- mboost_fit(list(spline1, spline2), y)
+mod2 <- mboost_fit(list(spline1), y)
+mod3 <- mboost_fit(list(s1 = spline1, s2 = spline2), y)
+names(coef(mod1))
+names(coef(mod2))
+names(coef(mod3))
+extract(mod1, "bnames")
+extract(mod2, "bnames")
+extract(mod3, "bnames")

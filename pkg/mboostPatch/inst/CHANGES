@@ -1,6 +1,42 @@
-                CHANGES in `mboost' VERSION 2.2-4 (2013-xx-yy, rXYZ)
+                CHANGES in `mboost' VERSION 2.3-1 (2014-xx-yy, rXYZ)
 
-  o  fixed bug in AIC.mboost: df = "actset" can only be used with glmboost models
+                CHANGES in `mboost' VERSION 2.3-0 (2014-06-26, r771)
+
+  o  stabsel was recoded and now uses different terminology, much more options
+     and a better tested code base
+
+  o  new replacement function mstop<- as an alternative to <mboost>[i]
+     (suggested by Achim Zeileis).
+
+  o  bmono:
+     - new and faster algorithm to compute monotonic P-splines (type = "quad.prog")
+     - new constraints added for positive and negative spline estimates
+
+  o  bbs:
+     - allows monotone T-splines (experimental)
+     - new argument deriv to bbs for computing derivatives of B-splines
+
+  o  bmrf can now also handle neighborhood matrizes as an argument to bnd
+
+  o  added new families Hurdle and Multinomial
+
+  o  boost_control: added new argument stopintern for internal stopping
+     (based on oobag data) during fitting
+
+  o  Misc:
+     - added new argmument which to variable.names()
+     - added new method risk to extract risks
+     - brandom now checks that a factor is given
+     - speed improvements when updating a model via mod[mstop]
+     - changed \dontrun to \donttest
+     - updated references
+
+  o  Bugfixes:
+     - fixed a problem with extract() of single base-learners
+     - fixed bug in AIC.mboost: df = "actset" can only be used with
+       glmboost models
+     - fixed package startup messages
+     - fixed a problem in mboost_fit (when names of base-learners were missing)
 
 
                 CHANGES in `mboost' VERSION 2.2-3 (2013-09-09, r733)

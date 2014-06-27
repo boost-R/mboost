@@ -227,6 +227,10 @@ logLik.mboost <- function(object, ...)
     invisible(NULL)
 }
 
+"mstop<-" <- function(x, value) {
+    return(x[value, return = TRUE])
+}
+
 mstop.mboost <- function(object, ...) object$mstop()
 
 update.mboost <- function(object, weights, ...)
@@ -397,7 +401,9 @@ print.glmboost <- function(x, ...) {
     invisible(x)
 }
 
-variable.names.mboost <- function(object, ...) {
+variable.names.mboost <- function(object, which = NULL, usedonly = FALSE, ...) {
+
+    which <- object$which(which, usedonly = usedonly)
 
     args <- list(...)
     if (length(args) > 0)
@@ -408,10 +414,24 @@ variable.names.mboost <- function(object, ...) {
                   paste(x$get_names(), collapse = ", "))
     ### </FIXME>
     if (is.matrix(ret)) ret <- ret[, , drop = TRUE]
-    ret
+    ret[which]
 }
 
-variable.names.glmboost <- function(object, ...) {
+variable.names.glmboost <- function(object, which = NULL, usedonly = FALSE, ...) {
+
+    if (usedonly) {
+        which <- object$which(usedonly = TRUE)
+        ## if center = TRUE for model fitting intercept is implicitly selected
+        center <- get("center", envir = environment(object$newX))
+        if (center){
+            intercept <- which(object$assign == 0)
+            INTERCEPT <- sum(object$assign == 0) == 1
+            if (INTERCEPT && !intercept %in% which)
+                which <- c(intercept, which)
+        }
+    } else {
+        which <- object$which(which, usedonly = usedonly)
+    }
 
     args <- list(...)
     if (length(args) > 0)
@@ -419,7 +439,7 @@ variable.names.glmboost <- function(object, ...) {
 
     ret <- object$baselearner[[1]]$get_names()
     names(ret) <- ret
-    ret
+    ret[which]
 }
 
 
@@ -428,6 +448,9 @@ selected <- function(object, ...)
 
 selected.mboost <- function(object, ...)
     object$xselect()
+
+selected.stabsel <- function(object, ...)
+    object$selected
 
 summary.mboost <- function(object, ...) {
 
@@ -477,7 +500,7 @@ extract.mboost <- function(object, what = c("design", "penalty", "lambda", "df",
     switch(what,
            "coefficients" = return(coef(object, which = which)),
            "residuals" = return(residuals(object)),
-           "variable.names" = return(variable.names(object)),
+           "variable.names" = return(variable.names(object, which)),
            "bnames" = return(get("bnames", envir = environment(object$update))[which]),
            "offset" = return(object$offset),
            "nuisance" = return(nuisance(object)),
@@ -514,7 +537,7 @@ extract.glmboost <- function(object, what = c("design", "coefficients", "residua
     switch(what,
            "coefficients" = return(coef(object, which = which)),
            "residuals" = return(residuals(object)),
-           "variable.names" = return(variable.names(object)),
+           "variable.names" = return(variable.names(object, which)),
            "bnames" = return(get("bnames", envir = environment(object$update))[which]),
            "offset" = return(object$offset),
            "nuisance" = return(nuisance(object)),
@@ -528,9 +551,26 @@ extract.blackboost <- function(object, ...)
 extract.blg <- function(object, what = c("design", "penalty", "index"),
                         asmatrix = FALSE, expand = FALSE, ...){
     what <- match.arg(what)
-    object <- object$dpp(rep(1, NROW(object$model.frame())))
-    return(extract(object, what = what,
-                   asmatrix = asmatrix, expand = expand))
+    #object <- object$dpp(rep(1, NROW(object$model.frame())))
+    # return(extract(object, what = what,
+    #               asmatrix = asmatrix, expand = expand))
+    if (what == "design")
+        mat <- get("X", envir = environment(object$dpp))
+    if (what == "penalty")
+        mat <- get("K", envir = environment(object$dpp))
+    if (what == "index")
+        return(get("index", envir = environment(object$dpp)))
+    ## only applicable for design and penalty matrix
+    if (asmatrix){
+        mat <- as.matrix(mat)
+    }
+    if (expand && !is.null(indx <- extract(object, what = "index"))){
+        a <- attributes(mat)
+        mat <- mat[indx,]
+        a[c("dim", "dimnames")] <- attributes(mat)[c("dim", "dimnames")]
+        attributes(mat) <- a
+    }
+    return(mat)
 }
 
 extract.bl_lin <- function(object, what = c("design", "penalty", "lambda", "df",
@@ -576,4 +616,11 @@ residuals.mboost <- function(object, ...){
         return(object$resid())
     stop(sQuote("residuals()"), " only implemented for ",
          sQuote("family = Gaussian()"))
+}
+
+risk <- function(object, ...)
+    UseMethod("risk")
+
+risk.mboost <- function(object, ...) {
+    object$risk()
 }

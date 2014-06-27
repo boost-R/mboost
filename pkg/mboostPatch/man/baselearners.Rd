@@ -19,30 +19,54 @@
   component-wise gradient boosting in function \code{mboost}.
 }
 \usage{
+## linear base-learner
 bols(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
      lambda = 0, contrasts.arg = "contr.treatment")
+
+## smooth P-spline base-learner
 bbs(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
     degree = 3, differences = 2, df = 4, lambda = NULL, center = FALSE,
-    cyclic = FALSE)
+    cyclic = FALSE, constraint = c("none", "increasing", "decreasing"),
+    deriv = 0)
+
+## bivariate P-spline base-learner
 bspatial(..., df = 6)
+
+## radial basis functions base-learner
 brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
      covFun = stationary.cov,
      args = list(Covariance="Matern", smoothness = 1.5, theta=NULL))
-brandom(..., contrasts.arg = "contr.dummy", df = 4)
+
+## random effects base-learner
+brandom(..., by = NULL, index = NULL, df = 4, lambda = NULL,
+        contrasts.arg = "contr.dummy")
+
+## tree based base-learner
 btree(..., tree_controls = ctree_control(stump = TRUE,
                                          mincriterion = 0,
                                          savesplitstats = FALSE))
+
+## constrained effects base-learner
 bmono(...,
-      constraint = c("increasing", "decreasing", "convex", "concave", "none"),
+      constraint = c("increasing", "decreasing", "convex", "concave",
+                     "none", "positive", "negative"),
+      type = c("quad.prog", "iterative"),
       by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
       degree = 3, differences = 2, df = 4, lambda = NULL,
       lambda2 = 1e6, niter=10, intercept = TRUE,
       contrasts.arg = "contr.treatment",
       boundary.constraints = FALSE,
       cons.arg = list(lambda = 1e+06, n = NULL, diff_order = NULL))
+
+## Markov random field base-learner
 bmrf(..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
     center = FALSE)
+
+## user-specified base-learner
 buser(X, K = NULL, by = NULL, index = NULL, df = 4, lambda = NULL)
+
+## combining single base-learners to form new,
+## more complex base-learners
 bl1 \%+\% bl2
 bl1 \%X\% bl2
 bl1 \%O\% bl2
@@ -52,12 +76,12 @@ bl1 \%O\% bl2
               frame of predictor variables. For smooth base-learners,
 	      the number of predictor variables and the number of
 	      columns in the data frame / matrix must be less than or
-	      equal to 2. If a data frame or matrix (with at least 2
-	      columns) is given to \code{bols} or \code{brandom}, it
-	      is directly used as the design matrix. Especially, no
-	      intercept term is added reagrdless of argument
-	      \code{intercept}. If the argument has only one column, it
-	      is simplified to a vector and an intercept is added or not
+	      equal to 2. If a matrix (with at least 2 columns) is
+	      given to \code{bols} or \code{brandom}, it is directly
+	      used as the design matrix. Especially, no intercept term
+	      is added regardless of argument \code{intercept}.
+	      If the argument has only one column, it is simplified
+	      to a vector and an intercept is added or not
 	      according to the argmuent \code{intercept}.}
   \item{by}{ an optional variable defining varying coefficients,
              either a factor or numeric variable.
@@ -147,6 +171,16 @@ bl1 \%O\% bl2
     or "concave". Additionally, "none" can be used to specify
     unconstrained P-splines. This is especially of interest in
     conjunction with \code{boundary.constraints = TRUE}.}
+  \item{type}{
+    determines how the constrained least squares problem should be
+    solved. If \code{type = "quad.prog"}, a numeric quadratic
+    programming method (Goldfarb and Idnani, 1982, 1983) is used
+    (see \code{\link{solve.QP}} in package \pkg{quadprog}). If
+    \code{type = "iterative"}, the iterative procedure described in
+    Hofner et al. (2011b) is used. The quadratic programming approach is
+    usually much faster than the iterative approach. For details see
+    Hofner et al. (2014).
+  }
   \item{lambda2}{ penalty parameter for the (monotonicity) constraint. }
   \item{niter}{ maximum number of iterations used to compute constraint
     estimates. Increase this number if a warning is displayed. }
@@ -174,6 +208,10 @@ bl1 \%O\% bl2
   \item{K}{ penalty matrix as it should be used in the penalized least
     squares estimation. If \code{NULL} (default), unpenalized estimation
     is used. }
+  \item{deriv}{an integer; the derivative of the spline of the given order
+               at the data is computed, defaults to zero. Note that this
+	       argument is only used to set up the design matrix and
+	       cannot be used in the fitting process.}
   \item{bl1}{a linear base-learner or a list of linear base-learners.}
   \item{bl2}{a linear base-learner or a list of linear base-learners.}
 }
@@ -198,7 +236,9 @@ bl1 \%O\% bl2
   corresponding design matrix (which can be omitted using
   \code{intercept = FALSE}). It is \emph{strongly} advised to (mean-)
   center continuous covariates, if no intercept is used in \code{bols}
-  (see Hofner et al., 2011a). When \code{df} (or \code{lambda}) is
+  (see Hofner et al., 2011a). If \code{x} is a matrix, it is directly used
+  as the design matrix and no further preprocessing (such as addition of
+  an intercept) is conducted. When \code{df} (or \code{lambda}) is
   given, a ridge estimator with \code{df} degrees of freedom (see
   section \sQuote{Global Options}) is used as base-learner. Note that
   all variables are treated as a group, i.e., they enter the model
@@ -237,9 +277,9 @@ bl1 \%O\% bl2
   fitted, where the random effects variance is governed by the
   specification of the degrees of freedom \code{df} or \code{lambda}
   (see section \sQuote{Global Options}). Note that \code{brandom(...)}
-  is essentially a wrapper to \code{bols(..., df = 4)}, i.e., a wrapper
-  that utilizes ridge-penalized categorical effects. For possible
-  arguments and defaults see \code{bols}.
+  is essentially a wrapper to \code{bols(..., df = 4, contrasts.arg =
+  "contr.dummy")}, i.e., a wrapper that utilizes ridge-penalized
+  categorical effects. For possible arguments and defaults see \code{bols}.
 
   For all linear base-learners the amount of smoothing is determined by
   the trace of the hat matrix, as indicated by \code{df}.
@@ -327,7 +367,7 @@ bl1 \%O\% bl2
 
   For a categorical covariate with non-observed categories
   \code{bols(x)} and \code{brandom(x)} both assign a zero effect
-  these categories. However, the non-observed categories must be
+  to these categories. However, the non-observed categories must be
   listed in \code{levels(x)}. Thus, predictions are possible
   for new observations if they correspond to this category.
 
@@ -344,7 +384,10 @@ bl1 \%O\% bl2
   with an additional asymmetric penalty enforcing monotonicity or
   convexity/concavity (see and Eilers, 2005). For more details in the
   boosting context and monotonic effects of ordinal factors see Hofner,
-  Mueller and Hothorn (2011b).
+  Mueller and Hothorn (2011b). The quadratic-programming based algorithm
+  is described in Hofner et al. (2014). Alternative monotonicity
+  constraints are implemented via T-splines in \code{bbs()} (Beliakov,
+  2000).
 
   Two or more linear base-learners can be joined using \code{\%+\%}. A
   tensor product of two or more linear base-learners is returned by
@@ -352,9 +395,10 @@ bl1 \%O\% bl2
   product of two matrices \code{X = kronecker(X2, X1)}, then \code{bl1
   \%O\% bl2} with design matrices X1 and X2, respectively, can be used
   to efficiently compute Ridge-estimates following Currie, Durban,
-  Eilers (2006). In cases the overall degrees of freedom of the combined
-  base-learner increase (additive or multiplicative, respectively).
-  These three features are experimental and for expert use only.
+  Eilers (2006). In all cases the overall degrees of freedom of the
+  combined base-learner increase (additive or multiplicative,
+  respectively). These three features are experimental and for expert
+  use only.
 
   \code{btree} fits a stump to one or more variables. Note that
   \code{\link{blackboost}} is more efficient for boosting stumps. For
@@ -427,13 +471,25 @@ bl1 \%O\% bl2
   Jan Gertheiss and Gerhard Tutz (2009), Penalized regression with ordinal
   predictors, \emph{International Statistical Review}, \bold{77}(3), 345--365.
 
+  D. Goldfarb and A. Idnani (1982),  Dual and Primal-Dual Methods
+  for Solving Strictly Convex Quadratic Programs.  In J. P. Hennart
+  (ed.), Numerical Analysis, Springer-Verlag, Berlin, pp. 226-239.
+
+  D. Goldfarb and A. Idnani (1983),  A numerically stable dual
+  method for solving strictly convex quadratic programs.
+  \emph{Mathematical Programming}, \bold{27}, 1--33.
+
   Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011a),
   A framework for unbiased model selection based on boosting.
   \emph{Journal of Computational and Graphical Statistics}, \bold{20}, 956--971.
 
   Benjamin Hofner, Joerg Mueller, and Torsten Hothorn (2011b),
   Monotonicity-Constrained Species Distribution Models,
-  \emph{Ecology}, 92:1895-1901.
+  \emph{Ecology}, \bold{92}, 1895--1901.
+
+  Benjamin Hofner, Thomas Kneib, and Torsten Hothorn (2014),
+  A Unified Framework of Constrained Regression,
+  \emph{Technical Report}, \url{http://arxiv.org/abs/1403.7118}.
 
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable
   selection and model choice in geoadditive regression models,
@@ -447,7 +503,9 @@ bl1 \%O\% bl2
   Benjamin Hofner (2010), Model-based Boosting 2.0, \emph{Journal of
     Machine Learning Research}, \bold{11}, 2109--2113.
 
-
+  G. M. Beliakov (2000), Shape Preserving Approximation using Least Squares
+  Splines, \emph{Approximation Theory and its Applications},
+  \bold{16}(4), 80--98.
 }
 
 \seealso{\code{\link{mboost}}}
@@ -488,7 +546,7 @@ bl1 \%O\% bl2
   mod2 <- mboost(y ~ bbs(x1, knots = 20, df = 4) +
                      bbs(x2, knots = knots.x2, df = 5) +
                      bols(x3) + bols(x4), weights = weights)
-  all.equal(coef(mod1), coef(mod2), check.attributes = FALSE)
+  all.equal(coef(mod1), coef(mod2))
 
 
   ### grouped linear effects
@@ -524,8 +582,7 @@ bl1 \%O\% bl2
   form2 <- y ~ bols(x1) + bols(x2) + bols(x1, by = x2, intercept = FALSE) +
                bspatial(x1, x2, knots = 12, center = TRUE, df = 1)
 
-## To speed up testing do not run this automatically.
-\dontrun{  mod1 <- gamboost(form1)
+\donttest{  mod1 <- gamboost(form1)
   plot(mod1)
 
   mod2 <- gamboost(form2)
@@ -546,8 +603,7 @@ bl1 \%O\% bl2
   ## (not really a good setting)
   form4 <- y ~ brad(x1, x2, knots = 50, args = list(theta = 0.4))
 
-## To speed up testing do not run this automatically.
-\dontrun{  mod3 <- gamboost(form3)
+\donttest{  mod3 <- gamboost(form3)
 plot(mod3)
 dim(extract(mod3, what = "design", which = "brad")[[1]])
 knots <- attr(extract(mod3, what = "design", which = "brad")[[1]], "knots")
@@ -637,8 +693,7 @@ plot(mod4)
   signif(cf_center, 3)
   signif(coef(lm(y ~ x, data = tmpdata)), 3)
 
-## To speed up testing do not run this automatically.
-\dontrun{  ### large data set with ties
+\donttest{  ### large data set with ties
   nunique <- 100
   xindex <- sample(1:nunique, 1000000, replace = TRUE)
   x <- runif(nunique)
@@ -732,7 +787,7 @@ plot(mod4)
   volf <- matrix(fitted(mod), nrow = nrow(volcano))
   image(volf, main = "fitted")
 
-\dontrun{  ## the old-fashioned way, a waste of space and time
+\donttest{  ## the old-fashioned way, a waste of space and time
   x <- expand.grid(x1, x2)
   modx <- mboost(vol ~ bbs(Var2, df = 3, knots = 10) \%X\%
                        bbs(Var1, df = 3, knots = 10), data = x,

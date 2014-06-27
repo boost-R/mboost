@@ -121,3 +121,116 @@ bhatmat <- function(n, H, xselect, fitm, fW) {
     }
     list(hatmatrix = B, trace = tr)
 }
+
+nnls1D <- function(XtX, X, y) {
+    my <- switch(attr(X, "Ts_constraint"),  "increasing" = {
+        ### first column is intercept
+        stopifnot(max(abs(X[,1,drop = TRUE] - 1)) < sqrt(.Machine$double.eps))
+        min(y)
+    }, "decreasing" = {
+        stopifnot(max(abs(X[,1,drop = TRUE] + 1)) < sqrt(.Machine$double.eps))
+        max(y)
+    })
+    y <- y - my
+    cf <- nnls(XtX, crossprod(X, y))$x
+    cf[1] <- cf[1] + switch(attr(X, "Ts_constraint"),  "increasing" = my,
+                                                    "decreasing" = -my)
+    cf
+}
+
+nnls2D <- function(X, XtX, Y) {
+
+    constr <- which(c(!is.null(attr(X$X1, "Ts_constraint")),
+                      !is.null(attr(X$X2, "Ts_constraint"))))
+    if (length(constr) == 2)
+            stop("only one dimension may be subject to constraints")
+    Xc <- paste("X", constr, sep = "")
+    my <- switch(attr(X[[Xc]], "Ts_constraint"),  "increasing" = {
+        ### first column is intercept
+        stopifnot(max(abs(X[[Xc]][,1,drop = TRUE] - 1)) < sqrt(.Machine$double.eps))
+        min(Y)
+    }, "decreasing" = {
+        stopifnot(max(abs(X[[Xc]][,1,drop = TRUE] + 1)) < sqrt(.Machine$double.eps))
+        max(Y)
+    })
+    Y <- Y - my
+
+    XWY <- as.vector(crossprod(X$X1, Y) %*% X$X2)
+    cf <- nnls(XtX, matrix(as(XWY, "matrix"), ncol = 1))$x
+    cf <- matrix(cf, nrow = ncol(X$X1))
+    if (constr == 1) cf[1,] <- cf[1,] + switch(attr(X[[Xc]], "Ts_constraint"),
+                                               "increasing" = my,
+                                               "decreasing" = -my)
+    if (constr == 2) cf[,1] <- cf[,1] + switch(attr(X[[Xc]], "Ts_constraint"),
+                                               "increasing" = my,
+                                               "decreasing" = -my)
+    cf
+}
+
+## function returns either differences or difference matrix
+## needed in bmono
+differences <- function(constraint, ncol = NULL) {
+    if (length(constraint) == 1) {
+        diff <- switch(constraint,
+                       none = NULL,
+                       positive = 0,
+                       negative = 0,
+                       increasing = 1,
+                       decreasing = -1,
+                       convex = 2,
+                       concave = -2)
+    } else {
+        diff <- lapply(constraint, function(x)
+                       switch(x,
+                              none = NULL,
+                              positive = 0,
+                              negative = 0,
+                              increasing = 1,
+                              decreasing = -1,
+                              convex = 2,
+                              concave = -2))
+    }
+    if (is.null(ncol))
+        return(diff)
+    #### and thus quit function
+
+    make_diffs <- function(diff, ncol) {
+        if (is.null(diff))
+            return(NULL)
+        if (diff != 0) {
+            D <- sign(diff) * diff(diag(ncol), differences = abs(diff))
+        } else {
+            D <- ifelse(constraint == "positive", 1, -1) * diag(ncol)
+        }
+        return(D)
+    }
+
+    if (length(diff) == 1)
+        return(make_diffs(diff, ncol))
+    #### and thus quit function
+
+    D <- vector(mode = "list", length =2)
+    tmpD <- make_diffs(diff[[1]], ncol[[1]])
+    if (!is.null(tmpD))
+        ## to make Matrix quiet
+        D[[1]] <- suppressMessages(kronecker(tmpD, diag(ncol[[2]])))
+    tmpD <- make_diffs(diff[[2]], ncol[[2]])
+    if (!is.null(tmpD))
+        ## to make Matrix quiet
+        D[[2]] <- suppressMessages(kronecker(diag(ncol[[1]]), tmpD))
+    return(D)
+}
+
+
+## least squares with equalities and inequalities
+solveLSEI <- function(XtX, Xty, D = NULL) {
+    if (is.null(D) || all(sapply(D, is.null)))
+        return(solve(XtX, Xty, LINPACK = FALSE))
+
+    if (!isMATRIX(D)) ## i.e. D is a list with 2 entries
+        D <- rbind(D[[1]], D[[2]])
+    ## NOTE: Currently both constraints get the same weight
+    cf <- solve.QP(Dmat = XtX, dvec = as.vector(Xty), Amat = t(D),
+                   bvec = rep(0, nrow(D)))$solution
+    cf
+}

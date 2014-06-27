@@ -78,11 +78,11 @@
     Machine Learning Research}, \bold{11}, 2109--2113.
 
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
-  (2012). Model-based Boosting in R: A Hands-on Tutorial Using the R
-  Package mboost. \emph{Department of Statistics, Technical Report No. 120}.\cr
-  \url{http://epub.ub.uni-muenchen.de/12754/}
+  (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
+  Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
+  \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
 
-  Available as vignette via: vignette(package = "mboost", "mboost_tutorial")
+  Available as vignette via: \code{vignette(package = "mboost", "mboost_tutorial")}
 }
 \seealso{\code{\link{mboost}} for the generic boosting function and
   \code{\link{gamboost}} for boosted additive models and
@@ -103,7 +103,7 @@
     signif(cf, 3)
     signif(coef(lm(dist ~ speed, data = cars)), 3)
     ## almost converged. With higher mstop the results get even better
- 
+
     ### now we center the design matrix for
     ### much quicker "convergence"
     cars.gb_centered <- glmboost(dist ~ speed, data = cars,

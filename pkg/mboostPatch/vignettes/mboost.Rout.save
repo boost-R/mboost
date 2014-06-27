@@ -7,7 +7,7 @@
 +     dependencies = TRUE)
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.2-2. See ‘package?mboost’ and the NEWS file
+This is mboost 2.3-0. See ‘package?mboost’ and the NEWS file
 for a complete list of changes.
 Note: The default for the computation of the degrees of freedom has changed.
       For details see section ‘Global Options’ of ‘?bols’.
@@ -16,26 +16,19 @@ Note: The default for the computation of the degrees of freedom has changed.
 
 > if (!require("party")) install.packages("party", dependencies = TRUE)
 Loading required package: party
-Loading required package: survival
-Loading required package: splines
 Loading required package: grid
-Loading required package: modeltools
-Loading required package: stats4
-Loading required package: coin
-Loading required package: mvtnorm
 Loading required package: zoo
 
 Attaching package: ‘zoo’
 
-The following object(s) are masked from ‘package:base’:
+The following objects are masked from ‘package:base’:
 
     as.Date, as.Date.numeric
 
 Loading required package: sandwich
 Loading required package: strucchange
-Loading required package: vcd
-Loading required package: MASS
-Loading required package: colorspace
+Loading required package: modeltools
+Loading required package: stats4
 
 > library("party")
 
@@ -44,6 +37,8 @@ Loading required package: colorspace
 +     mboost <- function(...) return(model)
 +     cvrisk <- function(...) return(cvm)
 + }
+
+> data("bodyfat", package = "TH.data")
 
 > features <- names(bodyfat)[-2]
 
@@ -108,7 +103,7 @@ Loss function: tau * (y - f) * ((y - f) >= 0) - (1 - tau) * (y - f) * ((y -
      f) < 0) 
  
 
-Number of boosting iterations: mstop = 450 
+Number of boosting iterations: mstop = 460 
 Step size:  0.1 
 Offset:  29.63 
 Number of baselearners:  19 
@@ -160,5 +155,5 @@ Number of baselearners:  19
 
  *** Run successfully completed ***
 > proc.time()
-       User      System verstrichen 
-     58.183       0.212      62.849 
+   user  system elapsed 
+ 87.844   0.308  50.742 

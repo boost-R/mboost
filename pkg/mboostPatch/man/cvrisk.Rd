@@ -83,7 +83,8 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   Andreas Mayr, Benjamin Hofner, and Matthias Schmid (2012). The
   importance of knowing when to stop - a sequential stopping rule for
   component-wise gradient boosting. \emph{Methods of Information in
-  Medicine}, DOI: \url{http://dx.doi.org/10.3414/ME11-02-0030}
+    Medicine}, \bold{51}, 178--186. \cr
+  DOI: \url{http://dx.doi.org/10.3414/ME11-02-0030}
 }
 \seealso{\code{\link{AIC.mboost}} for
   \code{AIC} based selection of the stopping iteration. Use \code{mstop}
@@ -91,7 +92,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   object.}
 \examples{
 
-  data("bodyfat", package = "mboost")
+  data("bodyfat", package = "TH.data")
 
   ### fit linear model to data
   model <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)

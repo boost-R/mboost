@@ -1,6 +1,6 @@
 
-R version 3.0.1 (2013-05-16) -- "Good Sport"
-Copyright (C) 2013 The R Foundation for Statistical Computing
+R version 3.1.0 (2014-04-10) -- "Spring Dance"
+Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -18,13 +18,10 @@ Type 'q()' to quit R.
 > 
 > library("mboost")
 Loading required package: parallel
-Loading required package: survival
-Loading required package: splines
-This is mboost 2.2-3. See 'package?mboost' and the NEWS file
+This is mboost 2.3-0. See 'package?mboost' and the NEWS file
 for a complete list of changes.
-Note: The default for the computation of the degrees of freedom has changed.
-      For details see section 'Global Options' of '?bols'.
-> data("birds", package = "mboost")
+
+> data("birds", package = "TH.data")
 > 
 > # define characteristics of the boosting algorithm
 > bcr <- boost_control(mstop=200, trace=TRUE)
@@ -317,4 +314,4 @@ Final risk: 497.9626
 > 
 > proc.time()
    user  system elapsed 
- 19.513   0.248  19.803 
+ 19.933   0.284  20.781 

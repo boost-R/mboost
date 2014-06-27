@@ -3,7 +3,7 @@
 \documentclass[10pt]{scrartcl}
 
 %%\VignetteIndexEntry{mboost Tutorial}
-%%\VignetteDepends{mboost,lattice,RColorBrewer}
+%%\VignetteDepends{mboost,lattice,RColorBrewer,TH.data}
 
 \usepackage{threeparttable}  % needed for \tnote (footnotes in table)
 \usepackage[utf8]{inputenc}
@@ -121,7 +121,7 @@ if (!file.exists("graphics"))
 \begin{center}
   \small
   \textbf{This is an extended and slightly modified version of the manuscript}\\
-  Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Mattthias Schmid (2012),
+  Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Mattthias Schmid (2014),
   Model-based Boosting in \textsf{R} - A Hands-on Tutorial Using the \textsf{R}
   Package mboost. \emph{Computational Statistics}, 29:3-35.\\
   DOI \href{http://dx.doi.org/10.1007/s00180-012-0382-5}{10.1007/s00180-012-0382-5}.\\
@@ -495,8 +495,8 @@ of 71 German women are available with the data set \R{bodyfat} \citep{garcia}
 included in \textbf{mboost}. We first load the package and the data set.
 
 <<setup, echo = true, results = hide>>=
-library("mboost")    ## load package
-data("bodyfat")      ## load data
+library("mboost")                         ## load package
+data("bodyfat", package = "TH.data")      ## load data
 @
 
 The response variable is the body fat measured by DXA (\R{DEXfat}), which can be

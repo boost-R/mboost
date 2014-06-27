@@ -6,6 +6,8 @@ import(Matrix)
 importFrom(survival, Surv, survfit)
 importFrom(splines, bs, splineDesign)
 importFrom(lattice, levelplot)
+importFrom(nnls, nnls)
+importFrom(quadprog, solve.QP)
 importFrom(utils, packageDescription)
 
 export(glmboost,
@@ -15,9 +17,10 @@ export(glmboost,
        boost_control, mstop, Family,
        GaussReg, Gaussian, GaussClass, Laplace, Binomial, Poisson, GammaReg, QuantReg,
        ExpectReg, NBinomial, PropOdds, Weibull, Loglog, Lognormal, AUC, mboost_fit,
-       Huber, AdaExp, Gehan, CoxPH, FP, IPCweights, cvrisk, cv, bbs, stabsel,
+       Huber, AdaExp, Gehan, CoxPH, Hurdle, Multinomial, FP, IPCweights,
+       cvrisk, cv, bbs, stabsel, stabsel_parameters,
        bols, bspatial, brandom, btree, bss, bns, brad, bmono, bmrf, buser, survFit, selected,
-       nuisance, "%+%", "%X%", "%O%", extract)
+       nuisance, "%+%", "%X%", "%O%", extract, risk, "mstop<-")
        ###, basesel, fitsel)
 exportClasses("boost_family")
 exportMethods("show")
@@ -68,7 +71,9 @@ S3method(cvrisk, mboost)
 # S3method(selected, glmboost)
 S3method(update, mboost)
 S3method(print, stabsel)
+S3method(print, stabsel_parameters)
 S3method(plot, stabsel)
+S3method(selected, stabsel)
 S3method(extract, mboost)
 S3method(extract, glmboost)
 S3method(extract, blackboost)
@@ -76,5 +81,6 @@ S3method(extract, blg)
 S3method(extract, bl_lin)
 S3method(extract, bl_tree)
 S3method(residuals, mboost)
+S3method(risk, mboost)
 
 useDynLib(mboost)

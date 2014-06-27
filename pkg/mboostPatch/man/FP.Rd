@@ -37,7 +37,7 @@ FP(x, p = c(-2, -1, -0.5, 0.5, 1, 2, 3), scaling = TRUE)
   for P-spline base-learners}
 \examples{
 
-    data("bodyfat", package = "mboost")
+    data("bodyfat", package = "TH.data")
     tbodyfat <- bodyfat
 
     ### map covariates into [1, 2]

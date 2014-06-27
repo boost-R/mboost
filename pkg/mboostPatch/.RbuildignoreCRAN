@@ -2,4 +2,5 @@ demo
 to_do_list.txt
 test
 ^\..*
+.*/auto
 vignettes/.*\.Rout\.save$

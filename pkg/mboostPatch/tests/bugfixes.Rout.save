@@ -1,6 +1,6 @@
 
-R version 3.0.1 (2013-05-16) -- "Good Sport"
-Copyright (C) 2013 The R Foundation for Statistical Computing
+R version 3.1.0 (2014-04-10) -- "Spring Dance"
+Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -19,15 +19,11 @@ Type 'q()' to quit R.
 > require("mboost")
 Loading required package: mboost
 Loading required package: parallel
-Loading required package: survival
-Loading required package: splines
-This is mboost 2.2-3. See 'package?mboost' and the NEWS file
+This is mboost 2.3-0. See 'package?mboost' and the NEWS file
 for a complete list of changes.
-Note: The default for the computation of the degrees of freedom has changed.
-      For details see section 'Global Options' of '?bols'.
+
 > require("Matrix")
 Loading required package: Matrix
-Loading required package: lattice
 > 
 > set.seed(290875)
 > 
@@ -41,7 +37,7 @@ Loading required package: zoo
 
 Attaching package: 'zoo'
 
-The following object is masked from 'package:base':
+The following objects are masked from 'package:base':
 
     as.Date, as.Date.numeric
 
@@ -77,7 +73,7 @@ See Warning section in ?coef.mboost
 > 
 > ### blackboost _did_ touch the response, arg!
 > 
-> data("bodyfat", package = "mboost")
+> data("bodyfat", package = "TH.data")
 > ctrl <- boost_control(mstop = 500, nu = 0.01)
 > bb <- blackboost(DEXfat ~ ., data = bodyfat, control = ctrl)
 > n <- nrow(bodyfat)
@@ -117,7 +113,7 @@ See Warning section in ?coef.mboost
 > if (FALSE){
 + ### dfbase=1 was not working correctly for ssp
 + ### spotted by Matthias Schmid <Matthias.Schmid@imbe.imed.uni-erlangen.de>
-+ data("bodyfat", package = "mboost")
++ data("bodyfat", package = "TH.data")
 + ctrl <- boost_control(mstop = 100)
 + ### COMMENT: Not using ssp here but P-splines
 + ### Remove check!
@@ -229,7 +225,7 @@ See Warning section in ?coef.mboost
 > 
 > ### check gamboost with weights (use weighted some of residuals
 > ### for variable selection)
-> data("bodyfat", package = "mboost")
+> data("bodyfat", package = "TH.data")
 > 
 > set.seed(290875)
 > n <- nrow(bodyfat)
@@ -602,7 +598,7 @@ Loading required package: foreign
 
 Attaching package: 'shapefiles'
 
-The following object is masked from 'package:foreign':
+The following objects are masked from 'package:foreign':
 
     read.dbf, write.dbf
 
@@ -624,6 +620,7 @@ Neighbor search finished.
 > y <- yNa <- rnorm(100)
 > x1 <- rnorm(100)
 > x2 <- rnorm(100)
+> z1 <- as.factor(sample(1:10, 100, replace = TRUE))
 > 
 > yNa[1] <- NA
 > coef(mboost(yNa ~ x1))
@@ -667,12 +664,13 @@ In mboost_fit(bl, response = response, ...) :
  weights of corresponding observations are set to zero and thus these observations are not used for fitting
 > 
 > x1[1] <- NA
-> mod <- mboost(y ~ bols(x1) + bbs(x1) + brandom(x1) +
+> z1[1] <- NA
+> mod <- mboost(y ~ bols(x1) + bbs(x1) + brandom(z1) +
 +                   bspatial(x1, x2) + brad(x1, x2, knots = 20) +
 +                   bmono(x1) +  buser(x1, K = 1, lambda = 0) + x2)
 Loading required package: fields
 Loading required package: spam
-Spam version 0.30-1 (2013-08-25) is loaded.
+Spam version 0.41-0 (2014-02-26) is loaded.
 Type 'help( Spam)' or 'demo( spam)' for a short introduction 
 and overview of this package.
 Help for individual functions is also obtained by adding the
@@ -688,7 +686,7 @@ The following object is masked from 'package:stats4':
 
     mle
 
-The following object is masked from 'package:base':
+The following objects are masked from 'package:base':
 
     backsolve, forwardsolve
 
@@ -698,7 +696,7 @@ Warning messages:
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 2: In bbs(x1) : base-learner contains missing values;
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
-3: In bols(x1, df = 4, contrasts.arg = "contr.dummy") :
+3: In bols(z1, df = 4, contrasts.arg = "contr.dummy") :
   base-learner contains missing values;
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 4: In bbs(x1, x2, df = 6) : base-learner contains missing values;
@@ -712,6 +710,29 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 8: In buser(x1, K = 1, lambda = 0) : base-learner contains missing values;
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > 
+> ## check handling of lists without names
+> n <- 100
+> x1 <- rnorm(n)
+> x2 <- rnorm(n) + 0.25 * x1
+> y <- 3 * sin(x1) + x2^2 + rnorm(n)
+> spline1 <- bbs(x1, knots = 20, df = 4)
+> spline2 <- bbs(x2, knots = 10, df = 5)
+> mod1 <- mboost_fit(list(spline1, spline2), y)
+> mod2 <- mboost_fit(list(spline1), y)
+> mod3 <- mboost_fit(list(s1 = spline1, s2 = spline2), y)
+> names(coef(mod1))
+[1] "bbs(x1, knots = 20, df = 4)" "bbs(x2, knots = 10, df = 5)"
+> names(coef(mod2))
+[1] "bbs(x1, knots = 20, df = 4)"
+> names(coef(mod3))
+[1] "s1" "s2"
+> extract(mod1, "bnames")
+[1] "bbs(x1, knots = 20, df = 4)" "bbs(x2, knots = 10, df = 5)"
+> extract(mod2, "bnames")
+[1] "bbs(x1, knots = 20, df = 4)"
+> extract(mod3, "bnames")
+[1] "s1" "s2"
+> 
 > proc.time()
    user  system elapsed 
- 30.017   0.164  30.433 
+ 27.537   0.400  28.366 

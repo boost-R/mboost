@@ -139,7 +139,7 @@ truedf <- sum(diag(X %*%  solve(crossprod(X,X) + lambda * K) %*% t(X)))
 stopifnot(abs(truedf - 4) < sqrt(.Machine$double.eps))
 
 ### check accuracy of df2lambda
-data("bodyfat", package="mboost")
+data("bodyfat", package="TH.data")
 diff_df <- matrix(NA, nrow=8, ncol=ncol(bodyfat))
 rownames(diff_df) <- paste("df", 3:10)
 colnames(diff_df) <- names(bodyfat)
@@ -409,3 +409,71 @@ b3 <- bbs(x, index = xindex)$dpp(w)
 c3 <- b3$fit(y)$model
 stopifnot(all.equal(c1, c2))
 stopifnot(all.equal(c1, c3))
+
+### new T spline monotonicity
+library("lattice")
+
+options(mboost_useMatrix = FALSE)
+x <- sort(runif(100, max = 2))
+y <- sin(x) + rnorm(100, sd = .1) + 10
+layout(matrix(1:3, nc = 3))
+plot(x, y)
+m1 <- mboost(y ~ bbs(x))
+lines(x, fitted(m1))
+plot(x, y)
+m2 <- mboost(y ~ bbs(x, constraint = "increasing"))
+lines(x, fitted(m2))
+plot(x, -y)
+m3 <- mboost(I(-y) ~ bbs(x, constraint = "decreasing"))
+lines(x, fitted(m3))
+
+
+### penalty problem -- penalize differences???
+bl <- bbs(x, constraint = "increasing", lambda = 100)
+lines(x, bl$dpp(rep(1, length(y)))$fit(y)$fitted(), col = "red")
+
+x1 <- seq(from = -3, to = 3, by = .1)
+x2 <- seq(from = 0, to = 2 * pi, by = .1)
+m2 <- sin(x2)
+y <- sapply(m2, function(m) pnorm(x1, mean = m))
+x <- expand.grid(x1 = x1, x2 = x2)
+y <- x$y <- as.vector(y) + runif(nrow(x), min = -.3, max = .3)
+
+wireframe(y ~ x1 + x2, data = x)
+
+m1 <- mboost(y ~ bbs(x1) %O% bbs(x2))
+x$p1 <- fitted(m1)
+wireframe(p1 ~ x1 + x2, data = x)
+
+m2 <- mboost(y ~ bbs(x1, constraint = "increasing", df = 10) %O% bbs(x2))
+x$p2 <- fitted(m2)
+wireframe(p2 ~ x1 + x2, data = x)
+
+m3 <- mboost(I(-y) ~ bbs(x1, constraint = "decreasing", df = 10) %O% bbs(x2))
+x$p3 <- fitted(m3)
+wireframe(p3 ~ x1 + x2, data = x)
+
+
+### check brandom
+x1 <- rnorm(100)
+x2 <- rnorm(100)
+z1 <- as.factor(sample(1:10, 100, TRUE))
+z2 <- as.factor(sample(1:10, 100, TRUE))
+Zm <- model.matrix(~ z1 - 1)
+Z <- as.data.frame(Zm)
+
+extract(brandom(z1))
+extract(brandom(z1, by = x2))
+extract(brandom(Zm))
+## probably non-sense but ok...
+extract(brandom(Z))
+## not really useful but might be ok
+extract(brandom(z1, z2))
+## should throw an error
+try(extract(brandom(x1, by = x2, intercept = FALSE)))
+
+## check if one can specify either df or lambda
+round(extract(brandom(z1, df = 3)$dpp(rep(1, 100)), what = "lambda"), 2)
+round(extract(brandom(z1, df = 3)$dpp(rep(1, 100)), what = "df"), 2)
+round(extract(brandom(z1, lambda = 50.39)$dpp(rep(1, 100)), what = "lambda"), 2)
+round(extract(brandom(z1, lambda = 50.39)$dpp(rep(1, 100)), what = "df"), 2)

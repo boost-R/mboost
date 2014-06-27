@@ -31,11 +31,7 @@
     packageStartupMessage("This is mboost ", vers, ". ", "See ",
                           sQuote("package?mboost"), " and the NEWS file\n",
                           "for a complete list of changes.\n",
-                          "Note: The default for the computation",
-                          " of the degrees of freedom has changed.\n",
-                          "      For details see section ",
-                          sQuote("Global Options"), " of ",
-                          sQuote("?bols"), ".", appendLF = TRUE)
+                          appendLF = TRUE)
     return(TRUE)
 }
 

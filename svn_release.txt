@@ -126,7 +126,7 @@
 	     cat change_mboostDevel_to_mboost.Rout
 	- Run build and check again on mboost_XXX (*not* mboostDevel this time!)
 	  Build package without test folder to be submitted to CRAN
-	     R CMD buildCRAN --resave-data --compact-vignettes pkg/mboostPatch
+	     R CMD buildCRAN --resave-data --compact-vignettes pkg/mboostDevel
        	     R CMD check --as-cran mboost_XXX.tar.gz
           To use the script copy it to R RHOME (< enter this in the console) /bin and make it executable.
 
@@ -169,7 +169,8 @@
 
   Run
     install.packages(c("party", "TH.data", "fields", "BayesX", "gbm",
-                       "mlbench", "RColorBrewer", "mfp", "randomForest"))
+                       "mlbench", "RColorBrewer", "mfp", "randomForest",
+                       "nnls", "quadprog"))
 
   Quit R and run
    ../relative/path/to/R-devel/bin/R CMD check --as-cran mboost_XXX.tar.gz
