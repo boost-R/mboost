@@ -604,6 +604,35 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
             warning("Argument ", sQuote("which"), " is ignored")
         mf
     }
+    ### save standard update function for re-use
+    update <- ret$update
+    ### needs a specialized update function as well
+    ret$update <- function(weights = NULL, oobweights = NULL, risk = "oobag") {
+        ## call standard update function
+        res <- update(weights = weights, oobweights = oobweights, risk = risk)
+        ## now re-set all special arguments
+        res$newX <- newX
+        res$assign <- assign
+        res$center <- cm
+        res$call <- cl
+        ### need specialized method (hatvalues etc. anyway)
+        res$hatvalues <- function() {
+            H <- vector(mode = "list", length = ncol(X))
+            MPinv <- res$basemodel[[1]]$MPinv()
+            for (j in unique(res$xselect()))
+                H[[j]] <- (X[,j] %*% MPinv[j, ,drop = FALSE]) * control$nu
+            H
+        }
+        res$rownames <- rownames(mf)
+        ### specialized method for model.frame
+        res$model.frame <- function(which = NULL) {
+            if (!is.null(which))
+                warning("Argument ", sQuote("which"), " is ignored")
+            mf
+        }
+        class(res) <- c("glmboost", "mboost")
+        res
+    }
     class(ret) <- c("glmboost", "mboost")
     return(ret)
 }
@@ -670,7 +699,36 @@ glmboost.matrix <- function(x, y, center = TRUE,
     ret$model.frame <- function(which = NULL) {
         if (!is.null(which))
             warning("Argument ", sQuote("which"), " is ignored")
-        mf
+        X
+    }
+    ### save standard update function for re-use
+    update <- ret$update
+    ### needs a specialized update function as well
+    ret$update <- function(weights = NULL, oobweights = NULL, risk = "oobag") {
+        ## call standard update function
+        res <- update(weights = weights, oobweights = oobweights, risk = risk)
+        ## now re-set all special arguments
+        ret$newX <- newX
+        res$assign <- assign
+        res$center <- cm
+        res$call <- match.call()
+        ### need specialized method (hatvalues etc. anyway)
+        res$hatvalues <- function() {
+            H <- vector(mode = "list", length = ncol(X))
+            MPinv <- res$basemodel[[1]]$MPinv()
+            for (j in unique(res$xselect()))
+                H[[j]] <- (X[,j] %*% MPinv[j, ,drop = FALSE]) * control$nu
+            H
+        }
+        res$rownames <- rownames(X)
+        ### specialized method for model.frame
+        res$model.frame <- function(which = NULL) {
+            if (!is.null(which))
+                warning("Argument ", sQuote("which"), " is ignored")
+            X
+        }
+        class(res) <- c("glmboost", "mboost")
+        res
     }
     class(ret) <- c("glmboost", "mboost")
     return(ret)

@@ -2,7 +2,9 @@
 
   o  changed vignette mboost_tutorial to reflect latest changes in mboost.
 
-  o  Bugfix: model.frame() was broken for glmboost models
+  o  Bugfixes: 
+     - glmboost()$model.frame() was broken
+     - glmboost()$update() was broken
 
                 CHANGES in `mboost' VERSION 2.3-0 (2014-06-26, r771)
 

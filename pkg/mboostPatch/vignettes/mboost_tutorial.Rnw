@@ -127,8 +127,8 @@ if (!file.exists("graphics"))
   DOI \href{http://dx.doi.org/10.1007/s00180-012-0382-5}{10.1007/s00180-012-0382-5}.\\
   The final publication is available at \url{http://link.springer.com}.\\[2em]
   Changes to the results in the original manuscript are due to changes in some
-  defaults of mboost (most notably the definition of degrees of freedom has
-  changed in mboost 2.2-0). See NEWS for details.
+  defaults of \textbf{mboost} (most notably the definition of degrees of freedom
+  has changed in \textbf{mboost} 2.2-0). See NEWS for details.
 \end{center}
 \bigskip
 
@@ -493,7 +493,7 @@ Appendix.
 body fat of women based on available anthropometric measurements. Observations
 of 71 German women are available with the data set \R{bodyfat} \citep{garcia}
 included in \textbf{mboost}. We first load the package and the data set%
-\footnote{The data set \R{bodyfat} has been moved to the package \pkg{TH.data}.}.
+\footnote{The data set \R{bodyfat} has been moved to the package \textbf{TH.data}.}.
 
 <<setup, echo = true, results = hide>>=
 library("mboost")                         ## load package
