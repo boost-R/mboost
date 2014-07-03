@@ -598,6 +598,12 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
         H
     }
     ret$rownames <- rownames(mf)
+    ### specialized method for model.frame
+    ret$model.frame <- function(which = NULL) {
+        if (!is.null(which))
+            warning("Argument ", sQuote("which"), " is ignored")
+        mf
+    }
     class(ret) <- c("glmboost", "mboost")
     return(ret)
 }
@@ -660,6 +666,12 @@ glmboost.matrix <- function(x, y, center = TRUE,
         H
     }
     ret$rownames <- rownames(X)
+    ### specialized method for model.frame
+    ret$model.frame <- function(which = NULL) {
+        if (!is.null(which))
+            warning("Argument ", sQuote("which"), " is ignored")
+        mf
+    }
     class(ret) <- c("glmboost", "mboost")
     return(ret)
 }

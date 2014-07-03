@@ -1,5 +1,9 @@
                 CHANGES in `mboost' VERSION 2.3-1 (2014-xx-yy, rXYZ)
 
+  o  changed vignette mboost_tutorial to reflect latest changes in mboost.
+
+  o  Bugfix: model.frame() was broken for glmboost models
+
                 CHANGES in `mboost' VERSION 2.3-0 (2014-06-26, r771)
 
   o  stabsel was recoded and now uses different terminology, much more options
@@ -22,6 +26,8 @@
 
   o  boost_control: added new argument stopintern for internal stopping
      (based on oobag data) during fitting
+
+  o  All data sets have been moved to the new package set TH.data
 
   o  Misc:
      - added new argmument which to variable.names()

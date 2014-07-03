@@ -120,7 +120,7 @@ if (!file.exists("graphics"))
 
 \begin{center}
   \small
-  \textbf{This is an extended and slightly modified version of the manuscript}\\
+  \textbf{This is an extended and (slightly) modified version of the manuscript}\\
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Mattthias Schmid (2014),
   Model-based Boosting in \textsf{R} - A Hands-on Tutorial Using the \textsf{R}
   Package mboost. \emph{Computational Statistics}, 29:3-35.\\
@@ -492,7 +492,8 @@ Appendix.
 \noindent The aim of this case study is to compute accurate predictions for the
 body fat of women based on available anthropometric measurements. Observations
 of 71 German women are available with the data set \R{bodyfat} \citep{garcia}
-included in \textbf{mboost}. We first load the package and the data set.
+included in \textbf{mboost}. We first load the package and the data set%
+\footnote{The data set \R{bodyfat} has been moved to the package \pkg{TH.data}.}.
 
 <<setup, echo = true, results = hide>>=
 library("mboostDevel")                         ## load package
@@ -576,7 +577,7 @@ solution using the \R{paste()} function is somewhat unavoidable when we intend
 to combine different base-learners for plenty of predictors in \R{gamboost()}.
 
 Note that at this iteration (\R{mstop} is still 100 as it is the default value)
-\R{anthro4a} is not included in the resulting model as the corresponding
+\R{anthro4} is not included in the resulting model as the corresponding
 base-learner was never selected in the update step. The function \R{coef()} by
 default only displays the selected variables but can be forced to show all
 effects by specifying \R{which = ""}:
@@ -1214,7 +1215,7 @@ k-fold cross-validation estimates and sub-sampling estimates. The main function
 to determine the cross-validated risk is
 \begin{Sinput}
   cvrisk(object, folds = cv(model.weights(object)),
-         papply = if (require("multicore")) mclapply else lapply)
+         papply = mclapply)
 \end{Sinput}
 In the simplest case, the user only needs to specify the fitted boosting model
 as \R{object}. If one wants to change the default cross-validation method
@@ -1949,17 +1950,21 @@ lines(sort(x2), fitted(mod, which = 2)[order(x2)] + mod$offset, col = red, lwd =
 <<cyclic1, width = 5,height = 5>>=
 ### example for cyclic spline
 set.seed(1907)
-x <- runif(200, 0,(2*pi))
-y <- rnorm(200, mean=sin(x), sd=0.2)
-newX <- seq(0,2*pi, length=100)
-mod <- gamboost(y ~ bbs(x, knots = 12))
-mod_cyclic <- gamboost(y ~ bbs(x, cyclic = TRUE, knots = 12,
-                               boundary.knots = c(0, 2*pi)))
+true_f <- function(x)
+    cos(x) + 0.25 * sin(4 * x)
+x <- runif(150, 0, 2 * pi)
+y <- rnorm(150, mean = true_f(x), sd=0.1)
+newX <- seq(0, 2*pi, length = 200)
+mod <- gamboost(y ~ bbs(x, knots = 20, degree = 4))
+mod[3000]
+mod_cyclic <- gamboost(y ~ bbs(x, cyclic=TRUE, knots = 20,
+                               degree = 4, boundary.knots=c(0, 2*pi)))
+mod_cyclic[3000]
 
 par(mar = c(4, 4, 0, 0) + 0.1)
-plot(x,y,
-     ylab = "f(x)",
-     cex=1, pch = 20, col = rgb(0.5, 0.5, 0.5, alpha = 0.8))
+plot(x,y, ylab = "f(x)",
+     pch = 20, xlim = c(0, 7),
+     col = rgb(0.5, 0.5, 0.5, alpha = 0.8))
 lines(newX, predict(mod, data.frame(x = newX)),
       col = "black", lwd = 2)
 lines(newX + 2 * pi, predict(mod, data.frame(x = newX)),
@@ -1970,8 +1975,9 @@ legend("bottomleft", c("cyclic = FALSE"),
 
 <<cyclic2, width = 5,height = 5>>=
 par(mar = c(4, 4, 0, 0) + 0.1)
-plot(x,y, ylab = "f(x)",
-     cex=1, pch = 20, col = rgb(0.5, 0.5, 0.5, alpha = 0.8))
+plot(x, y, ylab = "f(x)",
+     pch = 20, xlim = c(0, 7),
+     col = rgb(0.5, 0.5, 0.5, alpha = 0.8))
 lines(newX, predict(mod_cyclic, data.frame(x = newX)),
       col = red, lwd = 2)
 lines(newX + 2 * pi, predict(mod_cyclic, data.frame(x = newX)),
