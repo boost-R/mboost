@@ -1,8 +1,11 @@
 
-confint.mboost <- function(object, B = 1000, newdata = NULL,
-                           B.mstop = 25, which = NULL, ...) {
+confint.mboost <- function(object, parm = NULL, level = 0.95,
+                           B = 1000, B.mstop = 25, newdata = NULL,
+                           which = parm, ...) {
 
     which <- object$which(which, usedonly = FALSE)
+    if (!all(which %in% object$which(NULL, usedonly = FALSE)))
+        stop(sQuote("which"), " is wrongly specified")
 
     ## create new data and/or restructure data
     newdata <- .create_newdata(object, newdata, which)
@@ -22,16 +25,23 @@ confint.mboost <- function(object, B = 1000, newdata = NULL,
         predictions[[i]] <- .predict_confint(mod, newdata = newdata,
                                              which = which)
     }
-    res <- list(boot_pred = predictions, data = newdata, model = object)
+
+    ## prepare returned object
+    res <- list(level = level, boot_pred = predictions, data = newdata,
+                model = object)
+    attr(res, "which") <- which
     class(res) <- "mboost.ci"
     return(res)
 }
 
-confint.glmboost <- function(object, B = 1000, B.mstop = 25,
-                             which = NULL, ...) {
+confint.glmboost <- function(object, parm = NULL, level = 0.95,
+                             B = 1000, B.mstop = 25,
+                             which = parm, ...) {
 
     outer.folds <- cv(model.weights(object), B = B)
     which <- object$which(which, usedonly = FALSE)
+    if (!all(which %in% object$which(NULL, usedonly = FALSE)))
+        stop(sQuote("which"), " is wrongly specified")
 
     coefficients <- matrix(NA, ncol = length(which), nrow = B)
     colnames(coefficients) <- names(coef(object, which = which))
@@ -47,16 +57,51 @@ confint.glmboost <- function(object, B = 1000, B.mstop = 25,
         }
         coefficients[i, ] <- unlist(coef(mod, which = which, off2int = TRUE))
     }
-    res <- list(boot_coefs = coefficients, model = object)
+
+    ## prepare returned object
+    res <- list(confint = .ci_glmboost(coefficients, level = level, which = which),
+                level = level, boot_coefs = coefficients, model = object)
+    attr(res, "which") <- which
     class(res) <- "glmboost.ci"
     return(res)
 }
 
-print.glmboost.ci <- function(x, which = NULL, level = 0.95) {
+.ci_glmboost <- function(coefficients, level, which = NULL) {
     quantiles <- c((1 - level)/2, 1 - (1 - level)/2)
-    which <- x$model$which(which, usedonly = FALSE)
-    tmp <- apply(x$boot_coefs[, which], 2, FUN = quantile, probs = quantiles)
-    print(t(tmp))
+
+    tmp <- apply(coefficients, 2, FUN = quantile, probs = quantiles)
+    CI <- as.data.frame(t(tmp))[which, ]
+    return(CI)
+}
+
+## pe = add point estimte
+print.glmboost.ci <- function(x, which = NULL, level = x$level, pe = FALSE, ...) {
+
+    if (is.null(which)) {
+        which <- attr(x, "which")
+    } else {
+        which <- x$model$which(which, usedonly = FALSE)
+        if (!all(which %in% attr(x, "which")))
+            stop(sQuote("which"), " is wrongly specified")
+    }
+
+    if (!is.null(level) && level != x$level) {
+        CI <- .ci_glmboost(x$boot_coefs,  level = level, which = which)
+    } else {
+        CI <- x$confint[which, ]
+    }
+
+    if (pe) {
+        tmp <- data.frame(beta = coef(x$model, which))
+        CI <- cbind(tmp, CI)
+    }
+    if (length(which) > 1) {
+        cat("\tBootstrap Confidence Intervals\n")
+    } else {
+        cat("\tBootstrap Confidence Interval\n")
+    }
+    print(CI, ...)
+    return(invisible(x))
 }
 
 ## ## check for varing...
@@ -74,8 +119,9 @@ print.glmboost.ci <- function(x, which = NULL, level = 0.95) {
 ## ## Aditionally needed: Check for multivariate base-learners (except bols)
 
 
-## check for by variable and bivariate base-learners which both need a different
-## data set for prediction
+## FIXME: check for by variable and bivariate base-learners which both need a
+## different data set for prediction
+## FIXME: what about factor variables? do we get the correct levels?
 .create_newdata <- function(object, newdata = NULL, which, ...) {
     if (is.null(newdata)) {
         data <- newdata <- model.frame(object, which = which)
@@ -104,25 +150,6 @@ print.glmboost.ci <- function(x, which = NULL, level = 0.95) {
     return(newdata)
 }
 
-## .create_newdata.glmboost <- function(object, newdata, ...) {
-##     if (is.null(newdata)) {
-##         data <- model.frame(object)
-##         ## make grid!
-##         tmp <- data[rep(1, 100), ]
-##         grid <- function(x) {
-##             if (is.numeric(x)) {
-##                 return(seq(min(x), max(x), length = 100))
-##             } else {
-##                 return(rep(levels(x), length.out = 100))
-##             }
-##         }
-##         for (j in 1:ncol(data))
-##             tmp[, colnames(data)[j]] <- grid(data[,j])
-##         newdata <- tmp
-##     }
-##     return(newdata)
-## }
-
 ## special prediction function for the construction of confidence intervals:
 .predict_confint <- function(object, newdata = NULL, which, ...) {
     predictions <- matrix(NA, ncol = length(which), nrow = nrow(newdata[[1]]))
@@ -132,28 +159,28 @@ print.glmboost.ci <- function(x, which = NULL, level = 0.95) {
     return(predictions)
 }
 
-# .predict_confint.glmboost <- function(object, newdata, which, ...) {
-#     warning("shouldn't we return confints for coef?")
-#     predict(object, newdata = newdata, which = which)
-# }
 
-plot.mboost.ci <- function(x, which, level = 0.95,
+### plot functions
+plot.mboost.ci <- function(x, which, level = x$level,
                            ylim = NULL, type = "l", col = "black",
-                           ci.col = "grey",  raw = FALSE, ...) {
+                           ci.col = rgb(170, 170, 170, alpha = 85,
+                                        maxColorValue = 255),
+                           raw = FALSE, ...) {
 
-    which <- x$model$which(which, usedonly = FALSE)
+    if (missing(which)) {
+        which <- attr(x, "which")
+    } else {
+        which <- x$model$which(which, usedonly = FALSE)
+        if (!all(which %in% attr(x, "which")))
+            stop(sQuote("which"), " is wrongly specified")
+    }
+    if (length(which) > 1)
+        stop("Specify a single base-learner using ", sQuote("which"))
+
+    CI <- .ci_mboost(x$boot_pred, level = level, which = which, raw = raw)
 
     if (is.null(ylim)) {
-        preds <- sapply(x$boot_pred, function(p) p[, which])
-        if (!raw) {
-            quantiles <- c((1 - level)/2, 1 - (1 - level)/2)
-            tmp <- apply(preds, 1, FUN = quantile, probs = quantiles)
-            if (is.null(ylim))
-                ylim <- range(tmp)
-        } else {
-            if (is.null(ylim))
-                ylim <- range(preds)
-        }
+        ylim <- range(CI)
     }
 
     plot(x$model, which = which, type = "n", ylim = ylim,
@@ -162,22 +189,47 @@ plot.mboost.ci <- function(x, which, level = 0.95,
     lines(x$model, which = which, type = "l", col = col, ...)
 }
 
-lines.mboost.ci <- function(x, which, level = 0.95, col = "grey",
+lines.mboost.ci <- function(x, which, level = x$level,
+                            col = rgb(170, 170, 170, alpha = 85,
+                                      maxColorValue = 255),
                             raw = FALSE, ...) {
-    preds <- sapply(x$boot_pred, function(p) p[, which])
+
+    if (missing(which)) {
+        which <- attr(x, "which")
+    } else {
+        which <- x$model$which(which, usedonly = FALSE)
+        if (!all(which %in% attr(x, "which")))
+            stop(sQuote("which"), " is wrongly specified")
+    }
+    if (length(which) > 1)
+        stop("Specify a single base-learner using ", sQuote("which"))
+
+
+    CI <- .ci_mboost(x$boot_pred, level = level, which = which, raw = raw)
+
     x.data <- x$data[[which]]
     if (ncol(x.data) > 1) {
         stop("Cannot plot lines for more than 1 dimenstion")
     } else {
         x.data <- x.data[, 1]
     }
+
     if (!raw) {
-        quantiles <- c((1 - level)/2, 1 - (1 - level)/2)
-        tmp <- apply(preds, 1, FUN = quantile, probs = quantiles)
         polygon(c(x.data, rev(x.data)),
-                c(tmp[1, ], rev(tmp[2,])),
+                c(CI[1, ], rev(CI[2,])),
                 col = col, border = col)
     } else {
-        matlines(x$data[[which]], preds, col = col, lty = "solid", ...)
+        matlines(x$data[[which]], CI, col = col, lty = "solid", ...)
     }
+}
+
+.ci_mboost <- function(predictions, level, which = NULL, raw = FALSE) {
+
+    preds <- sapply(predictions, function(p) p[, which])
+    if (!raw) {
+        quantiles <- c((1 - level)/2, 1 - (1 - level)/2)
+        preds <- apply(preds, 1, FUN = quantile, probs = quantiles)
+    }
+
+    return(preds)
 }
