@@ -1,0 +1,53 @@
+---
+layout: page
+title: Publications
+permalink: /publications/
+---
+
+Scholary papers describing the methodology
+========================================================
+
+```{r setup, include = FALSE, cache = FALSE}
+library("RefManageR")
+bib <- ReadBib("TH.bib", check = FALSE)
+BibOptions(check.entries = FALSE, style = "html", cite.style = "authoryear",
+           bib.style = "numeric")
+```
+The mboost package implements componentwise functional gradient descent
+boosting, originally invented by `r Citet(bib, "Buehlmann_Yu_2003")`.
+The theory and package are described in the review by
+`r Citet(bib, "Buehlmann:2008:StatSci")`, an overview about the implementation
+is given in `r Citet(bib, "Hothorn+Buehlmann+Kneib+Schmid+Hofner_2010")`
+and `r Citet(bib, "Hothorn:2006:Bioinformatics:16940323")`.
+
+Applications in survival analysis are described in
+`r Citet(bib, "Hothorn:2006:Biostatistics:16344280")` and
+`r Citet(bib, "Schmid+Hothorn:2008a")`.
+
+Geoadditive models have been dealt with by 
+`r Citet(bib, "Kneib+Hothorn+Tutz:2009")` and
+`r Citet(bib, "Hothorn+Mueller+Schroeder_2011")`.
+
+Boosted quantile regression models were introduced by
+`r Citet(bib, "Fenske+Kneib+Hothorn_2011")` and later extended
+to longitudinal data by `r Citet(bib, "Fenske_Fahrmeir_Hothorn_2013")`
+and to the derivation of prediction intervals by
+`r Citet(bib, "Mayr_Hothorn_Fenske_2012")`.
+
+The application of P-spline base-learners was discussed by
+`r Citet(bib, "Schmid+Hothorn:2008b")`. Unbiased model selection
+was implemented as described by `r Citet(bib, "Hofner+Hothorn+Kneib_2011")`.
+An approach to non-linear time series can be found in
+`r Citet(bib, "Robinzonov_Tutz_Hothorn_2012")`.
+Boosted classifiers based on a direct optimisation of the partial AUC were
+introduced by `r Citet(bib, "Schmid_Hothorn_Krause_2012")`.
+
+`r Citet(bib, "Hothorn_Kneib_Buehlmann_2014")` used componentwise array
+boosting to fit a novel class of conditional transformation models; 
+some simplifications are given by `r Citet(bib, "Moest_Schmid_Faschingbauer_2014")`.
+
+**References**
+
+```{r results = "asis", echo = FALSE}
+PrintBibliography(bib, .opts = list(check.entries = FALSE, sorting = "ynt"))
+```
