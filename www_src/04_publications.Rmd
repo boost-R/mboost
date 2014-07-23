@@ -18,7 +18,8 @@ boosting, originally invented by `r Citet(bib, "Buehlmann_Yu_2003")`.
 The theory and package are described in the review by
 `r Citet(bib, "Buehlmann:2008:StatSci")`, an overview about the implementation
 is given in `r Citet(bib, "Hothorn+Buehlmann+Kneib+Schmid+Hofner_2010")`
-and `r Citet(bib, "Hothorn:2006:Bioinformatics:16940323")`.
+and `r Citet(bib, "Hothorn:2006:Bioinformatics:16940323")`. A tutorial
+can be found in `r Citet(bib, "Hofner_Mayr_Robinzonov_2014")`.
 
 Applications in survival analysis are described in
 `r Citet(bib, "Hothorn:2006:Biostatistics:16344280")` and
@@ -26,7 +27,8 @@ Applications in survival analysis are described in
 
 Geoadditive models have been dealt with by 
 `r Citet(bib, "Kneib+Hothorn+Tutz:2009")` and
-`r Citet(bib, "Hothorn+Mueller+Schroeder_2011")`.
+`r Citet(bib, "Hothorn+Mueller+Schroeder_2011")` and, with special emphasis
+on monotonicity constraints, by `r Citet(bib, "Hofner_Mueller_Hothorn_2011")`.
 
 Boosted quantile regression models were introduced by
 `r Citet(bib, "Fenske+Kneib+Hothorn_2011")` and later extended
@@ -45,6 +47,8 @@ introduced by `r Citet(bib, "Schmid_Hothorn_Krause_2012")`.
 `r Citet(bib, "Hothorn_Kneib_Buehlmann_2014")` used componentwise array
 boosting to fit a novel class of conditional transformation models; 
 some simplifications are given by `r Citet(bib, "Moest_Schmid_Faschingbauer_2014")`.
+In a similar spirit, `r Citet(bib, "Mayr_Fenske_Hofner_2012")` use the 
+package to fit GAMLSS models.
 
 **References**
 
