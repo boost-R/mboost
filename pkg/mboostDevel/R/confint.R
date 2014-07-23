@@ -13,10 +13,12 @@ confint.mboost <- function(object, parm = NULL, level = 0.95,
     outer.folds <- cv(model.weights(object), B = B)
     predictions <- vector("list", B)
 
+    cat("Start computing bootstrap confidence intervals... \n")
     for (i in 1:B) {
+        cat("\rB =", i)
         ## update model
         mod <- update(object, weights = outer.folds[, i],
-                      risk = "inbag")
+                      risk = "inbag", trace = FALSE)
         if (B.mstop > 0) {
             ## <FIXME> are the weights handled correctly?
             cvr <- cvrisk(mod, folds = cv(model.weights(mod), B = B.mstop))
@@ -25,6 +27,7 @@ confint.mboost <- function(object, parm = NULL, level = 0.95,
         predictions[[i]] <- .predict_confint(mod, newdata = newdata,
                                              which = which)
     }
+    cat("\n")
 
     ## prepare returned object
     res <- list(level = level, boot_pred = predictions, data = newdata,
@@ -104,20 +107,8 @@ print.glmboost.ci <- function(x, which = NULL, level = x$level, pe = FALSE, ...)
     return(invisible(x))
 }
 
-## ## check for varing...
-## data <- model.frame(x, which = w)[[1]]
-## get_vary <- x$baselearner[[w]]$get_vary
-## vary <- ""
-## if (!is.null(get_vary)) vary <- get_vary()
-## if (!is.null(newdata)) data <- newdata[, colnames(data), drop = FALSE]
-## if (vary != "") {
-##     v <- data[[vary]]
-##     if (is.factor(v)) v <- factor(levels(v)[-1], levels = levels(v))
-##     if (is.numeric(v)) v <- 1
-## }
 
 ## ## Aditionally needed: Check for multivariate base-learners (except bols)
-
 
 ## FIXME: check for by variable and bivariate base-learners which both need a
 ## different data set for prediction
@@ -125,18 +116,61 @@ print.glmboost.ci <- function(x, which = NULL, level = x$level, pe = FALSE, ...)
 .create_newdata <- function(object, newdata = NULL, which, ...) {
     if (is.null(newdata)) {
         data <- newdata <- model.frame(object, which = which)
+        nms <- names(object$baselearner)[which]
+
         for (w in which) {
-            ## make grid!
+            ## get data from w-th base-learner
             tmp <- data[[w]][rep(1, 100), , drop = FALSE]
+
+            ## are there varying coefficients (i.e. argument by)
+            get_vary <- object$baselearner[[w]]$get_vary
+            vary <- ""
+            if (!is.null(get_vary)) vary <- get_vary()
+            if (vary != "") {
+                if (is.factor(tmp[[vary]])) {
+                    if (nlevels(tmp[[vary]]) > 2)
+                        stop("Atomatic data creation for ", sQuote("by"),
+                             " variables with more than two levels is",
+                             " currently not supported;",
+                             " Specify ", sQuote("newdata"), " instead.")
+                    data[[w]][[vary]] <- factor(levels(data[[w]][[vary]])[-1],
+                                                levels = levels(data[[w]][[vary]]))
+                }
+                if (is.numeric(tmp[[vary]]))
+                    data[[w]][[vary]] <- 1
+            }
+
+            ## now make grid
             grid <- function(x) {
                 if (is.numeric(x)) {
                     return(seq(min(x), max(x), length = 100))
                 } else {
-                    return(rep(levels(x), length.out = 100))
+                    return(rep(unique(x), length.out = 100))
                 }
             }
+
             for (j in 1:ncol(data[[w]]))
                 tmp[, colnames(data[[w]])[j]] <- grid(data[[w]][,j])
+
+            ## FIXME: what about btree and bmrf?
+
+            ## check if any base-learner is a bivariate smooth effect, i.e. if
+            ## base-learner is multivariate and bbs, bspatial or brad
+            which.vary <- colnames(tmp) == vary
+            multivar <- grepl("bbs|bspatial|brad", nms[w]) &
+                ncol(tmp[!which.vary]) >= 2
+            if (multivar) {
+                ## make grid
+                egrid <- expand.grid(tmp[!which.vary])
+                if (vary != "") {
+                    x.vary <- tmp[which.vary]
+                    rownames(x.vary) <- NULL
+                    tmp <- cbind(egrid, x.vary)
+                } else {
+                    tmp <- egrid
+                }
+            }
+            ## reset rownames
             rownames(tmp) <- NULL
             newdata[[w]] <- tmp
         }
@@ -152,10 +186,18 @@ print.glmboost.ci <- function(x, which = NULL, level = x$level, pe = FALSE, ...)
 
 ## special prediction function for the construction of confidence intervals:
 .predict_confint <- function(object, newdata = NULL, which, ...) {
-    predictions <- matrix(NA, ncol = length(which), nrow = nrow(newdata[[1]]))
-    for (w in which) {
-        predictions[, w] <- predict(object, newdata[[w]], which = w)
-    }
+    nrows <- sapply(newdata, nrow)
+    predictions <- sapply(which, function(w)
+                          matrix(predict(object, newdata[[w]], which = w),
+                                               ncol = 1, nrow = nrows[w]))
+    if (is.matrix(predictions))
+        predictions <- as.data.frame(predictions)
+    names(predictions) <- names(newdata[which])
+
+    ## ###### FIXME FIXME FIXME
+    ## WAS ist mit predict == 0?
+    ## Wie geht es in .ci_mboost weiter?
+    ## ###### FIXME FIXME FIXME
     return(predictions)
 }
 
@@ -209,7 +251,7 @@ lines.mboost.ci <- function(x, which, level = x$level,
 
     x.data <- x$data[[which]]
     if (ncol(x.data) > 1) {
-        stop("Cannot plot lines for more than 1 dimenstion")
+        stop("Cannot plot lines for more than 1 dimension")
     } else {
         x.data <- x.data[, 1]
     }
@@ -225,7 +267,7 @@ lines.mboost.ci <- function(x, which, level = x$level,
 
 .ci_mboost <- function(predictions, level, which = NULL, raw = FALSE) {
 
-    preds <- sapply(predictions, function(p) p[, which])
+    preds <- sapply(predictions, function(p) p[[which]])
     if (!raw) {
         quantiles <- c((1 - level)/2, 1 - (1 - level)/2)
         preds <- apply(preds, 1, FUN = quantile, probs = quantiles)
