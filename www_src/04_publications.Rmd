@@ -22,12 +22,12 @@ and `r Citet(bib, "Hothorn:2006:Bioinformatics:16940323")`. A tutorial
 can be found in `r Citet(bib, "Hofner_Mayr_Robinzonov_2014")`.
 
 Applications in survival analysis are described in
-`r Citet(bib, "Hothorn:2006:Biostatistics:16344280")` and
-`r Citet(bib, "Schmid+Hothorn:2008a")`.
+`r Citet(bib, "Hothorn:2006:Biostatistics:16344280")`,
+`r Citet(bib, "Schmid+Hothorn:2008a")` and `r Citet(bib, "Mayr_Schmid_2014")`.
 
 Geoadditive models have been dealt with by 
-`r Citet(bib, "Kneib+Hothorn+Tutz:2009")` and
-`r Citet(bib, "Hothorn+Mueller+Schroeder_2011")` and, with special emphasis
+`r Citet(bib, "Kneib+Hothorn+Tutz:2009")`,
+`r Citet(bib, "Hothorn+Mueller+Schroeder_2011")` and `r Citet(bib, "Schmid_Hothorn_Maloney_Weller_Potapov_2011")`, and, with special emphasis
 on monotonicity constraints, by `r Citet(bib, "Hofner_Mueller_Hothorn_2011")`.
 
 Boosted quantile regression models were introduced by
