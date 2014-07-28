@@ -1,12 +1,20 @@
                 CHANGES in `mboost' VERSION 2.4-0 (2014-xx-yy, rZZZ)
 
-  o  added functions to compute (bootstrap) confidence intervals
+  o  added confint function to compute (bootstrap) confidence intervals
+     together with plot and print methods
+
+  o  improved plot method for varying coefficients (ylim now suitable) and
+     base-learners of factor variables.
+
+  o  tweaked update function: we now can turn the trace off and specify
+     the type of risk as well as the oobweight to update()
+
 
                 CHANGES in `mboost' VERSION 2.3-1 (2014-xx-yy, rXYZ)
 
   o  changed vignette mboost_tutorial to reflect latest changes in mboost.
 
-  o  Bugfixes: 
+  o  Bugfixes:
      - glmboost()$model.frame() was broken
      - glmboost()$update() was broken
 

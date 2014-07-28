@@ -178,7 +178,8 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
                            trace = NULL) {
 
         control$mstop <- mstop
-        control$risk <- risk
+        if (!is.null(risk))
+            control$risk <- risk
         if (!is.null(trace))
             control$trace <- trace
         ### use user specified offset only (since it depends on weights otherwise)

@@ -15,10 +15,12 @@
 }
 \usage{
 \method{confint}{mboost}(object, parm = NULL, level = 0.95, B = 1000,
-        B.mstop = 25, newdata = NULL, which = parm, ...)
+        B.mstop = 25, newdata = NULL, which = parm,
+        papply = ifelse(B.mstop == 0, mclapply, lapply),
+        papply.mstop = mclapply, ...)
 \method{plot}{mboost.ci}(x, which, level = x$level, ylim = NULL, type = "l", col = "black",
      ci.col = rgb(170, 170, 170, alpha = 85, maxColorValue = 255),
-     raw = FALSE, ...)
+     raw = FALSE, print_levelplot = TRUE,...)
 \method{lines}{mboost.ci}(x, which, level = x$level,
      col = rgb(170, 170, 170, alpha = 85, maxColorValue = 255),
      raw = FALSE, ...)
@@ -47,13 +49,29 @@
     number of outer bootstrap replicates used to compute the empirical
     bootstrap confidence intervals.
   }
+  \item{B.mstop}{
+    number of inner bootstrap replicates used to determine the optimal
+    mstop on each of the \code{B} bootstrap samples.
+  }
   \item{newdata}{
     optionally, a data frame on which to compute the predictions for the
     confidence intervals.
   }
-  \item{B.mstop}{
-    number of inner bootstrap replicates used to determine the optimal
-    mstop on each of the \code{B} bootstrap samples.
+  \item{papply}{
+    (parallel) apply function for the outer bootstrap, defaults to
+    \code{\link[parallel]{mclapply}} if no inner bootstrap is used to
+    determine the optimal stopping iteration. For details see
+    argument \code{papply} in \code{\link{cvrisk}}. Be careful with your
+    computing resources if you use parallel computing for both, the
+    inner and the outer bootstrap.
+  }
+  \item{papply.mstop}{
+    (parallel) apply function for the inner bootstrap, defaults to
+    \code{\link[parallel]{mclapply}} if we use an inner bootstrap is to
+    determine the optimal stopping iteration. For details see
+    argument \code{papply} in \code{\link{cvrisk}}. Be careful with your
+    computing resources if you use parallel computing for both, the
+    inner and the outer bootstrap.
   }
   \item{x}{
     a confidence interval object.
@@ -62,10 +80,11 @@
     limits of the y scale. Per default computed from the data to plot.
   }
   \item{type}{
-    type of graphic for the point estimate, i.e., the predicted function.
-methods  }
+    type of graphic for the point estimate, i.e., for the predicted
+    function. Per default a line is plotted.
+  }
   \item{col}{
-    color of the point estimate, i.e., the predicted function.
+    color of the point estimate, i.e., for the predicted function.
   }
   \item{ci.col}{
     color of the confidence interval.
@@ -73,6 +92,14 @@ methods  }
   \item{raw}{
     logical, should the raw function estimates or the derived confidence
     estimates be plotted?
+  }
+  \item{print_levelplot}{
+    logical, should the \pkg{lattice} \code{\link{levelplot}} be printed
+    or simply returned for further modifications. This argument is only
+    considered if bivariate effect estimates are plotted. If
+    \code{print_levelplot} is set to \code{FALSE}, a list with objects
+    \code{mean}, \code{lowerPI} and \code{upperPI} is returned
+    containing the three \code{\link{levelplot}} objects.
   }
   \item{pe}{
     logical, should the point estimtate (PE) be also returned?
@@ -90,9 +117,10 @@ methods  }
   An object of class \code{glmboost.ci} or \code{mboost.ci} with special
   \code{print} and/or \code{plot} functions.
 }
-\references{
-  %% ~put references to the literature/web site here ~
-}
+%% \references{
+%% Benjamin Hofner , Thomas Kneib and Torsten Hothorn (2014),
+%% A Unified Framework of Constrained Regression.
+%% }
 \author{
   Benjamin Hofner <benjamin.hofner@fau.de>
 }

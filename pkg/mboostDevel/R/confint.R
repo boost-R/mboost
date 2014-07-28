@@ -1,7 +1,10 @@
 
 confint.mboost <- function(object, parm = NULL, level = 0.95,
                            B = 1000, B.mstop = 25, newdata = NULL,
-                           which = parm, ...) {
+                           which = parm,
+                           papply = ifelse(B.mstop == 0, mclapply, lapply),
+                           papply.mstop = mclapply,
+                           ...) {
 
     which <- object$which(which, usedonly = FALSE)
     if (!all(which %in% object$which(NULL, usedonly = FALSE)))
@@ -11,22 +14,24 @@ confint.mboost <- function(object, parm = NULL, level = 0.95,
     newdata <- .create_newdata(object, newdata, which)
 
     outer.folds <- cv(model.weights(object), B = B)
-    predictions <- vector("list", B)
 
     cat("Start computing bootstrap confidence intervals... \n")
-    for (i in 1:B) {
+
+    do_update <- function(i) {
+        #for (i in 1:B) {
         cat("\rB =", i)
         ## update model
         mod <- update(object, weights = outer.folds[, i],
                       risk = "inbag", trace = FALSE)
         if (B.mstop > 0) {
             ## <FIXME> are the weights handled correctly?
-            cvr <- cvrisk(mod, folds = cv(model.weights(mod), B = B.mstop))
+            cvr <- cvrisk(mod, folds = cv(model.weights(mod), B = B.mstop),
+                          papply = papply.mstop, ...)
             mod[mstop(cvr)]
         }
-        predictions[[i]] <- .predict_confint(mod, newdata = newdata,
-                                             which = which)
+        .predict_confint(mod, newdata = newdata, which = which)
     }
+    predictions <- papply(1:B, do_update)
     cat("\n")
 
     ## prepare returned object
@@ -55,7 +60,7 @@ confint.glmboost <- function(object, parm = NULL, level = 0.95,
                       risk = "inbag")
         if (B.mstop > 0) {
             ## <FIXME> are the weights handled correctly?
-            cvr <- cvrisk(mod, folds = cv(model.weights(mod), B = B.mstop))
+            cvr <- cvrisk(mod, folds = cv(model.weights(mod), B = B.mstop), ...)
             mod[mstop(cvr)]
         }
         coefficients[i, ] <- unlist(coef(mod, which = which, off2int = TRUE))
@@ -108,11 +113,7 @@ print.glmboost.ci <- function(x, which = NULL, level = x$level, pe = FALSE, ...)
 }
 
 
-## ## Aditionally needed: Check for multivariate base-learners (except bols)
-
-## FIXME: check for by variable and bivariate base-learners which both need a
-## different data set for prediction
-## FIXME: what about factor variables? do we get the correct levels?
+## FIXME: Aditionally needed: Does multivariate bols base-learners work correctly?
 .create_newdata <- function(object, newdata = NULL, which, ...) {
     if (is.null(newdata)) {
         data <- newdata <- model.frame(object, which = which)
@@ -193,11 +194,6 @@ print.glmboost.ci <- function(x, which = NULL, level = x$level, pe = FALSE, ...)
     if (is.matrix(predictions))
         predictions <- as.data.frame(predictions)
     names(predictions) <- names(newdata[which])
-
-    ## ###### FIXME FIXME FIXME
-    ## WAS ist mit predict == 0?
-    ## Wie geht es in .ci_mboost weiter?
-    ## ###### FIXME FIXME FIXME
     return(predictions)
 }
 
@@ -207,7 +203,7 @@ plot.mboost.ci <- function(x, which, level = x$level,
                            ylim = NULL, type = "l", col = "black",
                            ci.col = rgb(170, 170, 170, alpha = 85,
                                         maxColorValue = 255),
-                           raw = FALSE, ...) {
+                           raw = FALSE, print_levelplot = TRUE, ...) {
 
     if (missing(which)) {
         which <- attr(x, "which")
@@ -221,14 +217,41 @@ plot.mboost.ci <- function(x, which, level = x$level,
 
     CI <- .ci_mboost(x$boot_pred, level = level, which = which, raw = raw)
 
-    if (is.null(ylim)) {
-        ylim <- range(CI)
-    }
+    ## check if data (without by variable, which is not varying in the plot
+    ## data) has more than one column
+    varying <- which(sapply(x$data[[which]], function(x) length(unique(x))) > 1)
+    if (ncol(x$data[[which]]) > 1 && length(varying) > 1) {
 
-    plot(x$model, which = which, type = "n", ylim = ylim,
-         col = col, ...)
-    lines(x, which, level, col = ci.col, raw = raw, ...)
-    lines(x$model, which = which, type = "l", col = col, ...)
+        if (length(varying) > 2)
+            stop("Plots only implemented for more than 2 variables.")
+
+        p1 <- plot(x$model, which = which, newdata = x$data[[which]],
+                   main = "Mean surface", ...)
+        ## make level plots for upper and lower CI
+        fm <- as.formula(paste("pr ~ ", paste(names(varying), collapse = "*"), sep = ""))
+        pr <- CI[1, ]  ## lower CI
+        p2 <- levelplot(fm, data = x$data[[which]], main = paste(rownames(CI)[1], "CI surface"), ...)
+        pr <- CI[2, ]  ## upper CI
+        p3 <- levelplot(fm, data = x$data[[which]], main = paste(rownames(CI)[2], "CI surface"), ...)
+        if (print_levelplot) {
+                   ## position = left, bottom, right, top
+            print(p1, position=c(0, 0, 0.33, 1), more=TRUE)
+            print(p2, position=c(0.33, 0, 0.66, 1), more=TRUE)
+            print(p3, position=c(0.66, 0, 1, 1))
+            warning("The scale is not the same")
+        } else {
+            return(list(mean = p1, lowerCI = p2, upperCI = p3))
+        }
+    } else {
+        if (is.null(ylim)) {
+            ylim <- range(CI)
+        }
+        plot(x$model, which = which, newdata = x$data[[which]], rug = FALSE,
+             type = "n", ylim = ylim, col = col, ...)
+        lines(x, which, level, col = ci.col, raw = raw, ...)
+        lines(x$model, which = which, newdata = x$data[[which]], rug = FALSE,
+              type = "l", col = col, ...)
+    }
 }
 
 lines.mboost.ci <- function(x, which, level = x$level,
@@ -250,18 +273,34 @@ lines.mboost.ci <- function(x, which, level = x$level,
     CI <- .ci_mboost(x$boot_pred, level = level, which = which, raw = raw)
 
     x.data <- x$data[[which]]
-    if (ncol(x.data) > 1) {
+    ## check if data (without by variable, which is not varying in the plot
+    ## data) has more than one column
+    if (ncol(x.data) > 1 &&
+        sum(sapply(x.data, function(x) length(unique(x))) > 1) > 1) {
         stop("Cannot plot lines for more than 1 dimension")
     } else {
         x.data <- x.data[, 1]
     }
 
-    if (!raw) {
-        polygon(c(x.data, rev(x.data)),
-                c(CI[1, ], rev(CI[2,])),
-                col = col, border = col)
+    if (is.factor(x.data)) {
+        if (raw)
+            warning("plotting raw values is currently not implemented",
+                    " for factors")
+        pData <- cbind(x.data, t(CI))
+        pData <- unique(pData)
+        for (i in 1:nrow(pData)) {
+            polygon(x = pData[i, 1] + c(-0.35, 0.35, 0.35, -0.35),
+                    y = rep(pData[i, 2:3], each = 2),
+                    col = col, border = col, ...)
+        }
     } else {
-        matlines(x$data[[which]], CI, col = col, lty = "solid", ...)
+        if (!raw) {
+            polygon(c(x.data, rev(x.data)),
+                    c(CI[1, ], rev(CI[2,])),
+                    col = col, border = col)
+        } else {
+            matlines(x$data[[which]], CI, col = col, lty = "solid", ...)
+        }
     }
 }
 
