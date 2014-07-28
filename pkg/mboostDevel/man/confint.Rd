@@ -17,7 +17,7 @@
 \method{confint}{mboost}(object, parm = NULL, level = 0.95, B = 1000,
         B.mstop = 25, newdata = NULL, which = parm,
         papply = ifelse(B.mstop == 0, mclapply, lapply),
-        papply.mstop = mclapply, ...)
+        cvrisk_options = list(), ...)
 \method{plot}{mboost.ci}(x, which, level = x$level, ylim = NULL, type = "l", col = "black",
      ci.col = rgb(170, 170, 170, alpha = 85, maxColorValue = 255),
      raw = FALSE, print_levelplot = TRUE,...)
@@ -65,13 +65,12 @@
     computing resources if you use parallel computing for both, the
     inner and the outer bootstrap.
   }
-  \item{papply.mstop}{
-    (parallel) apply function for the inner bootstrap, defaults to
-    \code{\link[parallel]{mclapply}} if we use an inner bootstrap is to
-    determine the optimal stopping iteration. For details see
-    argument \code{papply} in \code{\link{cvrisk}}. Be careful with your
-    computing resources if you use parallel computing for both, the
-    inner and the outer bootstrap.
+  \item{cvrisk_options}{
+    (optionally) specify a named list with arguments to the inner
+    bootstrap. For example use \code{cvrisk_options = list(mc.cores =
+      2)} to specify that the \code{\link{mclapply}} function within
+    \code{\link{cvrisk}} uses 2 cores to compute the optimal
+    \code{mstop}.
   }
   \item{x}{
     a confidence interval object.
@@ -105,7 +104,7 @@
     logical, should the point estimtate (PE) be also returned?
   }
   \item{\dots}{
-    additional arguments
+    additional arguments to the outer bootstrap such as \code{mc.cores}.
   }
 }
 \details{

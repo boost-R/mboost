@@ -3,12 +3,20 @@ confint.mboost <- function(object, parm = NULL, level = 0.95,
                            B = 1000, B.mstop = 25, newdata = NULL,
                            which = parm,
                            papply = ifelse(B.mstop == 0, mclapply, lapply),
-                           papply.mstop = mclapply,
-                           ...) {
+                           cvrisk_options = list(), ...) {
 
     which <- object$which(which, usedonly = FALSE)
     if (!all(which %in% object$which(NULL, usedonly = FALSE)))
         stop(sQuote("which"), " is wrongly specified")
+
+    if (!is.list(cvrisk_options))
+        stop(sQuote("cvrisk_options"), " must be a named list")
+    if (length(cvrisk_options) > 0 && is.null(names(cvrisk_options)))
+        stop(sQuote("cvrisk_options"), " must be a named list")
+    if ("folds" %in% names(cvrisk_options))
+        stop("One cannot modify the folds of the inner bootstrap")
+    if ("object" %in% names(cvrisk_options))
+        stop("One cannot specify the model (object) of the inner bootstrap")
 
     ## create new data and/or restructure data
     newdata <- .create_newdata(object, newdata, which)
@@ -25,13 +33,15 @@ confint.mboost <- function(object, parm = NULL, level = 0.95,
                       risk = "inbag", trace = FALSE)
         if (B.mstop > 0) {
             ## <FIXME> are the weights handled correctly?
-            cvr <- cvrisk(mod, folds = cv(model.weights(mod), B = B.mstop),
-                          papply = papply.mstop, ...)
+            cvr <- do.call("cvrisk",
+                           args = c(list(object = mod,
+                                       folds = cv(model.weights(mod), B = B.mstop)),
+                                       cvrisk_options))
             mod[mstop(cvr)]
         }
         .predict_confint(mod, newdata = newdata, which = which)
     }
-    predictions <- papply(1:B, do_update)
+    predictions <- papply(1:B, do_update, ...)
     cat("\n")
 
     ## prepare returned object
