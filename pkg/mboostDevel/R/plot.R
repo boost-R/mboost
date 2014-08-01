@@ -150,7 +150,7 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                         ## xlab not user specified
                         plot_helper(paste(xl, "=", v[i]), yl)
                     } else {
-                        plot_helper(paste(xl, "(", vary, "=", v[i], ")"), yl)
+                        plot_helper(xl, yl)
                     }
                 }
             }
