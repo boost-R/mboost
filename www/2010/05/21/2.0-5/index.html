@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Getting Started</title>
+    <title>Version 2.0-5</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="">
-    <link rel="canonical" href="http://mboost.r-forge.r-project.org/getting_started/">
+    <link rel="canonical" href="http://mboost.r-forge.r-project.org/2010/05/21/2.0-5/">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="http://mboost.r-forge.r-project.org/css/main.css">
@@ -64,96 +64,15 @@ hljs.initHighlightingOnLoad();
       <div class="post">
 
   <header class="post-header">
-    <h1>Getting Started</h1>
+    <h1>Version 2.0-5</h1>
+    <p class="meta">May 21, 2010</p>
   </header>
 
   <article class="post-content">
-  <h1>Your first regression tree</h1>
-
-<p>First, install and fire-up R on your computer. Within R, one needs to
-install the mboost package by typing</p>
-
-<pre><code class="r">install.packages(&quot;mboost&quot;)
-</code></pre>
-
-<p>and hitting the ENTER key. Once the package is installed, you can
-load it using</p>
-
-<pre><code class="r">library(&quot;mboost&quot;)
-</code></pre>
-
-<pre><code>## Loading required package: parallel
-## This is mboost 2.3-0. See &#39;package?mboost&#39; and the NEWS file
-## for a complete list of changes.
-</code></pre>
-
-<p>Now all mboost functions are ready to be used, for example the mboost()
-function for fitting an additive regression model to the bodyfat data </p>
-
-<pre><code class="r">data(&quot;bodyfat&quot;, package = &quot;TH.data&quot;)
-
-### formula interface: additive Gaussian model with
-### a non-linear step-function in `age&#39;, a linear function in `waistcirc&#39;
-### and a smooth non-linear smooth function in `hipcirc&#39;
-mod &lt;- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc),
-              data = bodyfat)
-</code></pre>
-
-<pre><code>## Loading required package: party
-</code></pre>
-
-<pre><code>## Warning: package &#39;party&#39; was built under R version 3.2.0
-</code></pre>
-
-<pre><code>## Loading required package: grid
-## Loading required package: zoo
-## 
-## Attaching package: &#39;zoo&#39;
-## 
-## The following objects are masked from &#39;package:base&#39;:
-## 
-##     as.Date, as.Date.numeric
-## 
-## Loading required package: sandwich
-## Loading required package: strucchange
-## Loading required package: modeltools
-## Loading required package: stats4
-</code></pre>
-
-<pre><code>## Error: cannot load &#39;party&#39;
-</code></pre>
-
-<p>The model can be plotted</p>
-
-<pre><code class="r">layout(matrix(1:3, nc = 3, byrow = TRUE))
-plot(mod, ask = FALSE, main = &quot;formula&quot;)
-</code></pre>
-
-<pre><code>## Error: error in evaluating the argument &#39;x&#39; in selecting a method for function &#39;plot&#39;: Error: object &#39;mod&#39; not found
-</code></pre>
-
-<p>or used for computing predictions</p>
-
-<pre><code class="r">summary(predict(mod))
-</code></pre>
-
-<pre><code>## Error: object &#39;mod&#39; not found
-</code></pre>
-
-<p>which can be compared to the actual response values:</p>
-
-<pre><code class="r">plot(bodyfat$DEXfat, predict(mod))
-</code></pre>
-
-<pre><code>## Error: error in evaluating the argument &#39;y&#39; in selecting a method for function &#39;plot&#39;: Error in predict(mod) : object &#39;mod&#39; not found
-</code></pre>
-
-<pre><code class="r">abline(a = 0, b = 1)
-</code></pre>
-
-<pre><code>## Error: plot.new has not been called yet
-</code></pre>
-
+  <ul>
+<li> revision r507 </li>
+<li> no not use multicore functionality in R CMD check </li>
+</ul>
 
   </article>
 
