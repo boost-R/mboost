@@ -451,9 +451,6 @@ selected <- function(object, ...)
 selected.mboost <- function(object, ...)
     object$xselect()
 
-selected.stabsel <- function(object, ...)
-    object$selected
-
 summary.mboost <- function(object, ...) {
 
     ret <- list(object = object, selprob = NULL)

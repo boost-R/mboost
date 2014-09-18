@@ -1,3 +1,4 @@
+
                 CHANGES in `mboost' VERSION 2.3-1 (2014-xx-yy, rXYZ)
 
   o  changed vignette mboost_tutorial to reflect latest changes in mboost.
@@ -5,6 +6,8 @@
   o  Bugfixes: 
      - glmboost()$model.frame() was broken
      - glmboost()$update() was broken
+
+  o  stabsel has been moved to the new package stabs
 
                 CHANGES in `mboost' VERSION 2.3-0 (2014-06-26, r771)
 

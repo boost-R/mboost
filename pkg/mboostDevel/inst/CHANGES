@@ -9,6 +9,8 @@
   o  tweaked update function: we now can turn the trace off and specify
      the type of risk as well as the oobweight to update()
 
+  o  stabsel has been moved to the new package stabs
+
 
                 CHANGES in `mboost' VERSION 2.3-1 (2014-xx-yy, rXYZ)
 
