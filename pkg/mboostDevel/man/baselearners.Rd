@@ -142,7 +142,8 @@ bl1 \%O\% bl2
                  The latter option is the default (and currently only option) for \code{bbs}
                  with multiple covariates or \code{bmrf}.}
   \item{cyclic}{ if \code{cyclic = TRUE} the fitted values coincide at the boundaries
-                 (useful for cyclic covariates such as day time etc.).}
+                 (useful for cyclic covariates such as day time etc.). For details see
+		 Hofner et al. (2014).}
   \item{covFun}{ the covariance function (i.e. radial basis)
                  needed to compute the basis functions. Per
                  default the \code{\link[fields]{stationary.cov}} function
@@ -257,7 +258,9 @@ bl1 \%O\% bl2
   if one uses cyclic constraints, where the \code{boundary.knots}
   specify the points where the function is joined (e.g.,
   \code{boundary.knots = c(0, 2 * pi)} for angles as in a sine function
-  or \code{boundary.knots = c(0, 24)} for hours during the day).
+  or \code{boundary.knots = c(0, 24)} for hours during the day). For
+  details on cylcic splines in the context of boosting see Hofner et
+  al. (2014). 
 
   \code{bspatial} implements bivariate tensor product P-splines for the
   estimation of either spatial effects or interaction surfaces. Note
@@ -487,10 +490,11 @@ bl1 \%O\% bl2
   Monotonicity-Constrained Species Distribution Models,
   \emph{Ecology}, \bold{92}, 1895--1901.
 
-  Benjamin Hofner, Thomas Kneib, and Torsten Hothorn (2014),
-  A Unified Framework of Constrained Regression,
-  \emph{Technical Report}, \url{http://arxiv.org/abs/1403.7118}.
-
+  Benjamin Hofner, Thomas Kneib and Torsten Hothorn (2014),
+  A Unified Framework of Constrained Regression. Accepted for publication
+  in \emph{Statistics & Computing}.\cr
+  Preliminary version: \url{http://arxiv.org/abs/1403.7118}
+ 
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable
   selection and model choice in geoadditive regression models,
   \emph{Biometrics}, \bold{65}(2), 626--634.
