@@ -259,7 +259,13 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             } else {
                 ## only if no selection of baselearners
                 ## was made via the `which' argument
-                return(offset + matrix(rowSums(pr), ncol = 1))
+                ret <- matrix(rowSums(pr), ncol = 1)
+                if (length(offset) != 1 && !is.null(newdata)) {
+                    warning("Offset not used for prediction when ", sQuote("newdata"), " is specified")
+                } else {
+                    ret <- ret + offset
+                }
+                return(ret)
             }
         }, "cumsum" = {
             if (!nw) {
@@ -271,10 +277,15 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
                 attr(pr, "offset") <- offset
                 return(pr)
             } else {
-                ret <- 0
-                for (i in 1:max(xselect)) ret <- ret + pfun(i, agg = "none")
-                return(.Call("R_mcumsum", as(ret, "matrix"), PACKAGE = "mboost")
-                       + offset)
+                pr <- 0
+                for (i in 1:max(xselect)) pr <- pr + pfun(i, agg = "none")
+                pr <- .Call("R_mcumsum", as(pr, "matrix"), PACKAGE = "mboost")
+                if (length(offset) != 1 && !is.null(newdata)) {
+                    warning("Offset not used for prediction when ", sQuote("newdata"), " is specified")
+                } else {
+                    pr <- pr + offset
+                }
+                return(pr)
             }
          }, "none" = {
             if (!nw) {
@@ -284,11 +295,11 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
                 attr(pr, "offset") <- offset
                 return(pr)
             } else {
-                ret <- 0
-                for (i in 1:max(xselect)) ret <- ret + pfun(i, agg = "none")
-                ret <- as(ret, "matrix")
-                attr(ret, "offset") <- offset
-                return(ret)
+                pr <- 0
+                for (i in 1:max(xselect)) pr <- pr + pfun(i, agg = "none")
+                pr <- as(pr, "matrix")
+                attr(pr, "offset") <- offset
+                return(pr)
             }
          })
          return(pr)
