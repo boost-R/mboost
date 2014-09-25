@@ -15,10 +15,9 @@
 > require("mboostDevel")
 Loading required package: mboostDevel
 Loading required package: parallel
-This is mboostDevel 2.3-0. See ‘package?mboostDevel’ and the NEWS file
+This is mboostDevel 2.4-0. See ‘package?mboostDevel’ and the NEWS file
 for a complete list of changes.
-Note: The default for the computation of the degrees of freedom has changed.
-      For details see section ‘Global Options’ of ‘?bols’.
+
 
 > set.seed(190781)
 
@@ -460,21 +459,61 @@ Loss function: tau * (y - f) * ((y - f) >= 0) + (tau - 1) * (y - f) * ((y -
 
 > set.seed(1907)
 
-> x <- runif(200, 0, (2 * pi))
+> true_f <- function(x) cos(x) + 0.25 * sin(4 * x)
 
-> y <- rnorm(200, mean = sin(x), sd = 0.2)
+> x <- runif(150, 0, 2 * pi)
 
-> newX <- seq(0, 2 * pi, length = 100)
+> y <- rnorm(150, mean = true_f(x), sd = 0.1)
 
-> mod <- gamboost(y ~ bbs(x, knots = 12))
+> newX <- seq(0, 2 * pi, length = 200)
 
-> mod_cyclic <- gamboost(y ~ bbs(x, cyclic = TRUE, knots = 12, 
-+     boundary.knots = c(0, 2 * pi)))
+> mod <- gamboost(y ~ bbs(x, knots = 20, degree = 4))
+
+> mod[3000]
+
+	 Model-based Boosting
+
+Call:
+gamboost(formula = y ~ bbs(x, knots = 20, degree = 4))
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 3000 
+Step size:  0.1 
+Offset:  0.01949773 
+Number of baselearners:  1 
+
+
+> mod_cyclic <- gamboost(y ~ bbs(x, cyclic = TRUE, knots = 20, 
++     degree = 4, boundary.knots = c(0, 2 * pi)))
+
+> mod_cyclic[3000]
+
+	 Model-based Boosting
+
+Call:
+gamboost(formula = y ~ bbs(x, cyclic = TRUE, knots = 20, degree = 4,     boundary.knots = c(0, 2 * pi)))
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 3000 
+Step size:  0.1 
+Offset:  0.01949773 
+Number of baselearners:  1 
+
 
 > par(mar = c(4, 4, 0, 0) + 0.1)
 
-> plot(x, y, ylab = "f(x)", cex = 1, pch = 20, col = rgb(0.5, 
-+     0.5, 0.5, alpha = 0.8))
+> plot(x, y, ylab = "f(x)", pch = 20, xlim = c(0, 7), 
++     col = rgb(0.5, 0.5, 0.5, alpha = 0.8))
 
 > lines(newX, predict(mod, data.frame(x = newX)), col = "black", 
 +     lwd = 2)
@@ -487,8 +526,8 @@ Loss function: tau * (y - f) * ((y - f) >= 0) + (tau - 1) * (y - f) * ((y -
 
 > par(mar = c(4, 4, 0, 0) + 0.1)
 
-> plot(x, y, ylab = "f(x)", cex = 1, pch = 20, col = rgb(0.5, 
-+     0.5, 0.5, alpha = 0.8))
+> plot(x, y, ylab = "f(x)", pch = 20, xlim = c(0, 7), 
++     col = rgb(0.5, 0.5, 0.5, alpha = 0.8))
 
 > lines(newX, predict(mod_cyclic, data.frame(x = newX)), 
 +     col = red, lwd = 2)
@@ -648,4 +687,4 @@ pdf
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
- 13.604   0.468  12.654 
+ 13.124   0.359  13.845 

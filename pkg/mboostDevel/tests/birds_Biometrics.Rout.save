@@ -1,5 +1,5 @@
 
-R version 3.1.0 (2014-04-10) -- "Spring Dance"
+R version 3.1.1 (2014-07-10) -- "Sock it to Me"
 Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -18,7 +18,7 @@ Type 'q()' to quit R.
 > 
 > library("mboostDevel")
 Loading required package: parallel
-This is mboostDevel 2.3-0. See 'package?mboostDevel' and the NEWS file
+This is mboostDevel 2.4-0. See 'package?mboostDevel' and the NEWS file
 for a complete list of changes.
 
 > data("birds", package = "TH.data")
@@ -314,4 +314,4 @@ Final risk: 497.9626
 > 
 > proc.time()
    user  system elapsed 
- 19.933   0.284  20.781 
+ 19.303   0.336  20.173 

@@ -1,5 +1,5 @@
 
-R version 3.1.0 (2014-04-10) -- "Spring Dance"
+R version 3.1.1 (2014-07-10) -- "Sock it to Me"
 Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -34,7 +34,7 @@ Type 'q()' to quit R.
 > ### * </HEADER>
 > library('mboostDevel')
 Loading required package: parallel
-This is mboostDevel 2.3-0. See ‘package?mboostDevel’ and the NEWS file
+This is mboostDevel 2.4-0. See ‘package?mboostDevel’ and the NEWS file
 for a complete list of changes.
 
 > 
@@ -947,6 +947,125 @@ Loss function: abs(y - f)
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("boost_family-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
+> nameEx("confint")
+> ### * confint
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: confint.mboost
+> ### Title: Pointwise Bootstrap Confidence Intervals
+> ### Aliases: confint.mboost confint.glmboost plot.mboost.ci lines.mboost.ci
+> ###   print.glmboost.ci
+> ### Keywords: methods
+> 
+> ### ** Examples
+> 
+> ### a simple linear example
+> set.seed(1907)
+> data <- data.frame(x1 = rnorm(100), x2 = rnorm(100),
++                    z = factor(sample(1:3, 100, replace = TRUE)))
+> data$y <- rnorm(100, mean = data$x1 - data$x2 - 1 * (data$z == 2) +
++                             1 * (data$z == 3), sd = 0.1)
+> linmod <- glmboost(y ~ x1 + x2 + z, data = data,
++                    control = boost_control(mstop = 200))
+> 
+> ## compute confidence interval from 10 samples. Usually one should use
+> ## at least 1000 samples.
+> CI <- confint(linmod, B = 10, level = 0.9)
+Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
+  zero weights
+Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
+  zero weights
+Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
+  zero weights
+Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
+  zero weights
+Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
+  zero weights
+Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
+  zero weights
+Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
+  zero weights
+Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
+  zero weights
+Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
+  zero weights
+Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
+  zero weights
+> CI
+	Bootstrap Confidence Intervals
+                     5%         95%
+(Intercept) -0.01975195  0.02598639
+x1           0.98986917  1.01853830
+x2          -1.00530226 -0.98158388
+z2          -1.04350674 -0.99290512
+z3           0.98234788  1.06652604
+> 
+> ## to compute a confidence interval for another level simply change the
+> ## level in the print function:
+> print(CI, level = 0.8)
+	Bootstrap Confidence Intervals
+                    10%         90%
+(Intercept) -0.01105303  0.01607163
+x1           0.99577904  1.01340240
+x2          -1.00234059 -0.98355672
+z2          -1.03767821 -0.99552711
+z3           0.98851355  1.04334685
+> ## or print a subset (with point estimates):
+> print(CI, level = 0.8, pe = TRUE, which = "z")
+	Bootstrap Confidence Intervals
+        beta        10%        90%
+z2 -1.016220 -1.0376782 -0.9955271
+z3  1.024731  0.9885135  1.0433468
+> 
+> 
+> ### a simple smooth example
+> set.seed(1907)
+> data <- data.frame(x1 = rnorm(100), x2 = rnorm(100))
+> data$y <- rnorm(100, mean = data$x1^2 - sin(data$x2), sd = 0.1)
+> gam <- gamboost(y ~ x1 + x2, data = data,
++                 control = boost_control(mstop = 200))
+> 
+> ## compute confidence interval from 10 samples. Usually one should use
+> ## at least 1000 samples.
+> CI_gam <- confint(gam, B = 10, level = 0.9)
+Start computing bootstrap confidence intervals... 
+B = 1Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
+  zero weights
+B = 2Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
+  zero weights
+B = 3Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
+  zero weights
+B = 4Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
+  zero weights
+B = 5Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
+  zero weights
+B = 6Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
+  zero weights
+B = 7Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
+  zero weights
+B = 8Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
+  zero weights
+B = 9Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
+  zero weights
+B = 10Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
+  zero weights
+
+> 
+> par(mfrow = c(1, 2))
+> plot(CI_gam, which = 1)
+> plot(CI_gam, which = 2)
+> ## to compute a confidence interval for another level simply change the
+> ## level in the plot or lines function:
+> lines(CI_gam, which = 2, level = 0.8)
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("confint", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
+> cleanEx()
 > nameEx("cvrisk")
 > ### * cvrisk
 > 
@@ -1414,15 +1533,44 @@ Loading required package: stats4
 +                          response = DEXfat))
 >   plot(mod, ask = FALSE, main = "base-learner")
 > 
+>   ### use stability selection for base-learner selection
+>   library("stabs")
+Note: the specification for class “boost_family” in package ‘mboost’ seems equivalent to one from package ‘mboostDevel’: not turning on duplicate class definitions for this class.
+Note: the specification for class “boost_family_glm” in package ‘mboost’ seems equivalent to one from package ‘mboostDevel’: not turning on duplicate class definitions for this class.
+>   ## fit a linear model
+>   # (as this is quicker; also possible with non-linear model from above)
+>   mod <- glmboost(DEXfat ~ ., data = bodyfat)
+>   ## now run stability selection
+>   (sbody <- stabsel(mod, q = 3, PFER = 1, sampling.type = "MB"))
+	Stability Selection without further assumptions
+
+Selected base-learners:
+hipcirc 
+      4 
+
+Selection probabilities:
+ (Intercept)          age elbowbreadth  kneebreadth      anthro4     anthro3b 
+        0.00         0.00         0.00         0.01         0.09         0.14 
+    anthro3c     anthro3a    waistcirc      hipcirc 
+        0.24         0.61         0.92         0.99 
+
+Cutoff: 0.95; q: 3; PFER:  1 
+
+>   opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
+>   plot(sbody)
+>   par(opar)
+>   plot(sbody, type = "maxsel", ymargin = 6)
+> 
 > 
 > 
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("mboost", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 
-detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
-  ‘package:strucchange’, ‘package:sandwich’, ‘package:zoo’,
-  ‘package:grid’
+detaching ‘package:stabs’, ‘package:party’, ‘package:modeltools’,
+  ‘package:stats4’, ‘package:strucchange’, ‘package:sandwich’,
+  ‘package:zoo’, ‘package:grid’
 
 > nameEx("mboost_package")
 > ### * mboost_package
@@ -1512,9 +1660,9 @@ detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
 > base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: methods
 > ### Title: Methods for Gradient Boosting Objects
-> ### Aliases: print.glmboost print.mboost summary.mboost coef.mboost
-> ###   coef.glmboost [.mboost AIC.mboost mstop mstop.gbAIC mstop.mboost
-> ###   mstop.cvrisk mstop<- predict.mboost predict.gamboost
+> ### Aliases: mboost_methods print.glmboost print.mboost summary.mboost
+> ###   coef.mboost coef.glmboost [.mboost AIC.mboost mstop mstop.gbAIC
+> ###   mstop.mboost mstop.cvrisk mstop<- predict.mboost predict.gamboost
 > ###   predict.blackboost predict.glmboost fitted.mboost residuals.mboost
 > ###   resid.mboost variable.names.glmboost variable.names.mboost risk
 > ###   risk.mboost extract extract.mboost extract.gamboost extract.glmboost
@@ -3090,67 +3238,6 @@ attr(,"boundary.knots")$upper
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("methods", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
-> nameEx("stabsel")
-> ### * stabsel
-> 
-> flush(stderr()); flush(stdout())
-> 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
-> ### Name: stabsel
-> ### Title: Stability Selection
-> ### Aliases: stabsel stabsel_parameters stabsel_parameters.default
-> ###   stabsel_parameters.mboost plot.stabsel
-> ### Keywords: nonparametric
-> 
-> ### ** Examples
-> 
-> 
->   data("bodyfat", package = "TH.data")
-> 
->   ### low-dimensional example
->   mod <- glmboost(DEXfat ~ ., data = bodyfat)
-> 
->   ## compute cutoff ahead of running stabsel to see if it is a sensible
->   ## parameter choice.
->   ##   p = ncol(bodyfat) - 1 (= Outcome) + 1 ( = Intercept)
->   stabsel_parameters(q = 3, PFER = 1, p = ncol(bodyfat) - 1 + 1,
-+                      sampling.type = "MB")
-Stability Selection without further assumptions
-Cutoff: 0.95; q: 3; PFER:  1 
->   ## the same:
->   stabsel(mod, q = 3, PFER = 1, sampling.type = "MB", eval = FALSE)
-Stability Selection without further assumptions
-Cutoff: 0.95; q: 3; PFER:  1 
-> 
->   ## now run stability selection; to make results reproducible
->   set.seed(1234)
->   (sbody <- stabsel(mod, q = 3, PFER = 1, sampling.type = "MB"))
-	Stability Selection without further assumptions
-
-Selected base-learners:
-waistcirc   hipcirc 
-        3         4 
-
-Selection probabilities:
-kneebreadth    anthro3c    anthro3b     anthro4    anthro3a   waistcirc 
-       0.02        0.10        0.12        0.18        0.64        0.95 
-    hipcirc 
-       0.99 
-
-Cutoff: 0.95; q: 3; PFER:  1 
-
->   opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
->   plot(sbody)
->   par(opar)
-> 
->   plot(sbody, type = "maxsel", ymargin = 6)
-> 
-> 
-> 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("stabsel", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
-> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
-> cleanEx()
 > nameEx("survFit")
 > ### * survFit
 > 
@@ -3236,7 +3323,7 @@ attr(,"class")
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  15.148 0.38 17.41 1.34 0.14 
+Time elapsed:  17.527 0.998 35.294 26.941 1.832 
 > grDevices::dev.off()
 null device 
           1 
