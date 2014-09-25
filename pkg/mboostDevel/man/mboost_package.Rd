@@ -16,7 +16,7 @@
 Package: \tab mboostDevel\cr
 Type: \tab Package\cr
 Version: \tab 2.4-0\cr
-Date: \tab 2014-xx-yy\cr
+Date: \tab 2014-09-26\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes\cr
@@ -55,6 +55,17 @@ LazyData: \tab yes\cr
   paper is a good starting point when you plan to analyze your data using
   \code{mboost}.
 
+}
+
+\section{NEWS in 2.4-series}{
+
+  Bootstrap confidence intervals have been implemented in the novel
+  \code{\link[=confint.mboost]{confint}} function. The stability
+  selection procedure has now been moved to a stand-alone package called
+  \pkg{stabs}, which now also implements an iterface to use stability
+  selection with other fitting functions.
+  
+  For more changes see NEWS file.
 }
 
 \section{NEWS in 2.3-series}{
