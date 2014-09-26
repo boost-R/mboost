@@ -3,6 +3,7 @@ import(methods)
 import(stats)
 
 import(Matrix)
+import(parallel)
 importFrom(survival, Surv, survfit)
 importFrom(splines, bs, splineDesign)
 importFrom(lattice, levelplot)

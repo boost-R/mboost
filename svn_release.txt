@@ -178,6 +178,8 @@
   How to preview NEWS.Rd files
   ----------------------------
 
-  library(tools)
-  Rd2HTML("NEWS.Rd", out = "NEWS.html")
-  Rd2latex("NEWS.Rd", out = "NEWS.tex")
+  For HTML preview:
+      R CMD Rdconv -t 'html' -o 'NEWS.html' NEWS.Rd && firefox NEWS.html
+
+  and for PDF preview:
+      R CMD Rd2pdf NEWS.Rd

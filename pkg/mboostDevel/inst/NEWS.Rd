@@ -15,10 +15,10 @@
 
     \item \code{stabsel} has been moved to the new package \pkg{stabs}
 
-    \item changed vignette \code{mboost_tutorial} to reflect latest
+    \item changed vignette \file{mboost_tutorial} to reflect latest
     changes in \pkg{mboost}.
 
-    \item changed plain text \code{NEWS} to \code{inst/NEWS.Rd}
+    \item changed plain text \file{NEWS} to \file{inst/NEWS.Rd}
   }
   \subsection{Bugfixes}{
     \itemize{
@@ -81,82 +81,90 @@
   \itemize{
     \item fixed bugs in survival families:
     \itemize{
-      \item  offset in all survival families was based on max(survtime) instead
-      of max(log(survtime));
-      \item  offset in CoxPH can't be computed from Cox Partial LH as constants
-      are canceled out; Use fixed offset instead;
+      \item  \code{offset} in all survival families was based on
+      \code{max(survtime)} instead of \code{max(log(survtime))};
+      \item  \code{offset} in \code{CoxPH} can't be computed from Cox
+      Partial LH as constants are canceled out; Use fixed \code{offset}
+      instead; 
     }
     \item speed up checking of manual by changing some computations (e.g. reduce
-         mstop) or exclude code from checking via \\dontrun\{\}
-    \item removed dependency on ipred (replaced with TH.data)
+    \code{mstop}) or exclude code from checking via \code{\\dontrun\{\}}
+    \item removed dependency on \pkg{ipred} (replaced with \pkg{TH.data})
     \item small improvements in manual
   }
 }
 \section{Changes in mboost version 2.2-2 (2013-02-08, r703)}{
   \itemize{
 
-    \item bbs(..., center = "spectralDecomp") computes the spectral
+    \item \code{bbs(..., center = "spectralDecomp")} computes the spectral
     decomposition of the penalty matrix and the penalized part of the
-    design matrix is defined by this decomposition. Experiments show
-    that \code{bols(x) + bbs(x, center = "spectralDecomp")} is a little
-    better in recovering the true underlying functions than the default
-    \code{bols(x) + bbs(x, center = TRUE)} or, equivalently,
-    \code{bols(x) + bbs(x, center = "differenceMatrix")}. For
-    \code{bbs(x, y, center = TRUE)} or \code{bmrf(x, center = TRUE)},
+    design matrix is defined by this decomposition.
+    
+    Experiments show that \code{bols(x) + bbs(x, center = "spectralDecomp")}
+    is a little better in recovering the true underlying functions than
+    the default \code{bols(x) + bbs(x, center = TRUE)} or, equivalently,
+    \code{bols(x) + bbs(x, center = "differenceMatrix")}.
+
+    For \code{bbs(x, y, center = TRUE)} or \code{bmrf(x, center = TRUE)},
     the spectral decomposition is (and was) always used.
 
-    \item fixed bug in stabsel: '...' was not passed to cvrisk and thus one could
-         not specify options for mclapply
-    \item fixed bug in brandom: now really use contrasts.arg = "contr.dummy" per
-         default.
-    \item removed tests/ folder and .Rout.save files for vignettes from the CRAN
-         release
+    \item fixed bug in \code{stabsel}: \code{'...'} was not passed to
+         \code{cvrisk} and thus one could not specify options for \code{mclapply}
+    \item fixed bug in \code{brandom}: now really use
+    \code{contrasts.arg = "contr.dummy"} per default.
+    \item removed \code{tests/} folder and \code{.Rout.save} files for
+    vignettes from the CRAN release
     \item small improvements in manual
   }
 }
 \section{Changes in mboost version 2.2-1 (2013-01-14, r694)}{
   \itemize{
-    \item included warnings in stabsel() for better guidiance of the
-    user:
+    \item included warnings in \code{stabsel()} for better
+         guidiance of the user:
     \itemize{
-         \item A warning is issued if the upper bound for the FWER in stability
-           selection is greater (by a certain margin) than the specified bound.
-         \item A warning is also issued if mstop is too small to select
-	 q variables.
+         \item A warning is issued if the upper bound for the
+         \code{FWER} in stability selection is greater (by a certain
+         margin) than the specified bound. 
+         \item A warning is also issued if \code{mstop} is too small to select
+	 \code{q} variables.
     }
-    \item improved output of errors and warnings in stabsel.
-    \item suppress the notes from package Matrix about method ambiguity
-         ("Note: method with signature ... chosen, ... would also be valid")
+    \item improved output of errors and warnings in \code{stabsel}.
+    \item suppress the notes from package \pkg{Matrix} about method ambiguity
+         (\code{"Note: method with signature ... chosen, ... would also be valid"})
     \item updated manual on base-learners to reflect the change in the default for
          degrees of freedom (addtionally, all options are now discussed in a
-         separate section of the baselearner manual)
-    \item updated vignette mboost_tutorial
-    \item updated mboost_package.Rd:
-         now all important changes since mboost 2.0 are documented there
-    \item changed roles of contributers to ctb
-    \item suggested packages are now only used inside if(require(pkg)) statements
+         separate section of the base-learner manual)
+    \item updated vignette \file{mboost_tutorial}
+    \item updated \file{mboost_package.Rd}:
+         now all important changes since \pkg{mboost} 2.0 are documented there
+    \item changed roles of contributers to \code{ctb}
+    \item suggested packages are now only used inside \code{if(require(pkg))} statements
     \item changed startup message
   }
 }
 \section{Changes in mboost version 2.2-0 (2012-11-21, r680)}{
   \itemize{
-    \item switch from packages `multicore' and`snow' to `parallel'
-    \item changed behavior of bols(x, intercept = FALSE) when x is a factor:
-         now the intercept is simply dropped from the design matrix;
-         coding can be specified as usually for factors.
-    \item changed default for options("mboost_dftraceS") to FALSE, i.e.,
+    \item switch from packages \pkg{multicore} and \pkg{snow} to \pkg{parallel}
+    \item changed behavior of \code{bols(x, intercept = FALSE)} when
+    \code{x} is a factor:
+    \itemize{
+      \item now the intercept is simply dropped from the design matrix
+      \item coding can be specified as usually for factors.
+    }
+    \item changed default for \code{options("mboost_dftraceS")} to \code{FALSE}, i.e.,
          degrees of freedom are now computed from smoothing parameter
          as described in B. Hofner, T. Hothorn, T. Kneib, M. Schmid (2011).
     \item changed computation of B-spline basis at the boundaries:
          now also use equidistant knots in the boundaries (per default)
-    \item improved plot function when dealing with spatial plots
-         (now builds suitable grid based on the observations if no newdata is given)
-    \item increased default number of subsampling replicates in stabsel to 100
-    \item [experimental] bmono() now implements constraints at the boundaries of
-         (monotonic) P-splines
-    \item [experimental] added family Gehan() for rank-based estimation of survival models
-       in an accelerated failure time framework (contributed by Brent Johnson
-           <bajohn3@emory.edu>)
+    \item improved \code{plot} function when dealing with spatial plots
+         (now builds suitable grid based on the observations if no
+         \code{newdata} is given) 
+    \item increased default number of subsampling replicates in \code{stabsel} to 100
+    \item [experimental] \code{bmono()} now implements constraints at the boundaries of
+    (monotonic) P-splines
+    \item [experimental] added family \code{Gehan()} for rank-based
+    estimation of survival models in an accelerated failure time
+    framework (contributed by Brent Johnson \email{bajohn3@emory.edu})
   }
 }
 \section{Changes in mboost version 2.1-3 (2012-09-27, r672)}{
