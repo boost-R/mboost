@@ -53,13 +53,12 @@ function (..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
     return(ret)
 }
 
-hyper_bmrf <-
-function (mf, vary, bnd = NULL, df = 4, lambda = NULL, center = FALSE)
-{
+hyper_bmrf <- function (mf, vary, bnd = NULL, df = 4, lambda = NULL,
+                        center = FALSE) {
     if (is.null(bnd))
         stop("Neighbourhood relations must be given in matrix or boundary format.")
     else if (inherits(bnd, "bnd"))
-        K <- bnd2gra(bnd)
+        K <- BayesX::bnd2gra(bnd)
     else if (isMATRIX(bnd) &&
              nrow(bnd) == ncol(bnd) &&
              nlevels(mf[[1]]) <= nrow(bnd) &&
@@ -75,9 +74,7 @@ function (mf, vary, bnd = NULL, df = 4, lambda = NULL, center = FALSE)
         center = center)
 }
 
-X_bmrf <-
-function (mf, vary, args)
-{
+X_bmrf <- function (mf, vary, args) {
     K <- args$K
     districts <- rownames(K)
     X <- Diagonal(nrow(K))

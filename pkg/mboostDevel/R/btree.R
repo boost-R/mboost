@@ -1,8 +1,8 @@
 
 ### the classical tree-based baselearner; stumps by default
 ### (also fits an additive model)
-btree <- function(..., 
-    tree_controls = ctree_control(stump = TRUE, 
+btree <- function(...,
+    tree_controls = party::ctree_control(stump = TRUE,
                                   mincriterion = 0,
                                   savesplitstats = FALSE)) {
 
@@ -52,7 +52,7 @@ btree <- function(...,
         df <- mf
         df[[rname]] <- y
         object <- party:::ctreedpp(fm, data = df)
-        fitmem <- ctree_memory(object, TRUE)
+        fitmem <- party::ctree_memory(object, TRUE)
         where <- rep.int(0, nrow(mf))
         storage.mode(where) <- "integer"
         storage.mode(weights) <- "double"

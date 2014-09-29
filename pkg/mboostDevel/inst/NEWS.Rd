@@ -2,58 +2,74 @@
 \title{News for Package 'mboost'}
 
 \section{Changes in mboost version 2.4-0 (2014-09-26, rZZZ)}{
-  \itemize{
-    \item added \code{confint} function to compute (bootstrap)
-    confidence intervals together with plot and print methods
+  \subsection{User-visible changes}{
+    \itemize{
+      \item Added \code{confint} function to compute (bootstrap)
+      confidence intervals together with plot and print methods
 
-    \item improved \code{plot} method for varying coefficients
-    (\code{ylim} now suitable) and base-learners of factor variables.
+      \item \code{stabsel()} now depends on the new package \pkg{stabs}
+      where the packend and methods such as \code{plot} and \code{print}
+      are implemented
 
-    \item tweaked \code{update} function: we now can turn the trace off
-    and specify the type of \code{risk} as well as the \code{oobweight}
-    to \code{update()}
+      \item Improved \code{plot} method for varying coefficients
+      (\code{ylim} now suitable) and base-learners of factor variables.
 
-    \item \code{stabsel} has been moved to the new package \pkg{stabs}
+      \item Tweaked \code{update} function: we now can turn the
+      \code{trace} on and off, and specify the type of \code{risk} as
+      well as the \code{oobweight} to \code{update()}
 
-    \item changed vignette \file{mboost_tutorial} to reflect latest
-    changes in \pkg{mboost}.
-
-    \item changed plain text \file{NEWS} to \file{inst/NEWS.Rd}
+    }
+  }
+  \subsection{Miscellaneous}{
+    \itemize{
+      \item Updated vignette \file{mboost_tutorial} to reflect latest
+      changes in \pkg{mboost}.
+      \item Changed plain text \file{NEWS} to \file{inst/NEWS.Rd}
+      \item Removed links to archived package \pkg{mfp}.
+      \item Explicitly specify the packages for functions that are
+      implemented in packages that are listed as \code{Suggests:}, e.g
+      we now use \code{party::ctree_control} etc.
+    }
   }
   \subsection{Bugfixes}{
     \itemize{
       \item \code{glmboost()$model.frame()} was broken
       \item \code{glmboost()$update()} was broken
-      \item \code{predict()} for models with non-scalar offsets was broken
+      \item \code{predict()} for models with non-scalar offsets was
+      broken
     }
   }
 }
 
 \section{Changes in mboost version 2.3-0 (2014-06-26, r771)}{
-  \itemize{
-    \item \code{stabsel} was recoded and now uses different terminology, much more options
-    and a better tested code base
-    \item new replacement function \code{mstop<-} as an alternative to \code{<mboost>[i]}
-    (suggested by Achim Zeileis).
-    \item \code{bmono}
+  \subsection{User-visible changes}{
     \itemize{
-      \item new and faster algorithm to compute monotonic P-splines
-      (\code{type = "quad.prog"})
-      \item new constraints added for positive and negative spline
-      estimates
+      \item \code{stabsel} was recoded and now uses different
+      terminology, much more options and a better tested code base
+
+      \item new replacement function \code{mstop<-} as an alternative to
+      \code{<mboost>[i]} (suggested by Achim Zeileis).
+
+      \item \code{bmono}
+      \itemize{
+	\item new and faster algorithm to compute monotonic P-splines
+	(\code{type = "quad.prog"})
+	\item new constraints added for positive and negative spline
+	estimates
+      }
+      \item \code{bbs}
+      \itemize{
+	\item allows monotone T-splines (experimental)
+	\item new argument \code{deriv} to bbs for computing derivatives of
+	B-splines
+      }
+      \item \code{bmrf} can now also handle neighborhood matrizes as an
+      argument to \code{bnd}
+      \item added new families \code{Hurdle} and \code{Multinomial}
+      \item \code{boost_control}: added new argument \code{stopintern} for
+      internal stopping (based on oobag data) during fitting
+      \item All data sets have been moved to the new package set \pkg{TH.data}
     }
-    \item \code{bbs}
-    \itemize{
-      \item allows monotone T-splines (experimental)
-      \item new argument \code{deriv} to bbs for computing derivatives of
-      B-splines
-    }
-    \item \code{bmrf} can now also handle neighborhood matrizes as an
-    argument to \code{bnd}
-    \item added new families \code{Hurdle} and \code{Multinomial}
-    \item \code{boost_control}: added new argument \code{stopintern} for
-    internal stopping (based on oobag data) during fitting
-    \item All data sets have been moved to the new package set \pkg{TH.data}
   }
   \subsection{Miscellaneous}{
     \itemize{
@@ -85,7 +101,7 @@
       \code{max(survtime)} instead of \code{max(log(survtime))};
       \item  \code{offset} in \code{CoxPH} can't be computed from Cox
       Partial LH as constants are canceled out; Use fixed \code{offset}
-      instead; 
+      instead;
     }
     \item speed up checking of manual by changing some computations (e.g. reduce
     \code{mstop}) or exclude code from checking via \code{\\dontrun\{\}}
@@ -99,7 +115,7 @@
     \item \code{bbs(..., center = "spectralDecomp")} computes the spectral
     decomposition of the penalty matrix and the penalized part of the
     design matrix is defined by this decomposition.
-    
+
     Experiments show that \code{bols(x) + bbs(x, center = "spectralDecomp")}
     is a little better in recovering the true underlying functions than
     the default \code{bols(x) + bbs(x, center = TRUE)} or, equivalently,
@@ -124,7 +140,7 @@
     \itemize{
          \item A warning is issued if the upper bound for the
          \code{FWER} in stability selection is greater (by a certain
-         margin) than the specified bound. 
+         margin) than the specified bound.
          \item A warning is also issued if \code{mstop} is too small to select
 	 \code{q} variables.
     }
@@ -158,7 +174,7 @@
          now also use equidistant knots in the boundaries (per default)
     \item improved \code{plot} function when dealing with spatial plots
          (now builds suitable grid based on the observations if no
-         \code{newdata} is given) 
+         \code{newdata} is given)
     \item increased default number of subsampling replicates in \code{stabsel} to 100
     \item [experimental] \code{bmono()} now implements constraints at the boundaries of
     (monotonic) P-splines

@@ -1,9 +1,9 @@
 brad <- function(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
-                 covFun = stationary.cov,
+                 covFun = fields::stationary.cov,
                  args = list(Covariance = "Matern", smoothness = 1.5, theta = NULL)) {
 
-    if (!require("fields"))
-        stop("cannot load ", sQuote("fields"))
+    # if (!require("fields"))
+    #     stop("cannot load ", sQuote("fields"))
 
     cll <- match.call()
     cll[[1]] <- as.name("brad")
@@ -116,7 +116,10 @@ hyper_brad <- function(mf, vary, knots = 100, df = 4, lambda = NULL,
     ## first we need to build a correct matrix of mf
     x <- as.matrix(mf[which(colnames(mf) != vary)])
     if (length(knots) == 1) {
-        knots <- cover.design(R = unique(x), nd = knots)$design
+        if (!require("fields"))
+            stop("Cannot load package", sQuote("fields"),
+                 ", which is needed for the automatic knot placement")
+        knots <- fields::cover.design(R = unique(x), nd = knots)$design
     }
     if ("theta" %in% names(args) && is.null(args$theta)){
         ## (try to) compute effective range
@@ -135,16 +138,16 @@ hyper_brad <- function(mf, vary, knots = 100, df = 4, lambda = NULL,
 #       rho( max(x_(i) - x_(j)), smoothness, theta = max(x_(i) - x_(j))/c ) = 0.001
 #  <==> rho(c, smoothness, theta = 1) = 0.001
 effective_range <- function(x, eps = 0.001, interval = c(0.1, 100),
-                            covFun = stationary.cov, args = list()){
+                            covFun = fields::stationary.cov, args = list()){
 
-    if ( !( length(deparse(covFun)) == length(deparse(stationary.cov))
-           && all(deparse(covFun) == deparse(stationary.cov)) ) &&
-         !( length(deparse(covFun)) == length(deparse(Exp.cov))
-           && all(deparse(covFun) == deparse(Exp.cov)) ) ){
+    if ( !( length(deparse(covFun)) == length(deparse(fields::stationary.cov))
+           && all(deparse(covFun) == deparse(fields::stationary.cov)) ) &&
+         !( length(deparse(covFun)) == length(deparse(fields::Exp.cov))
+           && all(deparse(covFun) == deparse(fields::Exp.cov)) ) ){
         ## if cov.funcion is not one of stationary.cov and Exp.cov
         warning(sQuote("effective_range()"), " is only implemented for ",
                 sQuote("stationary.cov"), " and ", sQuote("Exp.cov"),
-                " from package:fields.")
+                " from package ", sQuote("fields"))
         return(NULL)
     }
 

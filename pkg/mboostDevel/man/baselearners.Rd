@@ -34,7 +34,7 @@ bspatial(..., df = 6)
 
 ## radial basis functions base-learner
 brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
-     covFun = stationary.cov,
+     covFun = fields::stationary.cov,
      args = list(Covariance="Matern", smoothness = 1.5, theta=NULL))
 
 ## random effects base-learner
@@ -42,9 +42,9 @@ brandom(..., by = NULL, index = NULL, df = 4, lambda = NULL,
         contrasts.arg = "contr.dummy")
 
 ## tree based base-learner
-btree(..., tree_controls = ctree_control(stump = TRUE,
-                                         mincriterion = 0,
-                                         savesplitstats = FALSE))
+btree(..., tree_controls = party::ctree_control(stump = TRUE,
+                                                mincriterion = 0,
+                                                savesplitstats = FALSE))
 
 ## constrained effects base-learner
 bmono(...,
@@ -146,8 +146,8 @@ bl1 \%O\% bl2
 		 Hofner et al. (2014).}
   \item{covFun}{ the covariance function (i.e. radial basis)
                  needed to compute the basis functions. Per
-                 default the \code{\link[fields]{stationary.cov}} function
-                 (package \code{fields}) is used. }
+                 default \code{\link[fields]{stationary.cov}} function
+                 (from package \code{fields}) is used. }
   \item{args}{ a named list of arguments to be passed to
                \code{cov.function}. Thus strongly dependent on the
                specified \code{cov.function}. }
@@ -260,7 +260,7 @@ bl1 \%O\% bl2
   \code{boundary.knots = c(0, 2 * pi)} for angles as in a sine function
   or \code{boundary.knots = c(0, 24)} for hours during the day). For
   details on cylcic splines in the context of boosting see Hofner et
-  al. (2014). 
+  al. (2014).
 
   \code{bspatial} implements bivariate tensor product P-splines for the
   estimation of either spatial effects or interaction surfaces. Note
@@ -494,7 +494,7 @@ bl1 \%O\% bl2
   A Unified Framework of Constrained Regression. Accepted for publication
   in \emph{Statistics & Computing}.\cr
   Preliminary version: \url{http://arxiv.org/abs/1403.7118}
- 
+
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable
   selection and model choice in geoadditive regression models,
   \emph{Biometrics}, \bold{65}(2), 626--634.

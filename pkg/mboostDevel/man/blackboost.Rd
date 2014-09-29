@@ -7,7 +7,7 @@
 }
 \usage{
 blackboost(formula, data = list(),
-           tree_controls = ctree_control(
+           tree_controls = party::ctree_control(
                teststat = "max",
                testtype = "Teststatistic",
                mincriterion = 0,
@@ -17,12 +17,11 @@ blackboost(formula, data = list(),
 \arguments{
   \item{formula}{ a symbolic description of the model to be fit. }
   \item{data}{ a data frame containing the variables in the model. }
-  \item{tree_controls}{ an object of class \code{"TreeControl"}, which can be
-                  obtained using \code{\link[party]{ctree_control}}.
-                  Defines hyper-parameters for the trees which are used as base-learners.
-                  It is wise
-                  to make sure to understand the consequences of altering any of its
-                  arguments.}
+  \item{tree_controls}{ an object of class \code{"TreeControl"}, which
+    can be obtained using \code{\link[party]{ctree_control}}. Defines
+    hyper-parameters for the trees which are used as base-learners. It
+    is wise to make sure to understand the consequences of altering any
+    of its arguments.}
   \item{\dots}{  additional arguments passed to \code{\link{mboost_fit}},
     including \code{weights}, \code{offset}, \code{family} and
     \code{control}. For default values see \code{\link{mboost_fit}}. }

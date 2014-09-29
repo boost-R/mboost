@@ -528,7 +528,7 @@ gamboost <- function(formula, data = list(),
 
 ### just one single tree-based baselearner
 blackboost <- function(formula, data = list(),
-    tree_controls = ctree_control(teststat = "max",
+    tree_controls = party::ctree_control(teststat = "max",
                                testtype = "Teststatistic",
                                mincriterion = 0,
                                maxdepth = 2, savesplitstats = FALSE),
