@@ -23,7 +23,7 @@ export(glmboost,
        cvrisk, cv, bbs,
        bols, bspatial, brandom, btree, bss, bns, brad, bmono, bmrf, buser, survFit, selected,
        nuisance, "%+%", "%X%", "%O%", extract, risk, "mstop<-",
-       stabsel.mboost, stabsel_parameters.mboost)
+       stabsel.mboost, stabsel_parameters.mboost, confint.mboost, confint.glmboost)
        ###, basesel, fitsel)
 exportClasses("boost_family")
 exportMethods("show")
