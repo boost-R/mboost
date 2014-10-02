@@ -1,5 +1,5 @@
 
-R version 3.1.0 (2014-04-10) -- "Spring Dance"
+R version 3.1.1 (2014-07-10) -- "Sock it to Me"
 Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -34,7 +34,8 @@ Type 'q()' to quit R.
 > ### * </HEADER>
 > library('mboost')
 Loading required package: parallel
-This is mboost 2.3-0. See ‘package?mboost’ and the NEWS file
+Loading required package: stabs
+This is mboost 2.4-0. See ‘package?mboost’ and the NEWS file
 for a complete list of changes.
 
 > 
@@ -947,6 +948,27 @@ Loss function: abs(y - f)
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("boost_family-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
+> nameEx("confint")
+> ### * confint
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: confint.mboost
+> ### Title: Pointwise Bootstrap Confidence Intervals
+> ### Aliases: confint.mboost confint.glmboost plot.mboost.ci lines.mboost.ci
+> ###   print.glmboost.ci
+> ### Keywords: methods
+> 
+> ### ** Examples
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("confint", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
+> cleanEx()
 > nameEx("cvrisk")
 > ### * cvrisk
 > 
@@ -1414,10 +1436,37 @@ Loading required package: stats4
 +                          response = DEXfat))
 >   plot(mod, ask = FALSE, main = "base-learner")
 > 
+>   ### use stability selection for base-learner selection
+>   library("stabs")
+>   ## fit a linear model
+>   # (as this is quicker; also possible with non-linear model from above)
+>   mod <- glmboost(DEXfat ~ ., data = bodyfat)
+>   ## now run stability selection
+>   (sbody <- stabsel(mod, q = 3, PFER = 1, sampling.type = "MB"))
+	Stability Selection without further assumptions
+
+Selected base-learners:
+hipcirc 
+      4 
+
+Selection probabilities:
+ (Intercept)          age elbowbreadth  kneebreadth      anthro4     anthro3b 
+        0.00         0.00         0.00         0.01         0.09         0.14 
+    anthro3c     anthro3a    waistcirc      hipcirc 
+        0.24         0.61         0.92         0.99 
+
+Cutoff: 0.95; q: 3; PFER:  1 
+
+>   opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
+>   plot(sbody)
+>   par(opar)
+>   plot(sbody, type = "maxsel", ymargin = 6)
+> 
 > 
 > 
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("mboost", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 
 detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
@@ -1432,7 +1481,7 @@ detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
 > base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: mboost-package
 > ### Title: mboost: Model-Based Boosting
-> ### Aliases: mboost-package
+> ### Aliases: mboost-package mboost_package package_mboost package-mboost
 > ### Keywords: package smooth nonparametric models
 > 
 > ### ** Examples
@@ -1512,9 +1561,9 @@ detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
 > base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: methods
 > ### Title: Methods for Gradient Boosting Objects
-> ### Aliases: print.glmboost print.mboost summary.mboost coef.mboost
-> ###   coef.glmboost [.mboost AIC.mboost mstop mstop.gbAIC mstop.mboost
-> ###   mstop.cvrisk mstop<- predict.mboost predict.gamboost
+> ### Aliases: mboost_methods print.glmboost print.mboost summary.mboost
+> ###   coef.mboost coef.glmboost [.mboost AIC.mboost mstop mstop.gbAIC
+> ###   mstop.mboost mstop.cvrisk mstop<- predict.mboost predict.gamboost
 > ###   predict.blackboost predict.glmboost fitted.mboost residuals.mboost
 > ###   resid.mboost variable.names.glmboost variable.names.mboost risk
 > ###   risk.mboost extract extract.mboost extract.gamboost extract.glmboost
@@ -3098,14 +3147,15 @@ attr(,"boundary.knots")$upper
 > base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: stabsel
 > ### Title: Stability Selection
-> ### Aliases: stabsel stabsel_parameters stabsel_parameters.default
-> ###   stabsel_parameters.mboost plot.stabsel
+> ### Aliases: stabsel stabsel.mboost stabsel_parameters.mboost
 > ### Keywords: nonparametric
 > 
 > ### ** Examples
 > 
-> 
+>   ## make data set available
 >   data("bodyfat", package = "TH.data")
+>   ## set seed
+>   set.seed(1234)
 > 
 >   ### low-dimensional example
 >   mod <- glmboost(DEXfat ~ ., data = bodyfat)
@@ -3122,20 +3172,19 @@ Cutoff: 0.95; q: 3; PFER:  1
 Stability Selection without further assumptions
 Cutoff: 0.95; q: 3; PFER:  1 
 > 
->   ## now run stability selection; to make results reproducible
->   set.seed(1234)
+>   ## now run stability selection
 >   (sbody <- stabsel(mod, q = 3, PFER = 1, sampling.type = "MB"))
 	Stability Selection without further assumptions
 
 Selected base-learners:
-waistcirc   hipcirc 
-        3         4 
+hipcirc 
+      4 
 
 Selection probabilities:
-kneebreadth    anthro3c    anthro3b     anthro4    anthro3a   waistcirc 
-       0.02        0.10        0.12        0.18        0.64        0.95 
-    hipcirc 
-       0.99 
+ (Intercept)          age elbowbreadth  kneebreadth     anthro3b      anthro4 
+        0.00         0.00         0.00         0.01         0.11         0.17 
+    anthro3c     anthro3a    waistcirc      hipcirc 
+        0.18         0.60         0.93         1.00 
 
 Cutoff: 0.95; q: 3; PFER:  1 
 
@@ -3236,7 +3285,7 @@ attr(,"class")
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  15.148 0.38 17.41 1.34 0.14 
+Time elapsed:  14.895 0.337 17.75 1.39 0.079 
 > grDevices::dev.off()
 null device 
           1 

@@ -1,5 +1,5 @@
 
-R version 3.1.0 (2014-04-10) -- "Spring Dance"
+R version 3.1.1 (2014-07-10) -- "Sock it to Me"
 Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -18,7 +18,8 @@ Type 'q()' to quit R.
 > 
 > library("mboost")
 Loading required package: parallel
-This is mboost 2.3-0. See 'package?mboost' and the NEWS file
+Loading required package: stabs
+This is mboost 2.4-0. See 'package?mboost' and the NEWS file
 for a complete list of changes.
 
 > attach(asNamespace("mboost"))
@@ -29,12 +30,10 @@ The following objects are masked from package:mboost:
     IPCweights, Laplace, Loglog, Lognormal, Multinomial, NBinomial,
     Poisson, PropOdds, QuantReg, Weibull, bbs, blackboost, bmono, bmrf,
     bns, bols, boost_control, brad, brandom, bspatial, bss, btree,
-    buser, cv, cvrisk, extract, gamboost, glmboost, mboost, mboost_fit,
-    mstop, mstop<-, nuisance, risk, selected, stabsel,
-    stabsel_parameters, survFit
-The following object is masked from package:stats:
+    buser, confint.glmboost, confint.mboost, cv, cvrisk, extract,
+    gamboost, glmboost, mboost, mboost_fit, mstop, mstop<-, nuisance,
+    risk, selected, stabsel.mboost, stabsel_parameters.mboost, survFit
 
-    D
 > library("MASS")
 > library("Matrix")
 > 
@@ -1203,4 +1202,4 @@ df
 > 
 > proc.time()
    user  system elapsed 
- 33.258   0.652  34.390 
+ 34.268   1.116  36.222 

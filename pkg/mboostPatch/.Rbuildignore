@@ -2,3 +2,5 @@ demo
 to_do_list.txt
 ^\..*
 .*/auto
+inst/NEWS.html
+inst/NEWS.pdf

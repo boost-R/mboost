@@ -1,6 +1,6 @@
 Package: mboost
 Title: Model-Based Boosting
-Version: 2.3-1
+Version: 2.4-1
 Date: 2014-xx-yy
 Authors@R: c(person("Torsten", "Hothorn", role = c("aut", "cre"),
                     email = "Torsten.Hothorn@R-project.org"),
@@ -15,10 +15,10 @@ Description: Functional gradient descent algorithm
   component-wise (penalised) least squares estimates or regression
   trees as base-learners for fitting generalized linear, additive
   and interaction models to potentially high-dimensional data.
-Depends: R (>= 2.14.0), methods, stats, parallel
+Depends: R (>= 2.14.0), methods, stats, parallel, stabs
 Imports: Matrix, survival, splines, lattice, nnls, quadprog, utils
 Suggests: party (>= 1.0-3), TH.data, MASS, fields, BayesX, gbm, mlbench,
-        RColorBrewer, rpart (>= 4.0-3), stabs
+        RColorBrewer, rpart (>= 4.0-3)
 LazyData: yes
 License: GPL-2
 URL: http://r-forge.r-project.org/projects/mboost/

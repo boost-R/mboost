@@ -1,5 +1,5 @@
 
-R version 3.1.0 (2014-04-10) -- "Spring Dance"
+R version 3.1.1 (2014-07-10) -- "Sock it to Me"
 Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -19,7 +19,8 @@ Type 'q()' to quit R.
 > require("mboost")
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.3-0. See 'package?mboost' and the NEWS file
+Loading required package: stabs
+This is mboost 2.4-0. See 'package?mboost' and the NEWS file
 for a complete list of changes.
 
 > if (require("party")) {
@@ -203,4 +204,4 @@ Warning message:
 > 
 > proc.time()
    user  system elapsed 
-  8.812   0.192   9.230 
+  8.559   0.201   9.020 

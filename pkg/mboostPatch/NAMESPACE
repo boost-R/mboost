@@ -1,8 +1,10 @@
 
 import(methods)
 import(stats)
+import(stabs)
 
 import(Matrix)
+import(parallel)
 importFrom(survival, Surv, survfit)
 importFrom(splines, bs, splineDesign)
 importFrom(lattice, levelplot)
@@ -20,7 +22,8 @@ export(glmboost,
        Huber, AdaExp, Gehan, CoxPH, Hurdle, Multinomial, FP, IPCweights,
        cvrisk, cv, bbs,
        bols, bspatial, brandom, btree, bss, bns, brad, bmono, bmrf, buser, survFit, selected,
-       nuisance, "%+%", "%X%", "%O%", extract, risk, "mstop<-")
+       nuisance, "%+%", "%X%", "%O%", extract, risk, "mstop<-",
+       stabsel.mboost, stabsel_parameters.mboost, confint.mboost, confint.glmboost)
        ###, basesel, fitsel)
 exportClasses("boost_family")
 exportMethods("show")
@@ -78,5 +81,12 @@ S3method(extract, bl_lin)
 S3method(extract, bl_tree)
 S3method(residuals, mboost)
 S3method(risk, mboost)
+S3method(confint, mboost)
+S3method(confint, glmboost)
+S3method(plot, mboost.ci)
+S3method(lines, mboost.ci)
+S3method(print, glmboost.ci)
+S3method(stabsel, mboost)
+S3method(stabsel_parameters, mboost)
 
 useDynLib(mboost)

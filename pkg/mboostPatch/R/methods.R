@@ -233,8 +233,10 @@ logLik.mboost <- function(object, ...)
 
 mstop.mboost <- function(object, ...) object$mstop()
 
-update.mboost <- function(object, weights, ...)
-    object$update(weights)
+update.mboost <- function(object, weights, oobweights = NULL,
+                          risk = NULL, trace = NULL, ...)
+    object$update(weights = weights, oobweights = oobweights,
+                  risk = risk, trace = trace)
 
 model.frame.mboost <- function(formula, ...)
     formula$model.frame(...)
@@ -448,9 +450,6 @@ selected <- function(object, ...)
 
 selected.mboost <- function(object, ...)
     object$xselect()
-
-selected.stabsel <- function(object, ...)
-    object$selected
 
 summary.mboost <- function(object, ...) {
 

@@ -1,12 +1,7 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.5-0 (2014-xx-yy)}{
-  \subsection{User-visible changes}{
-    \itemize{
-      \item 
-    }
-  }
+\section{Changes in mboost version 2.4-1 (2014-xx-yy)}{
   \subsection{Miscellaneous}{
     \itemize{
       \item 
@@ -18,7 +13,6 @@
     }
   }
 }
-	
 
 \section{Changes in mboost version 2.4-0 (2014-10-02)}{
   \subsection{User-visible changes}{

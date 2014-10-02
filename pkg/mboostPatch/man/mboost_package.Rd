@@ -1,5 +1,8 @@
 \name{mboost-package}
 \alias{mboost-package}
+\alias{mboost_package}
+\alias{package_mboost}
+\alias{package-mboost}
 \docType{package}
 \title{
   mboost: Model-Based Boosting
@@ -15,7 +18,7 @@
 \tabular{ll}{
 Package: \tab mboost\cr
 Type: \tab Package\cr
-Version: \tab 2.3-1\cr
+Version: \tab 2.4-1\cr
 Date: \tab 2014-xx-yy\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
@@ -55,6 +58,18 @@ LazyData: \tab yes\cr
   paper is a good starting point when you plan to analyze your data using
   \code{mboost}.
 
+}
+
+\section{NEWS in 2.4-series}{
+
+  Bootstrap confidence intervals have been implemented in the novel
+  \code{\link[=confint.mboost]{confint}} function. The stability
+  selection procedure has now been moved to a stand-alone package called
+  \pkg{stabs}, which now also implements an iterface to use stability
+  selection with other fitting functions. A generic function for
+  \code{"mboost"} models is implemented in \pkg{mboost}.
+  
+  For more changes see NEWS file.
 }
 
 \section{NEWS in 2.3-series}{

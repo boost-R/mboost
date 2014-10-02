@@ -7,10 +7,9 @@
 +     dependencies = TRUE)
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.3-0. See ‘package?mboost’ and the NEWS file
+This is mboost 2.4-0. See ‘package?mboost’ and the NEWS file
 for a complete list of changes.
-Note: The default for the computation of the degrees of freedom has changed.
-      For details see section ‘Global Options’ of ‘?bols’.
+
 
 > library("mboost")
 
@@ -156,4 +155,4 @@ Number of baselearners:  19
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
- 87.844   0.308  50.742 
+ 42.153   0.279  45.487 

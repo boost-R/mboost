@@ -1,5 +1,5 @@
 
-R version 3.1.0 (2014-04-10) -- "Spring Dance"
+R version 3.1.1 (2014-07-10) -- "Sock it to Me"
 Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -19,7 +19,8 @@ Type 'q()' to quit R.
 > require("mboost")
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.3-0. See 'package?mboost' and the NEWS file
+Loading required package: stabs
+This is mboost 2.4-0. See 'package?mboost' and the NEWS file
 for a complete list of changes.
 
 > 
@@ -245,7 +246,10 @@ In glmboost.formula(fm, data = ovarian, family = CoxPH(), control = boost_contro
 > 
 > stopifnot(max(abs(predict(gmod) -  predict(gbmod))) < 1e-4)
 > 
-> ### predictions:
+> ################################################################################
+> ### Check predictions
+> ################################################################################
+> 
 > set.seed(1907)
 > x1 <- rnorm(100)
 > x2 <- rnorm(100)
@@ -256,24 +260,38 @@ In glmboost.formula(fm, data = ovarian, family = CoxPH(), control = boost_contro
 > amod <- glmboost(y ~ -1 + x1 + x2, data = DF, center = FALSE)
 > agg <- c("none", "sum", "cumsum")
 > whi <- list(NULL, 1, 2, c(1,2))
+> pred <- vector("list", length = 4)
 > for (i in 1:4){
-+     pred <- vector("list", length=3)
++     pred[[i]][[i]] <- vector("list", length=3)
 +     for (j in 1:3){
-+         pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
++         pred[[i]][[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
 +     }
 +     if (i == 1){
-+         stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
-+         if ((pred[[2]] - rowSums(pred[[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
++         stopifnot(max(abs(pred[[i]][[2]] - pred[[i]][[3]][,ncol(pred[[i]][[3]])]))  < sqrt(.Machine$double.eps))
++         if ((pred[[i]][[2]] - rowSums(pred[[i]][[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
 +             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
-+         stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
++         stopifnot(max(abs(pred[[i]][[2]] - rowSums(pred[[i]][[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
 +     } else {
-+         stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
-+         stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
++         stopifnot(max(abs(pred[[i]][[2]] - sapply(pred[[i]][[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
++         stopifnot(max(abs(pred[[i]][[2]] - sapply(pred[[i]][[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
 +     }
 + }
 Warning message:
 'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
+> ## compare which = NULL and which == c(1, 2)
+> # type = "none"
+> stopifnot(all.equal(pred[[1]][[1]], pred[[4]][[1]]$x1 + pred[[4]][[1]]$x2, check.attributes = FALSE))
+> # type = "sum"
+> predictions <- as.matrix(DF[, c("x1", "x2")]) %*% matrix(coef(amod), ncol = 1) +
++     attr(coef(amod), "offset")
+> stopifnot(all.equal(pred[[1]][[2]], predictions))
+> stopifnot(all.equal(c(pred[[1]][[2]]),
++                     rowSums(pred[[4]][[2]]) + attr(coef(amod), "offset"),
++                     check.attributes = FALSE))
+> # type = "cumsum"
+> stopifnot(all.equal(pred[[1]][[3]], pred[[4]][[3]]$x1 + pred[[4]][[3]]$x2 + attr(coef(amod), "offset")))
 > 
+> ## same with names
 > agg <- c("none", "sum", "cumsum")
 > whi <- list(NULL, "x1", "x2", c("x1","x2"))
 > for (i in 1:4){
@@ -361,7 +379,72 @@ attr(,"offset")
 [1] 0.05114654
 
 > 
-> # compare predictions with gamboost
+> ## check predictions with offset
+> amod <- glmboost(y ~ -1 + x1 + x2, offset = 10, data = DF, center=FALSE)
+> bmod <- glmboost(y ~ -1 + x1 + x2, offset = fitted(amod), data = DF, center=FALSE)
+> ## specify newdata
+> newdata <- data.frame(x1 = rnorm(10), x2 = rnorm(10), x3 = rnorm(10))
+> agg <- c("none", "sum", "cumsum")
+> whi <- list(NULL, "x1", "x2", c("x1","x2"))
+> 
+> preda <- predb <- vector("list", length = 4)
+> for (i in 1:4){
++     preda[[i]][[i]] <- vector("list", length=3)
++     for (j in 1:3){
++         preda[[i]][[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]],
++                                    newdata = newdata)
++         ## a warning is issued for "sum" and "cumsum"
++         predb[[i]][[j]] <- predict(bmod, aggregate=agg[j], which = whi[[i]],
++                                    newdata = newdata)
++     }
++     if (i == 1){
++         ## checks for amod
++         stopifnot(max(abs(preda[[i]][[2]] - preda[[i]][[3]][,ncol(preda[[i]][[3]])]))  < sqrt(.Machine$double.eps))
++         if ((preda[[i]][[2]] - rowSums(preda[[i]][[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
++             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
++         stopifnot(max(abs(preda[[i]][[2]] - rowSums(preda[[i]][[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
++         ## same for bmod
++         stopifnot(max(abs(predb[[i]][[2]] - predb[[i]][[3]][,ncol(predb[[i]][[3]])]))  < sqrt(.Machine$double.eps))
++         if ((predb[[i]][[2]] - rowSums(predb[[i]][[1]]))[1] < sqrt(.Machine$double.eps))
++             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
++         ## here, the offset is not used in both cases!
++         stopifnot(max(abs(predb[[i]][[2]] - rowSums(predb[[i]][[1]])))   < sqrt(.Machine$double.eps))
++     } else {
++         ## checks for amod
++         stopifnot(max(abs(preda[[i]][[2]] - sapply(preda[[i]][[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
++         stopifnot(max(abs(preda[[i]][[2]] - sapply(preda[[i]][[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
++         ## same for bmod
++         stopifnot(max(abs(predb[[i]][[2]] - sapply(predb[[i]][[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
++         stopifnot(max(abs(predb[[i]][[2]] - sapply(predb[[i]][[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
++     }
++ }
+Warning messages:
+1: In object$predict(newdata = newdata, which = which, aggregate = aggregate) :
+  Offset not used for prediction when 'newdata' is specified
+2: In object$predict(newdata = newdata, which = which, aggregate = aggregate) :
+  Offset not used for prediction when 'newdata' is specified
+3: 'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
+4: 'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
+> ## compare which = NULL and which == c(1, 2);
+> ## The offset should be always dropped for bmod, but kept for amod
+> # type = "none"
+> stopifnot(all.equal(preda[[1]][[1]], preda[[4]][[1]]$x1 + preda[[4]][[1]]$x2, check.attributes = FALSE))
+> stopifnot(all.equal(predb[[1]][[1]], predb[[4]][[1]]$x1 + predb[[4]][[1]]$x2, check.attributes = FALSE))
+> # type = "sum"
+> predictionsA <- as.matrix(newdata[, c("x1", "x2")]) %*% matrix(coef(amod), ncol = 1) +
++     attr(coef(amod), "offset")
+> predictionsB <- as.matrix(newdata[, c("x1", "x2")]) %*% matrix(coef(bmod), ncol = 1)
+> stopifnot(all.equal(preda[[1]][[2]], predictionsA))
+> stopifnot(all.equal(predb[[1]][[2]], predictionsB))
+> stopifnot(all.equal(c(preda[[1]][[2]]), rowSums(preda[[4]][[2]]) + attr(coef(amod), "offset"),
++                     check.attributes = FALSE))
+> stopifnot(all.equal(c(predb[[1]][[2]]), rowSums(predb[[4]][[2]]),
++                     check.attributes = FALSE))
+> # type = "cumsum"
+> stopifnot(all.equal(predb[[1]][[3]], predb[[4]][[3]]$x1 + predb[[4]][[3]]$x2))
+> stopifnot(all.equal(predb[[1]][[3]], predb[[4]][[3]]$x1 + predb[[4]][[3]]$x2))
+> 
+> ### compare predictions with gamboost
 > mod1 <- glmboost(y ~ -1 + x1 + x2 + x3, data = DF, center=FALSE)
 > mod2 <- gamboost(y ~ x1 + x2 + x3, data = DF, baselearner= function(x) bols(x, intercept=FALSE))
 > pr1_2 <- predict(mod2, aggre = "cumsum")
@@ -402,7 +485,10 @@ See Warning section in ?coef.mboost
 > pr2 <- predict(logit, type="response")
 > stopifnot(pr - pr2 < sqrt(.Machine$double.eps))
 > 
-> ### coefficients:
+> ################################################################################
+> ### Check coefficients
+> ################################################################################
+> 
 > set.seed(1907)
 > x1 <- rnorm(100)
 > x2 <- rnorm(100)
@@ -512,4 +598,4 @@ See Warning section in ?coef.mboost
 > 
 > proc.time()
    user  system elapsed 
- 15.232   0.176  15.561 
+ 16.180   0.229  16.669 

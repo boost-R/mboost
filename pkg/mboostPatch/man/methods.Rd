@@ -1,4 +1,5 @@
 \name{methods}
+\alias{mboost_methods}
 \alias{print.glmboost}
 \alias{print.mboost}
 

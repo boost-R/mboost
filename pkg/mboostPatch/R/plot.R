@@ -10,12 +10,6 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
 
     which <- x$which(which, usedonly = is.null(which))
 
-    pr <- predict(x, which = which, newdata = newdata)
-    if (is.null(ylim)) ylim <- range(pr, na.rm = TRUE)
-    ## <FIXME> default ylim not suitable for plotting varying coefficient
-    ##         base-learners; Users need to specify suitable values themselves
-
-    ## FIXED?
     if (is.null(xlab)){
         userspec <- FALSE
         xlab <- variable.names(x)
@@ -57,20 +51,48 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
 
         plot_helper <- function(xl, yl){
             pr <- predict(x, newdata = data, which = w)
+            if (is.null(ylim)) ylim <- range(pr, na.rm = TRUE)
+
             if (vary != "") {
                 datavary <- data[, colnames(data) == vary, drop = FALSE]
                 data <- data[, colnames(data) != vary, drop = FALSE]
             }
-
             if (ncol(data) == 1) {
-                if (!add){
-                    plot(sort(data[[1]]), pr[order(data[[1]], na.last = NA)], type = type,
-                         xlab = xl, ylab = yl, ylim = ylim, ...)
+                if (!add) {
+                    if (is.factor(data[[1]])) {
+                        xVals <- unique(sort(data[[1]]))
+                        xValsN <- as.numeric(xVals)
+                        yVals <- unique(pr[order(data[[1]], na.last = NA)])
+                        if (length(pr) == 1 && pr == 0) {
+                            yVals <- rep(0, length(xVals))
+                        }
+                        plot(xValsN, yVals,
+                             type = "n", xaxt = "n",
+                             xlim = range(as.numeric(xVals)) + c(-0.5, 0.5),
+                             xlab = xl, ylab = yl, ylim = ylim)
+                        axis(1, at = xValsN, labels = levels(xVals))
+                        for (i in 1:length(xVals)) {
+                            lines(x = rep(xValsN[i], 2) + c(-0.35, 0.35),
+                                  y = rep(yVals[i], 2), ...)
+                        }
+                    } else {
+                        plot(sort(data[[1]]), pr[order(data[[1]], na.last = NA)], type = type,
+                             xlab = xl, ylab = yl, ylim = ylim, ...)
+                    }
                     if (rug) rug(data[[1]], col = rugcol)
                 } else {
                     if (is.factor(data[[1]])){
-                        boxplot(pr[order(data[[1]], na.last = NA)] ~ sort(data[[1]]),
-                                add = TRUE, ...)
+                        xVals <- unique(sort(data[[1]]))
+                        xValsN <- as.numeric(xVals)
+                        yVals <- unique(pr[order(data[[1]], na.last = NA)])
+                        if (length(pr) == 1 && pr == 0) {
+                            yVals <- rep(0, length(xVals))
+                        }
+                        axis(1, at = xValsN, labels = levels(xVals))
+                        for (i in 1:length(xVals)) {
+                            lines(x = rep(xValsN[i], 2) + c(-0.35, 0.35),
+                                  y = rep(yVals[i], 2), ...)
+                        }
                     } else {
                         lines(sort(data[[1]]), pr[order(data[[1]], na.last = NA)], type =
                               type, ...)
@@ -128,7 +150,7 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                         ## xlab not user specified
                         plot_helper(paste(xl, "=", v[i]), yl)
                     } else {
-                        plot_helper(paste(xl, "(", vary, "=", v[i], ")"), yl)
+                        plot_helper(xl, yl)
                     }
                 }
             }

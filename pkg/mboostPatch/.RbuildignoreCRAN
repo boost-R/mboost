@@ -4,3 +4,5 @@ test
 ^\..*
 .*/auto
 vignettes/.*\.Rout\.save$
+inst/NEWS.html
+inst/NEWS.pdf

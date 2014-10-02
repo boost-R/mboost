@@ -174,9 +174,14 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     )
 
     ### update to new weights; just a fresh start
-    RET$update <- function(weights = NULL, oobweights = NULL, risk = "oobag") {
+    RET$update <- function(weights = NULL, oobweights = NULL, risk = "oobag",
+                           trace = NULL) {
+
         control$mstop <- mstop
-        control$risk <- risk
+        if (!is.null(risk))
+            control$risk <- risk
+        if (!is.null(trace))
+            control$trace <- trace
         ### use user specified offset only (since it depends on weights otherwise)
         if (!is.null(offsetarg)) offsetarg <- offset
         mboost_fit(blg = blg, response = response, weights = weights,
@@ -523,7 +528,7 @@ gamboost <- function(formula, data = list(),
 
 ### just one single tree-based baselearner
 blackboost <- function(formula, data = list(),
-    tree_controls = ctree_control(teststat = "max",
+    tree_controls = party::ctree_control(teststat = "max",
                                testtype = "Teststatistic",
                                mincriterion = 0,
                                maxdepth = 2, savesplitstats = FALSE),
@@ -618,9 +623,11 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     ### save standard update function for re-use
     update <- ret$update
     ### needs a specialized update function as well
-    ret$update <- function(weights = NULL, oobweights = NULL, risk = "oobag") {
+    ret$update <- function(weights = NULL, oobweights = NULL, risk = "oobag",
+                           trace = NULL) {
         ## call standard update function
-        res <- update(weights = weights, oobweights = oobweights, risk = risk)
+        res <- update(weights = weights, oobweights = oobweights, risk = risk,
+                      trace = trace)
         ## now re-set all special arguments
         res$newX <- newX
         res$assign <- assign
@@ -715,9 +722,11 @@ glmboost.matrix <- function(x, y, center = TRUE,
     ### save standard update function for re-use
     update <- ret$update
     ### needs a specialized update function as well
-    ret$update <- function(weights = NULL, oobweights = NULL, risk = "oobag") {
+    ret$update <- function(weights = NULL, oobweights = NULL, risk = "oobag",
+                           trace = NULL) {
         ## call standard update function
-        res <- update(weights = weights, oobweights = oobweights, risk = risk)
+        res <- update(weights = weights, oobweights = oobweights, risk = risk,
+                      trace = trace)
         ## now re-set all special arguments
         ret$newX <- newX
         res$assign <- assign
