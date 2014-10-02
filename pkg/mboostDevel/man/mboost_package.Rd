@@ -1,8 +1,11 @@
-\name{mboostDevel-package}
-\alias{mboostDevel-package}
+\name{mboost-package}
+\alias{mboost-package}
+\alias{mboost_package}
+\alias{package_mboost}
+\alias{package-mboost}
 \docType{package}
 \title{
-  mboostDevel: Model-Based Boosting
+  mboost: Model-Based Boosting
 }
 \description{
   Functional gradient descent algorithm
@@ -13,10 +16,10 @@
 }
 \details{
 \tabular{ll}{
-Package: \tab mboostDevel\cr
+Package: \tab mboost\cr
 Type: \tab Package\cr
 Version: \tab 2.4-0\cr
-Date: \tab 2014-09-26\cr
+Date: \tab 2014-10-02\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes\cr
@@ -48,7 +51,7 @@ LazyData: \tab yes\cr
 
   Hofner et al. (2014) present a comprehensive hands-on tutorial for using the
   package \code{mboost}, which is also available as
-  \code{vignette(package = "mboostDevel", "mboost_tutorial")}.
+  \code{vignette(package = "mboost", "mboost_tutorial")}.
 
   Ben Taieba and Hyndman (2013) used this package for fitting their model in the
   Kaggle Global Energy Forecasting Competition 2012. The corresponding research
@@ -63,7 +66,8 @@ LazyData: \tab yes\cr
   \code{\link[=confint.mboost]{confint}} function. The stability
   selection procedure has now been moved to a stand-alone package called
   \pkg{stabs}, which now also implements an iterface to use stability
-  selection with other fitting functions.
+  selection with other fitting functions. A generic function for
+  \code{"mboost"} models is implemented in \pkg{mboost}.
   
   For more changes see NEWS file.
 }
@@ -189,7 +193,7 @@ LazyData: \tab yes\cr
   Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
   \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
 
-  Available as vignette via: \code{vignette(package = "mboostDevel",
+  Available as vignette via: \code{vignette(package = "mboost",
     "mboost_tutorial")}
 
   Souhaib Ben Taieba and Rob J. Hyndman (2014),

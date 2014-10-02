@@ -1,15 +1,15 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.4-0 (2014-09-26, rZZZ)}{
+\section{Changes in mboost version 2.4-0 (2014-10-02)}{
   \subsection{User-visible changes}{
     \itemize{
       \item Added \code{confint} function to compute (bootstrap)
       confidence intervals together with plot and print methods
 
       \item \code{stabsel()} now depends on the new package \pkg{stabs}
-      where the packend and methods such as \code{plot} and \code{print}
-      are implemented
+      where the back end and methods such as \code{plot} and
+      \code{print} are implemented
 
       \item Improved \code{plot} method for varying coefficients
       (\code{ylim} now suitable) and base-learners of factor variables.
@@ -31,7 +31,7 @@
       we now use \code{party::ctree_control} etc.
     }
   }
-  \subsection{Bugfixes}{
+  \subsection{Bug-fixes}{
     \itemize{
       \item \code{glmboost()$model.frame()} was broken
       \item \code{glmboost()$update()} was broken
@@ -41,7 +41,7 @@
   }
 }
 
-\section{Changes in mboost version 2.3-0 (2014-06-26, r771)}{
+\section{Changes in mboost version 2.3-0 (2014-06-26)}{
   \subsection{User-visible changes}{
     \itemize{
       \item \code{stabsel} was recoded and now uses different
@@ -63,7 +63,7 @@
 	\item new argument \code{deriv} to bbs for computing derivatives of
 	B-splines
       }
-      \item \code{bmrf} can now also handle neighborhood matrizes as an
+      \item \code{bmrf} can now also handle neighborhood matrices as an
       argument to \code{bnd}
       \item added new families \code{Hurdle} and \code{Multinomial}
       \item \code{boost_control}: added new argument \code{stopintern} for
@@ -73,7 +73,7 @@
   }
   \subsection{Miscellaneous}{
     \itemize{
-      \item added new argmument \code{which} to \code{variable.names()}
+      \item added new argument \code{which} to \code{variable.names()}
       \item added new method \code{risk} to extract risks
       \item \code{brandom} now checks that a factor is given
       \item speed improvements when updating a model via \code{mod[mstop]}
@@ -81,19 +81,19 @@
       \item updated references
     }
   }
-  \subsection{Bugfixes}{
+  \subsection{Bug-fixes}{
     \itemize{
       \item fixed a problem with \code{extract()} of single base-learners
       \item fixed bug in \code{AIC.mboost}: \code{df = "actset"} can
       only be used with glmboost models
-      \item fixed package startup messages
+      \item fixed package start up messages
       \item fixed a problem in \code{mboost_fit} (when names of
       base-learners were missing)
     }
   }
 }
 
-\section{Changes in mboost version 2.2-3 (2013-09-09, r733)}{
+\section{Changes in mboost version 2.2-3 (2013-09-09)}{
   \itemize{
     \item fixed bugs in survival families:
     \itemize{
@@ -109,7 +109,7 @@
     \item small improvements in manual
   }
 }
-\section{Changes in mboost version 2.2-2 (2013-02-08, r703)}{
+\section{Changes in mboost version 2.2-2 (2013-02-08)}{
   \itemize{
 
     \item \code{bbs(..., center = "spectralDecomp")} computes the spectral
@@ -133,10 +133,10 @@
     \item small improvements in manual
   }
 }
-\section{Changes in mboost version 2.2-1 (2013-01-14, r694)}{
+\section{Changes in mboost version 2.2-1 (2013-01-14)}{
   \itemize{
     \item included warnings in \code{stabsel()} for better
-         guidiance of the user:
+         guidance of the user:
     \itemize{
          \item A warning is issued if the upper bound for the
          \code{FWER} in stability selection is greater (by a certain
@@ -148,17 +148,17 @@
     \item suppress the notes from package \pkg{Matrix} about method ambiguity
          (\code{"Note: method with signature ... chosen, ... would also be valid"})
     \item updated manual on base-learners to reflect the change in the default for
-         degrees of freedom (addtionally, all options are now discussed in a
+         degrees of freedom (additionally, all options are now discussed in a
          separate section of the base-learner manual)
     \item updated vignette \file{mboost_tutorial}
     \item updated \file{mboost_package.Rd}:
          now all important changes since \pkg{mboost} 2.0 are documented there
-    \item changed roles of contributers to \code{ctb}
+    \item changed roles of contributors to \code{ctb}
     \item suggested packages are now only used inside \code{if(require(pkg))} statements
-    \item changed startup message
+    \item changed start up message
   }
 }
-\section{Changes in mboost version 2.2-0 (2012-11-21, r680)}{
+\section{Changes in mboost version 2.2-0 (2012-11-21)}{
   \itemize{
     \item switch from packages \pkg{multicore} and \pkg{snow} to \pkg{parallel}
     \item changed behavior of \code{bols(x, intercept = FALSE)} when
@@ -183,28 +183,28 @@
     framework (contributed by Brent Johnson \email{bajohn3@emory.edu})
   }
 }
-\section{Changes in mboost version 2.1-3 (2012-09-27, r672)}{
+\section{Changes in mboost version 2.1-3 (2012-09-27)}{
   \itemize{
     \item matrices with one column are now handled as vectors in base-learners
     \item improved manual
-    \item fixed error that occures with R (>= 2.16) due to internal changes in R
+    \item fixed error that occurs with R (>= 2.16) due to internal changes in R
   }
 }
-\section{Changes in mboost version 2.1-2 (2012-02-29, r647)}{
+\section{Changes in mboost version 2.1-2 (2012-02-29)}{
   \itemize{
     \item improved handling of missing values
-         (throws warnings and fixed a bug that occured for missings in the response)
+         (throws warnings and fixed a bug that occurred for missings in the response)
     \item improved manual for the handling of contrasts in bols
     \item added tutorial vignette
     \item updated references
   }
 }
-\section{Changes in mboost version 2.1-1 (2011-11-28, r606)}{
+\section{Changes in mboost version 2.1-1 (2011-11-28)}{
   \itemize{
     \item new option "mboost_eps" for factor in Demmler-Reinsch orthogonalization
   }
 }
-\section{Changes in mboost version 2.1-0 (2011-11-15, r601)}{
+\section{Changes in mboost version 2.1-0 (2011-11-15)}{
   \itemize{
     \subsection{Base-learners}{
       \itemize{
@@ -224,7 +224,7 @@
 	null space
 	\item bolscw can be mixed with other base-learners (although
 	not yet exported and not via the formula interface)
-	\item new experimental baselearner \%O\% for smoothing
+	\item new experimental base-learner \%O\% for smoothing
 	matrix-values responses
       }
     }
@@ -262,7 +262,7 @@
         out-of-bag-risk now weighted according to "weights" as
         specified in call to mboost
 	\item added warning if df2lambda is likely to become numerically
-        instable (i.e. in the case of large entries in the design matrix)
+        unstable (i.e. in the case of large entries in the design matrix)
 	\item improved storage, speed and stability using Matrix technology for
 	bols() for factors with many levels and brandom();
 	further improvements in base-learners that are combined via \%+\%.
@@ -271,51 +271,51 @@
     }
   }
 }
-\section{Changes in mboost version 2.0-12 (2011-08-22, r586)}{
+\section{Changes in mboost version 2.0-12 (2011-08-22)}{
   \itemize{
-    \item minor bugfixes to make mboost work with gamboostLSS
+    \item minor bug-fixes to make mboost work with gamboostLSS
     \item replaced writeLines with packageStartupMessage in .onAttach()
     \item replaced partially matched function arguments by full arguments
     \item minor fixes in manuals
   }
 }
-\section{Changes in mboost version 2.0-11 (2011-03-17, r561)}{
+\section{Changes in mboost version 2.0-11 (2011-03-17)}{
   \itemize{
     \item fix problem in bl_lin when using dense matrices from package "Matrix"
   }
 }
-\section{Changes in mboost version 2.0-10 (2011-02-20, r556)}{
+\section{Changes in mboost version 2.0-10 (2011-02-20)}{
   \itemize{
     \item add rqss results for India childhood malnutrition data
   }
 }
-\section{Changes in mboost version 2.0-9 (2010-11-19, r543)}{
+\section{Changes in mboost version 2.0-9 (2010-11-19)}{
   \itemize{
     \item add gbm to Suggests
   }
 }
-\section{Changes in mboost version 2.0-8 (2010-11-11, r542)}{
+\section{Changes in mboost version 2.0-8 (2010-11-11)}{
   \itemize{
     \item make survival package happy again
   }
 }
-\section{Changes in mboost version 2.0-7 (2010-09-28, r534)}{
+\section{Changes in mboost version 2.0-7 (2010-09-28)}{
   \itemize{
     \item vignette "mboost" updated
     \item remove problem with R CMD check that occurred on some 64bit systems
   }
 }
-\section{Changes in mboost version 2.0-6 (2010-05-22, r510)}{
+\section{Changes in mboost version 2.0-6 (2010-05-22)}{
   \itemize{
     \item no not use multicore functionality in R CMD check, really.
   }
 }
-\section{Changes in mboost version 2.0-5 (2010-05-21, r507)}{
+\section{Changes in mboost version 2.0-5 (2010-05-21)}{
   \itemize{
     \item no not use multicore functionality in R CMD check
   }
 }
-\section{Changes in mboost version 2.0-4 (2010-04-15, r490)}{
+\section{Changes in mboost version 2.0-4 (2010-04-15)}{
   \itemize{
     \item new vignette "mboost" describing 2.0-x series features
     \item fixed bug in bols(): contrast.arg was ignored if not a named list
@@ -326,7 +326,7 @@
     \item improvements and corrections in documentation
   }
 }
-\section{Changes in mboost version 2.0-3 (2010-03-10, r456)}{
+\section{Changes in mboost version 2.0-3 (2010-03-10)}{
   \itemize{
     \item glmboost(..., center = TRUE) now also centers columns of the
          design matrix corresponding to contrasts of factors
@@ -422,12 +422,12 @@
 \section{Changes in mboost version 1.1-1 (2009-04-21)}{
   \itemize{
     \item new quantile regression facilities.
-    \item fix problem with bbs baselearner and cvrisk
+    \item fix problem with bbs base-learner and cvrisk
   }
 }
 \section{Changes in mboost version 1.1-0 (2009-03-27)}{
   \itemize{
-    \item bbs instead of bss is the default baselearner in gamboost
+    \item bbs instead of bss is the default base-learner in gamboost
     \item make sure bbs with weights and expanded observations
          returns numerically the very same results
     \item btree can now deal with multiple variables
@@ -459,7 +459,7 @@
 \section{Changes in mboost version 1.0-2 (2008-11-05)}{
   \itemize{
     \item improved memory footprint in gamboost() and cvrisk()
-    \item option to suppress saving of ensembless added to
+    \item option to suppress saving of ensembles added to
          boost_control()
     \item bbs(), bns(), bspatial(): default number of knots changed to
          a fixed value (= 20)
@@ -468,7 +468,7 @@
     \item bols: works now for factors and can be set-up
          to use Ridge-estimation. Intercept can be omitted
          now (via center = TRUE).
-    \item new btree() baselearner for gamboost() available
+    \item new btree() base-learner for gamboost() available
     \item fix inconsistencies in regression tests
     \item add coef.gamboost
     \item new generic `survFit'
@@ -503,7 +503,7 @@
          (as mentioned in the discussion of Hastie to Buehlmann & Hothorn)
     \item status information during fitting is now available via
          boost_control(trace = TRUE) but is switched off by default
-    \item acknowledge constributions by Thomas Kneib and Matthias Schmid
+    \item acknowledge contributions by Thomas Kneib and Matthias Schmid
          in DESCRIPTION
   }
 }
@@ -605,7 +605,7 @@
 }
 \section{Changes in mboost version 0.4-14 (2006-10-27)}{
   \itemize{
-    \item AIC(..., "classical") is now faster for non-gaussian families
+    \item AIC(..., "classical") is now faster for non-Gaussian families
   }
 }
 \section{Changes in mboost version 0.4-13 (2006-10-04)}{
@@ -630,7 +630,7 @@
 }
 \section{Changes in mboost version 0.4-10 (2006-08-30)}{
   \itemize{
-    \item add checks for CoxPH (against coefficients and logLik of coxph)
+    \item add checks for CoxPH (against coefficients and logLik of CoxPH)
     \item add weights to CoxPH
     \item the ngradient function in Family objects needs to implement
          arguments (y, f, w), not just (y, f)
@@ -659,7 +659,7 @@
     \item allow for out-of-bag risk computations
     \item some cosmetics
     \item update keywords in Rd-files
-    \item risk was always 0 in Huber()@risk when d was choosen adaptively
+    \item risk was always 0 in Huber()@risk when d was chosen adaptively
     \item pData(westbc)$nodal.y has levels `negative' and `positive'
          (lymph node status)
   }
