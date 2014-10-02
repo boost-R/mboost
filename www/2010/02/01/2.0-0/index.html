@@ -71,32 +71,37 @@ hljs.initHighlightingOnLoad();
   <article class="post-content">
   <ul>
 <li> generic implementation of component-wise functional gradient
-   boosting in `mboost_fit', specialized code for linear,
-   additive and interaction models removed </li>
-<li> new families available for ordinal, expectile and censored regression </li>
-<li> computations potentially based on package Matrix
-   (reduces memory usage) </li>
+boosting in `mboost_fit', specialized code for linear, additive and
+interaction models removed </li>
+<li> new families available for ordinal, expectile and censored
+regression </li>
+<li> computations potentially based on package Matrix (reduces memory
+usage) </li>
 <li> various speed improvements </li>
 <li> added interface to extract selected base-learners (selected()) </li>
-<li> added interface for parallel computations in cvrisk with
-   arbitrary packages (e.g. multicore, snow) </li>
+<li> added interface for parallel computations in cvrisk with arbitrary
+packages (e.g. multicore, snow) </li>
 <li> added "which" argument in predict and coef functions and improved
-   usability of "which" in plot-function. Users can specify "which" as
-   numeric value or as a character string </li>
-<li> added function cv() to generate matrices for k-fold cross-validation,
-   subsampling and bootstrap </li>
+usability of "which" in plot-function. Users can specify "which" as
+numeric value or as a character string </li>
+<li> added function cv() to generate matrices for k-fold
+cross-validation, subsampling and bootstrap </li>
 <li> new function stabsel() for stability selection with error control </li>
 <li> added function model.weights() to extract the weights </li>
-<li> added interface to expand model by increasing mstop in
-   model[mstop] </li>
+<li> added interface to expand model by increasing mstop in model[mstop] </li>
 <li> alternative definition of degrees of freedom available </li>
 <li> Interface changes:
-   - class definition / Family() arguments changed
-   - changed behavior of subset method (model[mstop]). Object
-     is directly altered and not duplicated
-   - argument "center" in bols replaced with "intercept"
-   - argument "z" in base-learners replaced with "by"
-   - bns and bss deprecated; </li>
+
+  * class definition / Family() arguments changed
+
+  * changed behavior of subset method (model[mstop]). Object is
+    directly altered and not duplicated
+
+  * argument "center" in bols replaced with "intercept"
+
+  * argument "z" in base-learners replaced with "by"
+
+  * bns and bss deprecated; </li>
 </ul>
 
   </article>
@@ -118,7 +123,7 @@ hljs.initHighlightingOnLoad();
 
     <A class="page-link" HREF=http://CRAN.R-project.org/web/packages/mboost/mboost.pdf>Manual</A>
     
-    <A class="page-link" HREF=http://CRAN.R-project.org/src/contrib/mboost_2.3-0.tar.gz>Source</A>
+    <A class="page-link" HREF=http://CRAN.R-project.org/src/contrib/mboost_2.4-0.tar.gz>Source</A>
 
     <A class="page-link" HREF=https://r-forge.r-project.org/projects/mboost>Development</A>
 

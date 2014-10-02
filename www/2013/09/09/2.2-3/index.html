@@ -70,17 +70,17 @@ hljs.initHighlightingOnLoad();
 
   <article class="post-content">
   <ul>
-<li> General:
-  o  revision r733
-  o  speed up checking of manual by changing some computations (e.g. reduce
-   mstop) or exclude code from checking via \dontrun{}
-  o  removed dependency on ipred (replaced with TH.data
-  o  small improvements in manual
-Bug fixes:
-   o  offset in all survival families was based on max(survtime) instead
-   	of max(log(survtime));
-   o  offset in CoxPH can't be computed from Cox Partial LH as constants
-   	are canceled out; Use fixed offset instead; </li>
+<li> fixed bugs in survival families:
+
+  * offset in all survival families was based on max(survtime)
+    instead of max(log(survtime));
+
+  * offset in CoxPH can't be computed from Cox Partial LH as
+    constants are canceled out; Use fixed offset instead; </li>
+<li> speed up checking of manual by changing some computations (e.g.
+reduce mstop) or exclude code from checking via \dontrun{} </li>
+<li> removed dependency on ipred (replaced with TH.data) </li>
+<li> small improvements in manual </li>
 </ul>
 
   </article>
@@ -102,7 +102,7 @@ Bug fixes:
 
     <A class="page-link" HREF=http://CRAN.R-project.org/web/packages/mboost/mboost.pdf>Manual</A>
     
-    <A class="page-link" HREF=http://CRAN.R-project.org/src/contrib/mboost_2.3-0.tar.gz>Source</A>
+    <A class="page-link" HREF=http://CRAN.R-project.org/src/contrib/mboost_2.4-0.tar.gz>Source</A>
 
     <A class="page-link" HREF=https://r-forge.r-project.org/projects/mboost>Development</A>
 

@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Version 1.1-4</title>
+    <title>Version 2.0-3</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="">
-    <link rel="canonical" href="http://mboost.r-forge.r-project.org/2009/11/18/1.1-4/">
+    <link rel="canonical" href="http://mboost.r-forge.r-project.org/2010/03/10/2.0-3/">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="http://mboost.r-forge.r-project.org/css/main.css">
@@ -64,14 +64,25 @@ hljs.initHighlightingOnLoad();
       <div class="post">
 
   <header class="post-header">
-    <h1>Version 1.1-4</h1>
-    <p class="meta">Nov 18, 2009</p>
+    <h1>Version 2.0-3</h1>
+    <p class="meta">Mar 10, 2010</p>
   </header>
 
   <article class="post-content">
   <ul>
-<li> fixed bug in prediction with varying coefficients for binary effect
-modifiers </li>
+<li> glmboost(..., center = TRUE) now also centers columns of the design
+matrix corresponding to contrasts of factors when an intercept term
+is present leading to faster risk minimization in these cases. </li>
+<li> coef.glmboost: New argument `off2int = TRUE' adds the offset to the
+intercept. In addition, the intercept term is now adjusted for
+centered covariates. </li>
+<li> check for infinite residuals in mboost_fit(). Especially for family
+= Poisson(), something like boost_control(nu = 0.01) fixes this
+problem. </li>
+<li> "by" (in bols() and bbs()) can now handle factors with more than
+two levels </li>
+<li> improved plot.mboost() for varying coefficients </li>
+<li> minor improvements in documentation </li>
 </ul>
 
   </article>

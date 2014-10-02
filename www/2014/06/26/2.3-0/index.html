@@ -69,38 +69,49 @@ hljs.initHighlightingOnLoad();
   </header>
 
   <article class="post-content">
-  <ul>
-<li> General:
-  o  revision r771
-  o  stabsel was recoded and now uses different terminology, much more options
-   and a better tested code base
-  o  new replacement function mstop<- as an alternative to <mboost>[i]
-   (suggested by Achim Zeileis).
-  o  bmrf can now also handle neighborhood matrizes as an argument to bnd
-  o  added new families Hurdle and Multinomial
-  o  boost_control: added new argument stopintern for internal stopping
-   (based on oobag data) during fitting
-  o  All data sets have been moved to the new package set TH.data
-bmono:
-   o new and faster algorithm to compute monotonic P-splines (type =
-     "quad.prog")
-   o new constraints added for positive and negative spline estimates
-bbs:
-   o allows monotone T-splines (experimental)
-   o new argument deriv to bbs for computing derivatives of B-splines
-Misc:
-   o added new argmument which to variable.names(
-   o added new method risk to extract risks
-   o brandom now checks that a factor is given
-   o speed improvements when updating a model via mod[mstop]
-   o changed \dontrun to \donttest
-   o updated references
-Bugfixes:
-   o fixed a problem with extract() of single base-learners
-   o fixed bug in AIC.mboost: df = "actset" can only be used with
-     glmboost models
-   o fixed package startup messages
-   o fixed a problem in mboost_fit (when names of base-learners were missing </li>
+  <h2>User-visible changes</h2>
+<ul>
+<li> stabsel was recoded and now uses different terminology, much more
+options and a better tested code base </li>
+<li> new replacement function mstop<- as an alternative to <mboost>[i]
+(suggested by Achim Zeileis). </li>
+<li> bmono
+
+  * new and faster algorithm to compute monotonic P-splines (type =
+    "quad.prog")
+
+  * new constraints added for positive and negative spline
+    estimates </li>
+<li> bbs
+
+  * allows monotone T-splines (experimental)
+
+  * new argument deriv to bbs for computing derivatives of
+    B-splines </li>
+<li> bmrf can now also handle neighborhood matrices as an argument to
+bnd </li>
+<li> added new families Hurdle and Multinomial </li>
+<li> boost_control: added new argument stopintern for internal stopping
+(based on oobag data) during fitting </li>
+<li> All data sets have been moved to the new package set TH.data </li>
+</ul>
+<h2>Miscellaneous</h2>
+<ul>
+<li> added new argument which to variable.names() </li>
+<li> added new method risk to extract risks </li>
+<li> brandom now checks that a factor is given </li>
+<li> speed improvements when updating a model via mod[mstop] </li>
+<li> changed \dontrun to \donttest </li>
+<li> updated references </li>
+</ul>
+<h2>Bug-fixes</h2>
+<ul>
+<li> fixed a problem with extract() of single base-learners </li>
+<li> fixed bug in AIC.mboost: df = "actset" can only be used with
+glmboost models </li>
+<li> fixed package start up messages </li>
+<li> fixed a problem in mboost_fit (when names of base-learners were
+missing) </li>
 </ul>
 
   </article>
@@ -122,7 +133,7 @@ Bugfixes:
 
     <A class="page-link" HREF=http://CRAN.R-project.org/web/packages/mboost/mboost.pdf>Manual</A>
     
-    <A class="page-link" HREF=http://CRAN.R-project.org/src/contrib/mboost_2.3-0.tar.gz>Source</A>
+    <A class="page-link" HREF=http://CRAN.R-project.org/src/contrib/mboost_2.4-0.tar.gz>Source</A>
 
     <A class="page-link" HREF=https://r-forge.r-project.org/projects/mboost>Development</A>
 

@@ -71,16 +71,14 @@ hljs.initHighlightingOnLoad();
   <article class="post-content">
   <ul>
 <li> improved memory footprint in gamboost() and cvrisk() </li>
-<li> option to suppress saving of ensembless added to
-   boost_control() </li>
-<li> bbs(), bns(), bspatial(): default number of knots changed to
-   a fixed value (= 20) </li>
-<li> changed default for grid (now uses all iterations) in
-   cvrisk() and changed plot.cvrisk() </li>
-<li> bols: works now for factors and can be set-up
-   to use Ridge-estimation. Intercept can be omitted
-   now (via center = TRUE). </li>
-<li> new btree() baselearner for gamboost() available </li>
+<li> option to suppress saving of ensembles added to boost_control() </li>
+<li> bbs(), bns(), bspatial(): default number of knots changed to a
+fixed value (= 20) </li>
+<li> changed default for grid (now uses all iterations) in cvrisk() and
+changed plot.cvrisk() </li>
+<li> bols: works now for factors and can be set-up to use
+Ridge-estimation. Intercept can be omitted now (via center = TRUE). </li>
+<li> new btree() base-learner for gamboost() available </li>
 <li> fix inconsistencies in regression tests </li>
 <li> add coef.gamboost </li>
 <li> new generic `survFit' </li>
@@ -106,7 +104,7 @@ hljs.initHighlightingOnLoad();
 
     <A class="page-link" HREF=http://CRAN.R-project.org/web/packages/mboost/mboost.pdf>Manual</A>
     
-    <A class="page-link" HREF=http://CRAN.R-project.org/src/contrib/mboost_2.3-0.tar.gz>Source</A>
+    <A class="page-link" HREF=http://CRAN.R-project.org/src/contrib/mboost_2.4-0.tar.gz>Source</A>
 
     <A class="page-link" HREF=https://r-forge.r-project.org/projects/mboost>Development</A>
 

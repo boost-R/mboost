@@ -70,24 +70,26 @@ hljs.initHighlightingOnLoad();
 
   <article class="post-content">
   <ul>
-<li> revision r680 </li>
-<li> switch from packages `multicore' and`snow' to `parallel' </li>
+<li> switch from packages multicore and snow to parallel </li>
 <li> changed behavior of bols(x, intercept = FALSE) when x is a factor:
-   now the intercept is simply dropped from the design matrix;
-   coding can be specified as usually for factors. </li>
+
+  * now the intercept is simply dropped from the design matrix
+
+  * coding can be specified as usually for factors. </li>
 <li> changed default for options("mboost_dftraceS") to FALSE, i.e.,
-   degrees of freedom are now computed from smoothing parameter
-   as described in B. Hofner, T. Hothorn, T. Kneib, M. Schmid (2011). </li>
-<li> changed computation of B-spline basis at the boundaries:
-   now also use equidistant knots in the boundaries (per default </li>
-<li> improved plot function when dealing with spatial plots
-   (now builds suitable grid based on the observations if no newdata is given </li>
-<li> increased default number of subsampling replicates in stabsel to 100 </li>
-<li> [experimental] bmono() now implements constraints at the boundaries of
-   (monotonic) P-splines </li>
-<li> [experimental] added family Gehan() for rank-based estimation of survival models
- in an accelerated failure time framework (contributed by Brent Johnson
-     <bajohn3@emory.edu> </li>
+degrees of freedom are now computed from smoothing parameter as
+described in B. Hofner, T. Hothorn, T. Kneib, M. Schmid (2011). </li>
+<li> changed computation of B-spline basis at the boundaries: now also
+use equidistant knots in the boundaries (per default) </li>
+<li> improved plot function when dealing with spatial plots (now builds
+suitable grid based on the observations if no newdata is given) </li>
+<li> increased default number of subsampling replicates in stabsel to
+100 </li>
+<li> [experimental] bmono() now implements constraints at the boundaries
+of (monotonic) P-splines </li>
+<li> [experimental] added family Gehan() for rank-based estimation of
+survival models in an accelerated failure time framework
+(contributed by Brent Johnson <email: bajohn3@emory.edu>) </li>
 </ul>
 
   </article>
@@ -109,7 +111,7 @@ hljs.initHighlightingOnLoad();
 
     <A class="page-link" HREF=http://CRAN.R-project.org/web/packages/mboost/mboost.pdf>Manual</A>
     
-    <A class="page-link" HREF=http://CRAN.R-project.org/src/contrib/mboost_2.3-0.tar.gz>Source</A>
+    <A class="page-link" HREF=http://CRAN.R-project.org/src/contrib/mboost_2.4-0.tar.gz>Source</A>
 
     <A class="page-link" HREF=https://r-forge.r-project.org/projects/mboost>Development</A>
 

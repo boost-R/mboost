@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Version 1.1-4</title>
+    <title>Version 2.4-0</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="">
-    <link rel="canonical" href="http://mboost.r-forge.r-project.org/2009/11/18/1.1-4/">
+    <link rel="canonical" href="http://mboost.r-forge.r-project.org/2014/10/02/2.4-0/">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="http://mboost.r-forge.r-project.org/css/main.css">
@@ -64,14 +64,37 @@ hljs.initHighlightingOnLoad();
       <div class="post">
 
   <header class="post-header">
-    <h1>Version 1.1-4</h1>
-    <p class="meta">Nov 18, 2009</p>
+    <h1>Version 2.4-0</h1>
+    <p class="meta">Oct 2, 2014</p>
   </header>
 
   <article class="post-content">
-  <ul>
-<li> fixed bug in prediction with varying coefficients for binary effect
-modifiers </li>
+  <h2>User-visible changes</h2>
+<ul>
+<li> Added confint function to compute (bootstrap) confidence intervals
+together with plot and print methods </li>
+<li> stabsel() now depends on the new package stabs where the back end
+and methods such as plot and print are implemented </li>
+<li> Improved plot method for varying coefficients (ylim now suitable)
+and base-learners of factor variables. </li>
+<li> Tweaked update function: we now can turn the trace on and off, and
+specify the type of risk as well as the oobweight to update() </li>
+</ul>
+<h2>Miscellaneous</h2>
+<ul>
+<li> Updated vignette mboost_tutorial to reflect latest changes in
+mboost. </li>
+<li> Changed plain text NEWS to inst/NEWS.Rd </li>
+<li> Removed links to archived package mfp. </li>
+<li> Explicitly specify the packages for functions that are implemented
+in packages that are listed as Suggests:, e.g we now use
+party::ctree_control etc. </li>
+</ul>
+<h2>Bug-fixes</h2>
+<ul>
+<li> glmboost()$model.frame() was broken </li>
+<li> glmboost()$update() was broken </li>
+<li> predict() for models with non-scalar offsets was broken </li>
 </ul>
 
   </article>
