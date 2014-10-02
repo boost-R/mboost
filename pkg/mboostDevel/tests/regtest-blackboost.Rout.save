@@ -19,6 +19,7 @@ Type 'q()' to quit R.
 > require("mboostDevel")
 Loading required package: mboostDevel
 Loading required package: parallel
+Loading required package: stabs
 This is mboostDevel 2.4-0. See 'package?mboostDevel' and the NEWS file
 for a complete list of changes.
 
@@ -203,4 +204,4 @@ Warning message:
 > 
 > proc.time()
    user  system elapsed 
-  8.561   0.274   9.109 
+  8.559   0.201   9.020 

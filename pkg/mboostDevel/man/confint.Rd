@@ -131,6 +131,7 @@
   \code{\link{mboost_methods}} for other methods.
 }
 \examples{
+\donttest{
 ### a simple linear example
 set.seed(1907)
 data <- data.frame(x1 = rnorm(100), x2 = rnorm(100),
@@ -151,7 +152,6 @@ print(CI, level = 0.8)
 ## or print a subset (with point estimates):
 print(CI, level = 0.8, pe = TRUE, which = "z")
 
-
 ### a simple smooth example
 set.seed(1907)
 data <- data.frame(x1 = rnorm(100), x2 = rnorm(100))
@@ -169,5 +169,6 @@ plot(CI_gam, which = 2)
 ## to compute a confidence interval for another level simply change the
 ## level in the plot or lines function:
 lines(CI_gam, which = 2, level = 0.8)
+}
 }
 \keyword{methods}

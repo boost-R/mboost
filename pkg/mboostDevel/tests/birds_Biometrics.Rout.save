@@ -18,6 +18,7 @@ Type 'q()' to quit R.
 > 
 > library("mboostDevel")
 Loading required package: parallel
+Loading required package: stabs
 This is mboostDevel 2.4-0. See 'package?mboostDevel' and the NEWS file
 for a complete list of changes.
 
@@ -314,4 +315,4 @@ Final risk: 497.9626
 > 
 > proc.time()
    user  system elapsed 
- 19.303   0.336  20.173 
+ 18.541   0.565  19.760 

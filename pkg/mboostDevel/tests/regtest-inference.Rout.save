@@ -18,6 +18,7 @@ Type 'q()' to quit R.
 > require("mboostDevel")
 Loading required package: mboostDevel
 Loading required package: parallel
+Loading required package: stabs
 This is mboostDevel 2.4-0. See 'package?mboostDevel' and the NEWS file
 for a complete list of changes.
 
@@ -29,8 +30,9 @@ The following objects are masked from package:mboostDevel:
     IPCweights, Laplace, Loglog, Lognormal, Multinomial, NBinomial,
     Poisson, PropOdds, QuantReg, Weibull, bbs, blackboost, bmono, bmrf,
     bns, bols, boost_control, brad, brandom, bspatial, bss, btree,
-    buser, cv, cvrisk, extract, gamboost, glmboost, mboost, mboost_fit,
-    mstop, mstop<-, nuisance, risk, selected, survFit
+    buser, confint.glmboost, confint.mboost, cv, cvrisk, extract,
+    gamboost, glmboost, mboost, mboost_fit, mstop, mstop<-, nuisance,
+    risk, selected, stabsel.mboost, stabsel_parameters.mboost, survFit
 
 > 
 > set.seed(1907)
@@ -104,4 +106,4 @@ There were 50 or more warnings (use warnings() to see the first 50)
 > 
 > proc.time()
    user  system elapsed 
- 49.173   5.592  49.202 
+ 49.465   5.646  49.896 
