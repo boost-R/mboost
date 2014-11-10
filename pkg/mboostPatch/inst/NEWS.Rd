@@ -4,12 +4,16 @@
 \section{Changes in mboost version 2.4-1 (2014-xx-yy)}{
   \subsection{Miscellaneous}{
     \itemize{
-      \item 
+      \item
     }
   }
   \subsection{Bug-fixes}{
     \itemize{
-      \item 
+      \item Cross-validation was potentially wrong for \code{CoxPH()}
+      models. Users can now choose if they want the naive
+      cross-validation or the improved version by Verweij and van
+      Houwelingen (1993); (spotted by Holger Reulen <hreulen _ at _
+      uni-goettingen.de>)
     }
   }
 }
