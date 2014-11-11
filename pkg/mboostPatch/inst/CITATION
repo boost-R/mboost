@@ -6,7 +6,7 @@
      vers <- paste("R package version", desc$Version)
 
      citEntry(entry="Manual",
-              title = "Model-Based Boosting",
+              title = "{mboost}: Model-Based Boosting",
               author = personList(as.person("Torsten Hothorn"),
                                   as.person("Peter Buehlmann"),
                                   as.person("Thomas Kneib"),
