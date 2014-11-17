@@ -4,7 +4,7 @@
 \section{Changes in mboost version 2.4-1 (2014-xx-yy)}{
   \subsection{Miscellaneous}{
     \itemize{
-      \item
+      \item load AML dataset from package TH.data
     }
   }
   \subsection{Bug-fixes}{
