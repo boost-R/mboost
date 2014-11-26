@@ -20,6 +20,12 @@
 }
 
 \section{Changes in mboost version 2.4-1 (2014-xx-yy)}{
+\subsection{User-visible changes}{
+    \itemize{
+      \item Moved generic definition of \code{selected} to \pkg{stabs}
+	  which is required anyway.
+    }
+  }
   \subsection{Miscellaneous}{
     \itemize{
       \item load AML dataset from package TH.data
