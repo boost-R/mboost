@@ -45,7 +45,6 @@
 \alias{hatvalues.gamboost}
 \alias{hatvalues.glmboost}
 
-\alias{selected}
 \alias{selected.mboost}
 
 \alias{nuisance}

@@ -78,7 +78,7 @@ stabsel.mboost <- function(x, cutoff, q, PFER,
                 sampling.type = sampling.type, assumption = assumption,
                 call = cll)
     ret$call[[1]] <- as.name("stabsel")
-    class(ret) <- c("stabsel", "stabsel_mboost")
+    class(ret) <- c("stabsel_mboost", "stabsel")
     ret
 }
 
