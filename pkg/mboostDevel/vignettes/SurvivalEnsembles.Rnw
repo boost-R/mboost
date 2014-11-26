@@ -127,7 +127,7 @@ mdplot <- function(obs, pred, main = "", ...) {
 <<loaddata, echo = FALSE, results = tex>>=
 ### load data. See `mboost/inst/readAML_Bullinger.R' for
 ### how the data were generated from the raw data.
-load(system.file("AML_Bullinger.Rda", package = "mboostDevel"))
+load(file.path(path.package(package = "TH.data"), "rda", "AML_Bullinger.rda"))
 @
 
 \paragraph{Data preprocessing}

@@ -7,8 +7,10 @@
 cvrisk <- function(object, ...)
     UseMethod("cvrisk")
 
-cvrisk.mboost <- function (object, folds = cv(model.weights(object)), grid = 1:mstop(object),
-                    papply = mclapply, fun = NULL, ...){
+cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
+                           grid = 1:mstop(object), papply = mclapply,
+                           fun = NULL, corrected = TRUE, ...) {
+
     weights <- model.weights(object)
     if (any(weights == 0))
         warning("zero weights")
@@ -24,21 +26,48 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)), grid = 1:m
     fam_name <- object$family@name
     call <- deparse(object$call)
     if (is.null(fun)) {
-        dummyfct <- function(weights, oobweights) {
-            mod <- fitfct(weights = weights, oobweights = oobweights)
-            mod[max(grid)]
-            mod$risk()[grid]
+        if (fam_name != "Cox Partial Likelihood" || !corrected) {
+            dummyfct <- function(weights, oobweights) {
+                mod <- fitfct(weights = weights, oobweights = oobweights)
+                mod[max(grid)]
+                mod$risk()[grid]
+            }
+        } else {
+            ## If family = CoxPH(), cross-validation needs to be computed as in
+            ## Verweij, van Houwelingen (1993), Cross-validation in survival
+            ## analysis, Statistics in Medicine, 12:2305-2314.
+            plloss <- environment(object$family@risk)[["plloss"]]
+
+            if (is.null(fun)) {
+                dummyfct <- function(weights, oobweights) {
+                    ## <FIXME> Should the risk be computed on the inbag
+                    ## (currently done) or on the oobag observations?
+                    mod <- fitfct(weights = weights, oobweights = oobweights,
+                                  risk = "inbag")
+                    mod[max(grid)]
+
+                    pr <- predict(mod, aggregate = "cumsum")
+                    ## <FIXME> are the weights w really equal to 1? Shouldn't it
+                    ## be equal to the original fitting weights? Is this
+                    ## computed on ALL observations (currently done) or only on
+                    ## the OOBAG observations?
+                    lplk <- apply(pr[, grid], 2, function(f)
+                        sum(plloss(y = object$response, f = f, w = 1)))
+                    ## return negative "cvl"
+                    - mod$risk()[grid] - lplk
+                }
+            }
         }
-    }
-    else {
+    } else { ## !is.null(fun)
         dummyfct <- function(weights, oobweights) {
             mod <- fitfct(weights = weights, oobweights = oobweights)
             mod[max(grid)]
-            ### make sure dispatch works correctly
+            ## make sure dispatch works correctly
             class(mod) <- class(object)
             fun(mod)
         }
     }
+
     ## use case weights as out-of-bag weights (but set inbag to 0)
     OOBweights <- matrix(rep(weights, ncol(folds)), ncol = ncol(folds))
     OOBweights[folds > 0] <- 0

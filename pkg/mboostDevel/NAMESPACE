@@ -21,7 +21,7 @@ export(glmboost,
        ExpectReg, NBinomial, PropOdds, Weibull, Loglog, Lognormal, AUC, mboost_fit,
        Huber, AdaExp, Gehan, CoxPH, Hurdle, Multinomial, FP, IPCweights,
        cvrisk, cv, bbs,
-       bols, bspatial, brandom, btree, bss, bns, brad, bmono, bmrf, buser, survFit, selected,
+       bols, bspatial, brandom, btree, bss, bns, brad, bmono, bmrf, buser, survFit, selected.mboost,
        nuisance, "%+%", "%X%", "%O%", extract, risk, "mstop<-",
        stabsel.mboost, stabsel_parameters.mboost, confint.mboost, confint.glmboost)
        ###, basesel, fitsel)

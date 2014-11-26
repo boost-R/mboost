@@ -74,11 +74,11 @@ stabsel.mboost <- function(x, cutoff, q, PFER,
     if (extends(class(x), "glmboost"))
         rownames(phat) <- variable.names(x)
     ret <- list(phat = phat, selected = which((mm <- apply(phat, 1, max)) >= cutoff),
-                max = mm, cutoff = cutoff, q = q, PFER = PFER,
+                max = mm, cutoff = cutoff, q = q, PFER = PFER, p = p, B = B, 
                 sampling.type = sampling.type, assumption = assumption,
                 call = cll)
     ret$call[[1]] <- as.name("stabsel")
-    class(ret) <- c("stabsel", "stabsel_mboost")
+    class(ret) <- c("stabsel_mboost", "stabsel")
     ret
 }
 

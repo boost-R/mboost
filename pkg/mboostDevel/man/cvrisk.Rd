@@ -10,7 +10,7 @@
 \method{cvrisk}{mboost}(object, folds = cv(model.weights(object)),
        grid = 1:mstop(object),
        papply = mclapply,
-       fun = NULL, ...)
+       fun = NULL, corrected = TRUE, ...)
 cv(weights, type = c("bootstrap", "kfold", "subsampling"),
    B = ifelse(type == "kfold", 10, 25), prob = 0.5, strata = NULL)
 }
@@ -32,6 +32,10 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   \item{fun}{ if \code{fun} is NULL, the out-of-sample risk is returned. \code{fun},
               as a function of \code{object}, may extract any other characteristic
               of the cross-validated models. These are returned as is.}
+  \item{corrected}{ if \code{TRUE}, the corrected cross-validation
+    scheme of Verweij and van Houwelingen (1993) is used in case of Cox
+    models. Otherwise, the naive standard cross-validation scheme is
+    used.}
   \item{weights}{ a numeric vector of weights for the model to be cross-validated.}
   \item{type}{ character argument for specifying the cross-validation
                method. Currently (stratified) bootstrap, k-fold cross-validation
@@ -85,6 +89,10 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   component-wise gradient boosting. \emph{Methods of Information in
     Medicine}, \bold{51}, 178--186. \cr
   DOI: \url{http://dx.doi.org/10.3414/ME11-02-0030}
+
+  Verweij and van Houwelingen (1993). Cross-validation in survival
+  analysis. \emph{Statistics in Medicine}, \bold{12}:2305--2314.
+
 }
 \seealso{\code{\link{AIC.mboost}} for
   \code{AIC} based selection of the stopping iteration. Use \code{mstop}

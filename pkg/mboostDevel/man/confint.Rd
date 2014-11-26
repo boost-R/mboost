@@ -118,8 +118,8 @@
 }
 \references{
   Benjamin Hofner, Thomas Kneib and Torsten Hothorn (2014),
-  A Unified Framework of Constrained Regression. Accepted for publication
-  in \emph{Statistics & Computing}.
+  A Unified Framework of Constrained Regression. \emph{Statistics &
+    Computing}. Online first. DOI:10.1007/s11222-014-9520-y.
 
   Preliminary version: \url{http://arxiv.org/abs/1403.7118}
 }

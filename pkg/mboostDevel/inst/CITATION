@@ -6,7 +6,7 @@
      vers <- paste("R package version", desc$Version)
 
      citEntry(entry="Manual",
-              title = "Model-Based Boosting",
+              title = "{mboost}: Model-Based Boosting",
               author = personList(as.person("Torsten Hothorn"),
                                   as.person("Peter Buehlmann"),
                                   as.person("Thomas Kneib"),
@@ -14,12 +14,12 @@
                                   as.person("Benjamin Hofner")),
               year = year,
               note = vers,
-              url = "http://CRAN.R-project.org/package=mboostDevel",
+              url = "http://CRAN.R-project.org/package=mboost",
               textVersion =
               paste("T. Hothorn, P. Buehlmann, T. Kneib, M. Schmid, and B. Hofner (",
                     year,
-                    "). mboostDevel: Model-Based Boosting, ",
-                    vers, ", http://CRAN.R-project.org/package=mboostDevel", ".",
+                    "). mboost: Model-Based Boosting, ",
+                    vers, ", http://CRAN.R-project.org/package=mboost", ".",
                     sep=""))
 
     citEntry(entry="Article",
