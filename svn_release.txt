@@ -168,7 +168,7 @@
 
   Run
     install.packages(c("party", "TH.data", "fields", "BayesX", "gbm",
-                       "mlbench", "RColorBrewer", "randomForest",
+                       "mlbench", "RColorBrewer", "randomForest", "nnet",
                        "nnls", "quadprog", "stabs"))
 
   Quit R and run

@@ -18,7 +18,7 @@ Description: Functional gradient descent algorithm
 Depends: R (>= 2.14.0), methods, stats, parallel, stabs
 Imports: Matrix, survival, splines, lattice, nnls, quadprog, utils
 Suggests: party (>= 1.0-3), TH.data, MASS, fields, BayesX, gbm, mlbench,
-        RColorBrewer, rpart (>= 4.0-3)
+        RColorBrewer, rpart (>= 4.0-3), randomForest, nnet
 LazyData: yes
 License: GPL-2
 URL: http://mboost.r-forge.r-project.org/

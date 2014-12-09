@@ -289,10 +289,12 @@ distribution approximation used in Ma and Huang (2005).
     head(round(predict(mlm, type = "response"), 2))
 
     \donttest{
-    ### compare results with nnet::multinom
-    mlmn <- multinom(Species ~ Sepal.Length, data = iris)
-    max(abs(fitted(mlm[1000], type = "response") -
-            fitted(mlmn, type = "prob")))
+    if (require("nnet")) {
+        ### compare results with nnet::multinom
+        mlmn <- multinom(Species ~ Sepal.Length, data = iris)
+        max(abs(fitted(mlm[1000], type = "response") -
+                fitted(mlmn, type = "prob")))
+        }
     }
 
 }

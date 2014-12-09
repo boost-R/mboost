@@ -590,7 +590,6 @@ bl1 \%O\% bl2
   plot(mod1)
 
   mod2 <- gamboost(form2)
-  x11()
   ## automated plot function:
   plot(mod2)
   ## plot sum of linear and smooth effects:
