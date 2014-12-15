@@ -32,5 +32,7 @@ cat("#########################################################################",
     "# ",
     "# To revert changes simply use:",
     "#  svn revert --recursive pkg/mboostDevel",
+    "# or use",
+    "#  git checkout -- pkg/mboostDevel",
     "#########################################################################",
     sep = "\n")

@@ -86,8 +86,8 @@ if (vignettes == FALSE) {
     cat("#########################################################################",
         "# To revert changes simply use:",
         ifelse(which == "mboostDevel",
-               "#   svn revert --recursive pkg/mboostDevel/tests",
-               "#   svn revert --recursive pkg/mboostPatch/tests"),
+               "#   svn revert --recursive pkg/mboostDevel/tests\n# or use\n#   git checkout -- pkg/mboostDevel/vignettes",
+               "#   svn revert --recursive pkg/mboostPatch/tests\n# or use\n#   git checkout -- pkg/mboostPatch/vignettes"),
         "#########################################################################",
         sep = "\n")
 
@@ -125,8 +125,8 @@ if (vignettes == TRUE) {
         cat("#########################################################################",
             "# To revert changes simply use:",
             ifelse(which == "mboostDevel",
-                   "#   svn revert --recursive pkg/mboostDevel/vignettes",
-                   "#   svn revert --recursive pkg/mboostPatch/vignettes"),
+                   "#   svn revert --recursive pkg/mboostDevel/vignettes\n# or use\n#   git checkout -- pkg/mboostDevel/vignettes",
+                   "#   svn revert --recursive pkg/mboostPatch/vignettes\n# or use\n#   git checkout -- pkg/mboostPatch/vignettes"),
             "#########################################################################",
             sep = "\n")
     } else {
