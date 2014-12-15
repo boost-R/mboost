@@ -19,7 +19,7 @@
 Package: \tab mboost\cr
 Type: \tab Package\cr
 Version: \tab 2.4-1\cr
-Date: \tab 2014-xx-yy\cr
+Date: \tab 2014-12-15\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes\cr
@@ -69,7 +69,7 @@ LazyData: \tab yes\cr
   selection with other fitting functions. A generic function for
   \code{"mboost"} models is implemented in \pkg{mboost}.
   
-  For more changes see NEWS file.
+  \bold{For more changes see}\cr\code{news(Version >= "2.4-0", package  = "mboost")}
 }
 
 \section{NEWS in 2.3-series}{
@@ -93,7 +93,7 @@ LazyData: \tab yes\cr
      (based on out-of-bag data) during fitting to \code{boost_control}.
   }
 
-  For more changes see NEWS file.
+  \bold{For more changes see}\cr\code{news(Version >= "2.3-0", package  = "mboost")}
 }
 
 \section{NEWS in 2.2-series}{
@@ -124,7 +124,7 @@ LazyData: \tab yes\cr
     boundaries (per default).
   }
 
-  For more changes see NEWS file.
+  \bold{For more changes see}\cr\code{news(Version >= "2.2-0" & Version < "2.3-0", package  = "mboost")}
 }
 \section{NEWS in 2.1-series}{
 
@@ -138,7 +138,7 @@ LazyData: \tab yes\cr
   Starting from this version, we now also automatically center the
   variables in \code{\link{glmboost}} (argument \code{center = TRUE}).
 
-  A complete list of changes can be found in the NEWS file.
+  \bold{For more changes see}\cr\code{news(Version >= "2.1-0" & Version < "2.2-0", package  = "mboost")}
 }
 \section{NEWS in 2.0-series}{
 
@@ -167,6 +167,8 @@ LazyData: \tab yes\cr
 
   The most important advancement is a generic implementation
   of the optimizer in function \code{\link{mboost_fit}}.
+
+  \bold{For more changes see}\cr\code{news(Version >= "2.0-0" & Version < "2.1-0", package  = "mboost")}
 
 }
 \author{

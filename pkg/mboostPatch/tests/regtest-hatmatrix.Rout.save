@@ -19,7 +19,7 @@ Type 'q()' to quit R.
 > library("mboost")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-1. See 'package?mboost' and the NEWS file
+This is mboost 2.4-1. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > 
@@ -84,4 +84,4 @@ Warning messages:
 > 
 > proc.time()
    user  system elapsed 
-  2.169   0.100   2.312 
+  2.156   0.103   2.308 

@@ -7,7 +7,8 @@
 +     dependencies = TRUE)
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.4-0. See ‘package?mboost’ and the NEWS file
+Loading required package: stabs
+This is mboost 2.4-1. See ‘package?mboost’ and ‘news(package  = "mboost")’
 for a complete list of changes.
 
 
@@ -28,6 +29,13 @@ Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: modeltools
 Loading required package: stats4
+
+Attaching package: ‘modeltools’
+
+The following object is masked from ‘package:stabs’:
+
+    parameters
+
 
 > library("party")
 
@@ -155,4 +163,4 @@ Number of baselearners:  19
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
- 42.153   0.279  45.487 
+ 42.362   0.239  46.004 

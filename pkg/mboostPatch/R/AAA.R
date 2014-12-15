@@ -29,7 +29,8 @@
     vers <- packageDescription("mboost")[["Version"]]
 
     packageStartupMessage("This is mboost ", vers, ". ", "See ",
-                          sQuote("package?mboost"), " and the NEWS file\n",
+                          sQuote("package?mboost"), " and ",
+                          sQuote('news(package  = "mboost")'), "\n",
                           "for a complete list of changes.\n",
                           appendLF = TRUE)
     return(TRUE)

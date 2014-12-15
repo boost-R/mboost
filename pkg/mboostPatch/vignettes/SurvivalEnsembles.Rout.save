@@ -1,7 +1,8 @@
 
 > source("setup.R")
 Loading required package: parallel
-This is mboost 2.4-0. See ‘package?mboost’ and the NEWS file
+Loading required package: stabs
+This is mboost 2.4-1. See ‘package?mboost’ and ‘news(package  = "mboost")’
 for a complete list of changes.
 
 
@@ -39,6 +40,13 @@ Loading required package: strucchange
 Loading required package: modeltools
 Loading required package: stats4
 
+Attaching package: ‘modeltools’
+
+The following object is masked from ‘package:stabs’:
+
+    parameters
+
+
 > set.seed(290875)
 
 > CEX <- 0.85
@@ -48,7 +56,8 @@ Loading required package: stats4
 +     d <- obs - pred
 +     plot(m, d, xlab = "(Observed + Predicted) / 2" .... [TRUNCATED] 
 
-> load(system.file("AML_Bullinger.Rda", package = "mboost"))
+> load(file.path(path.package(package = "TH.data"), 
++     "rda", "AML_Bullinger.rda"))
 
 > AMLw <- IPCweights(Surv(clinical$time, clinical$event))
 
@@ -325,4 +334,4 @@ Warning in obs - pred :
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
-  8.157   0.381   8.760 
+  7.954   0.224   8.387 

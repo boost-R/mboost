@@ -35,7 +35,7 @@ Type 'q()' to quit R.
 > library('mboost')
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-1. See ‘package?mboost’ and the NEWS file
+This is mboost 2.4-1. See ‘package?mboost’ and ‘news(package  = "mboost")’
 for a complete list of changes.
 
 > 
@@ -3323,7 +3323,7 @@ attr(,"class")
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  15.536 0.68 19.097 2.326 0.227 
+Time elapsed:  15.457 0.544 18.843 1.57 0.183 
 > grDevices::dev.off()
 null device 
           1 

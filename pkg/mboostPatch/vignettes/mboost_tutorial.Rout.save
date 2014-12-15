@@ -6,16 +6,17 @@
 > if (any(is.na(pd))) {
 +     install.packages("mboost", repos = "http://cran.at.r-project.org")
 +     pd <- packageDescription("mboost")
-+  .... [TRUNCATED] 
++ }
 
 > if (compareVersion(pd$Version, "2.1-0") < 0) {
 +     warning("Current version of mboost is installed!")
-+     install.packages("mboost", repos  .... [TRUNCATED] 
++     install.packages("mboost", repos = "ht ..." ... [TRUNCATED] 
 
 > require("mboost")
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.4-0. See ‘package?mboost’ and the NEWS file
+Loading required package: stabs
+This is mboost 2.4-1. See ‘package?mboost’ and ‘news(package  = "mboost")’
 for a complete list of changes.
 
 
@@ -687,4 +688,4 @@ pdf
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
- 13.124   0.359  13.845 
+ 13.149   0.371  13.969 
