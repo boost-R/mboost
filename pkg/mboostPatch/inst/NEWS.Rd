@@ -5,12 +5,17 @@
 \subsection{User-visible changes}{
     \itemize{
       \item Moved generic definition of \code{selected} to \pkg{stabs}
-	  which is required anyway.
+      which is required anyway (thus, \pkg{stabs} >= 0.2-0 is now
+      required)
     }
   }
   \subsection{Miscellaneous}{
     \itemize{
-      \item load AML dataset from package TH.data
+      \item load AML dataset (\file{AML_Bullinger.rda}) from package
+      \pkg{TH.data}
+      \item Updated references (for stability selection, confidence
+      intervals and constrained regression)
+      \item fixed \file{inst/CITATION}
     }
   }
   \subsection{Bug-fixes}{
@@ -20,6 +25,8 @@
       cross-validation or the improved version by Verweij and van
       Houwelingen (1993); (spotted by Holger Reulen <hreulen _ at _
       uni-goettingen.de>)
+      \item Examples in \code{\\dontrun} are now executable and all
+      dependencies are properly stated in \file{DESCRIPTION}
     }
   }
 }
