@@ -1,5 +1,5 @@
 
-R version 3.1.1 (2014-07-10) -- "Sock it to Me"
+R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet"
 Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -19,7 +19,7 @@ Type 'q()' to quit R.
 > library("mboost")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-0. See 'package?mboost' and the NEWS file
+This is mboost 2.4-1. See 'package?mboost' and the NEWS file
 for a complete list of changes.
 
 > attach(asNamespace("mboost"))
@@ -32,7 +32,8 @@ The following objects are masked from package:mboost:
     bns, bols, boost_control, brad, brandom, bspatial, bss, btree,
     buser, confint.glmboost, confint.mboost, cv, cvrisk, extract,
     gamboost, glmboost, mboost, mboost_fit, mstop, mstop<-, nuisance,
-    risk, selected, stabsel.mboost, stabsel_parameters.mboost, survFit
+    risk, selected.mboost, stabsel.mboost, stabsel_parameters.mboost,
+    survFit
 
 > library("MASS")
 > library("Matrix")
@@ -336,7 +337,7 @@ Warning message:
 In data.frame(..., check.names = FALSE) :
   row names were found from a short variable and have been discarded
 > coef(m1)
-$`"bbs(x1) %X% bols(f, df = 5, contrasts.arg = \"contr.dummy\")"`
+$`"bbs(x1) %X% bols(f, df = 5, contrasts.arg = \\"contr.dummy\\")"`
  [1]  0.2242693758  0.0244549055 -0.0018236656 -0.0649204417 -0.0158616261
  [6] -0.1891022703  0.0633957967 -0.1288712394 -0.3211539316 -0.4271143516
 [11]  0.1304389247 -0.1279015955 -0.2844975667 -0.5354756406  0.1377335871
@@ -1202,4 +1203,4 @@ df
 > 
 > proc.time()
    user  system elapsed 
- 34.268   1.116  36.222 
+ 33.789   1.594  35.922 

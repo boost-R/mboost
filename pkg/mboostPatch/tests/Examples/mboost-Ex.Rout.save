@@ -1,5 +1,5 @@
 
-R version 3.1.1 (2014-07-10) -- "Sock it to Me"
+R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet"
 Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -35,7 +35,7 @@ Type 'q()' to quit R.
 > library('mboost')
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-0. See ‘package?mboost’ and the NEWS file
+This is mboost 2.4-1. See ‘package?mboost’ and the NEWS file
 for a complete list of changes.
 
 > 
@@ -875,6 +875,13 @@ Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: modeltools
 Loading required package: stats4
+
+Attaching package: ‘modeltools’
+
+The following object is masked from ‘package:stabs’:
+
+    parameters
+
 >     cars.gb
 
 	 Model-based Boosting
@@ -1140,6 +1147,13 @@ Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: modeltools
 Loading required package: stats4
+
+Attaching package: ‘modeltools’
+
+The following object is masked from ‘package:stabs’:
+
+    parameters
+
 >   cvtree <- cvrisk(blackbox, papply = lapply)
 >   plot(cvtree)
 > 
@@ -1427,6 +1441,13 @@ Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: modeltools
 Loading required package: stats4
+
+Attaching package: ‘modeltools’
+
+The following object is masked from ‘package:stabs’:
+
+    parameters
+
 >   layout(matrix(1:6, nc = 3, byrow = TRUE))
 >   plot(mod, ask = FALSE, main = "formula")
 > 
@@ -1445,7 +1466,7 @@ Loading required package: stats4
 >   (sbody <- stabsel(mod, q = 3, PFER = 1, sampling.type = "MB"))
 	Stability Selection without further assumptions
 
-Selected base-learners:
+Selected variables:
 hipcirc 
       4 
 
@@ -1455,7 +1476,9 @@ Selection probabilities:
     anthro3c     anthro3a    waistcirc      hipcirc 
         0.24         0.61         0.92         0.99 
 
+---
 Cutoff: 0.95; q: 3; PFER:  1 
+PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
 
 >   opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
 >   plot(sbody)
@@ -1512,6 +1535,13 @@ Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: modeltools
 Loading required package: stats4
+
+Attaching package: ‘modeltools’
+
+The following object is masked from ‘package:stabs’:
+
+    parameters
+
 > 
 >   ### bootstrap for assessing `optimal' number of boosting iterations
 >   cvm <- cvrisk(model, papply = lapply)
@@ -1568,8 +1598,8 @@ detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
 > ###   resid.mboost variable.names.glmboost variable.names.mboost risk
 > ###   risk.mboost extract extract.mboost extract.gamboost extract.glmboost
 > ###   extract.blackboost extract.blg extract.bl_lin extract.bl_tree
-> ###   logLik.mboost hatvalues.gamboost hatvalues.glmboost selected
-> ###   selected.mboost nuisance nuisance.mboost
+> ###   logLik.mboost hatvalues.gamboost hatvalues.glmboost selected.mboost
+> ###   nuisance nuisance.mboost
 > ### Keywords: methods
 > 
 > ### ** Examples
@@ -3165,18 +3195,24 @@ attr(,"boundary.knots")$upper
 >   ##   p = ncol(bodyfat) - 1 (= Outcome) + 1 ( = Intercept)
 >   stabsel_parameters(q = 3, PFER = 1, p = ncol(bodyfat) - 1 + 1,
 +                      sampling.type = "MB")
-Stability Selection without further assumptions
+Stability selection without further assumptions
+
 Cutoff: 0.95; q: 3; PFER:  1 
+PFER (specified upper bound):  1 
+PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
 >   ## the same:
 >   stabsel(mod, q = 3, PFER = 1, sampling.type = "MB", eval = FALSE)
-Stability Selection without further assumptions
+Stability selection without further assumptions
+
 Cutoff: 0.95; q: 3; PFER:  1 
+PFER (specified upper bound):  1 
+PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
 > 
 >   ## now run stability selection
 >   (sbody <- stabsel(mod, q = 3, PFER = 1, sampling.type = "MB"))
 	Stability Selection without further assumptions
 
-Selected base-learners:
+Selected variables:
 hipcirc 
       4 
 
@@ -3186,7 +3222,9 @@ Selection probabilities:
     anthro3c     anthro3a    waistcirc      hipcirc 
         0.18         0.60         0.93         1.00 
 
+---
 Cutoff: 0.95; q: 3; PFER:  1 
+PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
 
 >   opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
 >   plot(sbody)
@@ -3285,7 +3323,7 @@ attr(,"class")
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  14.895 0.337 17.75 1.39 0.079 
+Time elapsed:  15.536 0.68 19.097 2.326 0.227 
 > grDevices::dev.off()
 null device 
           1 

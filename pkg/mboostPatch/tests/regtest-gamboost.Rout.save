@@ -1,5 +1,5 @@
 
-R version 3.1.1 (2014-07-10) -- "Sock it to Me"
+R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet"
 Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -20,7 +20,7 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-0. See 'package?mboost' and the NEWS file
+This is mboost 2.4-1. See 'package?mboost' and the NEWS file
 for a complete list of changes.
 
 > require("survival")
@@ -208,6 +208,13 @@ Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: modeltools
 Loading required package: stats4
+
+Attaching package: 'modeltools'
+
+The following object is masked from 'package:stabs':
+
+    parameters
+
 > mod2 <- gamboost(fm2, data = tmp, base = "btree")
 > stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
 > stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
@@ -508,4 +515,4 @@ Warning in Xfun(mf, vary, args) :
 > 
 > proc.time()
    user  system elapsed 
- 11.110   0.250  11.664 
+ 11.326   0.308  11.928 

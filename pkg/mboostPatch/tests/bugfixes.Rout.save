@@ -1,5 +1,5 @@
 
-R version 3.1.1 (2014-07-10) -- "Sock it to Me"
+R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet"
 Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -20,7 +20,7 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-0. See 'package?mboost' and the NEWS file
+This is mboost 2.4-1. See 'package?mboost' and the NEWS file
 for a complete list of changes.
 
 > require("Matrix")
@@ -46,6 +46,13 @@ Loading required package: sandwich
 Loading required package: strucchange
 Loading required package: modeltools
 Loading required package: stats4
+
+Attaching package: 'modeltools'
+
+The following object is masked from 'package:stabs':
+
+    parameters
+
 > stopifnot(is.factor(pr) && all(levels(pr) %in% levels(dummy$y)))
 > 
 > ### predict for g{al}mboost.matrix did not work
@@ -736,4 +743,4 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 > 
 > proc.time()
    user  system elapsed 
- 28.060   0.378  28.861 
+ 27.983   0.489  28.889 
