@@ -5,7 +5,7 @@
 \subsection{User-visible changes}{
     \itemize{
       \item Moved generic definition of \code{selected} to \pkg{stabs}
-      which is required anyway (thus, \pkg{stabs} >= 0.2-0 is now
+      which is required anyway (thus, \pkg{stabs} >= 0.5-0 is now
       required)
     }
   }
