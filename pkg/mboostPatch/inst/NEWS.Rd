@@ -1,6 +1,21 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
+\section{Changes in mboost version 2.4-2 (2014-01-12)}{
+  \subsection{Miscellaneous}{
+    \itemize{
+      \item Added Hothorn et al (2010) to \file{inst/CITATION}
+    }
+  }
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Changes in \file{inst/CITATION} to make CRAN happy:
+      Citations can now be extracted without the need to install the
+      package.
+    }
+  }
+}
+
 \section{Changes in mboost version 2.4-1 (2014-12-15)}{
   \subsection{Miscellaneous}{
     \itemize{

@@ -49,6 +49,9 @@ LazyData: \tab yes\cr
   determine an appropriate model complexity. This task is the responsibility
   of the data analyst.
 
+  A description of novel features that were introduced in version 2.0 is
+  given in Hothorn et. al (2010).
+
   Hofner et al. (2014) present a comprehensive hands-on tutorial for using the
   package \code{mboost}, which is also available as
   \code{vignette(package = "mboost", "mboost_tutorial")}.
@@ -68,7 +71,7 @@ LazyData: \tab yes\cr
   \pkg{stabs}, which now also implements an iterface to use stability
   selection with other fitting functions. A generic function for
   \code{"mboost"} models is implemented in \pkg{mboost}.
-  
+
   \bold{For more changes see}\cr\code{news(Version >= "2.4-0", package  = "mboost")}
 }
 
