@@ -59,8 +59,6 @@
 
     Commit changes to pkg/mboostPatch/
 
-    Add latest svn LATEST version to inst/NEWS.Rd
-
     Now build package without test folder to be submitted to CRAN
        R CMD buildCRAN --resave-data --compact-vignettes pkg/mboostPatch && R CMD check --as-cran mboost_XXX.tar.gz
     To use the script copy it to R RHOME (< enter this in the console) /bin and make it executable.
