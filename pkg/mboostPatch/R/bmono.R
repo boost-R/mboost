@@ -144,7 +144,7 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
         args$type <- type
         args$lambda2 <- lambda2
         args$niter <- niter
-        ## <FIXME> Was machen wir bei kateg. Effekten? Da müsste das doch auch gehen!
+        ## <FIXME> Was machen wir bei kateg. Effekten? Da muesste das doch auch gehen!
         args$boundary.constraints <- boundary.constraints
         args$cons.arg$n <- cons.arg$n
         ret$dpp <- bl_mono(ret, Xfun = X_ols,
