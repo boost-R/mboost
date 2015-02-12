@@ -81,16 +81,17 @@ blackboost(formula, data = list(),
   \code{\link[mboost]{methods}}}
 \examples{
 
-    ### a simple two-dimensional example: cars data
-    cars.gb <- blackboost(dist ~ speed, data = cars,
-                          control = boost_control(mstop = 50))
-    cars.gb
+### a simple two-dimensional example: cars data
+cars.gb <- blackboost(dist ~ speed, data = cars,
+                      control = boost_control(mstop = 50))
+cars.gb
 
-    ### plot fit
-    plot(dist ~ speed, data = cars)
-    lines(cars$speed, predict(cars.gb), col = "red")
+### plot fit
+plot(dist ~ speed, data = cars)
+lines(cars$speed, predict(cars.gb), col = "red")
 
-    ### set up and plot additive tree model
+### set up and plot additive tree model
+if (require("party")) {
     ctrl <- ctree_control(maxdepth = 3)
     viris <- subset(iris, Species != "setosa")
     viris$Species <- viris$Species[, drop = TRUE]
@@ -101,6 +102,7 @@ blackboost(formula, data = list(),
                    data = viris, family = Binomial())[500]
     layout(matrix(1:4, ncol = 2))
     plot(imod)
+}
 
 }
 \keyword{models}

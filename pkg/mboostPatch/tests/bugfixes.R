@@ -215,15 +215,17 @@ for (i in s)
     stopifnot(max(abs(predict(x[i]) - predict(x[max(s)], agg = "cumsum")[,i])) < eps)
 
 ### make sure environment(formula) is used for evaluation
-data("cars")
-ctl  <- boost_control(mstop = 100, trace = TRUE)
-tctl <- ctree_control(teststat = "max", testtype = "Teststat",
-                      mincrit = 0, maxdepth = 5, savesplitstat = FALSE)
-myfun <- function(cars, xx, zz){
-  mboost(dist ~ btree(speed, tree_controls = zz),
-         data = cars, control = xx)
+if (require("party")) {
+    data("cars")
+    ctl  <- boost_control(mstop = 100, trace = TRUE)
+    tctl <- ctree_control(teststat = "max", testtype = "Teststat",
+                          mincrit = 0, maxdepth = 5, savesplitstat = FALSE)
+    myfun <- function(cars, xx, zz){
+        mboost(dist ~ btree(speed, tree_controls = zz),
+               data = cars, control = xx)
+    }
+    try(mod <- myfun(cars, xx = ctl, zz = tctl))
 }
-try(mod <- myfun(cars, xx = ctl, zz = tctl))
 
 ### bbs with weights and expanded data
 x <- runif(100)
