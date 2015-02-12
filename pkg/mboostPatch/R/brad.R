@@ -2,9 +2,6 @@ brad <- function(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NUL
                  covFun = fields::stationary.cov,
                  args = list(Covariance = "Matern", smoothness = 1.5, theta = NULL)) {
 
-    # if (!require("fields"))
-    #     stop("cannot load ", sQuote("fields"))
-
     cll <- match.call()
     cll[[1]] <- as.name("brad")
 
@@ -116,7 +113,7 @@ hyper_brad <- function(mf, vary, knots = 100, df = 4, lambda = NULL,
     ## first we need to build a correct matrix of mf
     x <- as.matrix(mf[which(colnames(mf) != vary)])
     if (length(knots) == 1) {
-        if (!require("fields"))
+        if (!requireNamespace("fields"))
             stop("Cannot load package", sQuote("fields"),
                  ", which is needed for the automatic knot placement")
         knots <- fields::cover.design(R = unique(x), nd = knots)$design

@@ -287,7 +287,7 @@ X_bbs <- function(mf, vary, args) {
                 ### L = \Gamma \Omega^1/2 in Section 2.3. of
                 ### Fahrmeir et al. (2004, Stat Sinica)
                 "spectralDecomp" = {
-                    SVD <- eigen(crossprod(K), symmetric = TRUE, EISPACK = FALSE)
+                    SVD <- eigen(crossprod(K), symmetric = TRUE)
                     ev <- SVD$vector[, 1:(ncol(X) - args$differences), drop = FALSE]
                     ew <- SVD$values[1:(ncol(X) - args$differences), drop = FALSE]
                     X %*% ev %*% diag(1/sqrt(ew))
@@ -360,7 +360,7 @@ X_bbs <- function(mf, vary, args) {
         if (!identical(args$center, FALSE)) {
             ### L = \Gamma \Omega^1/2 in Section 2.3. of Fahrmeir et al.
             ### (2004, Stat Sinica), always
-            L <- eigen(K, symmetric = TRUE, EISPACK = FALSE)
+            L <- eigen(K, symmetric = TRUE)
             L$vectors <- L$vectors[,1:(ncol(X) - args$differences^2), drop = FALSE]
             L$values <- sqrt(L$values[1:(ncol(X) - args$differences^2), drop = FALSE])
             L <- L$vectors %*% (diag(length(L$values)) * (1/L$values))
@@ -561,7 +561,6 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
 ### cyclic B-splines
 ### adapted version of mgcv:cSplineDes from S.N. Wood
 cbs <- function (x, knots, boundary.knots, degree = 3, deriv = 0L) {
-    # require(splines)
     nx <- names(x)
     x <- as.vector(x)
     ## handling of NAs

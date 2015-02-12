@@ -6,7 +6,7 @@ btree <- function(...,
                                   mincriterion = 0,
                                   savesplitstats = FALSE)) {
 
-    if (!require("party"))
+    if (!requireNamespace("party"))
         stop("cannot load ", sQuote("party"))
 
     cll <- match.call()
