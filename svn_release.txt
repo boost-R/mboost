@@ -170,7 +170,7 @@
                        "nnls", "quadprog", "stabs"))
 
   Quit R and run
-   ../relative/path/to/R-devel/bin/R CMD check --as-cran mboost_XXX.tar.gz
+   ../relative/path/to/R-devel/bin/R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
 
 
   How to preview NEWS.Rd files
@@ -181,3 +181,17 @@
 
   and for PDF preview:
       R CMD Rd2pdf NEWS.Rd
+
+
+  Checking reverse dependencies
+  -----------------------------
+
+  Use either
+
+      source("checks.R")
+      make_check("mboost_XXX.tar.gz")
+
+  or ecexute in the correct subfolder
+
+      devtools::revdep_check(pkg="mboost")
+
