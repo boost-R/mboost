@@ -18,8 +18,8 @@
 \tabular{ll}{
 Package: \tab mboost\cr
 Type: \tab Package\cr
-Version: \tab 2.4-1\cr
-Date: \tab 2014-12-15\cr
+Version: \tab 2.4-2\cr
+Date: \tab 2015-02-12\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes\cr

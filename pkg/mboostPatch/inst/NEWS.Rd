@@ -1,12 +1,12 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.4-2 (2014-01-12)}{
+\section{Changes in mboost version 2.4-2 (2014-02-12)}{
   \subsection{User-visible changes}{
     \itemize{
       \item Export \code{df2lambda}, \code{hyper_bbs} and \code{bl_lin}
         to make package \pkg{FDboost} happy. Note: These functions
-	should usually not be called directly by users.
+	usually should not be called directly by users.
     }
   }
   \subsection{Miscellaneous}{
