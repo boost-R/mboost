@@ -2,7 +2,7 @@ bmrf <-
 function (..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
     center = FALSE)
 {
-    if (!require("BayesX"))
+    if (!requireNamespace("BayesX"))
         stop("cannot load ", sQuote("BayesX"))
 
     cll <- match.call()
@@ -97,7 +97,7 @@ X_bmrf <- function (mf, vary, args) {
     if (isTRUE(args$center)) {
         ### L = \Gamma \Omega^1/2 in Section 2.3. of Fahrmeir et al.
         ### (2004, Stat Sinica)
-        SVD <- eigen(K, EISPACK = FALSE)
+        SVD <- eigen(K)
         ev <- SVD$vectors[, -dim(SVD$vectors)[2]]
         ew <- SVD$values[-length(SVD$values)]
         X <- as(X %*% ev %*% diag(1/sqrt(ew)), "matrix")

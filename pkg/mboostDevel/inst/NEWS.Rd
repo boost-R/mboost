@@ -19,16 +19,44 @@
   }
 }
 
-\section{Changes in mboost version 2.4-1 (2014-xx-yy)}{
-\subsection{User-visible changes}{
+\section{Changes in mboost version 2.4-2 (2014-02-12)}{
+  \subsection{User-visible changes}{
     \itemize{
-      \item Moved generic definition of \code{selected} to \pkg{stabs}
-	  which is required anyway.
+      \item Export \code{df2lambda}, \code{hyper_bbs} and \code{bl_lin}
+        to make package \pkg{FDboost} happy. Note: These functions
+	usually should not be called directly by users.
     }
   }
   \subsection{Miscellaneous}{
     \itemize{
-      \item load AML dataset from package TH.data
+      \item Added Hothorn et al (2010) to \file{inst/CITATION}
+    }
+  }
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Changes in \file{inst/CITATION} to make CRAN happy:
+        Citations can now be extracted without the need to install the
+        package.
+      \item Removed \code{EISPACK = FALSE} from \code{eigen()} as the
+        argument is defunct and ignored.
+      \item Changed \code{require} to \code{requireNamespace}
+    }
+  }
+}
+
+\section{Changes in mboost version 2.4-1 (2014-12-15)}{
+  \subsection{Miscellaneous}{
+    \itemize{
+      \item Moved generic definition of \code{selected} to \pkg{stabs}
+      which is required anyway (thus, \pkg{stabs} >= 0.5-0 is now
+      required)
+      \item load AML dataset (\file{AML_Bullinger.rda}) from package
+      \pkg{TH.data}
+      \item Updated references (for stability selection, confidence
+      intervals and constrained regression)
+      \item fixed \file{inst/CITATION}
+      \item Refer to \code{news(package = "mboost")} instead of to the
+      \file{NEWS} file.
     }
   }
   \subsection{Bug-fixes}{
@@ -38,6 +66,8 @@
       cross-validation or the improved version by Verweij and van
       Houwelingen (1993); (spotted by Holger Reulen <hreulen _ at _
       uni-goettingen.de>)
+      \item Examples in \code{\\dontrun} are now executable and all
+      dependencies are properly stated in \file{DESCRIPTION}
     }
   }
 }

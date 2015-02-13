@@ -19,7 +19,7 @@
 Package: \tab mboost\cr
 Type: \tab Package\cr
 Version: \tab 2.5-0\cr
-Date: \tab 2014-xx-yy\cr
+Date: \tab 2015-xx-yy\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes\cr
@@ -49,6 +49,9 @@ LazyData: \tab yes\cr
   determine an appropriate model complexity. This task is the responsibility
   of the data analyst.
 
+  A description of novel features that were introduced in version 2.0 is
+  given in Hothorn et. al (2010).
+
   Hofner et al. (2014) present a comprehensive hands-on tutorial for using the
   package \code{mboost}, which is also available as
   \code{vignette(package = "mboost", "mboost_tutorial")}.
@@ -68,8 +71,8 @@ LazyData: \tab yes\cr
   \pkg{stabs}, which now also implements an iterface to use stability
   selection with other fitting functions. A generic function for
   \code{"mboost"} models is implemented in \pkg{mboost}.
-  
-  For more changes see NEWS file.
+
+  \bold{For more changes see}\cr\code{news(Version >= "2.4-0", package  = "mboostDevel")}
 }
 
 \section{NEWS in 2.3-series}{
@@ -93,7 +96,7 @@ LazyData: \tab yes\cr
      (based on out-of-bag data) during fitting to \code{boost_control}.
   }
 
-  For more changes see NEWS file.
+  \bold{For more changes see}\cr\code{news(Version >= "2.3-0", package  = "mboostDevel")}
 }
 
 \section{NEWS in 2.2-series}{
@@ -124,7 +127,7 @@ LazyData: \tab yes\cr
     boundaries (per default).
   }
 
-  For more changes see NEWS file.
+  \bold{For more changes see}\cr\code{news(Version >= "2.2-0" & Version < "2.3-0", package  = "mboostDevel")}
 }
 \section{NEWS in 2.1-series}{
 
@@ -138,7 +141,7 @@ LazyData: \tab yes\cr
   Starting from this version, we now also automatically center the
   variables in \code{\link{glmboost}} (argument \code{center = TRUE}).
 
-  A complete list of changes can be found in the NEWS file.
+  \bold{For more changes see}\cr\code{news(Version >= "2.1-0" & Version < "2.2-0", package  = "mboostDevel")}
 }
 \section{NEWS in 2.0-series}{
 
@@ -167,6 +170,8 @@ LazyData: \tab yes\cr
 
   The most important advancement is a generic implementation
   of the optimizer in function \code{\link{mboost_fit}}.
+
+  \bold{For more changes see}\cr\code{news(Version >= "2.0-0" & Version < "2.1-0", package  = "mboostDevel")}
 
 }
 \author{
