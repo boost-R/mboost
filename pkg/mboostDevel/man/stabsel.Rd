@@ -10,7 +10,7 @@
 }
 \usage{
 ## a method to compute stability selection paths for fitted mboost models
-\method{stabsel}{mboost}(x, cutoff, q, PFER,
+\method{stabsel}{mboost}(x, cutoff, q, PFER, mstop = NULL,
         folds = subsample(model.weights(x), B = B),
         B = ifelse(sampling.type == "MB", 100, 50),
         assumption = c("unimodal", "r-concave", "none"),
@@ -29,6 +29,7 @@
   \item{PFER}{upper bound for the per-family error rate. This
     specifies the amount of falsely selected base-learners, which is
     tolerated. See details.}
+  \item{mstop}{ maximum number of boosting iterations. }
   \item{folds}{ a weight matrix with number of rows equal to the number
     of observations, see \code{\link{cvrisk}} and
     \code{\link[stabs]{subsample}}. Usually one should not

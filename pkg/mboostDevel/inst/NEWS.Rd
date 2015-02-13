@@ -4,17 +4,19 @@
 \section{Changes in mboost version 2.5-0 (2014-xx-yy)}{
   \subsection{User-visible changes}{
     \itemize{
-      \item 
+      \item Strong speed-up of \code{stabsel.mboost}: We now only compute
+      the model on each subsample until \code{q} variables were selected
+      (or \code{mstop} is reached)
     }
   }
   \subsection{Miscellaneous}{
     \itemize{
-      \item 
+      \item
     }
   }
   \subsection{Bug-fixes}{
     \itemize{
-      \item 
+      \item
     }
   }
 }
