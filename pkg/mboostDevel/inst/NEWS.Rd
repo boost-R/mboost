@@ -403,7 +403,7 @@
          design matrix corresponding to contrasts of factors
          when an intercept term is present leading to faster risk
          minimization in these cases.
-    \item coef.glmboost: New argument `off2int = TRUE' adds the
+    \item coef.glmboost: New argument \code{off2int = TRUE} adds the
          offset to the intercept. In addition, the intercept
          term is now adjusted for centered covariates.
     \item check for infinite residuals in mboost_fit(). Especially
@@ -431,7 +431,7 @@
 \section{Changes in mboost version 2.0-0 (2010-02-01)}{
   \itemize{
     \item generic implementation of component-wise functional gradient
-         boosting in `mboost_fit', specialized code for linear,
+         boosting in \code{mboost_fit}, specialized code for linear,
          additive and interaction models removed
     \item new families available for ordinal, expectile and censored regression
     \item computations potentially based on package Matrix
@@ -470,7 +470,7 @@
 \section{Changes in mboost version 1.1-3 (2009-09-21)}{
   \itemize{
     \item better x-axes in plot.cvrisk and possibility to change xlab
-    \item parallel cvrisk on Unix systems only (`multicore' isn't safe on windows)
+    \item parallel cvrisk on Unix systems only (\pkg{multicore} isn't safe on windows)
     \item included new penalty for ordinal predictors (in bols())
     \item corrected bug in bspatial (centering was not used for Xna)
     \item removed output of dfbase (which is seldom used) in gamboost
@@ -482,7 +482,7 @@
 \section{Changes in mboost version 1.1-2 (2009-07-21)}{
   \itemize{
     \item better weights and boundary knots handling in bspatial
-    \item cvrisk runs in parallel if package `multicore' is available
+    \item cvrisk runs in parallel if package \pkg{multicore} is available
     \item errors removed and minor improvements in the manuals
     \item center = TRUE in glmboost did only apply to numeric (not integer)
          predictors
@@ -542,7 +542,7 @@
     \item new btree() base-learner for gamboost() available
     \item fix inconsistencies in regression tests
     \item add coef.gamboost
-    \item new generic `survFit'
+    \item new generic \code{survFit}
     \item cosmetics for trace = TRUE
   }
 }
@@ -565,8 +565,8 @@
 }
 \section{Changes in mboost version 0.6-2}{
   \itemize{
-    \item move `mboost' to R-forge
-    \item improvements in `gamboost':
+    \item move \pkg{mboost} to R-forge
+    \item improvements in \code{gamboost}:
          \item P-splines as base learners available
          \item new formula interface for specifying the base learner
          \item new plot.gamboost
@@ -583,7 +583,7 @@
     \item gamboost() now allows for user-specified base learners
          via the formula interface
     \item gamboost.matrix(x = x, ...) requires colnames being set
-         for `x'
+         for \code{x}
     \item na.action = na.omit fix for g\{al\}mboost()
   }
 }
@@ -607,13 +607,13 @@
 }
 \section{Changes in mboost version 0.5-5 (2007-04-25)}{
   \itemize{
-    \item `westbc' regenerated
+    \item \code{westbc} regenerated
     \item LazyLoad: yes (no SaveImage: yes)
   }
 }
 \section{Changes in mboost version 0.5-4 (2007-04-18)}{
   \itemize{
-    \item plot() method for `glmboost' objects visualizing the
+    \item plot() method for \code{glmboost} objects visualizing the
          coefficient path (feature request by Axel Benner <benner@dkfz.de>).
     \item predict(newdata = <matrix>) was broken for gamboost(),
          thanks to Max Kuhn <Max.Kuhn@pfizer.com> for spotting this.
@@ -627,7 +627,7 @@
 }
 \section{Changes in mboost version 0.5-2 (2007-02-28)}{
   \itemize{
-    \item some performance improvements for `glmboost()'
+    \item some performance improvements for \code{glmboost()}
     \item blackboost() is now generic with formula and x, y interface
     \item plot() method for cvrisk() and AIC() output now allows for ylim
          specification without troubles
@@ -640,12 +640,12 @@
 }
 \section{Changes in mboost version 0.5-0 (2007-01-30)}{
   \itemize{
-    \item new `baselearner' argument to `gamboost' allowing to
+    \item new \code{baselearner} argument to \code{gamboost} allowing to
          specify difference component-wise base-learners to
          be used. Currently implemented: "ssp" for smoothing splines
          (default), "bsp" for B-splines and "ols" for linear models.
          The latter two haven't been tested yet.
-    \item The `dfbase' arguments now applies to each covariate and
+    \item The \code{dfbase} arguments now applies to each covariate and
          no longer to each column of the design matrix.
     \item cvrisk() for blackboost() was broken, totally :-(
     \item centered covariates were returned by glmboost() and gamboost()
@@ -653,12 +653,12 @@
     \item check for y being positive counts when family = "Poisson()"[B
     \item checks for Poisson() logLik() and AIC() methods
     \item fire a warning when all u > 0 or u < 0
-    \item update vignette `mboost_illustrations'
+    \item update vignette \file{mboost_illustrations}
   }
 }
 \section{Changes in mboost version 0.4-17 (2007-01-15)}{
   \itemize{
-    \item fix problem with `dfbase' in `gamboost', spotted by
+    \item fix problem with \code{dfbase} in \code{gamboost}, spotted by
          Karin Eckel <Karin.Eckel@imbe.imed.uni-erlangen.de>
   }
 }
@@ -694,8 +694,8 @@
 }
 \section{Changes in mboost version 0.4-11 (2006-09-07)}{
   \itemize{
-    \item add `contrasts.arg' argument to `glmboost.formula'
-    \item more meaningful default for `grid' in `cvrisk'
+    \item add \code{contrasts.arg} argument to \code{glmboost.formula}
+    \item more meaningful default for \code{grid} in \code{cvrisk}
     \item R-2.4.0 fixes
   }
 }
@@ -710,28 +710,28 @@
 }
 \section{Changes in mboost version 0.4-9 (2006-07-17)}{
   \itemize{
-    \item some small speed improvements in `gamboost'
-    \item handle factors in `gamboost' properly (via a linear model)
-    \item the dfbase argument can take a vector now (in `gamboost')
+    \item some small speed improvements in \code{gamboost}
+    \item handle factors in \code{gamboost} properly (via a linear model)
+    \item the dfbase argument can take a vector now (in \code{gamboost})
     \item update and improve entries in DESCRIPTION
     \item documentation updates
   }
 }
 \section{Changes in mboost version 0.4-8 (2006-07-05)}{
   \itemize{
-    \item Huber() is `Huber Error', not `Huber Absolute Error'
-    \item added `CoxPH' family object for fitting Cox models
+    \item Huber() is \sQuote{Huber Error}, not \sQuote{Huber Absolute Error}
+    \item added \code{CoxPH} family object for fitting Cox models
     \item remove inst/LaTeX
-    \item use NROW / NCOL more often (now that `y' may be a `Surv' object)
-    \item implement `cvrisk', a general cross-validation function for the
+    \item use NROW / NCOL more often (now that \code{y} may be a \code{Surv} object)
+    \item implement \code{cvrisk}, a general cross-validation function for the
          empirical risk and a corresponding plot method
     \item unify risk computations in all three fitting functions
-    \item unify names for `gb' objects
+    \item unify names for \code{gb} objects
     \item allow for out-of-bag risk computations
     \item some cosmetics
     \item update keywords in Rd-files
     \item risk was always 0 in Huber()@risk when d was chosen adaptively
-    \item pData(westbc)$nodal.y has levels `negative' and `positive'
+    \item pData(westbc)$nodal.y has levels \code{negative} and \code{positive}
          (lymph node status)
   }
 }
@@ -739,15 +739,15 @@
   \itemize{
     \item add src/Makevars (required for Windows builds)
     \item make sure objects that are modified at C-level get _copied_ in
-         `blackboost'
+         \code{blackboost}
   }
 }
 \section{Changes in mboost version 0.4-6 (2006-06-14)}{
   \itemize{
-    \item some minor `codetools' fixes: removed unused variables
+    \item some minor \code{codetools} fixes: removed unused variables
          and an out-dated function
-    \item add `codetools' checks to regression tests
+    \item add \code{codetools} checks to regression tests
     \item fix xlab in plot.gbAIC
-        `mboost' version 0.4-5 published on CRAN 2006-06-13
+    \item \pkg{mboost} version 0.4-5 published on CRAN 2006-06-13
   }
 }
