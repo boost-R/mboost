@@ -71,7 +71,8 @@ Gaussian <- function()
            check_y = function(y) {
                if (!is.numeric(y) || !is.null(dim(y)))
                    stop("response is not a numeric vector but ",
-                        sQuote("family = Gaussian()")) y
+                        sQuote("family = Gaussian()")) 
+               y
            },
            name = "Squared Error (Regression)",
            fW = function(f) return(rep(1, length = length(f))),
