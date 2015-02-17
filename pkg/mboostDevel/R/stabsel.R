@@ -10,13 +10,14 @@ stabsel.mboost <- function(x, cutoff, q, PFER,
     cll <- match.call()
     p <- length(variable.names(x))
     ibase <- 1:p
-    n <- nrow(folds)
+    n <- sum(model.weights(x))
 
     sampling.type <- match.arg(sampling.type)
-    if (sampling.type == "MB")
+    if (sampling.type == "MB") {
         assumption <- "none"
-    else
+    } else {
         assumption <- match.arg(assumption)
+    }
 
     ## check mstop
     if (is.null(mstop)) {
@@ -36,9 +37,17 @@ stabsel.mboost <- function(x, cutoff, q, PFER,
     if (!extends(class(x), "glmboost"))
         nms <- names(nms)
 
+    ## if verbose, count violations (i.e., mstop too small)
+    violations <- rep(FALSE, ifelse(sampling.type == "MB", B, 2 * B))
+
+    if (verbose)
+        cat("Run stabsel ")
+
     ## define the fitting function (args.fitfun is not used but needed for
     ## compatibility with run_stabsel
     fit_model <- function(i, folds, q, args.fitfun) {
+        if (verbose)
+            cat(".")
         ## start by fitting q steps (which are needed at least to obtain q
         ## selected base-learners)
         mod <- update(x, weights = folds[, i])
@@ -63,8 +72,10 @@ stabsel.mboost <- function(x, cutoff, q, PFER,
         names(selected) <- nms
         selected[unique(xs)] <- TRUE
 
-        ## compute selection paths
+        if (verbose && sum(selected) < q)
+            violations[i] <<- TRUE
 
+        ## compute selection paths
         sel_paths <- matrix(FALSE, nrow = length(nms), ncol = mstop)
         rownames(sel_paths) <- nms
         for (j in 1:length(xs))
@@ -80,19 +91,18 @@ stabsel.mboost <- function(x, cutoff, q, PFER,
                  verbose = verbose, FWER = FWER, eval = eval,
                  names = unlist(nms), ...)
 
+    if (verbose)
+        cat("\n")
+
     if (!eval)
         return(ret)
 
-#    if (verbose){
-#        qq <- sapply(ss, function(x) length(unique(x)))
-#        sum_of_violations <- sum(qq < q)
-#        if (sum_of_violations > 0)
-#            warning(sQuote("mstop"), " too small in ",
-#                    sum_of_violations, " of the ", ncol(folds),
-#                    " subsampling replicates to select ", sQuote("q"),
-#                    " base-learners; Increase ", sQuote("mstop"),
-#                    " bevor applying ", sQuote("stabsel"))
-#    }
+    if (any(violations))
+        warning(sQuote("mstop"), " too small in ",
+                sum(violations), " of the ", length(violations),
+                " subsampling replicates to select ", sQuote("q"),
+                " base-learners; Increase ", sQuote("mstop"),
+                " bevor applying ", sQuote("stabsel"))
 
     ret$call <- cll
     ret$call[[1]] <- as.name("stabsel")
