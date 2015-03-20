@@ -1,7 +1,22 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.4-2 (2014-02-12)}{
+\section{Changes in mboost version 2.4-3 (2015-03-20)}{
+  \subsection{Miscellaneous}{
+    \itemize{
+      \item Updated manual for \code{PropOdds()}.
+    }
+  }
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Fixed bug in \code{PropOdds()} which occured if
+      \code{offset} was specified: nuisance parameters \code{delta}
+      and \code{sigma} were not properly initialized.
+    }
+  }
+}
+
+\section{Changes in mboost version 2.4-2 (2015-02-12)}{
   \subsection{User-visible changes}{
     \itemize{
       \item Export \code{df2lambda}, \code{hyper_bbs} and \code{bl_lin}

@@ -71,7 +71,7 @@ Gaussian <- function()
            check_y = function(y) {
                if (!is.numeric(y) || !is.null(dim(y)))
                    stop("response is not a numeric vector but ",
-                        sQuote("family = Gaussian()")) 
+                        sQuote("family = Gaussian()"))
                y
            },
            name = "Squared Error (Regression)",
@@ -397,9 +397,6 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
     }
 
     offset <- function(y, w = 1) {
-        delta <<- seq(from = nuirange[1], to = nuirange[2],
-                      length = nlevels(y) - 1)
-        sigma <<- d2s(delta)
         optimize(risk, interval = offrange, y = y, w = w)$minimum
     }
 
@@ -412,14 +409,21 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
                1 / (1 + exp(f - sigma[i - 1])))
             })
             ret
-        }
+    }
+
+    check_y <- function(y) {
+        if (!is.ordered(y))
+            stop("response must be an ordered factor")
+        ## initialize thresholds:
+        delta <<- seq(from = nuirange[1], to = nuirange[2],
+                      length = nlevels(y) - 1)
+        sigma <<- d2s(delta)
+        y
+    }
 
     Family(ngradient = ngradient,
            risk = risk, offset = offset,
-           check_y = function(y) {
-               stopifnot(is.ordered(y))
-               y
-           },
+           check_y = check_y,
            nuisance = function() return(sigma),
            response = response,
            rclass = function(f) apply(response(f), 1, which.max))
@@ -857,7 +861,7 @@ Hurdle <- function(nuirange = c(0, 100)){
                y}, nuisance = function() return(sigma),
                name = "Hurdle model, negative binomial non-zero part",
                response = function(f) exp(f))
-} 
+}
 
 ### multinomial logit model
 ### NOTE: this family can't be applied out-of-the box
@@ -877,18 +881,18 @@ Multinomial <- function() {
         as.vector(model.matrix(~ y - 1)[,-length(lev)])
     }
     return(Family(ngradient = function(y, f, w = 1) {
-               if (length(f) != length(y)) 
+               if (length(f) != length(y))
                    stop("predictor doesn't correspond to multinomial logit model; see ?Multinomial")
-               f <- pmin(abs(f), 36) * sign(f) 
+               f <- pmin(abs(f), 36) * sign(f)
                p <- matrix(exp(f), ncol = length(lev) - 1)
                p <- as.vector(p / (1 + rowSums(p)))
-               y - p  
+               y - p
            },
            loss = function(y, f) {
                f <- pmin(abs(f), 36) * sign(f)
                p <- matrix(exp(f), ncol = length(lev) - 1)
                p <- as.vector(p / (1 + rowSums(p)))
-               -y * log(p) 
+               -y * log(p)
            },
            offset = function(y, w) {
                return(rep(0, length(y)))
