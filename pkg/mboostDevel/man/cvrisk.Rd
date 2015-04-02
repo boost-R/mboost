@@ -10,7 +10,7 @@
 \method{cvrisk}{mboost}(object, folds = cv(model.weights(object)),
        grid = 1:mstop(object),
        papply = mclapply,
-       fun = NULL, corrected = TRUE, ...)
+       fun = NULL, corrected = TRUE, mc.preschedule = FALSE, ...)
 cv(weights, type = c("bootstrap", "kfold", "subsampling"),
    B = ifelse(type == "kfold", 10, 25), prob = 0.5, strata = NULL)
 }
@@ -35,7 +35,13 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   \item{corrected}{ if \code{TRUE}, the corrected cross-validation
     scheme of Verweij and van Houwelingen (1993) is used in case of Cox
     models. Otherwise, the naive standard cross-validation scheme is
-    used.}
+    used.
+  }
+  \item{mc.preschedule}{
+    preschedule tasks if are parallelized using \code{\link{mclapply}}
+    (default: \code{FALSE})? For details see \code{\link{mclapply}}.
+
+  }
   \item{weights}{ a numeric vector of weights for the model to be cross-validated.}
   \item{type}{ character argument for specifying the cross-validation
                method. Currently (stratified) bootstrap, k-fold cross-validation

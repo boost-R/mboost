@@ -9,7 +9,8 @@ cvrisk <- function(object, ...)
 
 cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
                            grid = 1:mstop(object), papply = mclapply,
-                           fun = NULL, corrected = TRUE, ...) {
+                           fun = NULL, corrected = TRUE, mc.preschedule = FALSE,
+                           ...) {
 
     weights <- model.weights(object)
     if (any(weights == 0))
@@ -71,12 +72,27 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
     ## use case weights as out-of-bag weights (but set inbag to 0)
     OOBweights <- matrix(rep(weights, ncol(folds)), ncol = ncol(folds))
     OOBweights[folds > 0] <- 0
-    oobrisk <- papply(1:ncol(folds),
-        function(i) dummyfct(weights = folds[, i],
-                             oobweights = OOBweights[, i]), ...)
-    ## get errors if mclapply is used
-    if (any(idx <- sapply(oobrisk, is.character)))
-        stop(sapply(oobrisk[idx], function(x) x))
+    if (all.equal(papply, mclapply) == TRUE) {
+        oobrisk <- papply(1:ncol(folds),
+                          function(i) dummyfct(weights = folds[, i],
+                                               oobweights = OOBweights[, i]),
+                          mc.preschedule = mc.preschedule,
+                          ...)
+    } else {
+        oobrisk <- papply(1:ncol(folds),
+                          function(i) try(dummyfct(weights = folds[, i],
+                                                   oobweights = OOBweights[, i])),
+                          ...)
+    }
+    ## if any errors if mclapply was used: remove result and issue a warning
+    if (any(idx <- sapply(oobrisk, is.character))) {
+        warning(sum(idx), " fold(s) encountered an error. ",
+                "Results are based on ", ncol(folds) - sum(idx),
+                " folds only.\n",
+                "Original error message(s):\n",
+                sapply(oobrisk[idx], function(x) x))
+        oobrisk[idx] <- NULL
+    }
     if (!is.null(fun))
         return(oobrisk)
     oobrisk <- t(as.data.frame(oobrisk))

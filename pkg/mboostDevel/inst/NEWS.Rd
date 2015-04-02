@@ -1,12 +1,14 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.5-0 (2014-xx-yy)}{
+\section{Changes in mboost version 2.5-0 (2015-xx-yy)}{
   \subsection{User-visible changes}{
     \itemize{
       \item Strong speed-up of \code{stabsel.mboost}: We now only compute
       the model on each subsample until \code{q} variables were selected
       (or \code{mstop} is reached)
+      \item Better handling of errors in (single) folds of \code{cvrisk}:
+      results of folds without errors are used and a \code{warning} is issued.
     }
   }
   \subsection{Miscellaneous}{
