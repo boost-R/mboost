@@ -48,7 +48,12 @@ isMATRIX <- function(x)
 
 ### rows without missings in Matrices, matrices and data.frames
 Complete.cases <- function(x) {
-    if (isMATRIX(x)) return(rowSums(is.na(x)) == 0)
+    if (isMATRIX(x))
+        return(rowSums(is.na(x)) == 0)
+    if (inherits(x, "databel")) {
+        warning("for databel data complete.cases are currently not checked")
+        return(rep(TRUE, nrow(x)))
+    }
     complete.cases(x)
 }
 
