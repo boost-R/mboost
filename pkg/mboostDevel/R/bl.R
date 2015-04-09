@@ -12,7 +12,7 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
         if (lambda == 0) return(c(df = ncol(X), lambda = 0))
 
     ## check for possible instability
-    if (max(abs(X)) > 10)
+    if (options("mboost_check_df2lambda")[[1]] && max(abs(X)) > 10)
         warning("Some absolute values in design matrix are greater 10. Hence, ",
                 sQuote("df2lambda"), " might be numerically instable.\n  ",
                 "See documentation of argument ", sQuote("by"),
@@ -33,8 +33,11 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
     }
     A <- XtX + dmat * options("mboost_eps")[[1]]
     Rm <- solve(chol(A))
-    decomp <- svd(crossprod(Rm, dmat) %*% Rm)
-    d <- decomp$d
+    ## singular value decomposition without singular vectors
+    d <- try(svd(crossprod(Rm, dmat) %*% Rm, nu=0, nv=0)$d)
+    ## if unsucessfull try the same computation but compute singular vectors as well
+    if (inherits(d, "try-error"))
+        d <- svd(crossprod(Rm, dmat) %*% Rm)$d
 
     ### option
     if (options("mboost_dftraceS")[[1]]){

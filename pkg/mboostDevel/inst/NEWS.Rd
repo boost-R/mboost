@@ -8,17 +8,26 @@
       the model on each subsample until \code{q} variables were selected
       (or \code{mstop} is reached)
       \item Better handling of errors in (single) folds of \code{cvrisk}:
-      results of folds without errors are used and a \code{warning} is issued.
+      results of folds without errors are used and a \code{warning} is
+      issued.
     }
   }
   \subsection{Miscellaneous}{
     \itemize{
-      \item
+      \item Added new option \code{options(mboost_check_df2lambda =
+	TRUE)}, which controlls if a stability check in \code{df2lambda}
+      is performed. If set to \code{FALSE} this might speed up the
+      computation of \code{df2lambda} especially with large design
+      matrices.
+      \item Stopped computing the singular vectors in \code{df2lambda}
+      as the singular values are sufficient and as
+      \dQuote{computing the singular vectors is the slow part for large
+	matrices} (proposed by Fabian Scheipl).
     }
   }
   \subsection{Bug-fixes}{
     \itemize{
-      \item
+      \item \code{PropOdds()}: fixed bug if \code{offset} was specified.
     }
   }
 }
