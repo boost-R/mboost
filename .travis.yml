@@ -7,6 +7,9 @@ sudo: required
 
 before_install:
   - cd pkg/mboostDevel
+  
+install:
+  - sudo apt-get install latex-xcolor
 
 r_github_packages:
   - hofnerb/stabs
