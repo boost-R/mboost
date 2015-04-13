@@ -3,6 +3,8 @@
 
 language: r
 
+sudo: required
+
 before_install:
   - cd pkg/mboostDevel
 
