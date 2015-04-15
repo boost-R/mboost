@@ -32,6 +32,9 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
         dmat <- diag(ncol(XtX))
     }
     A <- XtX + dmat * options("mboost_eps")[[1]]
+    ## make sure that A is also numerically symmetric
+    if (is(A, "Matrix"))
+        A <- forceSymmetric(A)
     Rm <- solve(chol(A))
     ## singular value decomposition without singular vectors
     d <- try(svd(crossprod(Rm, dmat) %*% Rm, nu=0, nv=0)$d)
