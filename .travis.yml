@@ -1,0 +1,22 @@
+## check development version of mboost
+## see http://docs.travis-ci.com/user/languages/r/
+
+language: r
+
+sudo: required
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install latex-xcolor
+  - cd pkg/mboostDevel
+
+r_github_packages:
+  - hofnerb/stabs
+  
+after_failure:
+  - ./travis-tool.sh dump_logs
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
