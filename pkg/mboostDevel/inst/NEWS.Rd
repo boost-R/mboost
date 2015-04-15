@@ -27,7 +27,13 @@
   }
   \subsection{Bug-fixes}{
     \itemize{
-      \item \code{PropOdds()}: fixed bug if \code{offset} was specified.
+      \item \code{PropOdds()}: fixed bug if \code{offset} was specified
+      (spotted by Madlene Nussbaum).
+      \item Bug in \code{plot.mboost()} fixed which occured if a factor
+      with equal effect estimates for different categories was plotted.
+      \item Bug in \code{df2lambda} fixed: Make sure that \code{A} is
+      symmetric if it is \code{Matrix}-object (spotted by Souhaib Ben
+      Taieb).
     }
   }
 }
