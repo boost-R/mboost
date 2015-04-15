@@ -6,7 +6,8 @@ mboost
 `mboost` implements boosting algorithms for fitting generalized linear, additive and interaction models 
 to potentially high-dimensional data. 
 
-This [github repositiry](https://github.com/hofnerb/mboost) is just a copy of the r-forge repository which is hosted at 
+This [github repositiry](https://github.com/hofnerb/mboost) is essentially just
+a copy of the r-forge repository which is hosted at
 [R-forge](https://r-forge.r-project.org/projects/mboost).
 
 ## Installation
