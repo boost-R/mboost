@@ -62,7 +62,12 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                     if (is.factor(data[[1]])) {
                         xVals <- unique(sort(data[[1]]))
                         xValsN <- as.numeric(xVals)
-                        yVals <- unique(pr[order(data[[1]], na.last = NA)])
+                        ## make sure that we get the same number of values as in
+                        ## x; this is only a problem if pr is equal for
+                        ## different x values.
+                        yVals <- unique(cbind(pr[order(data[[1]], na.last = NA)],
+                                              sort(data[[1]])))[, 1]
+
                         if (length(pr) == 1 && pr == 0) {
                             yVals <- rep(0, length(xVals))
                         }
