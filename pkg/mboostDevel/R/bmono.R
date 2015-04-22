@@ -158,12 +158,22 @@ bl_mono <- function(blg, Xfun, args) {
     index <- blg$get_index()
     vary <- blg$get_vary()
 
-    newX <- function(newdata = NULL) {
+    newX <- function(newdata = NULL, prediction = FALSE) {
         if (!is.null(newdata)) {
-            stopifnot(all(names(newdata) == names(blg)))
-            stopifnot(all(class(newdata) == class(mf)))
-            mf <- newdata[,names(blg),drop = FALSE]
+            if (!all(names(blg) %in% names(newdata)))
+                stop("Variable(s) missing in ", sQuote("newdata"), ":\n\t",
+                     names(blg)[!names(blg) %in% names(newdata)])
+            if (!all(class(newdata) == class(mf)))
+                stop(sQuote("newdata"),
+                     " must have the same class as the original data:\n\t",
+                     class(mf))
+            nm <- names(blg)
+            if (any(duplicated(nm)))  ## removes duplicates
+                nm <- unique(nm)
+            mf <- newdata[, nm, drop = FALSE]
         }
+        ## this argument is currently only used in X_bbs --> bsplines
+        args$prediction <- prediction
         return(Xfun(mf, vary, args))
     }
     X <- newX()
