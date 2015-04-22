@@ -10,6 +10,11 @@
       \item Better handling of errors in (single) folds of \code{cvrisk}:
       results of folds without errors are used and a \code{warning} is
       issued.
+      \item \code{bbs} and \code{bmono} no longer allow data outside of
+      the \code{boundary.knots} during model fitting.
+      \item Predictions for \code{bbs} and \code{bmono} now use linear
+      extrapolation (user request inspired by
+      \code{mgcv::Predict.matrix.pspline.smooth}).
     }
   }
   \subsection{Miscellaneous}{
