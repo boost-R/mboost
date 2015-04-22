@@ -477,3 +477,25 @@ round(extract(brandom(z1, df = 3)$dpp(rep(1, 100)), what = "lambda"), 2)
 round(extract(brandom(z1, df = 3)$dpp(rep(1, 100)), what = "df"), 2)
 round(extract(brandom(z1, lambda = 50.39)$dpp(rep(1, 100)), what = "lambda"), 2)
 round(extract(brandom(z1, lambda = 50.39)$dpp(rep(1, 100)), what = "df"), 2)
+
+
+### check if data beyond boundary knots is permitted
+set.seed(1234)
+x <- rnorm(100)
+y <- sin(x) + rnorm(100, sd = 0.1)
+plot(x, y, xlim = c(-3, 5))
+## should not work:
+try(mod <- mboost(y ~ bbs(x, boundary.knots = c(-1, 1))))
+try(mod <- mboost(y ~ bbs(x, cyclic = TRUE, boundary.knots = c(-1, 1))))
+## now fit models and check linear extrapolation
+mod <- mboost(y ~ bbs(x))
+tail(pr <- predict(mod, newdata = data.frame(x = seq(-3, 5, by = 0.1))))
+lines(seq(-3, 5, by = 0.1), pr)
+## now with bmono
+mod <- mboost(y ~ bmono(x))
+tail(pr2 <- predict(mod, newdata = data.frame(x = seq(-3, 5, by = 0.1))))
+lines(seq(-3, 5, by = 0.1), pr2, col = "red")
+## check same with cyclic splines
+mod <- mboost(y ~ bbs(x, cyclic = TRUE))
+try(predict(mod, newdata = data.frame(x = seq(-3, 5, by = 0.1))))
+

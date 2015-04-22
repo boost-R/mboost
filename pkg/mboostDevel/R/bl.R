@@ -206,9 +206,10 @@ hyper_bbs <- function(mf, vary, knots = 20, boundary.knots = NULL, degree = 3,
     if (cyclic & constraint != "none")
         stop("constraints not implemented for cyclic B-splines")
     stopifnot(is.numeric(deriv) & length(deriv) == 1)
+    ## prediction is usually set in/by newX()
     list(knots = ret, degree = degree, differences = differences,
          df = df, lambda = lambda, center = center, cyclic = cyclic,
-         Ts_constraint = constraint, deriv = deriv)
+         Ts_constraint = constraint, deriv = deriv, prediction = FALSE)
 }
 
 ### model.matrix for P-splines baselearner (including tensor product P-splines)
@@ -606,7 +607,7 @@ cbs <- function (x, knots, boundary.knots, degree = 3, deriv = 0L) {
     attr(X, "degree") <- degree
     attr(X,"knots") <- knots
     attr(X,"boundary.knots") <- boundary.knots
-    if (deriv != 0)
+    if (length(deriv) > 1 || deriv != 0)
         attr(X, "deriv") <- deriv
     dimnames(X) <- list(nx, 1L:ncol(X))
     return(X)
@@ -647,6 +648,27 @@ bsplines <- function(x, knots, boundary.knots, degree,
     ## construct design matrix
     X <- splineDesign(k, x, degree + 1, derivs = rep(deriv, length(x)),
                       outer.ok = TRUE)
+
+    ## code along the lines of mgcv::Predict.matrix.pspline.smooth
+    if (extrapolation) {
+        ## Build matrix to map coeficients to value (deriv = 0) and
+        ## slope (deriv = 1) at end points.
+        if (deriv != 0L) {
+            warning("deriv != 0L; Linear extrapolation overwritten")
+        } else {
+              deriv <- c(0, 1, 0, 1)
+          }
+        D <- splineDesign(knots = k, x = rep(boundary.knots, each = 2),
+                          ord = degree + 1, deriv)
+        ## Add rows for linear extrapolation
+        idx <- x < boundary.knots[1]
+        if (any(idx, na.rm = TRUE))
+            X[idx,] <- cbind(1, x[idx] - boundary.knots[1]) %*% D[1:2, ]
+        idx <- x > boundary.knots[2]
+        if (any(idx, na.rm = TRUE))
+            X[idx,] <- cbind(1, x[idx] - boundary.knots[2]) %*% D[3:4, ]
+    }
+
     ## handling of NAs
     if (nas) {
         tmp <- matrix(NA, length(nax), ncol(X))
@@ -667,7 +689,7 @@ bsplines <- function(x, knots, boundary.knots, degree,
         attr(X, "Ts_constraint") <- Ts_constraint
     if (Ts_constraint != "none")
         attr(X, "D") <- D
-    if (deriv != 0)
+    if (length(deriv) > 1 || deriv != 0)
         attr(X, "deriv") <- deriv
     dimnames(X) <- list(nx, 1L:ncol(X))
     return(X)
