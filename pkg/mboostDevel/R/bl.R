@@ -569,7 +569,8 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
 ### adapted version of mgcv::cSplineDes from S.N. Wood
 cbs <- function (x, knots, boundary.knots, degree = 3, deriv = 0L) {
 
-    if (any(x < boundary.knots[1]) | any(x > boundary.knots[2]))
+    if (any(x < boundary.knots[1], na.rm = TRUE) |
+        any(x > boundary.knots[2], na.rm = TRUE))
         stop("some ", sQuote("x"), " values are beyond ",
              sQuote("boundary.knots"))
 
@@ -614,7 +615,8 @@ cbs <- function (x, knots, boundary.knots, degree = 3, deriv = 0L) {
 bsplines <- function(x, knots, boundary.knots, degree,
                      Ts_constraint = "none", deriv = 0L){
 
-    if (any(x < boundary.knots[1]) | any(x > boundary.knots[2]))
+    if (any(x < boundary.knots[1], na.rm = TRUE) |
+        any(x > boundary.knots[2], na.rm = TRUE))
         warning("some ", sQuote("x"), " values are beyond ",
                 sQuote("boundary.knots"))
 
