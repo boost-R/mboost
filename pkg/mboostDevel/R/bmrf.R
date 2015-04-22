@@ -1,7 +1,5 @@
-bmrf <-
-function (..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
-    center = FALSE)
-{
+bmrf <- function (..., by = NULL, index = NULL, bnd = NULL, df = 4,
+                  lambda = NULL, center = FALSE) {
     if (!requireNamespace("BayesX"))
         stop("cannot load ", sQuote("BayesX"))
 
@@ -71,7 +69,7 @@ hyper_bmrf <- function (mf, vary, bnd = NULL, df = 4, lambda = NULL,
         K <- Matrix(unclass(K))
     nm <- colnames(mf)[colnames(mf) != vary]
     list(K = K, bnd = bnd, pen = TRUE, df = df, lambda = lambda,
-        center = center)
+         center = center)
 }
 
 X_bmrf <- function (mf, vary, args) {
