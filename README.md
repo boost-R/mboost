@@ -1,7 +1,7 @@
 mboost
 ======
 
-[![Build Status](https://travis-ci.org/hofnerb/mboost.svg?branch=travis-ci)](https://travis-ci.org/hofnerb/mboost)
+[![Build Status](https://travis-ci.org/hofnerb/mboost.svg?branch=master)](https://travis-ci.org/hofnerb/mboost)
 
 `mboost` implements boosting algorithms for fitting generalized linear, additive and interaction models 
 to potentially high-dimensional data. 
