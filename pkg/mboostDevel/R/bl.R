@@ -216,13 +216,14 @@ X_bbs <- function(mf, vary, args) {
 
     stopifnot(is.data.frame(mf))
     mm <- lapply(which(colnames(mf) != vary), function(i) {
-        X <- bsplines(mf[[i]],
-                      knots = args$knots[[i]]$knots,
-                      boundary.knots = args$knots[[i]]$boundary.knots,
-                      degree = args$degree,
-                      Ts_constraint = args$Ts_constraint,
-                      deriv = args$deriv)
-        if (args$cyclic) {
+        if (!args$cyclic) {
+            X <- bsplines(mf[[i]],
+                          knots = args$knots[[i]]$knots,
+                          boundary.knots = args$knots[[i]]$boundary.knots,
+                          degree = args$degree,
+                          Ts_constraint = args$Ts_constraint,
+                          deriv = args$deriv)
+        } else { ## if cyclic spline
             X <- cbs(mf[[i]],
                      knots = args$knots[[i]]$knots,
                      boundary.knots = args$knots[[i]]$boundary.knots,
@@ -565,8 +566,13 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
 }
 
 ### cyclic B-splines
-### adapted version of mgcv:cSplineDes from S.N. Wood
+### adapted version of mgcv::cSplineDes from S.N. Wood
 cbs <- function (x, knots, boundary.knots, degree = 3, deriv = 0L) {
+
+    if (any(x < boundary.knots[1]) | any(x > boundary.knots[2]))
+        stop("some ", sQuote("x"), " values are beyond ",
+             sQuote("boundary.knots"))
+
     nx <- names(x)
     x <- as.vector(x)
     ## handling of NAs
@@ -607,6 +613,11 @@ cbs <- function (x, knots, boundary.knots, degree = 3, deriv = 0L) {
 
 bsplines <- function(x, knots, boundary.knots, degree,
                      Ts_constraint = "none", deriv = 0L){
+
+    if (any(x < boundary.knots[1]) | any(x > boundary.knots[2]))
+        warning("some ", sQuote("x"), " values are beyond ",
+                sQuote("boundary.knots"))
+
     nx <- names(x)
     x <- as.vector(x)
     ## handling of NAs
@@ -659,8 +670,13 @@ bl_lin <- function(blg, Xfun, args) {
 
     newX <- function(newdata = NULL) {
         if (!is.null(newdata)) {
-            stopifnot(all(names(blg) %in% names(newdata)))
-            stopifnot(all(class(newdata) == class(mf)))
+            if (!all(names(blg) %in% names(newdata)))
+                stop("Variable(s) missing in ", sQuote("newdata"), ":\n\t",
+                     names(blg)[!names(blg) %in% names(newdata)])
+            if (!all(class(newdata) == class(mf)))
+                stop(sQuote("newdata"),
+                     " must have the same class as the original data:\n\t",
+                     class(mf))
             nm <- names(blg)
             if (any(duplicated(nm)))  ## removes duplicates
                 nm <- unique(nm)
