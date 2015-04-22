@@ -144,7 +144,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
                 index <- NULL
                 nm <- names(blg)
                 newdata <- newdata[nm]
-                X <- newX(newdata)$X
+                X <- newX(newdata, prediction = TRUE)$X
             }
             ncfprod <- function(b)
                 as.vector(as(tcrossprod(X$X1 %*% b, X$X2), "matrix"))
