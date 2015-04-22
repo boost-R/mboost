@@ -222,7 +222,7 @@ X_bbs <- function(mf, vary, args) {
                           boundary.knots = args$knots[[i]]$boundary.knots,
                           degree = args$degree,
                           Ts_constraint = args$Ts_constraint,
-                          deriv = args$deriv)
+                          deriv = args$deriv, extrapolation = args$prediction)
         } else { ## if cyclic spline
             X <- cbs(mf[[i]],
                      knots = args$knots[[i]]$knots,
@@ -613,12 +613,22 @@ cbs <- function (x, knots, boundary.knots, degree = 3, deriv = 0L) {
 }
 
 bsplines <- function(x, knots, boundary.knots, degree,
-                     Ts_constraint = "none", deriv = 0L){
+                     Ts_constraint = "none", deriv = 0L,
+                     extrapolation = FALSE) {
 
-    if (any(x < boundary.knots[1], na.rm = TRUE) |
-        any(x > boundary.knots[2], na.rm = TRUE))
-        warning("some ", sQuote("x"), " values are beyond ",
-                sQuote("boundary.knots"))
+    ## do not allow data beyond boundary knots while fitting
+    if (!extrapolation && (any(x < boundary.knots[1], na.rm = TRUE) |
+                               any(x > boundary.knots[2], na.rm = TRUE)))
+        stop("some ", sQuote("x"), " values are beyond ",
+             sQuote("boundary.knots"))
+
+    ## allow extrapolation when predicting
+    if (extrapolation <- extrapolation &&
+        (any(x < boundary.knots[1], na.rm = TRUE) |
+             any(x > boundary.knots[2], na.rm = TRUE))) {
+        warning("Some ", sQuote("x"), " values are beyond ",
+                sQuote("boundary.knots"), "; Linear extrapolation used.")
+    }
 
     nx <- names(x)
     x <- as.vector(x)
@@ -670,7 +680,7 @@ bl_lin <- function(blg, Xfun, args) {
     index <- blg$get_index()
     vary <- blg$get_vary()
 
-    newX <- function(newdata = NULL) {
+    newX <- function(newdata = NULL, prediction = FALSE) {
         if (!is.null(newdata)) {
             if (!all(names(blg) %in% names(newdata)))
                 stop("Variable(s) missing in ", sQuote("newdata"), ":\n\t",
@@ -684,6 +694,8 @@ bl_lin <- function(blg, Xfun, args) {
                 nm <- unique(nm)
             mf <- newdata[, nm, drop = FALSE]
         }
+        ## this argument is currently only used in X_bbs --> bsplines
+        args$prediction <- prediction
         return(Xfun(mf, vary, args))
     }
     X <- newX()
@@ -775,7 +787,7 @@ bl_lin <- function(blg, Xfun, args) {
                     newdata <- newdata[index[[1]],,drop = FALSE]
                     index <- index[[2]]
                 }
-                X <- newX(newdata)$X
+                X <- newX(newdata, prediction = TRUE)$X
             }
             aggregate <- match.arg(aggregate)
             pr <- switch(aggregate, "sum" =
