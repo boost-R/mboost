@@ -61,7 +61,8 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         if (is.null(args$lambda)) {
 
             ### <FIXME>: is there a better way to feed XtX into lambdadf?
-            lambdadf <- df2lambda(matrix(0, ncol = ncol(X$X1) + ncol(X$X2)),
+            ### <FIXME>: is ncol(X$X1) + ncol(X$X2) ok or should it be rankMatrix(...)?
+            lambdadf <- df2lambda(X = diag(ncol(X$X1) + ncol(X$X2)),
                                   df = args$df, lambda = args$lambda,
                                   dmat = K, weights = weights, XtX = XtX)
             ### </FIXME>

@@ -39,6 +39,8 @@
       \item Bug in \code{df2lambda} fixed: Make sure that \code{A} is
       symmetric if it is \code{Matrix}-object (spotted by Souhaib Ben
       Taieb).
+      \item Bug in \code{df2lambda} fixed. Design matrices were always
+      assumed to be of full rank.
     }
   }
 }

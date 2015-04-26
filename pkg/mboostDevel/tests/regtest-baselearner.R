@@ -152,6 +152,15 @@ for (i in 3:10){
 stopifnot(all(diff_df < sqrt(.Machine$double.eps)))
 options(op)
 
+### check degrees of freedom for design matrices without full rank:
+x <- sample(1:3, 100, replace = TRUE)
+X <- extract(bbs(x))
+rankMatrix(X)
+## df2lambda:
+stopifnot(df2lambda(X, df = NULL, lambda = 0, weights = rep(1, 100))[["df"]] == 3)
+(res <- df2lambda(X, df = 4, weights = rep(1, 100)))
+stopifnot(res[["lambda"]] == 0)
+
 ### componentwise
 cf2 <- coef(fit(dpp(bolscw(cbind(1, xn)), weights = w), y))
 cf1 <- coef(lm(y ~ xn - 1, weights = w))
@@ -370,11 +379,11 @@ d$y <- y
 w <- as.vector(rmultinom(1, length(y), rep(1 / length(y), length(y))))
 
 m1 <- mboost(y ~ bbs(Var2, df = 3, knots = 5) %X%
-                     bbs(Var1, df = 3, knots = 7),
-                     data = d, weights = w)
-m2 <- mboost(y ~ bbs(x1, df = 3, knots = 7)%O%
+                 bbs(Var1, df = 3, knots = 7),
+             data = d, weights = w)
+m2 <- mboost(y ~ bbs(x1, df = 3, knots = 7) %O%
                  bbs(x2, df = 3, knots = 5),
-                 weights = w)
+             weights = w)
 
 stopifnot(max(abs(fitted(m1) - fitted(m2))) < tol)
 

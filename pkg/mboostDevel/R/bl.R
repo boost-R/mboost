@@ -4,12 +4,22 @@
 df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
                       XtX = NULL) {
 
-
     stopifnot(xor(is.null(df), is.null(lambda)))
-    if (!is.null(df))
-        if (df >= ncol(X)) return(c(df = df, lambda = 0))
+    if (!is.null(df)) {
+        rank_X <- rankMatrix(X, method = 'qr')
+        if (df >= rank_X) {
+            if (df > rank_X)
+                warning(sQuote("df"),
+                        " too large:\n  Degrees of freedom cannot be larger",
+                        " than the rank of the design matrix.\n",
+                        "  Unpenalized base-learner with df = ",
+                        rank_X, " used. Re-consider model specification.")
+            return(c(df = df, lambda = 0))
+        }
+    }
     if (!is.null(lambda))
-        if (lambda == 0) return(c(df = ncol(X), lambda = 0))
+        if (lambda == 0)
+            return(c(df = rankMatrix(X), lambda = 0))
 
     ## check for possible instability
     if (options("mboost_check_df2lambda")[[1]] && max(abs(X)) > 10)
