@@ -84,7 +84,7 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
                                                    oobweights = OOBweights[, i])),
                           ...)
     }
-    ## if any errors if mclapply was used: remove result and issue a warning
+    ## if any errors occured remove results and issue a warning
     if (any(idx <- sapply(oobrisk, is.character))) {
         warning(sum(idx), " fold(s) encountered an error. ",
                 "Results are based on ", ncol(folds) - sum(idx),
