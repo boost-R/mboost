@@ -40,7 +40,6 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   \item{mc.preschedule}{
     preschedule tasks if are parallelized using \code{\link{mclapply}}
     (default: \code{FALSE})? For details see \code{\link{mclapply}}.
-
   }
   \item{weights}{ a numeric vector of weights for the model to be cross-validated.}
   \item{type}{ character argument for specifying the cross-validation
