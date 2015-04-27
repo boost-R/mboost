@@ -15,6 +15,8 @@
       \item Predictions for \code{bbs} and \code{bmono} now use linear
       extrapolation (user request inspired by
       \code{mgcv::Predict.matrix.pspline.smooth}).
+      \item Parallel computing via \code{mclapply}: Set
+      \code{mc.preschedule = FALSE} per default.
     }
   }
   \subsection{Miscellaneous}{
