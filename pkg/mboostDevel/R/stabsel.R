@@ -72,16 +72,16 @@ stabsel.mboost <- function(x, cutoff, q, PFER,
         names(selected) <- nms
         selected[unique(xs)] <- TRUE
 
-        if (verbose && sum(selected) < q)
-            violations[i] <<- TRUE
-
         ## compute selection paths
         sel_paths <- matrix(FALSE, nrow = length(nms), ncol = mstop)
         rownames(sel_paths) <- nms
         for (j in 1:length(xs))
             sel_paths[xs[j], j:mstop] <- TRUE
 
-        return(list(selected = selected, path = sel_paths))
+        ret <- list(selected = selected, path = sel_paths)
+        ## was mstop to small?
+        attr(ret, "violations") <- ifelse(sum(selected) < q, TRUE, FALSE)
+        return(ret)
     }
 
     ret <- run_stabsel(fitter = fit_model, args.fitter = list(),
@@ -96,6 +96,9 @@ stabsel.mboost <- function(x, cutoff, q, PFER,
 
     if (!eval)
         return(ret)
+
+    if (!is.null(attr(ret, "violations")))
+        violations <- attr(ret, "violations")
 
     if (any(violations))
         warning(sQuote("mstop"), " too small in ",
