@@ -38,7 +38,7 @@ a copy of the r-forge repository which is hosted at
   ```
 
 - Alternatively, both the current patch and development versions of `mboost` (or `mboostDevel` respectively) 
-  can be downloaded from R-forge if the built was successful:
+  can be downloaded from R-forge if it was successfully built:
   ```
   install.packages("mboost", repos = "http://r-forge.r-project.org")
   ## or
