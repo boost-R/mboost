@@ -7,7 +7,7 @@ mboost
 `mboost` implements boosting algorithms for fitting generalized linear, additive and interaction models 
 to potentially high-dimensional data. 
 
-This [github repositiry](https://github.com/hofnerb/mboost) is essentially just
+This [GitHub repository](https://github.com/hofnerb/mboost) is essentially just
 a copy of the r-forge repository which is hosted at
 [R-forge](https://r-forge.r-project.org/projects/mboost).
 
@@ -38,13 +38,13 @@ a copy of the r-forge repository which is hosted at
   ```
 
 - Alternatively, both the current patch and development versions of `mboost` (or `mboostDevel` respectively) 
-  can be downloaded from R-forge if the built was successfull:
+  can be downloaded from R-forge if the built was successful:
   ```
   install.packages("mboost", repos = "http://r-forge.r-project.org")
   ## or
   install.packages("mboostDevel", repos = "http://r-forge.r-project.org")
   ```
-  However, currently these builts often don't succeed and furthemore are only available 
+  However, currently these builds often don't succeed and furthermore are only available 
   for recent versions of R.
   
 ## Using mboost
