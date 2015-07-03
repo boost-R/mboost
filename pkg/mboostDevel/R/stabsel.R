@@ -37,7 +37,7 @@ stabsel.mboost <- function(x, cutoff, q, PFER,
     if (!extends(class(x), "glmboost"))
         nms <- names(nms)
 
-    ## if verbose, count violations (i.e., mstop too small)
+    ## count violations (i.e., mstop too small)
     violations <- rep(FALSE, ifelse(sampling.type == "MB", B, 2 * B))
 
     if (verbose)
