@@ -11,6 +11,8 @@ importFrom(lattice, levelplot)
 importFrom(nnls, nnls)
 importFrom(quadprog, solve.QP)
 importFrom(utils, packageDescription)
+importFrom("graphics", "abline", "axis", "box", "lines", "matlines", "matplot", "plot", "points", "polygon")
+importFrom("grDevices", "hcl", "rgb")
 
 export(glmboost,
        gamboost,
