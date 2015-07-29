@@ -9,6 +9,8 @@
       model. Predictions for new data are now
       possible (thanks to Sarah Brockhaus, see
       https://github.com/hofnerb/mboost/issues/13).
+      \item \file{inst/CITATION}: Added subheadings and
+      tutorial paper.
     }
   }
   \subsection{Bug-fixes}{

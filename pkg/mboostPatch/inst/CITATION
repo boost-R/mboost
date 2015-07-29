@@ -1,6 +1,4 @@
 
-citHeader("To cite package 'mboost' in publications use:")
-
 year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date)
 vers <- paste("R package version", meta$Version)
 
@@ -14,27 +12,32 @@ citEntry(entry="Manual",
          year = year,
          note = paste("{R} package version", vers),
          url = "http://CRAN.R-project.org/package=mboost",
-         textVersion =
-             paste("T. Hothorn, P. Buehlmann, T. Kneib, M. Schmid, and B. Hofner (",
-                   year,
-                   "). mboost: Model-Based Boosting, ",
-                   paste("R package version", vers),
-                   ", http://CRAN.R-project.org/package=mboost", ".",
-                   sep=""))
+         header = "To cite the package 'mboost' itself use:",
+         textVersion = paste(
+             "T. Hothorn, P. Buehlmann, T. Kneib, M. Schmid, and B. Hofner (",
+             year, "). mboost: Model-Based Boosting, ",
+             paste("R package version", vers),
+             ", http://CRAN.R-project.org/package=mboost", ".", sep = ""
+             )
+         )
 
 citEntry(entry="Article",
-         title = "Boosting Algorithms: Regularization, Prediction and Model Fitting (with Discussion)",
-         author = personList(as.person("Peter Buehlmann"), as.person("Torsten Hothorn")),
-         journal      = "Statistical Science",
-         year         = "2007",
-         volume       = "22",
-         number       = "4",
-         pages        = "477--505",
-
-         textVersion =
-         paste("Peter Buehlmann and Torsten Hothorn (2007).",
-               "Boosting Algorithms: Regularization, Prediction and Model Fitting (with Discussion).",
-               "Statistical Science, 22(4), 477-505."),
+         title = "Model-based Boosting in {R}: A Hands-on Tutorial Using the {R} Package mboost",
+         author = personList(as.person("Benjamin Hofner"),
+                             as.person("Andreas Mayr"),
+                             as.person("Nikolay Robinzonov"),
+                             as.person("Matthias Schmid")),
+         journal      = "Computational Statistics",
+         year         = "2014",
+         volume       = "29",
+         pages        = "3--35",
+         header = "A comprehensive tutorial is given in:",
+         textVersion = paste(
+             "Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov,",
+             "Matthias Schmid (2014).",
+             "Model-based Boosting in R: A Hands-on Tutorial Using the R Package mboost.",
+             "Computational Statistics, 29, 3-35."
+             )
          )
 
 citEntry(entry="Article",
@@ -48,14 +51,29 @@ citEntry(entry="Article",
          year         = "2010",
          volume       = "11",
          pages        = "2109--2113",
-
-         textVersion =
-         paste("Torsten Hothorn, Peter Buehlmann, Thomas Kneib,",
-               "Matthias Schmid and Benjamin Hofner (2010).",
-               "Model-based Boosting 2.0.",
-               "Journal of Machine Learning Research, 11, 2109-2113."
-               ),
+         header = "An overview of the implementation is given in:",
+         textVersion = paste(
+             "Torsten Hothorn, Peter Buehlmann, Thomas Kneib,",
+             "Matthias Schmid and Benjamin Hofner (2010).",
+             "Model-based Boosting 2.0.",
+             "Journal of Machine Learning Research, 11, 2109-2113."
+             )
          )
 
+citEntry(entry="Article",
+         title = "Boosting Algorithms: Regularization, Prediction and Model Fitting (with Discussion)",
+         author = personList(as.person("Peter Buehlmann"), as.person("Torsten Hothorn")),
+         journal      = "Statistical Science",
+         year         = "2007",
+         volume       = "22",
+         number       = "4",
+         pages        = "477--505",
+         header = "The theory and the package (until version 2.0) are described in:",
+         textVersion = paste(
+             "Peter Buehlmann and Torsten Hothorn (2007).",
+             "Boosting Algorithms: Regularization, Prediction and Model Fitting (with Discussion).",
+             "Statistical Science, 22(4), 477-505."
+             )
+         )
 
-citFooter('Use ', sQuote('toBibtex(citation("mboost"))'), ' to extract BibTeX references.')
+citFooter('\nUse ', sQuote('toBibtex(citation("mboost"))'), ' to extract BibTeX references.')
