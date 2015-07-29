@@ -3,7 +3,7 @@
 \alias{glmboost.formula}
 \alias{glmboost.matrix}
 \alias{glmboost.default}
-\alias{plot.glmboost}
+
 \title{ Gradient Boosting with Component-wise Linear Models }
 \description{
   Gradient boosting for optimizing arbitrary loss functions where component-wise
@@ -15,8 +15,6 @@
           center = TRUE, control = boost_control(), ...)
 \method{glmboost}{matrix}(x, y, center = TRUE, control = boost_control(), ...)
 \method{glmboost}{default}(x,  ...)
-\method{plot}{glmboost}(x, main = deparse(x$call), col = NULL,
-                        off2int = FALSE, ...)
 }
 \arguments{
   \item{formula}{ a symbolic description of the model to be fit. }
@@ -31,15 +29,8 @@
           contain \code{NA}s.}
   \item{center}{logical indicating of the predictor variables are centered before fitting.}
   \item{control}{ a list of parameters controlling the algorithm.}
-  \item{x}{ design matrix or an object of class \code{glmboost} for plotting.
-            Sparse matrices of class \code{Matrix} can be used as well.}
+  \item{x}{ design matrix. Sparse matrices of class \code{Matrix} can be used as well.}
   \item{y}{ vector of responses. }
-  \item{main}{ a title for the plot.}
-  \item{col}{ (a vector of) colors for plotting the lines representing
-    the coefficient paths.}
-  \item{off2int}{ logical indicating whether the offset should be
-    added to the intercept (if there is any) or if the offset is
-    neglected for plotting (default).}
   \item{\dots}{ additional arguments passed to \code{\link{mboost_fit}},
     including \code{weights}, \code{offset}, \code{family} and
     \code{control}. For default values see \code{\link{mboost_fit}}.}
@@ -110,10 +101,10 @@
                                  control = boost_control(mstop = 2000),
                                  center = TRUE)
 
-    ## plot coefficient paths oth glmboost
+    ## plot coefficient paths of glmboost
     par(mfrow=c(1,2), mai = par("mai") * c(1, 1, 1, 2.5))
-    plot(cars.gb, main="without centering")
-    plot(cars.gb_centered, main="with centering")
+    plot(cars.gb, main = "without centering")
+    plot(cars.gb_centered, main = "with centering")
 
     ### alternative loss function: absolute loss
     cars.gbl <- glmboost(dist ~ speed, data = cars,

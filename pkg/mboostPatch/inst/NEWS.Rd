@@ -2,12 +2,19 @@
 \title{News for Package 'mboost'}
 
 \section{Changes in mboost version 2.4-3 (2015-03-20)}{
+  \subsection{User-visible changes}{
+    \itemize{
+      \item Added documentation for \code{plot.mboost} function and moved
+      documentation of \code{plot.glmboost} to the same help page.
+      Resolves issue \href{https://github.com/hofnerb/mboost/issues/11}{#11}.
+    }
+  }
   \subsection{Miscellaneous}{
     \itemize{
       \item \code{PropOdds()}: Updated manual for proportional odds model.
       \item \code{Multinomial()}: Updated manual for multinomial logit
       model. Predictions for new data are now
-      possible (solves issue
+      possible (resolves issue
       \href{https://github.com/hofnerb/mboost/issues/13}{#13}, thanks to
       Sarah Brockhaus).
       \item \file{inst/CITATION}: Added subheadings and
@@ -20,7 +27,7 @@
       \code{offset} was specified: nuisance parameters \code{delta}
       and \code{sigma} were not properly initialized.
       \item Truncate output of complete data structure when model is
-      printed. Solves issue
+      printed. Resolves issue
       \href{https://github.com/hofnerb/mboost/issues/11}{#11}.
     }
   }

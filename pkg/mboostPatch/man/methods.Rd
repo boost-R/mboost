@@ -316,6 +316,11 @@ mstop(x) <- value
 }
 \references{
 
+  Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
+  (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
+  Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
+  \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
+
   Clifford M. Hurvich, Jeffrey S. Simonoff and Chih-Ling Tsai (1998),
   Smoothing parameter selection in nonparametric regression using
   an improved Akaike information criterion.
@@ -340,9 +345,14 @@ mstop(x) <- value
   DOI: \url{http://dx.doi.org/10.3414/ME11-02-0030}
 
 }
-\seealso{ \code{\link{gamboost}}, \code{\link{glmboost}} and
-  \code{\link{blackboost}} for model fitting. See \code{\link{cvrisk}} for
-  cross-validated stopping iteration.}
+\seealso{
+  \code{\link{gamboost}}, \code{\link{glmboost}} and
+  \code{\link{blackboost}} for model fitting.
+
+  \code{\link{plot.mboost}} for plotting methods.
+
+  \code{\link{cvrisk}} for cross-validated stopping iteration.
+}
 \examples{
 
   ### a simple two-dimensional example: cars data
