@@ -7,8 +7,9 @@
       \item \code{PropOdds()}: Updated manual for proportional odds model.
       \item \code{Multinomial()}: Updated manual for multinomial logit
       model. Predictions for new data are now
-      possible (thanks to Sarah Brockhaus, see
-      https://github.com/hofnerb/mboost/issues/13).
+      possible (solves issue
+      \href{https://github.com/hofnerb/mboost/issues/13}{#13}, thanks to
+      Sarah Brockhaus).
       \item \file{inst/CITATION}: Added subheadings and
       tutorial paper.
     }
@@ -18,6 +19,9 @@
       \item Fixed bug in \code{PropOdds()} which occured if
       \code{offset} was specified: nuisance parameters \code{delta}
       and \code{sigma} were not properly initialized.
+      \item Truncate output of complete data structure when model is
+      printed. Solves issue
+      \href{https://github.com/hofnerb/mboost/issues/11}{#11}.
     }
   }
 }
