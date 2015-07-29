@@ -206,8 +206,8 @@ distribution approximation used in Ma and Huang (2005).
   model specification (see example).  More specifically, the predictor must
   be in the form of a linear array model (see \code{\link{\%O\%}}).  Note
   that this family does not work with tree-based base-learners at the
-  moment.  The class corresponding to the last level of the factor coding
-  the response is uses as reference class.
+  moment. The class corresponding to the last level of the factor coding
+  of the response is used as reference class.
 
 }
 \section{Warning}{
@@ -278,8 +278,7 @@ distribution approximation used in Ma and Huang (2005).
     \code{AUC()} was donated by Fabian Scheipl.
 }
 \examples{
-Laplace()
-
+### Define a new family
 MyGaussian <- function(){
        Family(ngradient = function(y, f, w = 1) y - f,
        loss = function(y, f) (y - f)^2,
@@ -287,7 +286,7 @@ MyGaussian <- function(){
 }
 
 \donttest{
-### fitting a proportional odds model
+### Proportional odds model
 data(iris)
 iris$Species <- factor(iris$Species, ordered = TRUE)
 if (require("MASS")) {
@@ -298,27 +297,38 @@ mod.PropOdds <- glmboost(Species  ~ Sepal.Length, data = iris,
 mstop(mod.PropOdds) <- 1000
 ## thresholds are treated as nuisance parameters, to extract these use
 nuisance(mod.PropOdds)
-## effect estimate:
-coef(mod.PropOdds)["Sepal.Length"]
-
-## effect
+## effect estimate
 coef(mod.PropOdds)["Sepal.Length"]
 ## make thresholds comparable to a model without intercept
 nuisance(mod.PropOdds) - coef(mod.PropOdds)["(Intercept)"] -
     attr(coef(mod.PropOdds), "offset")
 }
 
-### fitting multinomial logit model via a linear array model
-X0 <- K0 <- diag(nlevels(iris$Species) - 1)
-colnames(X0) <- levels(iris$Species)[-nlevels(iris$Species)]
+### Multinomial logit model via a linear array model
+## One needs to convert the data to a list 
+myiris <- as.list(iris)
+## ... and define a dummy vector with one factor level less 
+## than the outcome, which is used as reference category.
+myiris$class <- factor(levels(iris$Species)[-nlevels(iris$Species)])
+## Now fit the linear array model
 mlm <- mboost(Species ~ bols(Sepal.Length, df = 2) \%O\%
-                        buser(X0, K0, df = 2), data = iris,
+                        bols(class, df = 2, contrasts.arg = "contr.dummy"), 
+              data = myiris,
               family = Multinomial())
-head(round(predict(mlm, type = "response"), 2))
+coef(mlm) ## one should use more boosting iterations.
+head(round(pred <- predict(mlm, type = "response"), 2))
 
+## Prediction with new data:
+newdata <- as.list(iris[1,])
+## One always needs to keep the dummy vector class as above!
+newdata$class <- factor(levels(iris$Species)[-nlevels(iris$Species)])
+pred2 <- predict(mlm, type = "response", newdata = newdata)
+## check results
+pred[1, ]
+pred2
 \donttest{
+## Compare results with nnet::multinom
 if (require("nnet")) {
-    ### compare results with nnet::multinom
     mlmn <- multinom(Species ~ Sepal.Length, data = iris)
     max(abs(fitted(mlm[1000], type = "response") -
             fitted(mlmn, type = "prob")))
