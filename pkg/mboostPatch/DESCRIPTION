@@ -22,4 +22,4 @@ Suggests: party (>= 1.0-3), TH.data, MASS, fields, BayesX, gbm, mlbench,
         RColorBrewer, rpart (>= 4.0-3), randomForest, nnet
 LazyData: yes
 License: GPL-2
-URL: http://mboost.r-forge.r-project.org/
+URL: http://mboost.r-forge.r-project.org/, https://github.com/hofnerb/mboost

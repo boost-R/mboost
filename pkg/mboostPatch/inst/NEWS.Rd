@@ -6,7 +6,7 @@
     \itemize{
       \item Added documentation for \code{plot.mboost} function and moved
       documentation of \code{plot.glmboost} to the same help page.
-      Resolves issue \href{https://github.com/hofnerb/mboost/issues/11}{#11}.
+      Resolves issue \href{https://github.com/hofnerb/mboost/issues/14}{#14}.
     }
   }
   \subsection{Miscellaneous}{
@@ -29,6 +29,9 @@
       \item Truncate output of complete data structure when model is
       printed. Resolves issue
       \href{https://github.com/hofnerb/mboost/issues/11}{#11}.
+      \item Prediction now also possible with \code{newdata = list()}.
+      Resolves issue
+      \href{https://github.com/hofnerb/mboost/issues/15}{#15}.
     }
   }
 }
