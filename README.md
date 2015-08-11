@@ -11,7 +11,9 @@ This [GitHub repository](https://github.com/hofnerb/mboost) is essentially just
 a copy of the r-forge repository which is hosted at
 [R-forge](https://r-forge.r-project.org/projects/mboost).
 
-### Using mboost
+## Using mboost
+
+For installation instructions see [below](#inst).
 
 Instructions on how to use `mboost` can be found in various places:
 - Have a look at the tutorials:
@@ -19,11 +21,11 @@ Instructions on how to use `mboost` can be found in various places:
   - [mboost 2.0](http://cran.r-project.org/web/packages/mboost/vignettes/mboost.pdf)
 - Visit the [project homepage](http://mboost.r-forge.r-project.org/) and see further tutorials and references there.
 
-### Issues
+## Reporting Issues (etc.)
 
 For issues, bugs, feature requests etc. please use the [GitHub Issues](https://github.com/hofnerb/mboost/issues).
 
-### Installation
+## [Installation Instructions][inst]
 
 - Current version (from CRAN):
   ```
@@ -58,3 +60,6 @@ For issues, bugs, feature requests etc. please use the [GitHub Issues](https://g
   ```
   However, currently these builds often don't succeed and furthermore are only available
   for recent versions of R.
+
+[inst]: inst
+
