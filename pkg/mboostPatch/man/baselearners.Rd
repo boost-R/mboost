@@ -1,4 +1,5 @@
 \name{baselearners}
+\alias{baselearners}
 \alias{bols}
 \alias{bbs}
 \alias{bspatial}
