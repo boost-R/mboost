@@ -13,7 +13,7 @@ a copy of the r-forge repository which is hosted at
 
 ## Using mboost
 
-For installation instructions see [below](#inst).
+For installation instructions see below.
 
 Instructions on how to use `mboost` can be found in various places:
 - Have a look at the tutorials:
@@ -25,7 +25,7 @@ Instructions on how to use `mboost` can be found in various places:
 
 For issues, bugs, feature requests etc. please use the [GitHub Issues](https://github.com/hofnerb/mboost/issues).
 
-## [Installation Instructions][inst]
+## Installation Instructions
 
 - Current version (from CRAN):
   ```
