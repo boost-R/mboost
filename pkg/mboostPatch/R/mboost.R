@@ -589,9 +589,9 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     ### this function will be used for predictions later
     newX <- function(newdata) {
         mf <- model.frame(delete.response(attr(mf, "terms")),
-            data = newdata, na.action = na.pass)
-        X <- model.matrix(delete.response(attr(mf, "terms")), data = mf,
-                          contrasts.arg = contrasts.arg)
+                          data = newdata, na.action = na.pass)
+        X <- model.matrix(delete.response(attr(mf, "terms")),
+                          data = mf, contrasts.arg = contrasts.arg)
         scale(X, center = cm, scale = FALSE)
     }
 

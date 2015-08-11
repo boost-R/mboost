@@ -652,8 +652,8 @@ bl_lin <- function(blg, Xfun, args) {
     vary <- blg$get_vary()
 
     newX <- function(newdata = NULL) {
-        nm <- names(blg)
         if (!is.null(newdata)) {
+            nm <- names(blg)
             if (!all(nm %in% names(newdata)))
                 stop(sQuote("newdata"),
                      " must contain all predictor variables,",

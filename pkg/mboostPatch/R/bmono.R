@@ -160,9 +160,22 @@ bl_mono <- function(blg, Xfun, args) {
 
     newX <- function(newdata = NULL) {
         if (!is.null(newdata)) {
-            stopifnot(all(names(newdata) == names(blg)))
-            stopifnot(all(class(newdata) == class(mf)))
-            mf <- newdata[,names(blg),drop = FALSE]
+            nm <- names(blg)
+            if (!all(nm %in% names(newdata)))
+                stop(sQuote("newdata"),
+                     " must contain all predictor variables,",
+                     " which were used to specify the model.")
+            if (!class(newdata) %in% c("list", "data.frame"))
+                stop(sQuote("newdata"), " must be either a data.frame or a list")
+            if (any(duplicated(nm)))  ## removes duplicates
+                nm <- unique(nm)
+            if (!all(sapply(newdata[nm], class) == sapply(mf, class)))
+                stop("Variables in ", sQuote("newdata"),
+                     " must have the same classes as in the original data set")
+            ## subset data
+            mf <- newdata[nm]
+            if (is.list(mf))
+                mf <- as.data.frame(mf)
         }
         return(Xfun(mf, vary, args))
     }
@@ -338,12 +351,11 @@ bl_mono <- function(blg, Xfun, args) {
             if (!is.matrix(cf)) cf <- matrix(cf, nrow = 1)
             if(!is.null(newdata)) {
                 index <- NULL
-                nm <- names(blg)
-                newdata <- newdata[,nm, drop = FALSE]
-                ### option
-                if (nrow(newdata) > options("mboost_indexmin")[[1]]) {
+                ## Use sparse data represenation if data set is huge
+                ## and a data.frame
+                if (is.data.frame(newdata) && nrow(newdata) > options("mboost_indexmin")[[1]]) {
                     index <- get_index(newdata)
-                    newdata <- newdata[index[[1]],,drop = FALSE]
+                    newdata <- newdata[index[[1]], , drop = FALSE]
                     index <- index[[2]]
                 }
                 X <- newX(newdata)$X
@@ -356,8 +368,9 @@ bl_mono <- function(blg, Xfun, args) {
                                PACKAGE = "mboost"), "matrix")
             },
             "none" = as(X %*% cf, "matrix"))
-            if (is.null(index)) return(pr[,,drop = FALSE])
-            return(pr[index,,drop = FALSE])
+            if (is.null(index))
+                return(pr[, , drop = FALSE])
+            return(pr[index, , drop = FALSE])
         }
 
         ret <- list(fit = fit, hatvalues = hatvalues,

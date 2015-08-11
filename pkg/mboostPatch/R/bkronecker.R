@@ -10,9 +10,22 @@ bl_lin_matrix <- function(blg, Xfun, args) {
 
     newX <- function(newdata = NULL) {
         if (!is.null(newdata)) {
-            stopifnot(all(names(newdata) == names(blg)))
-            # stopifnot(all(class(newdata) == class(mf)))
-            mf <- newdata[names(blg)]
+            nm <- names(blg)
+            if (!all(nm %in% names(newdata)))
+                stop(sQuote("newdata"),
+                     " must contain all predictor variables,",
+                     " which were used to specify the model.")
+            if (!class(newdata) %in% c("list", "data.frame"))
+                stop(sQuote("newdata"), " must be either a data.frame or a list")
+            if (any(duplicated(nm)))  ## removes duplicates
+                nm <- unique(nm)
+            if (!all(sapply(newdata[nm], class) == sapply(mf, class)))
+                stop("Variables in ", sQuote("newdata"),
+                     " must have the same classes as in the original data set")
+            ## subset data
+            mf <- newdata[nm]
+            if (is.list(mf))
+                mf <- as.data.frame(mf)
         }
         return(Xfun(mf, vary, args))
     }
@@ -34,7 +47,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
 
     dpp <- function(weights) {
 
-        if (!is.null(attr(X$X1, "deriv")) || !is.null(attr(X$X2, "deriv"))) 
+        if (!is.null(attr(X$X1, "deriv")) || !is.null(attr(X$X2, "deriv")))
             stop("fitting of derivatives of B-splines not implemented")
 
         W <- matrix(weights, nrow = n1, ncol = n2)
@@ -46,7 +59,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         XtX <- array(XtX, c(c1, c1, c2, c2))
         XtX <- mymatrix(aperm(XtX, c(1, 3, 2, 4)), nrow = c1 * c2)
 
-        ### If lambda was given in both baselearners, we 
+        ### If lambda was given in both baselearners, we
         ### directly multiply the marginal penalty matrices by lambda
         ### and then compute the total penalty as the kronecker sum.
         ### args$lambda is NA in this case and we don't compute
@@ -67,10 +80,10 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         XtX <- XtX + K
 
         ### nnls
-        constr <- (!is.null(attr(X$X1, "constraint"))) + 
+        constr <- (!is.null(attr(X$X1, "constraint"))) +
                   (!is.null(attr(X$X2, "constraint")))
 
-        if (constr == 2) 
+        if (constr == 2)
             stop("only one dimension may be subject to constraints")
         constr <- constr > 0
 
@@ -135,8 +148,6 @@ bl_lin_matrix <- function(blg, Xfun, args) {
             cf <- lapply(bm, function(x) x$model)
             if(!is.null(newdata)) {
                 index <- NULL
-                nm <- names(blg)
-                newdata <- newdata[nm]
                 X <- newX(newdata)$X
             }
             ncfprod <- function(b)
@@ -227,7 +238,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
     l1 <- args1$lambda
     l2 <- args2$lambda
     if (xor(is.null(l1), is.null(l2)))
-        stop("lambda needs to be given in both baselearners combined with ", 
+        stop("lambda needs to be given in both baselearners combined with ",
              sQuote("%O%"))
     if (!is.null(l1) && !is.null(l2)) {
         ### there is no common lambda!

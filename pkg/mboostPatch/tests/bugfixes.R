@@ -482,7 +482,7 @@ extract(mod3, "bnames")
 ## [https://github.com/hofnerb/mboost/issues/15]
 data("bodyfat", package = "TH.data")
 bf <- as.list(bodyfat)
-mod <- mboost(DEXfat ~ bols(waistcirc) + bbs(hipcirc),
+mod <- mboost(DEXfat ~ bols(waistcirc) + bmono(hipcirc) + btree(age),
               data = bf)
 ## predict with data frame
 nd <- bodyfat[1:2,]
@@ -492,9 +492,9 @@ nd <- as.list(bodyfat[1:2,])
 pr2 <- predict(mod, newdata = nd)
 stopifnot(pr1 == pr2)
 ## check plotting
-nd <- list(waistcirc = 1,
+nd <- list(waistcirc = 1, age = 1,
            hipcirc = seq(min(bf$hipcirc), max(bf$hipcirc), length = 100))
 plot(mod, which = 2, newdata = nd)
-nd <- data.frame(waistcirc = 1,
+nd <- data.frame(waistcirc = 1, age = 1,
                  hipcirc = seq(min(bf$hipcirc), max(bf$hipcirc), length = 100))
 plot(mod, which = 2, newdata = nd)

@@ -1,7 +1,5 @@
-bmrf <-
-function (..., by = NULL, index = NULL, bnd = NULL, df = 4, lambda = NULL,
-    center = FALSE)
-{
+bmrf <- function (..., by = NULL, index = NULL, bnd = NULL, df = 4,
+                  lambda = NULL, center = FALSE) {
     if (!requireNamespace("BayesX"))
         stop("cannot load ", sQuote("BayesX"))
 
