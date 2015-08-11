@@ -652,13 +652,23 @@ bl_lin <- function(blg, Xfun, args) {
     vary <- blg$get_vary()
 
     newX <- function(newdata = NULL) {
+        nm <- names(blg)
         if (!is.null(newdata)) {
-            stopifnot(all(names(blg) %in% names(newdata)))
-            stopifnot(all(class(newdata) == class(mf)))
-            nm <- names(blg)
+            if (!all(nm %in% names(newdata)))
+                stop(sQuote("newdata"),
+                     " must contain all predictor variables,",
+                     " which were used to specify the model.")
+            if (!class(newdata) %in% c("list", "data.frame"))
+                stop(sQuote("newdata"), " must be either a data.frame or a list")
             if (any(duplicated(nm)))  ## removes duplicates
                 nm <- unique(nm)
-            mf <- newdata[, nm, drop = FALSE]
+            if (!all(sapply(newdata[nm], class) == sapply(mf, class)))
+                stop("Variables in ", sQuote("newdata"),
+                     " must have the same classes as in the original data set")
+            ## subset data
+            mf <- newdata[nm]
+            if (is.list(mf))
+                mf <- as.data.frame(mf)
         }
         return(Xfun(mf, vary, args))
     }
@@ -728,7 +738,7 @@ bl_lin <- function(blg, Xfun, args) {
         hatvalues <- function() {
             ret <- as.matrix(tcrossprod(X %*% solve(XtX), X * w))
             if (is.null(index)) return(ret)
-            return(ret[index,index])
+            return(ret[index, index])
         }
         ### </FIXME>
 
@@ -738,19 +748,18 @@ bl_lin <- function(blg, Xfun, args) {
         ### prepare for computing predictions
         predict <- function(bm, newdata = NULL, aggregate = c("sum", "cumsum", "none")) {
             cf <- sapply(bm, coef)
-            if (!is.matrix(cf)) cf <- matrix(cf, nrow = 1)
+            if (!is.matrix(cf))
+                cf <- matrix(cf, nrow = 1)
             if(!is.null(newdata)) {
                 index <- NULL
-                nm <- names(blg)
-                if (any(duplicated(nm)))  ## removes duplicates
-                    nm <- unique(nm)
-                newdata <- newdata[,nm, drop = FALSE]
-                ### option
-                if (nrow(newdata) > options("mboost_indexmin")[[1]]) {
+                ## Use sparse data represenation if data set is huge
+                ## and a data.frame
+                if (is.data.frame(newdata) && nrow(newdata) > options("mboost_indexmin")[[1]]) {
                     index <- get_index(newdata)
-                    newdata <- newdata[index[[1]],,drop = FALSE]
+                    newdata <- newdata[index[[1]], , drop = FALSE]
                     index <- index[[2]]
                 }
+
                 X <- newX(newdata)$X
             }
             aggregate <- match.arg(aggregate)
@@ -761,8 +770,9 @@ bl_lin <- function(blg, Xfun, args) {
                                PACKAGE = "mboost"), "matrix")
             },
             "none" = as(X %*% cf, "matrix"))
-            if (is.null(index)) return(pr[,,drop = FALSE])
-            return(pr[index,,drop = FALSE])
+            if (is.null(index))
+                return(pr[ , , drop = FALSE])
+            return(pr[index, ,drop = FALSE])
         }
 
         ret <- list(fit = fit, hatvalues = hatvalues,

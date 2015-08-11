@@ -41,8 +41,13 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
         data <- model.frame(x, which = w)[[1]]
         get_vary <- x$baselearner[[w]]$get_vary
         vary <- ""
-        if (!is.null(get_vary)) vary <- get_vary()
-        if (!is.null(newdata)) data <- newdata[, colnames(data), drop = FALSE]
+        if (!is.null(get_vary))
+            vary <- get_vary()
+        if (!is.null(newdata)) {
+            data <- newdata[colnames(data)]
+            if (is.list(data))
+                data <- as.data.frame(data)
+        }
         if (vary != "") {
             v <- data[[vary]]
             if (is.factor(v)) v <- factor(levels(v)[-1], levels = levels(v))
