@@ -8,10 +8,12 @@ bl_lin_matrix <- function(blg, Xfun, args) {
     index <- blg$get_index()
     vary <- blg$get_vary()
 
-    newX <- function(newdata = NULL) {
+    newX <- function(newdata = NULL, prediction = FALSE) {
         if (!is.null(newdata)) {
             mf <- check_newdata(newdata, blg, mf, to.data.frame = FALSE)
         }
+        ## this argument is currently only used in X_bbs --> bsplines
+        args$prediction <- prediction
         return(Xfun(mf, vary, args))
     }
     X <- newX()
@@ -52,7 +54,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         if (is.null(args$lambda)) {
 
             ### <FIXME>: is there a better way to feed XtX into lambdadf?
-            lambdadf <- df2lambda(matrix(0, ncol = ncol(X$X1) + ncol(X$X2)),
+            lambdadf <- df2lambda(X = diag(rankMatrix(X$X1, method = 'qr') * rankMatrix(X$X2, method = 'qr')),
                                   df = args$df, lambda = args$lambda,
                                   dmat = K, weights = weights, XtX = XtX)
             ### </FIXME>
@@ -133,7 +135,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
             cf <- lapply(bm, function(x) x$model)
             if(!is.null(newdata)) {
                 index <- NULL
-                X <- newX(newdata)$X
+                X <- newX(newdata, prediction = TRUE)$X
             }
             ncfprod <- function(b)
                 as.vector(as(tcrossprod(X$X1 %*% b, X$X2), "matrix"))

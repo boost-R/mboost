@@ -1,12 +1,30 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.4-3 (2015-08-12)}{
+\section{Changes in mboost version 2.5-0 (2015-08-13)}{
   \subsection{User-visible changes}{
     \itemize{
       \item Added documentation for \code{plot.mboost} function and moved
       documentation of \code{plot.glmboost} to the same help page.
       Resolves issue \href{https://github.com/hofnerb/mboost/issues/14}{#14}.
+      \item Better handling of errors in (single) folds of \code{cvrisk}:
+      results of folds without errors are used and a \code{warning} is
+      issued.
+      \item \code{bbs} and \code{bmono} no longer allow data outside of
+      the \code{boundary.knots} during model fitting.
+      \item Predictions for \code{bbs} and \code{bmono} now use linear
+      extrapolation (user request inspired by
+      \code{mgcv::Predict.matrix.pspline.smooth}).
+      \item Parallel computing via \code{mclapply}: Set
+      \code{mc.preschedule = FALSE} per default.
+      \item Added new option \code{options(mboost_check_df2lambda =
+	TRUE)}, which controlls if a stability check in \code{df2lambda}
+      is performed. If set to \code{FALSE} this might speed up the
+      computation of \code{df2lambda} especially with large design
+      matrices.
+      \item Prediction now also possible with \code{newdata = list()}.
+      Resolves issue
+      \href{https://github.com/hofnerb/mboost/issues/15}{#15}.
     }
   }
   \subsection{Miscellaneous}{
@@ -19,19 +37,28 @@
       Sarah Brockhaus).
       \item \file{inst/CITATION}: Added subheadings and
       tutorial paper.
+      
+      \item Stopped computing the singular vectors in \code{df2lambda}
+      as the singular values are sufficient and as
+      \dQuote{computing the singular vectors is the slow part for large
+	matrices} (proposed by Fabian Scheipl).    
     }
   }
   \subsection{Bug-fixes}{
     \itemize{
       \item Fixed bug in \code{PropOdds()} which occured if
       \code{offset} was specified: nuisance parameters \code{delta}
-      and \code{sigma} were not properly initialized.
+      and \code{sigma} were not properly initialized (spotted by Madlene Nussbaum).
+      \item Bug in \code{plot.mboost()} fixed which occured if a factor
+      with equal effect estimates for different categories was plotted.
+      \item Bug in \code{df2lambda} fixed: Make sure that \code{A} is
+      symmetric if it is \code{Matrix}-object (spotted by Souhaib Ben
+      Taieb).
+      \item Bug in \code{df2lambda} fixed. Design matrices were always
+      assumed to be of full rank.
       \item Truncate output of complete data structure when model is
       printed. Resolves issue
       \href{https://github.com/hofnerb/mboost/issues/11}{#11}.
-      \item Prediction now also possible with \code{newdata = list()}.
-      Resolves issue
-      \href{https://github.com/hofnerb/mboost/issues/15}{#15}.
       \item  Adhere to CRAN policies regarding import of base packages
       (closes \href{https://github.com/hofnerb/mboost/issues/9}{#9}).
     }

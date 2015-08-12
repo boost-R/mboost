@@ -1,5 +1,4 @@
 require("mboost")
-attach(asNamespace("mboost"))
 
 set.seed(1907)
 
@@ -20,3 +19,11 @@ confint.gam <- confint(gam, B = 100, B.mstop = 1)
 plot(confint.gam, which = 1)
 plot(confint.gam, which = 2)
 plot(confint.gam, which = 3)
+
+
+### check cvrisk (it should run even if a fold leads to an error)
+folds <- cv(model.weights(glm), type = "kfold")
+folds[1, 1] <- NA
+
+cvrisk(glm, folds = folds, papply = lapply)
+cvrisk(glm, folds = folds, papply = mclapply)

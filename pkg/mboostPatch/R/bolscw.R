@@ -57,7 +57,7 @@ bolscw <- function(X) {
             return(ret)
         }
 
-        predict <- function(bm, newdata = NULL,
+        predict <- function(bm, newdata = NULL, 
                             aggregate = c("sum", "cumsum", "none")) {
 
             aggregate <- match.arg(aggregate)
@@ -97,7 +97,7 @@ bolscw <- function(X) {
             return(X %*% cf)
         }
 
-        ret <- list(fit = fit, predict = predict, Xnames = colnames(X),
+        ret <- list(fit = fit, predict = predict, Xnames = colnames(X), 
                     MPinv = function() {
                         if (is.null(MPinvS)) MPinvS <<- t(X * weights) / sxtx
                         return(MPinvS / sxtx)

@@ -152,6 +152,15 @@ for (i in 3:10){
 stopifnot(all(diff_df < sqrt(.Machine$double.eps)))
 options(op)
 
+### check degrees of freedom for design matrices without full rank:
+x <- sample(1:3, 100, replace = TRUE)
+X <- extract(bbs(x))
+rankMatrix(X)
+## df2lambda:
+stopifnot(df2lambda(X, df = NULL, lambda = 0, weights = rep(1, 100))[["df"]] == 3)
+(res <- df2lambda(X, df = 4, weights = rep(1, 100)))
+stopifnot(res[["lambda"]] == 0)
+
 ### componentwise
 cf2 <- coef(fit(dpp(bolscw(cbind(1, xn)), weights = w), y))
 cf1 <- coef(lm(y ~ xn - 1, weights = w))
@@ -370,11 +379,11 @@ d$y <- y
 w <- as.vector(rmultinom(1, length(y), rep(1 / length(y), length(y))))
 
 m1 <- mboost(y ~ bbs(Var2, df = 3, knots = 5) %X%
-                     bbs(Var1, df = 3, knots = 7),
-                     data = d, weights = w)
-m2 <- mboost(y ~ bbs(x1, df = 3, knots = 7)%O%
+                 bbs(Var1, df = 3, knots = 7),
+             data = d, weights = w)
+m2 <- mboost(y ~ bbs(x1, df = 3, knots = 7) %O%
                  bbs(x2, df = 3, knots = 5),
-                 weights = w)
+             weights = w)
 
 stopifnot(max(abs(fitted(m1) - fitted(m2))) < tol)
 
@@ -477,3 +486,25 @@ round(extract(brandom(z1, df = 3)$dpp(rep(1, 100)), what = "lambda"), 2)
 round(extract(brandom(z1, df = 3)$dpp(rep(1, 100)), what = "df"), 2)
 round(extract(brandom(z1, lambda = 50.39)$dpp(rep(1, 100)), what = "lambda"), 2)
 round(extract(brandom(z1, lambda = 50.39)$dpp(rep(1, 100)), what = "df"), 2)
+
+
+### check if data beyond boundary knots is permitted
+set.seed(1234)
+x <- rnorm(100)
+y <- sin(x) + rnorm(100, sd = 0.1)
+plot(x, y, xlim = c(-3, 5))
+## should not work:
+try(mod <- mboost(y ~ bbs(x, boundary.knots = c(-1, 1))))
+try(mod <- mboost(y ~ bbs(x, cyclic = TRUE, boundary.knots = c(-1, 1))))
+## now fit models and check linear extrapolation
+mod <- mboost(y ~ bbs(x))
+tail(pr <- predict(mod, newdata = data.frame(x = seq(-3, 5, by = 0.1))))
+lines(seq(-3, 5, by = 0.1), pr)
+## now with bmono
+mod <- mboost(y ~ bmono(x))
+tail(pr2 <- predict(mod, newdata = data.frame(x = seq(-3, 5, by = 0.1))))
+lines(seq(-3, 5, by = 0.1), pr2, col = "red")
+## check same with cyclic splines
+mod <- mboost(y ~ bbs(x, cyclic = TRUE))
+try(predict(mod, newdata = data.frame(x = seq(-3, 5, by = 0.1))))
+

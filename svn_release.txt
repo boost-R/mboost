@@ -91,8 +91,7 @@
     Add a new section "NEWS in X.Y-series" to /man/mboost_package.Rd
       and explain the most important changes there.
 
-    R CMD build --resave-data --compact-vignettes pkg/mboostDevel
-    R CMD check --as-cran mboostDevel_XXX.tar.gz
+    R CMD build --resave-data --compact-vignettes pkg/mboostDevel && R CMD check --as-cran mboostDevel_XXX.tar.gz
 
     If differences to .Rout.save occure:
        - Manually check differences
