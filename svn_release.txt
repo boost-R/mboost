@@ -28,7 +28,7 @@
     Update inst/NEWS.Rd (see also "How to preview NEWS.Rd files")
     Update Date and Version in /man/mboost_package.Rd
 
-    R CMD build --resave-data --compact-vignettes pkg/mboostPatch && R CMD check --as-cran mboost_XXX.tar.gz
+    R CMD build --resave-data --compact-vignettes pkg/mboostPatch && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
 
     If differences to .Rout.save occure:
        - Manually check differences. You might want to use something like:
@@ -60,7 +60,7 @@
     Commit changes to pkg/mboostPatch/
 
     Now build package without test folder to be submitted to CRAN
-       R CMD buildCRAN --resave-data --compact-vignettes pkg/mboostPatch && R CMD check --as-cran mboost_XXX.tar.gz
+       R CMD buildCRAN --resave-data --compact-vignettes pkg/mboostPatch && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
     To use the script copy it to R RHOME (< enter this in the console) /bin and make it executable.
 
     Check that reverse dependencies don't break.

@@ -1,4 +1,5 @@
 make_check <- function(srcpkg, dir = "./") {
+   require("tools")
    if (dir == "") dir <- "./"
    .libPaths("")
    options(repos = "http://CRAN.at.R-project.org")
@@ -13,11 +14,13 @@ make_check <- function(srcpkg, dir = "./") {
        dir.create(cdir)
    } else {
        system(paste("rm -rf", cdir))
+       dir.create(cdir)
    }
    if (!file.exists(ddir)) {
        dir.create(ddir)
    } else {
        system(paste("rm -rf", ddir))
+       dir.create(ddir)
    }
    file.copy(srcpkg, ddir)
    download.packages(pkg, repos = options("repos"), destdir = cdir)
