@@ -1,6 +1,6 @@
 
-R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet"
-Copyright (C) 2014 The R Foundation for Statistical Computing
+R version 3.2.1 (2015-06-18) -- "World-Famous Astronaut"
+Copyright (C) 2015 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -20,7 +20,7 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-1. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.4-3. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > if (require("party")) {
@@ -132,16 +132,7 @@ for a complete list of changes.
 + }
 Loading required package: party
 Loading required package: grid
-Loading required package: zoo
-
-Attaching package: 'zoo'
-
-The following objects are masked from 'package:base':
-
-    as.Date, as.Date.numeric
-
-Loading required package: sandwich
-Loading required package: strucchange
+Loading required package: mvtnorm
 Loading required package: modeltools
 Loading required package: stats4
 
@@ -151,12 +142,22 @@ The following object is masked from 'package:stabs':
 
     parameters
 
+Loading required package: strucchange
+Loading required package: zoo
+
+Attaching package: 'zoo'
+
+The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric
+
+Loading required package: sandwich
 [1] 2.367443
 Loading required package: gbm
 Loading required package: survival
-Loading required package: splines
 Loading required package: lattice
-Loaded gbm 2.1
+Loading required package: splines
+Loaded gbm 2.1.1
 [1] 2.753747
 $surv
            [,1]
@@ -211,4 +212,4 @@ Warning message:
 > 
 > proc.time()
    user  system elapsed 
-  8.407   0.225   9.009 
+  6.276   0.154   6.643 

@@ -1,6 +1,6 @@
 
-R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet"
-Copyright (C) 2014 The R Foundation for Statistical Computing
+R version 3.2.1 (2015-06-18) -- "World-Famous Astronaut"
+Copyright (C) 2015 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -20,7 +20,7 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-1. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.4-3. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > 
@@ -190,7 +190,6 @@ See Warning section in ?coef.mboost
 +     stopifnot(all.equal(cx$loglik[2], logLik(gl)))
 + }
 Loading required package: survival
-Loading required package: splines
 > 
 > 
 > ## Cox model with predictions obtained from survFit function
@@ -598,4 +597,4 @@ See Warning section in ?coef.mboost
 > 
 > proc.time()
    user  system elapsed 
- 15.638   0.326  16.135 
+ 12.121   0.165  12.444 

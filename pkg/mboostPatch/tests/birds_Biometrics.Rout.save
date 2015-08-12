@@ -1,6 +1,6 @@
 
-R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet"
-Copyright (C) 2014 The R Foundation for Statistical Computing
+R version 3.2.1 (2015-06-18) -- "World-Famous Astronaut"
+Copyright (C) 2015 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -19,7 +19,7 @@ Type 'q()' to quit R.
 > library("mboost")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-1. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.4-3. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > data("birds", package = "TH.data")
@@ -192,7 +192,7 @@ attr(,"offset")
 [ 281] ...................................... -- risk: 129.1004 
 [ 321] ...................................... -- risk: 128.511 
 [ 361] ...................................... -- risk: 127.9744 
-[ 401] ...................................... -- risk: 127.4638 
+[ 401] ...................................... -- risk: 127.4639 
 [ 441] ...................................... -- risk: 127.0067 
 [ 481] ..................
 Final risk: 126.7845 
@@ -315,4 +315,4 @@ Final risk: 497.9626
 > 
 > proc.time()
    user  system elapsed 
- 20.078   0.342  21.018 
+ 15.190   0.145  15.674 

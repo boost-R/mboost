@@ -1,6 +1,6 @@
 
-R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet"
-Copyright (C) 2014 The R Foundation for Statistical Computing
+R version 3.2.1 (2015-06-18) -- "World-Famous Astronaut"
+Copyright (C) 2015 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -35,7 +35,7 @@ Type 'q()' to quit R.
 > library('mboost')
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-1. See ‘package?mboost’ and ‘news(package  = "mboost")’
+This is mboost 2.4-3. See ‘package?mboost’ and ‘news(package  = "mboost")’
 for a complete list of changes.
 
 > 
@@ -151,27 +151,43 @@ FP(elbowbreadth, scaling = FALSE)log(elbowbreadth)elbowbreadth^-2
 > 
 > ### ** Examples
 > 
+> ### Define a new family
+> MyGaussian <- function(){
++        Family(ngradient = function(y, f, w = 1) y - f,
++        loss = function(y, f) (y - f)^2,
++        name = "My Gauss Variant")
++ }
 > 
->     Laplace()
+> 
+> ### Multinomial logit model via a linear array model
+> ## One needs to convert the data to a list 
+> myiris <- as.list(iris)
+> ## ... and define a dummy vector with one factor level less 
+> ## than the outcome, which is used as reference category.
+> myiris$class <- factor(levels(iris$Species)[-nlevels(iris$Species)])
+> ## Now fit the linear array model
+> mlm <- mboost(Species ~ bols(Sepal.Length, df = 2) %O%
++                         bols(class, df = 2, contrasts.arg = "contr.dummy"), 
++               data = myiris,
++               family = Multinomial())
+> coef(mlm) ## one should use more boosting iterations.
+$`"bols(Sepal.Length, df = 2) %O% bols(class, df = 2, contrasts.arg = \\"contr.dummy\\")"`
+     (Intercept)_classsetosa     Sepal.Length_classsetosa 
+                  11.6398483                   -2.0190645 
+ (Intercept)_classversicolor Sepal.Length_classversicolor 
+                   2.3384902                   -0.3845469 
 
-	 Absolute Error 
-
-Loss function: abs(y - f) 
- 
-> 
->     MyGaussian <- function(){
-+            Family(ngradient = function(y, f, w = 1) y - f,
-+            loss = function(y, f) (y - f)^2,
-+            name = "My Gauss Variant")
-+     }
-> 
->     ### fitting multinomial logit model via a linear array model
->     X0 <- K0 <- diag(nlevels(iris$Species) - 1)
->     colnames(X0) <- levels(iris$Species)[-nlevels(iris$Species)]
->     mlm <- mboost(Species ~ bols(Sepal.Length, df = 2) %O%
-+                             buser(X0, K0, df = 2), data = iris,
-+                   family = Multinomial())
->     head(round(predict(mlm, type = "response"), 2))
+attr(,"offset")
+  [1] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ [38] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ [75] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[112] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[149] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[186] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[223] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[260] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[297] 0 0 0 0
+> head(round(pred <- predict(mlm, type = "response"), 2))
      setosa versicolor virginica
 [1,]   0.61       0.23      0.16
 [2,]   0.69       0.19      0.12
@@ -180,6 +196,21 @@ Loss function: abs(y - f)
 [5,]   0.65       0.21      0.14
 [6,]   0.48       0.30      0.23
 > 
+> ## Prediction with new data:
+> newdata <- as.list(iris[1,])
+> ## One always needs to keep the dummy vector class as above!
+> newdata$class <- factor(levels(iris$Species)[-nlevels(iris$Species)])
+> pred2 <- predict(mlm, type = "response", newdata = newdata)
+Warning in object$predict(newdata = newdata, which = which, aggregate = aggregate) :
+  Offset not used for prediction when ‘newdata’ is specified
+> ## check results
+> pred[1, ]
+    setosa versicolor  virginica 
+ 0.6090049  0.2319469  0.1590482 
+> pred2
+        setosa versicolor virginica
+[1,] 0.6090049  0.2319469 0.1590482
+[2,] 0.6090049  0.2319469 0.1590482
 > 
 > 
 > 
@@ -195,8 +226,8 @@ Loss function: abs(y - f)
 > base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: baselearners
 > ### Title: Base-learners for Gradient Boosting
-> ### Aliases: bols bbs bspatial brad brandom btree bmono bmrf buser bns bss
-> ###   %+% %X% %O%
+> ### Aliases: baselearners bols bbs bspatial brad brandom btree bmono bmrf
+> ###   buser bns bss %+% %X% %O%
 > ### Keywords: models
 > 
 > ### ** Examples
@@ -858,31 +889,11 @@ attr(,"contrasts")$x
 > ### ** Examples
 > 
 > 
->     ### a simple two-dimensional example: cars data
->     cars.gb <- blackboost(dist ~ speed, data = cars,
-+                           control = boost_control(mstop = 50))
-Loading required package: party
-Loading required package: grid
-Loading required package: zoo
-
-Attaching package: ‘zoo’
-
-The following objects are masked from ‘package:base’:
-
-    as.Date, as.Date.numeric
-
-Loading required package: sandwich
-Loading required package: strucchange
-Loading required package: modeltools
-Loading required package: stats4
-
-Attaching package: ‘modeltools’
-
-The following object is masked from ‘package:stabs’:
-
-    parameters
-
->     cars.gb
+> ### a simple two-dimensional example: cars data
+> cars.gb <- blackboost(dist ~ speed, data = cars,
++                       control = boost_control(mstop = 50))
+Loading required namespace: party
+> cars.gb
 
 	 Model-based Boosting
 
@@ -901,21 +912,45 @@ Offset:  42.98
 Number of baselearners:  1 
 
 > 
->     ### plot fit
->     plot(dist ~ speed, data = cars)
->     lines(cars$speed, predict(cars.gb), col = "red")
+> ### plot fit
+> plot(dist ~ speed, data = cars)
+> lines(cars$speed, predict(cars.gb), col = "red")
 > 
->     ### set up and plot additive tree model
->     ctrl <- ctree_control(maxdepth = 3)
->     viris <- subset(iris, Species != "setosa")
->     viris$Species <- viris$Species[, drop = TRUE]
->     imod <- mboost(Species ~ btree(Sepal.Length, tree_controls = ctrl) +
+> ### set up and plot additive tree model
+> if (require("party")) {
++     ctrl <- ctree_control(maxdepth = 3)
++     viris <- subset(iris, Species != "setosa")
++     viris$Species <- viris$Species[, drop = TRUE]
++     imod <- mboost(Species ~ btree(Sepal.Length, tree_controls = ctrl) +
 +                              btree(Sepal.Width, tree_controls = ctrl) +
 +                              btree(Petal.Length, tree_controls = ctrl) +
 +                              btree(Petal.Width, tree_controls = ctrl),
 +                    data = viris, family = Binomial())[500]
->     layout(matrix(1:4, ncol = 2))
->     plot(imod)
++     layout(matrix(1:4, ncol = 2))
++     plot(imod)
++ }
+Loading required package: party
+Loading required package: grid
+Loading required package: mvtnorm
+Loading required package: modeltools
+Loading required package: stats4
+
+Attaching package: ‘modeltools’
+
+The following object is masked from ‘package:stabs’:
+
+    parameters
+
+Loading required package: strucchange
+Loading required package: zoo
+
+Attaching package: ‘zoo’
+
+The following objects are masked from ‘package:base’:
+
+    as.Date, as.Date.numeric
+
+Loading required package: sandwich
 > 
 > 
 > 
@@ -924,9 +959,9 @@ Number of baselearners:  1
 > base::cat("blackboost", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
-  ‘package:strucchange’, ‘package:sandwich’, ‘package:zoo’,
-  ‘package:grid’
+detaching ‘package:party’, ‘package:strucchange’, ‘package:sandwich’,
+  ‘package:zoo’, ‘package:modeltools’, ‘package:stats4’,
+  ‘package:mvtnorm’, ‘package:grid’
 
 > nameEx("boost_family-class")
 > ### * boost_family-class
@@ -974,7 +1009,6 @@ Loss function: abs(y - f)
 > 
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("confint", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
-> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("cvrisk")
 > ### * cvrisk
@@ -1133,27 +1167,6 @@ Degrees of freedom (for mstop = 45): 1.917234
 > 
 >   ### trees
 >   blackbox <- blackboost(DEXfat ~ ., data = bodyfat)
-Loading required package: party
-Loading required package: grid
-Loading required package: zoo
-
-Attaching package: ‘zoo’
-
-The following objects are masked from ‘package:base’:
-
-    as.Date, as.Date.numeric
-
-Loading required package: sandwich
-Loading required package: strucchange
-Loading required package: modeltools
-Loading required package: stats4
-
-Attaching package: ‘modeltools’
-
-The following object is masked from ‘package:stabs’:
-
-    parameters
-
 >   cvtree <- cvrisk(blackbox, papply = lapply)
 >   plot(cvtree)
 > 
@@ -1189,11 +1202,6 @@ The following object is masked from ‘package:stabs’:
 > base::cat("cvrisk", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
-
-detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
-  ‘package:strucchange’, ‘package:sandwich’, ‘package:zoo’,
-  ‘package:grid’
-
 > nameEx("gamboost")
 > ### * gamboost
 > 
@@ -1267,7 +1275,6 @@ Degrees of freedom (for mstop = 26): 3.905132
 > ### Name: glmboost
 > ### Title: Gradient Boosting with Component-wise Linear Models
 > ### Aliases: glmboost glmboost.formula glmboost.matrix glmboost.default
-> ###   plot.glmboost
 > ### Keywords: models regression
 > 
 > ### ** Examples
@@ -1322,10 +1329,10 @@ attr(,"offset")
 +                                  control = boost_control(mstop = 2000),
 +                                  center = TRUE)
 > 
->     ## plot coefficient paths oth glmboost
+>     ## plot coefficient paths of glmboost
 >     par(mfrow=c(1,2), mai = par("mai") * c(1, 1, 1, 2.5))
->     plot(cars.gb, main="without centering")
->     plot(cars.gb_centered, main="with centering")
+>     plot(cars.gb, main = "without centering")
+>     plot(cars.gb_centered, main = "with centering")
 > 
 >     ### alternative loss function: absolute loss
 >     cars.gbl <- glmboost(dist ~ speed, data = cars,
@@ -1427,27 +1434,6 @@ detaching ‘package:Matrix’
 >   ### and a smooth non-linear smooth function in `hipcirc'
 >   mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc),
 +                 data = bodyfat)
-Loading required package: party
-Loading required package: grid
-Loading required package: zoo
-
-Attaching package: ‘zoo’
-
-The following objects are masked from ‘package:base’:
-
-    as.Date, as.Date.numeric
-
-Loading required package: sandwich
-Loading required package: strucchange
-Loading required package: modeltools
-Loading required package: stats4
-
-Attaching package: ‘modeltools’
-
-The following object is masked from ‘package:stabs’:
-
-    parameters
-
 >   layout(matrix(1:6, nc = 3, byrow = TRUE))
 >   plot(mod, ask = FALSE, main = "formula")
 > 
@@ -1491,11 +1477,6 @@ PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
 > base::cat("mboost", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
-
-detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
-  ‘package:strucchange’, ‘package:sandwich’, ‘package:zoo’,
-  ‘package:grid’
-
 > nameEx("mboost_package")
 > ### * mboost_package
 > 
@@ -1521,27 +1502,6 @@ detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
 +                                   ### hip and waist circumference
 +       bbs(kneebreadth),           ### a smooth function of kneebreadth
 +       data = bodyfat, control = boost_control(mstop = 100))
-Loading required package: party
-Loading required package: grid
-Loading required package: zoo
-
-Attaching package: ‘zoo’
-
-The following objects are masked from ‘package:base’:
-
-    as.Date, as.Date.numeric
-
-Loading required package: sandwich
-Loading required package: strucchange
-Loading required package: modeltools
-Loading required package: stats4
-
-Attaching package: ‘modeltools’
-
-The following object is masked from ‘package:stabs’:
-
-    parameters
-
 > 
 >   ### bootstrap for assessing `optimal' number of boosting iterations
 >   cvm <- cvrisk(model, papply = lapply)
@@ -1578,11 +1538,6 @@ NULL
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("mboost_package", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
-
-detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
-  ‘package:strucchange’, ‘package:sandwich’, ‘package:zoo’,
-  ‘package:grid’
-
 > nameEx("methods")
 > ### * methods
 > 
@@ -1598,8 +1553,8 @@ detaching ‘package:party’, ‘package:modeltools’, ‘package:stats4’,
 > ###   resid.mboost variable.names.glmboost variable.names.mboost risk
 > ###   risk.mboost extract extract.mboost extract.gamboost extract.glmboost
 > ###   extract.blackboost extract.blg extract.bl_lin extract.bl_tree
-> ###   logLik.mboost hatvalues.gamboost hatvalues.glmboost selected.mboost
-> ###   nuisance nuisance.mboost
+> ###   logLik.mboost hatvalues.gamboost hatvalues.glmboost selected
+> ###   selected.mboost nuisance nuisance.mboost
 > ### Keywords: methods
 > 
 > ### ** Examples
@@ -3169,6 +3124,108 @@ attr(,"boundary.knots")$upper
 > base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
 > base::cat("methods", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
+> nameEx("plot")
+> ### * plot
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: plot
+> ### Title: Plot effect estimates of boosting models
+> ### Aliases: plot plot.glmboost plot.mboost lines.mboost
+> ### Keywords: methods
+> 
+> ### ** Examples
+> 
+> 
+> ### a simple example: cars data with one random variable
+> set.seed(1234)
+> cars$z <- rnorm(50)
+> 
+> ########################################
+> ## Plot linear models
+> ########################################
+> 
+> ## fit a linear model
+> cars.lm <- glmboost(dist ~ speed + z, data = cars)
+> 
+> ## plot coefficient paths of glmboost
+> par(mfrow = c(3, 1), mar = c(4, 4, 4, 8))
+> plot(cars.lm,
++      main = "Coefficient paths (offset not included)")
+> plot(cars.lm, off2int = TRUE,
++      main = "Coefficient paths (offset included in intercept)")
+> 
+> ## plot coefficient paths only for the first 15 steps,
+> ## i.e., bevore z is selected
+> mstop(cars.lm) <- 15
+> plot(cars.lm, off2int = TRUE, main = "z is not yet selected")
+> 
+> 
+> ########################################
+> ## Plot additive models; basics
+> ########################################
+> 
+> ## fit an additive model
+> cars.gam <- gamboost(dist ~ speed + z, data = cars)
+> 
+> ## plot effects
+> par(mfrow = c(1, 2), mar = c(4, 4, 0.1, 0.1))
+> plot(cars.gam)
+> 
+> ## use same y-lims
+> plot(cars.gam, ylim = c(-50, 50))
+> 
+> ## plot only the effect of speed
+> plot(cars.gam, which = "speed")
+> ## as partial matching is used we could also use
+> plot(cars.gam, which = "sp")
+> 
+> 
+> ########################################
+> ## More complex plots
+> ########################################
+> 
+> ## Let us use more boosting iterations and compare the effects.
+> 
+> ## We change the plot type and plot both effects in one figure:
+> par(mfrow = c(1, 1), mar = c(4, 4, 4, 0.1))
+> mstop(cars.gam) <- 100
+> plot(cars.gam, which = 1, col = "red", type = "l", rug = FALSE,
++      main = "Compare effect for various models")
+> 
+> ## Now the same model with 1000 iterations
+> mstop(cars.gam) <- 1000
+> lines(cars.gam, which = 1, col = "grey", lty = "dotted")
+> 
+> ## There are some gaps in the data. Use newdata to get a smoother curve:
+> newdata <- data.frame(speed = seq(min(cars$speed), max(cars$speed),
++                                   length = 200))
+> lines(cars.gam, which = 1, col = "grey", lty = "dashed",
++       newdata = newdata)
+> 
+> ## The model with 1000 steps seems to overfit the data.
+> ## Usually one should use e.g. cross-validation to tune the model.
+> 
+> ## Finally we refit the model using linear effects as comparison
+> cars.glm <- gamboost(dist ~ speed + z, baselearner = bols, data = cars)
+> lines(cars.glm, which = 1, col = "black")
+> ## We see that all effects are more or less linear.
+> 
+> ## Add a legend
+> legend("topleft", title = "Model",
++        legend = c("... with mstop = 100", "... with mstop = 1000",
++          "... with linear effects"),
++        lty = c("solid", "dashed", "solid"),
++        col = c("red", "grey", "black"))
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("plot", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
+> cleanEx()
 > nameEx("stabsel")
 > ### * stabsel
 > 
@@ -3252,7 +3309,6 @@ PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
 > 
 > 
 > library("survival")
-Loading required package: splines
 > data("ovarian", package = "survival")
 > 
 > fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps
@@ -3323,7 +3379,7 @@ attr(,"class")
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  15.457 0.544 18.843 1.57 0.183 
+Time elapsed:  10.61 0.369 13.02 1.317 0.12 
 > grDevices::dev.off()
 null device 
           1 

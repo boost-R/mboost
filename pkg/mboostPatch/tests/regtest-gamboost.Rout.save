@@ -1,6 +1,6 @@
 
-R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet"
-Copyright (C) 2014 The R Foundation for Statistical Computing
+R version 3.2.1 (2015-06-18) -- "World-Famous Astronaut"
+Copyright (C) 2015 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -20,12 +20,11 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-1. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.4-3. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > require("survival")
 Loading required package: survival
-Loading required package: splines
 > 
 > set.seed(290875)
 > 
@@ -194,27 +193,7 @@ In gamboost(fm2, data = tmp, base = "bss", dfbase = 3) :
 > fm1 <- y ~ btree(x1) + btree(x2)
 > fm2 <- y ~ x1 + x2
 > mod1 <- gamboost(fm1, data = tmp)
-Loading required package: party
-Loading required package: grid
-Loading required package: zoo
-
-Attaching package: 'zoo'
-
-The following objects are masked from 'package:base':
-
-    as.Date, as.Date.numeric
-
-Loading required package: sandwich
-Loading required package: strucchange
-Loading required package: modeltools
-Loading required package: stats4
-
-Attaching package: 'modeltools'
-
-The following object is masked from 'package:stabs':
-
-    parameters
-
+Loading required namespace: party
 > mod2 <- gamboost(fm2, data = tmp, base = "btree")
 > stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
 > stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
@@ -515,4 +494,4 @@ Warning in Xfun(mf, vary, args) :
 > 
 > proc.time()
    user  system elapsed 
- 11.083   0.441  11.826 
+  7.457   0.134   7.827 
