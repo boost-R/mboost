@@ -10,7 +10,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
 
     newX <- function(newdata = NULL) {
         if (!is.null(newdata)) {
-            mf <- check_newdata(newdata, blg, mf)
+            mf <- check_newdata(newdata, blg, mf, to.data.frame = FALSE)
         }
         return(Xfun(mf, vary, args))
     }

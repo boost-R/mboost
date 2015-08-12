@@ -235,7 +235,7 @@ solveLSEI <- function(XtX, Xty, D = NULL) {
     cf
 }
 
-check_newdata <- function(newdata, blg, mf) {
+check_newdata <- function(newdata, blg, mf, to.data.frame = TRUE) {
     nm <- names(blg)
     if (!all(nm %in% names(newdata)))
         stop(sQuote("newdata"),
@@ -251,7 +251,7 @@ check_newdata <- function(newdata, blg, mf) {
                 call. = FALSE)
     ## subset data
     mf <- newdata[nm]
-    if (is.list(mf))
+    if (is.list(mf) && to.data.frame)
         mf <- as.data.frame(mf)
     return(mf)
 }
