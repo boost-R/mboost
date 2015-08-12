@@ -1,7 +1,7 @@
 Package: mboost
 Title: Model-Based Boosting
-Version: 2.4-2
-Date: 2015-02-12
+Version: 2.4-3
+Date: 2015-08-12
 Authors@R: c(person("Torsten", "Hothorn", role = c("aut", "cre"),
                     email = "Torsten.Hothorn@R-project.org"),
              person("Peter", "Buehlmann", role = "aut"),
@@ -22,4 +22,5 @@ Suggests: party (>= 1.0-3), TH.data, MASS, fields, BayesX, gbm, mlbench,
         RColorBrewer, rpart (>= 4.0-3), randomForest, nnet
 LazyData: yes
 License: GPL-2
+BugReports: https://github.com/hofnerb/mboost/issues
 URL: http://mboost.r-forge.r-project.org/, https://github.com/hofnerb/mboost

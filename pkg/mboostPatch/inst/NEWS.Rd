@@ -1,7 +1,7 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.4-3 (2015-03-20)}{
+\section{Changes in mboost version 2.4-3 (2015-08-12)}{
   \subsection{User-visible changes}{
     \itemize{
       \item Added documentation for \code{plot.mboost} function and moved
@@ -32,6 +32,8 @@
       \item Prediction now also possible with \code{newdata = list()}.
       Resolves issue
       \href{https://github.com/hofnerb/mboost/issues/15}{#15}.
+      \item  Adhere to CRAN policies regarding import of base packages
+      (closes \href{https://github.com/hofnerb/mboost/issues/9}{#9}).
     }
   }
 }
