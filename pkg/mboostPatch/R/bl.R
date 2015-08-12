@@ -653,22 +653,7 @@ bl_lin <- function(blg, Xfun, args) {
 
     newX <- function(newdata = NULL) {
         if (!is.null(newdata)) {
-            nm <- names(blg)
-            if (!all(nm %in% names(newdata)))
-                stop(sQuote("newdata"),
-                     " must contain all predictor variables,",
-                     " which were used to specify the model.")
-            if (!class(newdata) %in% c("list", "data.frame"))
-                stop(sQuote("newdata"), " must be either a data.frame or a list")
-            if (any(duplicated(nm)))  ## removes duplicates
-                nm <- unique(nm)
-            if (!all(sapply(newdata[nm], class) == sapply(mf, class)))
-                stop("Variables in ", sQuote("newdata"),
-                     " must have the same classes as in the original data set")
-            ## subset data
-            mf <- newdata[nm]
-            if (is.list(mf))
-                mf <- as.data.frame(mf)
+            mf <- check_newdata(newdata, blg, mf)
         }
         return(Xfun(mf, vary, args))
     }
