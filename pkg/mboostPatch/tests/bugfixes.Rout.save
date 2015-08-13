@@ -20,7 +20,7 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-3. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.5-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > require("Matrix")
@@ -370,6 +370,9 @@ Error in object$newX(newdata) :
 > x2 <- rnorm(100)
 > data <- data.frame(y=y, x1=x1, x2=x2, z=z)
 > model <- gamboost(y ~ bspatial(x1,x2, by=z), data = data)
+Warning message:
+In structure(if (useGrad) which.min(diff1) else if (Meth == "qr") { :
+  rankMatrix(x, method='qr'): computing t(x) as nrow(x) < ncol(x)
 > stopifnot(!is.na(predict(model,data[1,-1])))
 > 
 > ### bols with intercept = FALSE for categorical covariates was broken
@@ -699,6 +702,8 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 8: In buser(x1, K = 1, lambda = 0) : base-learner contains missing values;
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
+9: In structure(if (useGrad) which.min(diff1) else if (Meth == "qr") { :
+  rankMatrix(x, method='qr'): computing t(x) as nrow(x) < ncol(x)
 > 
 > ## check handling of lists without names
 > n <- 100
@@ -746,4 +751,4 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 > 
 > proc.time()
    user  system elapsed 
- 22.141   0.279  22.817 
+ 21.160   0.250  21.759 

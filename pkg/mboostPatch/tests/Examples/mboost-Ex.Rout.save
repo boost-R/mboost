@@ -20,22 +20,10 @@ Type 'q()' to quit R.
 > pkgname <- "mboost"
 > source(file.path(R.home("share"), "R", "examples-header.R"))
 > options(warn = 1)
-> base::assign(".ExTimings", "mboost-Ex.timings", pos = 'CheckExEnv')
-> base::cat("name\tuser\tsystem\telapsed\n", file=base::get(".ExTimings", pos = 'CheckExEnv'))
-> base::assign(".format_ptime",
-+ function(x) {
-+   if(!is.na(x[4L])) x[1L] <- x[1L] + x[4L]
-+   if(!is.na(x[5L])) x[2L] <- x[2L] + x[5L]
-+   options(OutDec = '.')
-+   format(x[1L:3L], digits = 7L)
-+ },
-+ pos = 'CheckExEnv')
-> 
-> ### * </HEADER>
 > library('mboost')
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-3. See ‘package?mboost’ and ‘news(package  = "mboost")’
+This is mboost 2.5-0. See ‘package?mboost’ and ‘news(package  = "mboost")’
 for a complete list of changes.
 
 > 
@@ -46,7 +34,6 @@ for a complete list of changes.
 > 
 > flush(stderr()); flush(stdout())
 > 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: FP
 > ### Title: Fractional Polynomials
 > ### Aliases: FP
@@ -133,15 +120,12 @@ FP(elbowbreadth, scaling = FALSE)log(elbowbreadth)elbowbreadth^-2
 > 
 > 
 > 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("FP", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("Family")
 > ### * Family
 > 
 > flush(stderr()); flush(stdout())
 > 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: Family
 > ### Title: Gradient Boosting Families
 > ### Aliases: Family AdaExp Binomial GaussClass GaussReg Gaussian Huber
@@ -210,24 +194,20 @@ Warning in object$predict(newdata = newdata, which = which, aggregate = aggregat
 > pred2
         setosa versicolor virginica
 [1,] 0.6090049  0.2319469 0.1590482
-[2,] 0.6090049  0.2319469 0.1590482
 > 
 > 
 > 
 > 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("Family", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("baselearners")
 > ### * baselearners
 > 
 > flush(stderr()); flush(stdout())
 > 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: baselearners
 > ### Title: Base-learners for Gradient Boosting
-> ### Aliases: baselearners bols bbs bspatial brad brandom btree bmono bmrf
-> ###   buser bns bss %+% %X% %O%
+> ### Aliases: baselearners baselearner base-learner bols bbs bspatial brad
+> ###   brandom btree bmono bmrf buser bns bss %+% %X% %O%
 > ### Keywords: models
 > 
 > ### ** Examples
@@ -691,8 +671,12 @@ bols(x_center, intercept = FALSE).x_center
 >   lines(newX + 2 * pi, sin(newX), lty="dashed")
 >   lines(newX, predict(mod, data.frame(x = newX)),
 +         col="red", lwd = 1.5)
+Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
 >   lines(newX + 2 * pi, predict(mod, data.frame(x = newX)),
 +         col="blue", lwd=1.5)
+Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
 >   plot(x,y, main="bbs (cyclic)", cex=0.5)
 >   lines(newX, sin(newX), lty="dotted")
 >   lines(newX + 2 * pi, sin(newX), lty="dashed")
@@ -871,8 +855,6 @@ attr(,"contrasts")$x
 > 
 > 
 > 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("baselearners", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("blackboost")
@@ -880,7 +862,6 @@ attr(,"contrasts")$x
 > 
 > flush(stderr()); flush(stdout())
 > 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: blackboost
 > ### Title: Gradient Boosting with Regression Trees
 > ### Aliases: blackboost
@@ -955,8 +936,6 @@ Loading required package: sandwich
 > 
 > 
 > 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("blackboost", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
 detaching ‘package:party’, ‘package:strucchange’, ‘package:sandwich’,
@@ -968,7 +947,6 @@ detaching ‘package:party’, ‘package:strucchange’, ‘package:sandwich’
 > 
 > flush(stderr()); flush(stdout())
 > 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: boost_family-class
 > ### Title: Class "boost\_family": Gradient Boosting Family
 > ### Aliases: boost_family-class show,boost_family-method
@@ -987,15 +965,12 @@ Loss function: abs(y - f)
 > 
 > 
 > 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("boost_family-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("confint")
 > ### * confint
 > 
 > flush(stderr()); flush(stdout())
 > 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: confint.mboost
 > ### Title: Pointwise Bootstrap Confidence Intervals
 > ### Aliases: confint.mboost confint.glmboost plot.mboost.ci lines.mboost.ci
@@ -1007,15 +982,12 @@ Loss function: abs(y - f)
 > 
 > 
 > 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("confint", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("cvrisk")
 > ### * cvrisk
 > 
 > flush(stderr()); flush(stdout())
 > 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: cvrisk
 > ### Title: Cross-Validation
 > ### Aliases: cvrisk cvrisk.mboost cv
@@ -1198,8 +1170,6 @@ Degrees of freedom (for mstop = 45): 1.917234
 > 
 > 
 > 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("cvrisk", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("gamboost")
@@ -1207,7 +1177,6 @@ Degrees of freedom (for mstop = 45): 1.917234
 > 
 > flush(stderr()); flush(stdout())
 > 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: gamboost
 > ### Title: Gradient Boosting with Smooth Components
 > ### Aliases: gamboost
@@ -1263,15 +1232,12 @@ Degrees of freedom (for mstop = 26): 3.905132
 > 
 > 
 > 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("gamboost", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("glmboost")
 > ### * glmboost
 > 
 > flush(stderr()); flush(stdout())
 > 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: glmboost
 > ### Title: Gradient Boosting with Component-wise Linear Models
 > ### Aliases: glmboost glmboost.formula glmboost.matrix glmboost.default
@@ -1406,8 +1372,6 @@ attr(,"offset")
 > 
 > 
 > 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("glmboost", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 
@@ -1418,7 +1382,6 @@ detaching ‘package:Matrix’
 > 
 > flush(stderr()); flush(stdout())
 > 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: mboost
 > ### Title: Model-based Gradient Boosting
 > ### Aliases: mboost mboost_fit
@@ -1435,13 +1398,13 @@ detaching ‘package:Matrix’
 >   mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc),
 +                 data = bodyfat)
 >   layout(matrix(1:6, nc = 3, byrow = TRUE))
->   plot(mod, ask = FALSE, main = "formula")
+>   plot(mod, main = "formula")
 > 
 >   ### the same
 >   with(bodyfat,
 +        mod <- mboost_fit(list(btree(age), bols(waistcirc), bbs(hipcirc)),
 +                          response = DEXfat))
->   plot(mod, ask = FALSE, main = "base-learner")
+>   plot(mod, main = "base-learner")
 > 
 >   ### use stability selection for base-learner selection
 >   library("stabs")
@@ -1473,8 +1436,6 @@ PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
 > 
 > 
 > 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("mboost", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("mboost_package")
@@ -1482,7 +1443,6 @@ PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
 > 
 > flush(stderr()); flush(stdout())
 > 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: mboost-package
 > ### Title: mboost: Model-Based Boosting
 > ### Aliases: mboost-package mboost_package package_mboost package-mboost
@@ -1535,15 +1495,12 @@ NULL
 > 
 > 
 > 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("mboost_package", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("methods")
 > ### * methods
 > 
 > flush(stderr()); flush(stdout())
 > 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: methods
 > ### Title: Methods for Gradient Boosting Objects
 > ### Aliases: mboost_methods print.glmboost print.mboost summary.mboost
@@ -3121,15 +3078,12 @@ attr(,"boundary.knots")$upper
 > 
 > 
 > 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("methods", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("plot")
 > ### * plot
 > 
 > flush(stderr()); flush(stdout())
 > 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: plot
 > ### Title: Plot effect estimates of boosting models
 > ### Aliases: plot plot.glmboost plot.mboost lines.mboost
@@ -3222,8 +3176,6 @@ attr(,"boundary.knots")$upper
 > 
 > 
 > 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("plot", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("stabsel")
@@ -3231,7 +3183,6 @@ attr(,"boundary.knots")$upper
 > 
 > flush(stderr()); flush(stdout())
 > 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: stabsel
 > ### Title: Stability Selection
 > ### Aliases: stabsel stabsel.mboost stabsel_parameters.mboost
@@ -3291,8 +3242,6 @@ PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
 > 
 > 
 > 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("stabsel", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("survFit")
@@ -3300,7 +3249,6 @@ PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
 > 
 > flush(stderr()); flush(stdout())
 > 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: survFit
 > ### Title: Survival Curves for a Cox Proportional Hazards Model
 > ### Aliases: survFit survFit.mboost plot.survFit
@@ -3373,13 +3321,11 @@ attr(,"class")
 > 
 > 
 > 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("survFit", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > ### * <FOOTER>
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  10.61 0.369 13.02 1.317 0.12 
+Time elapsed:  10.759 1.072 24.895 16.309 10.266 
 > grDevices::dev.off()
 null device 
           1 

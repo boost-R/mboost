@@ -19,7 +19,7 @@ Type 'q()' to quit R.
 > library("mboost")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-3. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.5-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > attach(asNamespace("mboost"))
@@ -241,6 +241,28 @@ In cf1 - cf2 :
 > stopifnot(all(diff_df < sqrt(.Machine$double.eps)))
 > options(op)
 > 
+> ### check degrees of freedom for design matrices without full rank:
+> x <- sample(1:3, 100, replace = TRUE)
+> X <- extract(bbs(x))
+> rankMatrix(X)
+[1] 3
+attr(,"method")
+[1] "tolNorm2"
+attr(,"useGrad")
+[1] FALSE
+attr(,"tol")
+[1] 2.220446e-14
+> ## df2lambda:
+> stopifnot(df2lambda(X, df = NULL, lambda = 0, weights = rep(1, 100))[["df"]] == 3)
+> (res <- df2lambda(X, df = 4, weights = rep(1, 100)))
+    df lambda 
+     4      0 
+Warning message:
+In df2lambda(X, df = 4, weights = rep(1, 100)) : 'df' too large:
+  Degrees of freedom cannot be larger than the rank of the design matrix.
+  Unpenalized base-learner with df = 3 used. Re-consider model specification.
+> stopifnot(res[["lambda"]] == 0)
+> 
 > ### componentwise
 > cf2 <- coef(fit(dpp(bolscw(cbind(1, xn)), weights = w), y))
 > cf1 <- coef(lm(y ~ xn - 1, weights = w))
@@ -262,7 +284,7 @@ In cf1 - cf2 :
 > f1 <- dpp(bolscw(X), weights = w)$fit
 > f1(y)$model
        coef     xselect           p 
-   39.20852  3630.00000 10000.00000 
+   38.62476  6813.00000 10000.00000 
 > 
 > ### varying coefficients
 > x1 <- runif(n, max = 2)
@@ -275,7 +297,7 @@ In cf1 - cf2 :
 > f2 <- d$predict(list(f), newdata = data.frame(x1 = 1, x2 = x2))
 > 
 > max(abs(sin(x2) - f2))
-[1] 0.7891727
+[1] 0.7299873
 > 
 > ### bols and bbs; matrix interfaces
 > n <- 10000
@@ -410,12 +432,21 @@ In data.frame(..., check.names = FALSE) :
 > y <- rnorm(100, mean = f(x1, x2), sd = 0.5)
 > mod1 <- mboost(y ~ bspatial(x1, x2, df = 6, knots = list(x1 = 10, x2 = 5)),
 +                control = boost_control(mstop = 50))
+Warning message:
+In structure(if (useGrad) which.min(diff1) else if (Meth == "qr") { :
+  rankMatrix(x, method='qr'): computing t(x) as nrow(x) < ncol(x)
 > mod21 <- mboost(y ~ bmono(x1, x2, df = 6, knots = list(x1 = 10, x2 = 5),
 +                           lambda2 = list(x1 = 10e6, x2 = 0)),
 +                 control = boost_control(mstop = 50))
+Warning message:
+In structure(if (useGrad) which.min(diff1) else if (Meth == "qr") { :
+  rankMatrix(x, method='qr'): computing t(x) as nrow(x) < ncol(x)
 > mod22 <- mboost(y ~ bmono(x1, x2, df = 6, knots = list(x1 = 10, x2 = 5),
 +                           lambda2 = list(x1 = 0, x2 = 10e6)),
 +                 control = boost_control(mstop = 50))
+Warning message:
+In structure(if (useGrad) which.min(diff1) else if (Meth == "qr") { :
+  rankMatrix(x, method='qr'): computing t(x) as nrow(x) < ncol(x)
 > 
 > diff_order <- 1
 > D1 <- kronecker(diff(diag(10 + 3 + 1), differences = diff_order),
@@ -431,14 +462,14 @@ In data.frame(..., check.names = FALSE) :
 > 
 > beta <- coef(mod21)[[1]]
 > sum((D1 %*% beta)[D1 %*% beta <= 0])
-[1] -3.277378e-13
+[1] -7.105427e-15
 > sum((D2 %*% beta)[D2 %*% beta <= 0])
 [1] -0.003959336
 > stopifnot(all(D1 %*% beta > - 2e-05))
 > 
 > beta <- coef(mod22)[[1]]
 > sum((D1 %*% beta)[D1 %*% beta <= 0])
-[1] -4.849454e-13
+[1] -3.212541e-12
 > sum((D2 %*% beta)[D2 %*% beta <= 0])
 [1] 0
 > stopifnot(all(D2 %*% beta > - 2e-05))
@@ -488,10 +519,20 @@ In data.frame(..., check.names = FALSE) :
 > 
 > stopifnot(max(abs(extract(b1, "design") - B)) < tol)
 > b1d <- b1$dpp(w)
+Warning message:
+In df2lambda(X, df = args$df, lambda = args$lambda, dmat = K, weights = w,  :
+  'df' too large:
+  Degrees of freedom cannot be larger than the rank of the design matrix.
+  Unpenalized base-learner with df = 12 used. Re-consider model specification.
 > 
 > b2 <- buser(X1, K = diag(ncol(X1))) %O%
 +       buser(X2, K = diag(ncol(X2)))
 > b2d <- b2$dpp(w)
+Warning message:
+In df2lambda(X = diag(rankMatrix(X$X1, method = "qr") * rankMatrix(X$X2,  :
+  'df' too large:
+  Degrees of freedom cannot be larger than the rank of the design matrix.
+  Unpenalized base-learner with df = 12 used. Re-consider model specification.
 > 
 > stopifnot(max(abs(get("XtX", environment(b1d$fit)) -
 +         get("XtX", environment(b2d$fit)))) < tol)
@@ -517,11 +558,11 @@ In data.frame(..., check.names = FALSE) :
 > w <- as.vector(rmultinom(1, length(y), rep(1 / length(y), length(y))))
 > 
 > m1 <- mboost(y ~ bbs(Var2, df = 3, knots = 5) %X%
-+                      bbs(Var1, df = 3, knots = 7),
-+                      data = d, weights = w)
-> m2 <- mboost(y ~ bbs(x1, df = 3, knots = 7)%O%
++                  bbs(Var1, df = 3, knots = 7),
++              data = d, weights = w)
+> m2 <- mboost(y ~ bbs(x1, df = 3, knots = 7) %O%
 +                  bbs(x2, df = 3, knots = 5),
-+                  weights = w)
++              weights = w)
 > 
 > stopifnot(max(abs(fitted(m1) - fitted(m2))) < tol)
 > 
@@ -1201,6 +1242,54 @@ lambda
 df 
  3 
 > 
+> 
+> ### check if data beyond boundary knots is permitted
+> set.seed(1234)
+> x <- rnorm(100)
+> y <- sin(x) + rnorm(100, sd = 0.1)
+> plot(x, y, xlim = c(-3, 5))
+> ## should not work:
+> try(mod <- mboost(y ~ bbs(x, boundary.knots = c(-1, 1))))
+Error in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  : 
+  some 'x' values are beyond 'boundary.knots'
+> try(mod <- mboost(y ~ bbs(x, cyclic = TRUE, boundary.knots = c(-1, 1))))
+Error in cbs(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  : 
+  some 'x' values are beyond 'boundary.knots'
+> ## now fit models and check linear extrapolation
+> mod <- mboost(y ~ bbs(x))
+> tail(pr <- predict(mod, newdata = data.frame(x = seq(-3, 5, by = 0.1))))
+            [,1]
+[76,] -0.2708137
+[77,] -0.3167285
+[78,] -0.3626432
+[79,] -0.4085580
+[80,] -0.4544727
+[81,] -0.5003875
+Warning message:
+In bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some 'x' values are beyond 'boundary.knots'; Linear extrapolation used.
+> lines(seq(-3, 5, by = 0.1), pr)
+> ## now with bmono
+> mod <- mboost(y ~ bmono(x))
+> tail(pr2 <- predict(mod, newdata = data.frame(x = seq(-3, 5, by = 0.1))))
+          [,1]
+[76,] 1.150483
+[77,] 1.156586
+[78,] 1.162690
+[79,] 1.168793
+[80,] 1.174897
+[81,] 1.181000
+Warning message:
+In bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some 'x' values are beyond 'boundary.knots'; Linear extrapolation used.
+> lines(seq(-3, 5, by = 0.1), pr2, col = "red")
+> ## check same with cyclic splines
+> mod <- mboost(y ~ bbs(x, cyclic = TRUE))
+> try(predict(mod, newdata = data.frame(x = seq(-3, 5, by = 0.1))))
+Error in cbs(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  : 
+  some 'x' values are beyond 'boundary.knots'
+> 
+> 
 > proc.time()
    user  system elapsed 
- 31.611   0.581  32.588 
+ 29.163   0.567  30.151 

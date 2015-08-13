@@ -20,7 +20,7 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-3. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.5-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > require("survival")
@@ -494,4 +494,4 @@ Warning in Xfun(mf, vary, args) :
 > 
 > proc.time()
    user  system elapsed 
-  7.457   0.134   7.827 
+  7.519   0.310   8.025 

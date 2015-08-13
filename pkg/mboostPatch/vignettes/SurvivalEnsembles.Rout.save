@@ -2,7 +2,7 @@
 > source("setup.R")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-1. See ‘package?mboost’ and ‘news(package  = "mboost")’
+This is mboost 2.5-0. See ‘package?mboost’ and ‘news(package  = "mboost")’
 for a complete list of changes.
 
 
@@ -21,22 +21,12 @@ Loading required package: rpart
 > if (!require("survival")) stop("cannot attach package ", 
 +     sQuote("survival"))
 Loading required package: survival
-Loading required package: splines
 
 > if (!require("party")) stop("cannot attach package ", 
 +     sQuote("party"))
 Loading required package: party
 Loading required package: grid
-Loading required package: zoo
-
-Attaching package: ‘zoo’
-
-The following objects are masked from ‘package:base’:
-
-    as.Date, as.Date.numeric
-
-Loading required package: sandwich
-Loading required package: strucchange
+Loading required package: mvtnorm
 Loading required package: modeltools
 Loading required package: stats4
 
@@ -46,6 +36,16 @@ The following object is masked from ‘package:stabs’:
 
     parameters
 
+Loading required package: strucchange
+Loading required package: zoo
+
+Attaching package: ‘zoo’
+
+The following objects are masked from ‘package:base’:
+
+    as.Date, as.Date.numeric
+
+Loading required package: sandwich
 
 > set.seed(290875)
 
@@ -334,4 +334,4 @@ Warning in obs - pred :
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
-  7.954   0.224   8.387 
+  5.311   0.087   5.572 

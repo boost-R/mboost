@@ -2,7 +2,7 @@
 > source("setup.R")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.4-1. See ‘package?mboost’ and ‘news(package  = "mboost")’
+This is mboost 2.5-0. See ‘package?mboost’ and ‘news(package  = "mboost")’
 for a complete list of changes.
 
 
@@ -328,4 +328,4 @@ Degrees of freedom (for mstop = 86): 11.348
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
- 13.022   0.227  13.390 
+ 10.259   0.430  10.846 
