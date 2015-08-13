@@ -65,7 +65,7 @@
 
     Check that reverse dependencies don't break.
 
-    Ftp source package to CRAN or use web form at http://xmpalantir.wu.ac.at/cransubmit/.
+    Use web form at http://xmpalantir.wu.ac.at/cransubmit/.
 
     Merge changes to R code or documentation to pkg/mboostDevel/
         cd pkg/mboostDevel/R
@@ -131,7 +131,7 @@
 
     Check that reverse dependencies don't break.
 
-    Ftp source package to CRAN or use web form at http://xmpalantir.wu.ac.at/cransubmit/.
+    Use web form at http://xmpalantir.wu.ac.at/cransubmit/.
 
     Merge changes to pkg/mboostPatch/
        (NOTE: This should not work that way as we didn't commit the name changes mboostDevel --> mboost.

@@ -34,6 +34,8 @@ make_check <- function(srcpkg, dir = "./") {
    summarize_check_packages_in_dir_results(ddir, all = TRUE)
    summarize_check_packages_in_dir_timings(ddir, all = TRUE)
 
-   tools:::check_packages_in_dir_changes(ddir, cdir, outputs = TRUE, sources = TRUE)
+   check_packages_in_dir_changes(ddir, cdir, outputs = TRUE, sources = TRUE)
    # setwd(odir)
 }
+
+package_dependencies("mboost", available.packages(), reverse = TRUE)

@@ -285,7 +285,10 @@ MyGaussian <- function(){
        name = "My Gauss Variant")
 }
 
-\donttest{
+\donttest{############################################################
+## Do not run and check these examples automatically as
+## they take some time
+
 ### Proportional odds model
 data(iris)
 iris$Species <- factor(iris$Species, ordered = TRUE)
@@ -302,17 +305,19 @@ coef(mod.PropOdds)["Sepal.Length"]
 ## make thresholds comparable to a model without intercept
 nuisance(mod.PropOdds) - coef(mod.PropOdds)["(Intercept)"] -
     attr(coef(mod.PropOdds), "offset")
+
+## End(Not run and test)
 }
 
 ### Multinomial logit model via a linear array model
-## One needs to convert the data to a list 
+## One needs to convert the data to a list
 myiris <- as.list(iris)
-## ... and define a dummy vector with one factor level less 
+## ... and define a dummy vector with one factor level less
 ## than the outcome, which is used as reference category.
 myiris$class <- factor(levels(iris$Species)[-nlevels(iris$Species)])
 ## Now fit the linear array model
 mlm <- mboost(Species ~ bols(Sepal.Length, df = 2) \%O\%
-                        bols(class, df = 2, contrasts.arg = "contr.dummy"), 
+                        bols(class, df = 2, contrasts.arg = "contr.dummy"),
               data = myiris,
               family = Multinomial())
 coef(mlm) ## one should use more boosting iterations.
@@ -326,13 +331,20 @@ pred2 <- predict(mlm, type = "response", newdata = newdata)
 ## check results
 pred[1, ]
 pred2
-\donttest{
+
+\donttest{############################################################
+## Do not run and check these examples automatically as
+## they take some time
+
 ## Compare results with nnet::multinom
 if (require("nnet")) {
     mlmn <- multinom(Species ~ Sepal.Length, data = iris)
     max(abs(fitted(mlm[1000], type = "response") -
             fitted(mlmn, type = "prob")))
+
 }
+
+## End(Not run and test)
 }
 
 }
