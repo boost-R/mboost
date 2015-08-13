@@ -18,7 +18,7 @@
       \item Parallel computing via \code{mclapply}: Set
       \code{mc.preschedule = FALSE} per default.
       \item Added new option \code{options(mboost_check_df2lambda =
-	TRUE)}, which controlls if a stability check in \code{df2lambda}
+	TRUE)}, which controls if a stability check in \code{df2lambda}
       is performed. If set to \code{FALSE} this might speed up the
       computation of \code{df2lambda} especially with large design
       matrices.
@@ -46,10 +46,10 @@
   }
   \subsection{Bug-fixes}{
     \itemize{
-      \item Fixed bug in \code{PropOdds()} which occured if
+      \item Fixed bug in \code{PropOdds()} which occurred if
       \code{offset} was specified: nuisance parameters \code{delta}
       and \code{sigma} were not properly initialized (spotted by Madlene Nussbaum).
-      \item Bug in \code{plot.mboost()} fixed which occured if a factor
+      \item Bug in \code{plot.mboost()} fixed which occurred if a factor
       with equal effect estimates for different categories was plotted.
       \item Bug in \code{df2lambda} fixed: Make sure that \code{A} is
       symmetric if it is \code{Matrix}-object (spotted by Souhaib Ben

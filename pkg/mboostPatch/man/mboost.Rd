@@ -130,13 +130,13 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc),
                 data = bodyfat)
   layout(matrix(1:6, nc = 3, byrow = TRUE))
-  plot(mod, ask = FALSE, main = "formula")
+  plot(mod, main = "formula")
 
   ### the same
   with(bodyfat,
        mod <- mboost_fit(list(btree(age), bols(waistcirc), bbs(hipcirc)),
                          response = DEXfat))
-  plot(mod, ask = FALSE, main = "base-learner")
+  plot(mod, main = "base-learner")
 
   ### use stability selection for base-learner selection
   library("stabs")
