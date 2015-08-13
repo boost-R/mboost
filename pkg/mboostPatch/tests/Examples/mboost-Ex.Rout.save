@@ -1389,7 +1389,6 @@ detaching ‘package:Matrix’
 > 
 > ### ** Examples
 > 
-> 
 >   data("bodyfat", package = "TH.data")
 > 
 >   ### formula interface: additive Gaussian model with
@@ -1406,37 +1405,8 @@ detaching ‘package:Matrix’
 +                          response = DEXfat))
 >   plot(mod, main = "base-learner")
 > 
->   ### use stability selection for base-learner selection
->   library("stabs")
->   ## fit a linear model
->   # (as this is quicker; also possible with non-linear model from above)
->   mod <- glmboost(DEXfat ~ ., data = bodyfat)
->   ## now run stability selection
->   (sbody <- stabsel(mod, q = 3, PFER = 1, sampling.type = "MB"))
-	Stability Selection without further assumptions
-
-Selected variables:
-hipcirc 
-      4 
-
-Selection probabilities:
- (Intercept)          age elbowbreadth  kneebreadth      anthro4     anthro3b 
-        0.00         0.00         0.00         0.01         0.09         0.14 
-    anthro3c     anthro3a    waistcirc      hipcirc 
-        0.24         0.61         0.92         0.99 
-
----
-Cutoff: 0.95; q: 3; PFER:  1 
-PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
-
->   opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
->   plot(sbody)
->   par(opar)
->   plot(sbody, type = "maxsel", ymargin = 6)
 > 
 > 
-> 
-> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("mboost_package")
 > ### * mboost_package
@@ -3325,7 +3295,7 @@ attr(,"class")
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  10.759 1.072 24.895 16.309 10.266 
+Time elapsed:  10.59 0.721 12.907 1.323 1.297 
 > grDevices::dev.off()
 null device 
           1 
