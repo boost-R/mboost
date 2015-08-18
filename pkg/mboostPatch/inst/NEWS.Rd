@@ -7,14 +7,14 @@
       \item Added documentation for \code{plot.mboost} function and moved
       documentation of \code{plot.glmboost} to the same help page.
       Resolves issue \href{https://github.com/hofnerb/mboost/issues/14}{#14}.
-      \item Better handling of errors in (single) folds of \code{cvrisk}:
-      results of folds without errors are used and a \code{warning} is
-      issued.
       \item \code{bbs} and \code{bmono} no longer allow data outside of
       the \code{boundary.knots} during model fitting.
       \item Predictions for \code{bbs} and \code{bmono} now use linear
       extrapolation (user request inspired by
       \code{mgcv::Predict.matrix.pspline.smooth}).
+      \item Better handling of errors in (single) folds of \code{cvrisk}:
+      results of folds without errors are used and a \code{warning} is
+      issued.
       \item Parallel computing via \code{mclapply}: Set
       \code{mc.preschedule = FALSE} per default.
       \item Added new option \code{options(mboost_check_df2lambda =
@@ -37,11 +37,10 @@
       Sarah Brockhaus).
       \item \file{inst/CITATION}: Added subheadings and
       tutorial paper.
-      
       \item Stopped computing the singular vectors in \code{df2lambda}
       as the singular values are sufficient and as
       \dQuote{computing the singular vectors is the slow part for large
-	matrices} (proposed by Fabian Scheipl).    
+	matrices} (proposed by Fabian Scheipl).
     }
   }
   \subsection{Bug-fixes}{
