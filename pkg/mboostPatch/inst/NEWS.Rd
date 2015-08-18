@@ -2,6 +2,24 @@
 \title{News for Package 'mboost'}
 
 \section{Changes in mboost version 2.5-0 (2015-08-13)}{
+  \subsection{User-visible changes} {
+    \itemize{
+    }
+  }
+  \subsection{Miscellaneous} {
+    \itemize{
+      \item Improved checks for \code{newdata}: Warnings are no longer
+      issued if data has just different types of numeric values (i.e.,
+      integer vs. double). 
+    }
+  }
+  \subsection{Bug-fixes}{
+    \itemize{
+    }
+  }
+}
+
+\section{Changes in mboost version 2.5-0 (2015-08-13)}{
   \subsection{User-visible changes}{
     \itemize{
       \item Added documentation for \code{plot.mboost} function and moved

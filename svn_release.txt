@@ -78,6 +78,7 @@
     Make sure not to modify version numbers etc. in pkg/mboostDevel
     and to add recents NEWS to pkg/mboostDevel/inst/NEWS.Rd
 
+   Update webpage. See www_src.
 
   Making a minor release
   ----------------------
@@ -143,6 +144,8 @@
 
     After a minor release, pkg/mboostDevel/ and pkg/mboostPatch/ are identical
     (with the exeption of the package names -- mboost vs. mboostDevel).
+
+   Update webpage. See www_src.
 
 
   Starting a new experimental version
