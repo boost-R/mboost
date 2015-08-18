@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Version 0.4-15</title>
+    <title>Version 2.4-1</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="">
-    <link rel="canonical" href="http://mboost.r-forge.r-project.org/2006/12/06/0.4-15/">
+    <link rel="canonical" href="http://mboost.r-forge.r-project.org/2014/12/15/2.4-1/">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="http://mboost.r-forge.r-project.org/css/main.css">
@@ -64,15 +64,29 @@ hljs.initHighlightingOnLoad();
       <div class="post">
 
   <header class="post-header">
-    <h1>Version 0.4-15</h1>
-    <p class="meta">Dec 6, 2006</p>
+    <h1>Version 2.4-1</h1>
+    <p class="meta">Dec 15, 2014</p>
   </header>
 
   <article class="post-content">
-  <ul>
-<li> fix plot problems in plot.cvrisk </li>
-<li> allow for centering of the numerical covariates in glmboost and
-gamboost </li>
+  <h2>Miscellaneous</h2>
+<ul>
+<li> Moved generic definition of selected to stabs which is required
+anyway (thus, stabs >= 0.5-0 is now required) </li>
+<li> load AML dataset (AML_Bullinger.rda) from package TH.data </li>
+<li> Updated references (for stability selection, confidence intervals
+and constrained regression) </li>
+<li> fixed inst/CITATION </li>
+<li> Refer to news(package = "mboost") instead of to the NEWS file. </li>
+</ul>
+<h2>Bug-fixes</h2>
+<ul>
+<li> Cross-validation was potentially wrong for CoxPH() models. Users
+can now choose if they want the naive cross-validation or the
+improved version by Verweij and van Houwelingen (1993); (spotted by
+Holger Reulen <hreulen _ at _ uni-goettingen.de>) </li>
+<li> Examples in \dontrun are now executable and all dependencies are
+properly stated in DESCRIPTION </li>
 </ul>
 
   </article>

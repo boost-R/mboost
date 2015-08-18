@@ -4,7 +4,7 @@ title: Getting Started
 permalink: /getting_started/
 ---
 
-Your first regression tree
+Your first boosted model
 ========================================================
 
 First, install and fire-up R on your computer. Within R, one needs to

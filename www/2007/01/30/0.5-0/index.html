@@ -70,20 +70,19 @@ hljs.initHighlightingOnLoad();
 
   <article class="post-content">
   <ul>
-<li> new `baselearner' argument to `gamboost' allowing to specify
-difference component-wise base-learners to be used. Currently
-implemented: "ssp" for smoothing splines (default), "bsp" for
-B-splines and "ols" for linear models.  The latter two haven't been
-tested yet. </li>
-<li> The `dfbase' arguments now applies to each covariate and no longer
-to each column of the design matrix. </li>
+<li> new baselearner argument to gamboost allowing to specify difference
+component-wise base-learners to be used. Currently implemented:
+"ssp" for smoothing splines (default), "bsp" for B-splines and
+"ols" for linear models.  The latter two haven't been tested yet. </li>
+<li> The dfbase arguments now applies to each covariate and no longer to
+each column of the design matrix. </li>
 <li> cvrisk() for blackboost() was broken, totally :-( </li>
 <li> centered covariates were returned by glmboost() and gamboost() </li>
 <li> Poisson() used an incorrect offset </li>
 <li> check for y being positive counts when family = "Poisson()"[B </li>
 <li> checks for Poisson() logLik() and AIC() methods </li>
 <li> fire a warning when all u > 0 or u < 0 </li>
-<li> update vignette `mboost_illustrations' </li>
+<li> update vignette mboost_illustrations </li>
 </ul>
 
   </article>
@@ -105,7 +104,7 @@ to each column of the design matrix. </li>
 
     <A class="page-link" HREF=http://CRAN.R-project.org/web/packages/mboost/mboost.pdf>Manual</A>
     
-    <A class="page-link" HREF=http://CRAN.R-project.org/src/contrib/mboost_2.4-0.tar.gz>Source</A>
+    <A class="page-link" HREF=http://CRAN.R-project.org/src/contrib/mboost_2.5-0.tar.gz>Source</A>
 
     <A class="page-link" HREF=https://r-forge.r-project.org/projects/mboost>Development</A>
 

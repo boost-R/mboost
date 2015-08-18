@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Version 0.4-15</title>
+    <title>Version 2.4-2</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="">
-    <link rel="canonical" href="http://mboost.r-forge.r-project.org/2006/12/06/0.4-15/">
+    <link rel="canonical" href="http://mboost.r-forge.r-project.org/2015/02/12/2.4-2/">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="http://mboost.r-forge.r-project.org/css/main.css">
@@ -64,15 +64,28 @@ hljs.initHighlightingOnLoad();
       <div class="post">
 
   <header class="post-header">
-    <h1>Version 0.4-15</h1>
-    <p class="meta">Dec 6, 2006</p>
+    <h1>Version 2.4-2</h1>
+    <p class="meta">Feb 12, 2015</p>
   </header>
 
   <article class="post-content">
-  <ul>
-<li> fix plot problems in plot.cvrisk </li>
-<li> allow for centering of the numerical covariates in glmboost and
-gamboost </li>
+  <h2>User-visible changes</h2>
+<ul>
+<li> Export df2lambda, hyper_bbs and bl_lin to make package FDboost
+happy. Note: These functions usually should not be called directly
+by users. </li>
+</ul>
+<h2>Miscellaneous</h2>
+<ul>
+<li> Added Hothorn et al (2010) to inst/CITATION </li>
+</ul>
+<h2>Bug-fixes</h2>
+<ul>
+<li> Changes in inst/CITATION to make CRAN happy: Citations can now be
+extracted without the need to install the package. </li>
+<li> Removed EISPACK = FALSE from eigen() as the argument is defunct and
+ignored. </li>
+<li> Changed require to requireNamespace </li>
 </ul>
 
   </article>
