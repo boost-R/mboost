@@ -4,7 +4,6 @@
 df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
                       XtX = NULL) {
 
-
     stopifnot(xor(is.null(df), is.null(lambda)))
     if (!is.null(df)) {
         rank_X <- rankMatrix(X, method = 'qr')

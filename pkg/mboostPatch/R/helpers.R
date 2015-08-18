@@ -48,7 +48,7 @@ isMATRIX <- function(x)
 
 ### rows without missings in Matrices, matrices and data.frames
 Complete.cases <- function(x) {
-    if (isMATRIX(x)) 
+    if (isMATRIX(x))
         return(rowSums(is.na(x)) == 0)
     complete.cases(x)
 }
@@ -246,10 +246,17 @@ check_newdata <- function(newdata, blg, mf, to.data.frame = TRUE) {
         stop(sQuote("newdata"), " must be either a data.frame or a list")
     if (any(duplicated(nm)))  ## removes duplicates
         nm <- unique(nm)
-    if (!all(sapply(newdata[nm], class) == sapply(mf, class)))
-        warning("Some variables in ", sQuote("newdata"),
-                " do not have the same class as in the original data set",
-                call. = FALSE)
+    cl1 <- sapply(newdata[nm], class)
+    cl2 <- sapply(mf, class)
+    if (!all(cl1 == cl2)) {
+        idx <- which(cl1 != cl2)
+        ## classes can be different when one is integer and the other is double
+        if (!all(sapply(newdata[nm][idx], is.numeric)) ||
+            !all(sapply(mf[idx], is.numeric)))
+            warning("Some variables in ", sQuote("newdata"),
+                    " do not have the same class as in the original data set",
+                    call. = FALSE)
+    }
     ## subset data
     mf <- newdata[nm]
     if (is.list(mf) && to.data.frame)
