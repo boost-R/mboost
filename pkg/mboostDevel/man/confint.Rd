@@ -132,6 +132,10 @@
 }
 \examples{
 \donttest{
+############################################################
+## Do not run these examples automatically as they take
+## some time (~ 30 seconds depending on the system)
+
 ### a simple linear example
 set.seed(1907)
 data <- data.frame(x1 = rnorm(100), x2 = rnorm(100),

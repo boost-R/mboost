@@ -63,6 +63,19 @@ LazyData: \tab yes\cr
 
 }
 
+\section{NEWS in 2.5-series}{
+
+  Crossvaliation does not stop on errors in single folds anymore an was
+  sped up by setting \code{mc.preschedule = FALSE} if parallel
+  computations via \code{\link{mclapply}} are used. The
+  \code{\link{plot.mboost}} function is now documented. Values outside
+  the boundary knots are now better handeled (forbidden during fitting,
+  while linear extrapolation is used for prediction). Further perfomance
+  improvements and a lot of bug fixes have been added.
+
+  \bold{For more changes see}\cr\code{news(Version >= "2.5-0", package  = "mboostDevel")}
+}
+
 \section{NEWS in 2.4-series}{
 
   Bootstrap confidence intervals have been implemented in the novel

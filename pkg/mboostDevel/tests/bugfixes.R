@@ -477,3 +477,24 @@ names(coef(mod3))
 extract(mod1, "bnames")
 extract(mod2, "bnames")
 extract(mod3, "bnames")
+
+## check handling of newdata = list(), at least for common scenarios with lists
+## [https://github.com/hofnerb/mboost/issues/15]
+data("bodyfat", package = "TH.data")
+bf <- as.list(bodyfat)
+mod <- mboost(DEXfat ~ bols(waistcirc) + bmono(hipcirc) + btree(age),
+              data = bf)
+## predict with data frame
+nd <- bodyfat[1:2,]
+pr1 <- predict(mod, newdata = nd)
+## predict with list
+nd <- as.list(bodyfat[1:2,])
+pr2 <- predict(mod, newdata = nd)
+stopifnot(pr1 == pr2)
+## check plotting
+nd <- list(waistcirc = 1, age = 1,
+           hipcirc = seq(min(bf$hipcirc), max(bf$hipcirc), length = 100))
+plot(mod, which = 2, newdata = nd)
+nd <- data.frame(waistcirc = 1, age = 1,
+                 hipcirc = seq(min(bf$hipcirc), max(bf$hipcirc), length = 100))
+plot(mod, which = 2, newdata = nd)

@@ -1,4 +1,5 @@
 \name{baselearners}
+\alias{baselearners}
 \alias{baselearner}
 \alias{base-learner}
 \alias{bols}
@@ -588,7 +589,11 @@ bl1 \%O\% bl2
   form2 <- y ~ bols(x1) + bols(x2) + bols(x1, by = x2, intercept = FALSE) +
                bspatial(x1, x2, knots = 12, center = TRUE, df = 1)
 
-\donttest{  mod1 <- gamboost(form1)
+\donttest{############################################################
+## Do not run and check these examples automatically as
+## they take some time
+
+  mod1 <- gamboost(form1)
   plot(mod1)
 
   mod2 <- gamboost(form2)
@@ -599,6 +604,8 @@ bl1 \%O\% bl2
   df <- expand.grid(x1 = unique(x1), x2 = unique(x2))
   df$pred <- predict(mod2, newdata = df)
   levelplot(pred ~ x1 * x2, data = df)
+
+## End(Not run and test)
 }
 
   ## specify radial basis function base-learner for spatial effect
@@ -608,14 +615,19 @@ bl1 \%O\% bl2
   ## (not really a good setting)
   form4 <- y ~ brad(x1, x2, knots = 50, args = list(theta = 0.4))
 
-\donttest{  mod3 <- gamboost(form3)
-plot(mod3)
-dim(extract(mod3, what = "design", which = "brad")[[1]])
-knots <- attr(extract(mod3, what = "design", which = "brad")[[1]], "knots")
+\donttest{############################################################
+## Do not run and check these examples automatically as
+## they take some time
+  mod3 <- gamboost(form3)
+  plot(mod3)
+  dim(extract(mod3, what = "design", which = "brad")[[1]])
+  knots <- attr(extract(mod3, what = "design", which = "brad")[[1]], "knots")
 
-mod4 <- gamboost(form4)
-dim(extract(mod4, what = "design", which = "brad")[[1]])
-plot(mod4)
+  mod4 <- gamboost(form4)
+  dim(extract(mod4, what = "design", which = "brad")[[1]])
+  plot(mod4)
+
+## End(Not run and test)
 }
 
   ### random intercept
@@ -698,7 +710,11 @@ plot(mod4)
   signif(cf_center, 3)
   signif(coef(lm(y ~ x, data = tmpdata)), 3)
 
-\donttest{  ### large data set with ties
+\donttest{############################################################
+## Do not run and check these examples automatically as
+## they take some time
+
+  ### large data set with ties
   nunique <- 100
   xindex <- sample(1:nunique, 1000000, replace = TRUE)
   x <- runif(nunique)
@@ -724,6 +740,8 @@ plot(mod4)
 
   all.equal(c1, c2)
   all.equal(c1, c3)
+
+## End(Not run and test)
 }
 
   ### cyclic P-splines
@@ -792,7 +810,11 @@ plot(mod4)
   volf <- matrix(fitted(mod), nrow = nrow(volcano))
   image(volf, main = "fitted")
 
-\donttest{  ## the old-fashioned way, a waste of space and time
+\donttest{############################################################
+## Do not run and check these examples automatically as
+## they take some time
+
+  ## the old-fashioned way, a waste of space and time
   x <- expand.grid(x1, x2)
   modx <- mboost(vol ~ bbs(Var2, df = 3, knots = 10) \%X\%
                        bbs(Var1, df = 3, knots = 10), data = x,
@@ -800,6 +822,8 @@ plot(mod4)
   modx[250]
 
   max(abs(fitted(mod) - fitted(modx)))
+
+## End(Not run and test)
 }
 
   ### setting contrasts via contrasts.arg

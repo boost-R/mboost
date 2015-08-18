@@ -174,15 +174,17 @@ distribution approximation used in Ma and Huang (2005).
 
   Families with an additional scale parameter can be used for fitting
   models as well: \code{PropOdds()} leads to proportional odds models
-  for ordinal outcome variables. When using this family, an ordered set of
-  threshold parameters is re-estimated in each boosting iteration.
-  \code{NBinomial()} leads to regression models with a negative binomial
-  conditional distribution of the response. \code{Weibull()}, \code{Loglog()},
-  and \code{Lognormal()} implement the negative log-likelihood functions
-  of accelerated failure time models with Weibull, log-logistic, and
-  lognormal distributed outcomes, respectively. Hence, parametric survival
-  models can be boosted using these families. For details see Schmid and
-  Hothorn (2008) and Schmid et al. (2010).
+  for ordinal outcome variables (Schmid et al., 2011). When using this
+  family, an ordered set of threshold parameters is re-estimated in each
+  boosting iteration. An example is given below which also shows how to
+  obtain the thresholds. \code{NBinomial()} leads to regression models with
+  a negative binomial conditional distribution of the response.
+  \code{Weibull()}, \code{Loglog()}, and \code{Lognormal()} implement
+  the negative log-likelihood functions of accelerated failure time
+  models with Weibull, log-logistic, and lognormal distributed outcomes,
+  respectively. Hence, parametric survival models can be boosted using
+  these families. For details see Schmid and Hothorn (2008) and Schmid
+  et al. (2010).
 
   \code{Gehan()} implements rank-based estimation of survival data in an
   accelerated failure time model. The loss function is defined as the sum
@@ -204,8 +206,8 @@ distribution approximation used in Ma and Huang (2005).
   model specification (see example).  More specifically, the predictor must
   be in the form of a linear array model (see \code{\link{\%O\%}}).  Note
   that this family does not work with tree-based base-learners at the
-  moment.  The class corresponding to the last level of the factor coding
-  the response is uses as reference class.
+  moment. The class corresponding to the last level of the factor coding
+  of the response is used as reference class.
 
 }
 \section{Warning}{
@@ -250,7 +252,12 @@ distribution approximation used in Ma and Huang (2005).
     Matthias Schmid, Sergej Potapov, Annette Pfahlberg,
     and Torsten Hothorn (2010). Estimation and regularization techniques for
     regression models with multidimensional prediction functions.
-    \emph{Statistics and Computing}, \bold{20}, 139-150.
+    \emph{Statistics and Computing}, \bold{20}, 139--150.
+
+    Schmid, M., T. Hothorn, K. O. Maloney, D. E. Weller and S. Potapov
+    (2011): Geoadditive regression modeling of stream biological
+    condition. \emph{Environmental and Ecological Statistics},
+    \bold{18}(4), 709--733.
 
     Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
     (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
@@ -271,31 +278,74 @@ distribution approximation used in Ma and Huang (2005).
     \code{AUC()} was donated by Fabian Scheipl.
 }
 \examples{
+### Define a new family
+MyGaussian <- function(){
+       Family(ngradient = function(y, f, w = 1) y - f,
+       loss = function(y, f) (y - f)^2,
+       name = "My Gauss Variant")
+}
 
-    Laplace()
+\donttest{############################################################
+## Do not run and check these examples automatically as
+## they take some time
 
-    MyGaussian <- function(){
-           Family(ngradient = function(y, f, w = 1) y - f,
-           loss = function(y, f) (y - f)^2,
-           name = "My Gauss Variant")
-    }
+### Proportional odds model
+data(iris)
+iris$Species <- factor(iris$Species, ordered = TRUE)
+if (require("MASS")) {
+    (mod.polr <- polr(Species  ~ Sepal.Length, data = iris))
+}
+mod.PropOdds <- glmboost(Species  ~ Sepal.Length, data = iris,
+                         family = PropOdds(nuirange = c(-0.5, 3)))
+mstop(mod.PropOdds) <- 1000
+## thresholds are treated as nuisance parameters, to extract these use
+nuisance(mod.PropOdds)
+## effect estimate
+coef(mod.PropOdds)["Sepal.Length"]
+## make thresholds comparable to a model without intercept
+nuisance(mod.PropOdds) - coef(mod.PropOdds)["(Intercept)"] -
+    attr(coef(mod.PropOdds), "offset")
 
-    ### fitting multinomial logit model via a linear array model
-    X0 <- K0 <- diag(nlevels(iris$Species) - 1)
-    colnames(X0) <- levels(iris$Species)[-nlevels(iris$Species)]
-    mlm <- mboost(Species ~ bols(Sepal.Length, df = 2) \%O\%
-                            buser(X0, K0, df = 2), data = iris,
-                  family = Multinomial())
-    head(round(predict(mlm, type = "response"), 2))
+## End(Not run and test)
+}
 
-    \donttest{
-    if (require("nnet")) {
-        ### compare results with nnet::multinom
-        mlmn <- multinom(Species ~ Sepal.Length, data = iris)
-        max(abs(fitted(mlm[1000], type = "response") -
-                fitted(mlmn, type = "prob")))
-        }
-    }
+### Multinomial logit model via a linear array model
+## One needs to convert the data to a list
+myiris <- as.list(iris)
+## ... and define a dummy vector with one factor level less
+## than the outcome, which is used as reference category.
+myiris$class <- factor(levels(iris$Species)[-nlevels(iris$Species)])
+## Now fit the linear array model
+mlm <- mboost(Species ~ bols(Sepal.Length, df = 2) \%O\%
+                        bols(class, df = 2, contrasts.arg = "contr.dummy"),
+              data = myiris,
+              family = Multinomial())
+coef(mlm) ## one should use more boosting iterations.
+head(round(pred <- predict(mlm, type = "response"), 2))
+
+## Prediction with new data:
+newdata <- as.list(iris[1,])
+## One always needs to keep the dummy vector class as above!
+newdata$class <- factor(levels(iris$Species)[-nlevels(iris$Species)])
+pred2 <- predict(mlm, type = "response", newdata = newdata)
+## check results
+pred[1, ]
+pred2
+
+\donttest{############################################################
+## Do not run and check these examples automatically as
+## they take some time
+
+## Compare results with nnet::multinom
+if (require("nnet")) {
+    mlmn <- multinom(Species ~ Sepal.Length, data = iris)
+    max(abs(fitted(mlm[1000], type = "response") -
+            fitted(mlmn, type = "prob")))
+
+}
+
+## End(Not run and test)
+}
 
 }
 \keyword{models}

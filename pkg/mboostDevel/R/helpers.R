@@ -235,3 +235,31 @@ solveLSEI <- function(XtX, Xty, D = NULL) {
                    bvec = rep(0, nrow(D)))$solution
     cf
 }
+
+check_newdata <- function(newdata, blg, mf, to.data.frame = TRUE) {
+    nm <- names(blg)
+    if (!all(nm %in% names(newdata)))
+        stop(sQuote("newdata"),
+             " must contain all predictor variables,",
+             " which were used to specify the model.")
+    if (!class(newdata) %in% c("list", "data.frame"))
+        stop(sQuote("newdata"), " must be either a data.frame or a list")
+    if (any(duplicated(nm)))  ## removes duplicates
+        nm <- unique(nm)
+    cl1 <- sapply(newdata[nm], class)
+    cl2 <- sapply(mf, class)
+    if (!all(cl1 == cl2)) {
+        idx <- which(cl1 != cl2)
+        ## classes can be different when one is integer and the other is double
+        if (!all(sapply(newdata[nm][idx], is.numeric)) ||
+            !all(sapply(mf[idx], is.numeric)))
+            warning("Some variables in ", sQuote("newdata"),
+                    " do not have the same class as in the original data set",
+                    call. = FALSE)
+    }
+    ## subset data
+    mf <- newdata[nm]
+    if (is.list(mf) && to.data.frame)
+        mf <- as.data.frame(mf)
+    return(mf)
+}

@@ -10,7 +10,14 @@ bl_lin_matrix <- function(blg, Xfun, args) {
 
     newX <- function(newdata = NULL, prediction = FALSE) {
         if (!is.null(newdata)) {
-            mf <- check_newdata(newdata, blg, mf, to.data.frame = FALSE)
+            if (!all(names(blg) %in% names(newdata)))
+                stop("Variable(s) missing in ", sQuote("newdata"), ":\n\t",
+                     names(blg)[!names(blg) %in% names(newdata)])
+            # stopifnot(all(class(newdata) == class(mf)))
+            nm <- names(blg)
+            if (any(duplicated(nm)))  ## removes duplicates
+                nm <- unique(nm)
+            mf <- newdata[nm]
         }
         ## this argument is currently only used in X_bbs --> bsplines
         args$prediction <- prediction
@@ -54,7 +61,12 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         if (is.null(args$lambda)) {
 
             ### <FIXME>: is there a better way to feed XtX into lambdadf?
+<<<<<<< HEAD
+            ### <FIXME>: is ncol(X$X1) + ncol(X$X2) ok or should it be rankMatrix(...)?
+            lambdadf <- df2lambda(X = diag(ncol(X$X1) + ncol(X$X2)),
+=======
             lambdadf <- df2lambda(X = diag(rankMatrix(X$X1, method = 'qr') * rankMatrix(X$X2, method = 'qr')),
+>>>>>>> mboost
                                   df = args$df, lambda = args$lambda,
                                   dmat = K, weights = weights, XtX = XtX)
             ### </FIXME>
@@ -135,6 +147,8 @@ bl_lin_matrix <- function(blg, Xfun, args) {
             cf <- lapply(bm, function(x) x$model)
             if(!is.null(newdata)) {
                 index <- NULL
+                nm <- names(blg)
+                newdata <- newdata[nm]
                 X <- newX(newdata, prediction = TRUE)$X
             }
             ncfprod <- function(b)

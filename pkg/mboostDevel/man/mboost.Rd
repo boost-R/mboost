@@ -121,7 +121,6 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   \code{\link{boost_control}}, \code{\link{Family}} and
   \code{\link[mboostDevel]{methods}}. }
 \examples{
-
   data("bodyfat", package = "TH.data")
 
   ### formula interface: additive Gaussian model with
@@ -130,25 +129,13 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc),
                 data = bodyfat)
   layout(matrix(1:6, nc = 3, byrow = TRUE))
-  plot(mod, ask = FALSE, main = "formula")
+  plot(mod, main = "formula")
 
   ### the same
   with(bodyfat,
        mod <- mboost_fit(list(btree(age), bols(waistcirc), bbs(hipcirc)),
                          response = DEXfat))
-  plot(mod, ask = FALSE, main = "base-learner")
-
-  ### use stability selection for base-learner selection
-  library("stabs")
-  ## fit a linear model
-  # (as this is quicker; also possible with non-linear model from above)
-  mod <- glmboost(DEXfat ~ ., data = bodyfat)
-  ## now run stability selection
-  (sbody <- stabsel(mod, q = 3, PFER = 1, sampling.type = "MB"))
-  opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
-  plot(sbody)
-  par(opar)
-  plot(sbody, type = "maxsel", ymargin = 6)
+  plot(mod, main = "base-learner")
 }
 \keyword{models}
 \keyword{nonlinear}
