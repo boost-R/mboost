@@ -51,7 +51,7 @@ btree <- function(...,
         fm <- as.formula(paste(rname, " ~ ", paste(colnames(mf), collapse = "+")))
         df <- mf
         df[[rname]] <- y
-        object <- party:::ctreedpp(fm, data = df)
+        object <- party_intern(fm, data = df, fun = "ctreedpp")
         fitmem <- party::ctree_memory(object, TRUE)
         where <- rep.int(0, nrow(mf))
         storage.mode(where) <- "integer"
@@ -59,14 +59,15 @@ btree <- function(...,
 
         fitfun <- function(y) {
 
-            party:::R_modify_response(y, object@responses)
-            tree <- party:::R_TreeGrow(object, weights, fitmem, ctrl,
-                          where)
-            party:::R_remove_weights(tree, TRUE)
+            party_intern(y, object@responses, fun = "R_modify_response")
+            tree <- party_intern(object, weights, fitmem, ctrl, where,
+                                 fun = "R_TreeGrow")
+            party_intern(tree, TRUE, fun = "R_remove_weights")
 
             fitted <- function() {
-                wh <- party:::R_get_nodeID(tree, object@inputs, 0.0)
-                return(unlist(party:::R_getpredictions(tree, wh)))
+                wh <- party_intern(tree, object@inputs, 0.0,
+                                   fun = "R_get_nodeID")
+                return(unlist(party_intern(tree, wh, fun = "R_getpredictions")))
             }
 
             ret <- list(model = tree, fitted = fitted)
@@ -80,13 +81,15 @@ btree <- function(...,
             if (is.null(newdata)) {
                 newinp <- object@inputs
             } else {
-                newinp <- party:::newinputs(object, newdata)
+                newinp <- party_intern(object, newdata, fun = "newinputs")
             }
 
             pr <- 0
             for (i in 1:length(bm)) {
-                wh <- party:::R_get_nodeID(bm[[i]]$model, newinp, 0.0)
-                pri <- unlist(party:::R_getpredictions(bm[[i]]$model, wh))
+                wh <- party_intern(bm[[i]]$model, newinp, 0.0,
+                                   fun = "R_get_nodeID")
+                pri <- unlist(party_intern(bm[[i]]$model, wh,
+                                           fun = "R_getpredictions"))
                 if (aggregate == "sum") {
                     pr <- pr + pri
                 } else {

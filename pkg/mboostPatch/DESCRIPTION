@@ -1,13 +1,13 @@
 Package: mboost
 Title: Model-Based Boosting
-Version: 2.5-0
-Date: 2015-08-13
-Authors@R: c(person("Torsten", "Hothorn", role = c("aut", "cre"),
-                    email = "Torsten.Hothorn@R-project.org"),
+Version: 2.5-1
+Date: 2015-08-19
+Authors@R: c(person("Torsten", "Hothorn", role = "aut"),
              person("Peter", "Buehlmann", role = "aut"),
              person("Thomas", "Kneib", role = "aut"),
              person("Matthias", "Schmid", role = "aut"),
-             person("Benjamin", "Hofner", role = "aut"),
+             person("Benjamin", "Hofner", role = c("aut", "cre"),
+	            email = "benjamin.hofner@fau.de"),
              person("Fabian", "Sobotka", role = "ctb"),
              person("Fabian", "Scheipl", role = "ctb"))
 Description: Functional gradient descent algorithm
@@ -17,8 +17,8 @@ Description: Functional gradient descent algorithm
   and interaction models to potentially high-dimensional data.
 Depends: R (>= 2.14.0), methods, stats, parallel, stabs (>= 0.5-0)
 Imports: Matrix, survival, splines, lattice, nnls, quadprog, utils,
-	graphics, grDevices
-Suggests: party (>= 1.0-3), TH.data, MASS, fields, BayesX, gbm, mlbench,
+	graphics, grDevices, party (>= 1.0-23)
+Suggests: TH.data, MASS, fields, BayesX, gbm, mlbench,
         RColorBrewer, rpart (>= 4.0-3), randomForest, nnet
 LazyData: yes
 License: GPL-2
