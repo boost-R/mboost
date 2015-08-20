@@ -1,17 +1,23 @@
 ## check development version of mboost
 ## see http://docs.travis-ci.com/user/languages/r/
 
-language: r
+## test multiple directories 
+## (see https://lord.io/blog/2014/travis-multiple-subdirs/)
+env:
+ - TEST_DIR=pkg/mboostPatch
+ - TEST_DIR=pkg/mboostDevel
 
+language: r
 sudo: required
 
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install latex-xcolor
-  - cd pkg/mboostPatch
+  - sudo apt-get install latex-xcolor texlive-generic-recommended texlive-fonts-recommended texlive-fonts-extra texlive-extra-utils texlive-latex-recommended texlive-latex-extra
+  - cd $TEST_DIR
 
 r_github_packages:
   - hofnerb/stabs
+  - hofnerb/gamboostLSS/patch
   
 after_failure:
   - ./travis-tool.sh dump_logs
