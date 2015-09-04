@@ -2,6 +2,7 @@ mboost
 ======
 
 [![Build Status](https://travis-ci.org/hofnerb/mboost.svg?branch=master)](https://travis-ci.org/hofnerb/mboost)
+[![CRAN Status Badge](http://www.r-pkg.org/badges/version/mboost)](http://cran.r-project.org/package=mboost)
 [![](http://cranlogs.r-pkg.org/badges/mboost)](http://cran.rstudio.com/web/packages/mboost/index.html)
 
 `mboost` implements boosting algorithms for fitting generalized linear, additive and interaction models
