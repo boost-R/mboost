@@ -29,32 +29,32 @@ For issues, bugs, feature requests etc. please use the [GitHub Issues](https://g
 ## Installation Instructions
 
 - Current version (from CRAN):
-  ```
+  ```r
   install.packages("mboost")
   ```
 
 - Latest **patch version** (under development) from GitHub:
-  ```
+  ```r
   library("devtools")
   install_github("hofnerb/mboost/pkg/mboostPatch")
   library("mboost")
   ```
 
 - Latest **development version** from GitHub:
-  ```
+  ```r
   library("devtools")
   install_github("hofnerb/mboost/pkg/mboostDevel")
   library("mboostDevel")
   ```
 
   To be able to use the `install_github()` command, one needs to install `devtools` first:
-  ```
+  ```r
   install.packages("devtools")
   ```
 
 - Alternatively, both the current patch and development versions of `mboost` (or `mboostDevel` respectively)
   can be downloaded from R-forge if it was successfully built:
-  ```
+  ```r
   install.packages("mboost", repos = "http://r-forge.r-project.org")
   ## or
   install.packages("mboostDevel", repos = "http://r-forge.r-project.org")
