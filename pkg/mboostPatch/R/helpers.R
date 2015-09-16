@@ -248,8 +248,11 @@ check_newdata <- function(newdata, blg, mf, to.data.frame = TRUE) {
         nm <- unique(nm)
     cl1 <- sapply(newdata[nm], class)
     cl2 <- sapply(mf, class)
-    if (!all(cl1 == cl2)) {
-        idx <- which(cl1 != cl2)
+
+    if (!isTRUE(all.equal(cl1, cl2))) {
+        # idx <- which(cl1 != cl2)
+        idx <- which(!sapply(1:length(cl1),
+                             function(i) all(cl1[[i]] == cl2[[i]])))
         ## classes can be different when one is integer and the other is double
         if (!all(sapply(newdata[nm][idx], is.numeric)) ||
             !all(sapply(mf[idx], is.numeric)))
