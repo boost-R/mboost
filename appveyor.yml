@@ -17,7 +17,9 @@ environment:
   - TEST_DIR: pkg\mboostDevel
 
 before_build:
-  - cp ..\travis-tool.sh .\pkg\travis-tool.sh
+  - dir ..\
+  - dir
+  - cp ..\travis-tool.sh pkg\travis-tool.sh
   - cp travis-tool.sh.cmd %TEST_DIR%\travis-tool.sh.cmd
   - cd %TEST_DIR%
   - bash -c "echo '^travis-tool\.sh\.cmd$' >> .Rbuildignore"
