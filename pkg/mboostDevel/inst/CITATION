@@ -1,6 +1,6 @@
 
 year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date)
-vers <- paste("R package version", meta$Version)
+vers <- meta$Version
 
 citEntry(entry="Manual",
          title = "{mboost}: Model-Based Boosting",
