@@ -85,8 +85,8 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
                tsums[i] <- mean.default(weights * ((sstmp$fitted()) - u)^2,
                                         na.rm = TRUE)
            }
-           if (all(tsums < 0))
-               stop("could not fit base learner in boosting iteration ", m)
+           if (all(is.na(tsums)) || all(tsums < 0))
+               stop("could not fit base-learners in boosting iteration ", m)
            xselect[m] <<- which.min(tsums)
            return(ss[[xselect[m]]])
         }
@@ -96,6 +96,8 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             bnames <- bl[[1]]$Xnames
             basefit <- function(u, m) {
                 mod <- fit1(y = u)
+                if(any(is.na(coef(mod))))
+                    stop("could not fit base-learner in boosting iteration ", m)
                 xselect[m] <<- mod$model["xselect"]
                 return(mod)
             }
@@ -103,7 +105,10 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             bnames <- names(bl)
             basefit <- function(u, m) {
                 xselect[m] <<- 1L
-                return(fit1(y = u))
+                mod <- fit1(y = u)
+                if(any(is.na(coef(mod))))
+                    stop("could not fit base-learner in boosting iteration ", m)
+                return(mod)
             }
         }
     }
