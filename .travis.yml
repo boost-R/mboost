@@ -22,6 +22,9 @@ r_github_packages:
 after_failure:
   - ./travis-tool.sh dump_logs
 
+after_success:
+  - Rscript -e 'library(covr); coveralls()'
+
 notifications:
   email:
     on_success: change
