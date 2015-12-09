@@ -32,7 +32,7 @@ on_failure:
   - travis-tool.sh dump_logs
 
 artifacts:
-  - path: '*.Rcheck\**\*.log'
+  - path: '%TEST_DIR%/*.Rcheck\**\*.log'
     name: Logs
 
   - path: '*.Rcheck\**\*.out'
