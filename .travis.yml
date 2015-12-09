@@ -18,6 +18,7 @@ before_install:
 r_github_packages:
   - hofnerb/stabs
   - hofnerb/gamboostLSS/patch
+  - jimhester/covr
   
 after_failure:
   - ./travis-tool.sh dump_logs
