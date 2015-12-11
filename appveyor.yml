@@ -32,20 +32,20 @@ on_failure:
   - travis-tool.sh dump_logs
 
 artifacts:
-  - path: '%TEST_DIR%/*.Rcheck\**\*.log'
+  - path: '$(TEST_DIR)\*.Rcheck\**\*.log'
     name: Logs
 
-  - path: '*.Rcheck\**\*.out'
+  - path: '$(TEST_DIR)\*.Rcheck\**\*.out'
     name: Logs
 
-  - path: '*.Rcheck\**\*.fail'
+  - path: '$(TEST_DIR)\*.Rcheck\**\*.fail'
     name: Logs
 
-  - path: '*.Rcheck\**\*.Rout'
+  - path: '$(TEST_DIR)\*.Rcheck\**\*.Rout'
     name: Logs
 
-  - path: '\*_*.tar.gz'
+  - path: '$(TEST_DIR)\*_*.tar.gz'
     name: Bits
 
-  - path: '\*_*.zip'
+  - path: '$(TEST_DIR)\*_*.zip'
     name: Bits
