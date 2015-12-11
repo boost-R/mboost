@@ -29,7 +29,7 @@ test_script:
   - travis-tool.sh run_tests
 
 artifacts:
- - path: '$(TEST_DIR)\*.Rcheck\**\*.log'
+  - path: '$(TEST_DIR)\*.Rcheck\**\*.log'
     name: Logs
 
   - path: '$(TEST_DIR)\*.Rcheck\**\*.out'
