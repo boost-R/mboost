@@ -28,14 +28,21 @@ build_script:
 test_script:
   - travis-tool.sh run_tests
 
-on_failure:
-  - travis-tool.sh dump_logs
+#on_failure:
+#  - travis-tool.sh dump_logs
 
 artifacts:
-  - path: '$(TEST_DIR)\*.Rcheck\*.log'
-  - path: '$(TEST_DIR)\*.Rcheck\*.out'
-  - path: '$(TEST_DIR)\*.Rcheck\*.fail'
-  - path: '$(TEST_DIR)\*.Rcheck\*.Rout'
+ - path: '$(TEST_DIR)\*.Rcheck\**\*.log'
+    name: Logs
+
+  - path: '$(TEST_DIR)\*.Rcheck\**\*.out'
+    name: Logs
+
+  - path: '$(TEST_DIR)\*.Rcheck\**\*.fail'
+    name: Logs
+
+  - path: '$(TEST_DIR)\*.Rcheck\**\*.Rout'
+    name: Logs
 
   - path: '$(TEST_DIR)\*_*.tar.gz'
     name: Bits
