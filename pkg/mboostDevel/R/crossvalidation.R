@@ -74,8 +74,8 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
     OOBweights[folds > 0] <- 0
     if (all.equal(papply, mclapply) == TRUE) {
         oobrisk <- papply(1:ncol(folds),
-                          function(i) dummyfct(weights = folds[, i],
-                                               oobweights = OOBweights[, i]),
+                          function(i) try(dummyfct(weights = folds[, i],
+                                                   oobweights = OOBweights[, i])),
                           mc.preschedule = mc.preschedule,
                           ...)
     } else {
