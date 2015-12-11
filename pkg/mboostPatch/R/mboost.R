@@ -106,7 +106,8 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             basefit <- function(u, m) {
                 xselect[m] <<- 1L
                 mod <- fit1(y = u)
-                if(all(is.na(coef(mod))))
+                if((!is.null(coef(mod)) && all(is.na(coef(mod)))) ||
+                   all(is.na(mean.default(weights * ((mod$fitted()) - u)^2, na.rm = TRUE))))
                     stop("could not fit base-learner in boosting iteration ", m)
                 return(mod)
             }
