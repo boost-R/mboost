@@ -30,6 +30,7 @@ test_script:
 
 on_failure:
   - travis-tool.sh dump_logs
+  - appveyor PushArtifact $(TEST_DIR)\*.Rcheck\**\*.out
 
 artifacts:
   - path: '$(TEST_DIR)\*.Rcheck\**\*.log'
