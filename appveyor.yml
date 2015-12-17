@@ -30,11 +30,11 @@ test_script:
 
 on_failure:
   - travis-tool.sh dump_logs
-  - echo C:/projects/mboost/pkg/mboostPatch/mboost.Rcheck/00install.out
   - appveyor PushArtifact C:/projects/mboost/pkg/mboostPatch/mboost.Rcheck/00install.out
+  - cat C:/projects/mboost/pkg/mboostPatch/mboost.Rcheck/00install.out
 
 on_finish:
-- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 artifacts:
   - path: '$(TEST_DIR)\*.Rcheck\**\*.log'
