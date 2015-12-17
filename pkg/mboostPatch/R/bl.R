@@ -980,12 +980,14 @@ fit.bl <- function(object, y)
         newX1 <- environment(bl1$dpp)$newX
         newX2 <- environment(bl2$dpp)$newX
 
-        X1 <- newX1(mf[, bl1$get_names(), drop = FALSE])
+        X1 <- newX1(mf[, bl1$get_names(), drop = FALSE],
+                    prediction = args$prediction)
         K1 <- X1$K
         if (!is.null(l1)) K1 <- l1 * K1
         X1 <- X1$X
 
-        X2 <- newX2(mf[, bl2$get_names(), drop = FALSE])
+        X2 <- newX2(mf[, bl2$get_names(), drop = FALSE],
+                    prediction = args$prediction)
         K2 <- X2$K
         if (!is.null(l2)) K2 <- l2 * K2
         X2 <- X2$X
@@ -1085,7 +1087,8 @@ fit.bl <- function(object, y)
         newX1 <- environment(bl1$dpp)$newX
         newX2 <- environment(bl2$dpp)$newX
 
-        X1 <- newX1(mf[, bl1$get_names(), drop = FALSE])
+        X1 <- newX1(mf[, bl1$get_names(), drop = FALSE],
+                    prediction = args$prediction)
         K1 <- X1$K
         X1 <- X1$X
         if (!is.null(l1)) K1 <- l1 * K1
@@ -1095,7 +1098,8 @@ fit.bl <- function(object, y)
         if (MATRIX & !is(K1, "Matrix"))
             K1 <- Matrix(K1)
 
-        X2 <- newX2(mf[, bl2$get_names(), drop = FALSE])
+        X2 <- newX2(mf[, bl2$get_names(), drop = FALSE],
+                    prediction = args$prediction)
         K2 <- X2$K
         X2 <- X2$X
         if (!is.null(l2)) K2 <- l2 * K2

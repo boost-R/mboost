@@ -241,7 +241,8 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         newX1 <- environment(bl1$dpp)$newX
         newX2 <- environment(bl2$dpp)$newX
 
-        X1 <- newX1(as.data.frame(mf[bl1$get_names()]))
+        X1 <- newX1(as.data.frame(mf[bl1$get_names()]),
+                    prediction = args$prediction)
         K1 <- X1$K
         X1 <- X1$X
         if (!is.null(l1)) K1 <- l1 * K1
@@ -251,7 +252,8 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         if (MATRIX & !is(K1, "Matrix"))
             K1 <- Matrix(K1)
 
-        X2 <- newX2(as.data.frame(mf[bl2$get_names()]))
+        X2 <- newX2(as.data.frame(mf[bl2$get_names()]),
+                    prediction = args$prediction)
         K2 <- X2$K
         X2 <- X2$X
         if (!is.null(l2)) K2 <- l2 * K2
