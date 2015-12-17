@@ -6,7 +6,7 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
 
     stopifnot(xor(is.null(df), is.null(lambda)))
     if (!is.null(df)) {
-        rank_X <- rankMatrix(X, method = 'qr')
+        rank_X <- rankMatrix(X, method = 'qr', warn.t = FALSE)
         if (df >= rank_X) {
             if (df > rank_X)
                 warning(sQuote("df"),

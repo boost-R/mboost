@@ -19,7 +19,8 @@ Depends: R (>= 2.14.0), methods, stats, parallel, stabs (>= 0.5-0)
 Imports: Matrix, survival, splines, lattice, nnls, quadprog, utils,
 	graphics, grDevices, party (>= 1.0-23)
 Suggests: TH.data, MASS, fields, BayesX, gbm, mlbench,
-        RColorBrewer, rpart (>= 4.0-3), randomForest, nnet
+        RColorBrewer, rpart (>= 4.0-3), randomForest, nnet,
+	testthat (>= 0.10.0)
 LazyData: yes
 License: GPL-2
 BugReports: https://github.com/hofnerb/mboost/issues
