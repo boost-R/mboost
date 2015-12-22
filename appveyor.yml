@@ -33,8 +33,8 @@ on_failure:
   - appveyor PushArtifact C:/projects/mboost/pkg/mboostPatch/mboost.Rcheck/00install.out
   - cat C:/projects/mboost/pkg/mboostPatch/mboost.Rcheck/00install.out
 
-on_finish:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+# on_finish:
+#   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 artifacts:
   - path: '$(TEST_DIR)\*.Rcheck\**\*.log'
