@@ -1,7 +1,8 @@
 mboost
 ======
 
-[![Build Status](https://travis-ci.org/hofnerb/mboost.svg?branch=master)](https://travis-ci.org/hofnerb/mboost)
+[![Build Status (Linux)](https://travis-ci.org/hofnerb/mboost.svg?branch=master)](https://travis-ci.org/hofnerb/mboost)
+[![Build status (Windows)](https://ci.appveyor.com/api/projects/status/05272ar5gksvfr4q/branch/master?svg=true)](https://ci.appveyor.com/project/hofnerb/mboost/branch/master)
 [![CRAN Status Badge](http://www.r-pkg.org/badges/version/mboost)](http://cran.r-project.org/package=mboost)
 [![Coverage Status](https://coveralls.io/repos/hofnerb/mboost/badge.svg?branch=master&service=github)](https://coveralls.io/github/hofnerb/mboost?branch=master)
 [![](http://cranlogs.r-pkg.org/badges/mboost)](http://cran.rstudio.com/web/packages/mboost/index.html)
