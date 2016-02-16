@@ -9,8 +9,10 @@ varimp_mboost <- function(object, percent = FALSE) {
   blearner_selected <- object$xselect()
    
   ### compute risks for each step
-  # initial risk for the intercept odel
-  risk0 <- object$family@risk( y = object$response, f = object$offset ) 
+  # initial risk for the intercept model
+  y <- object$response
+  if(is.factor(y)) y <- 2*as.numeric(y) -3
+  risk0 <- object$family@risk( y = y, f = object$offset ) 
   # risk after each boosting-steps
   riskstep <- object$risk()
   # risk reduction per step
