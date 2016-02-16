@@ -5,7 +5,7 @@ varimp_mboost <- function(object, percent = FALSE) {
     stop(paste(deparse(substitute(object)), "is no mboost object."))
   
   ### which baselearners were selected in boosting steps
-  blearner_names <- names(object$baselearner)
+  blearner_names <- names( extract(object, "variable.names") )
   blearner_selected <- object$xselect()
    
   ### compute risks for each step
