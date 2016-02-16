@@ -72,9 +72,14 @@ plot.varimp_mboost <- function(x, nbars = 20L, maxchar = 20L, xlim, ...) {
   names(xsorted) <- sapply(names(xsorted), FUN = function(name) {
     paste(strtrim(name, maxchar), if( nchar(name) < maxchar ) "" else "..") })
   
-  ### plot risk reduction per variable 
-  barplot(height = xsorted, horiz = TRUE,
-    ylab = "Baselearner", xlab = xlab, 
-    xlim = xlim, ...)
+  # Adjust left margin to length of horizontal y labels
+  leftmargin <-  max(strwidth(names(xsorted), "inch")+.4, na.rm = TRUE)
+  opar <- par(mai=c(1.02, leftmargin, 0.82, 0.42))
+  
+  # plot risk reduction per variable 
+  barplot(height = xsorted, horiz = TRUE, las = 1,
+          xlab = "Empirical Risk Reduction", #ylab = "Baselearner",
+          xlim = xlim, ...)
   box()
+  par(opar)
 }
