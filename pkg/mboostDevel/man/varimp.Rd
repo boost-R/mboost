@@ -13,7 +13,7 @@ varimp_mboost(object)
   \item{percent}{ logical indicating whether risk reduction should be returned in precent of the total reduction during boosting. }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+For each base learner this function cumulates the in-bag risk reduction achieved over all boosting iterations the particular base learner was selected in. This quantifies their specific contribution to risk reduction which can be used to compare the importance of different base learners in the model. 
 }
 \value{ An object of class \code{varimp_mboost} with an available \code{plot} method. Risk reductions per base learner are ordered according to the \code{mboost} object. }
 \references{
