@@ -1,17 +1,20 @@
 varimp_mboost <- function(object, percent = FALSE) {
   
   ### check arguments
-  if( !(inherits(object, "mboost")) )
-    stop(paste(deparse(substitute(object)), "is no mboost object."))
+  if( !(inherits(object, "gamboost") || inherits(object, "glmboost")) )
+    stop(paste(deparse(substitute(object)), 
+      "has to be a gamboost or glmboost object."))
   
   ### which baselearners were selected in boosting steps
-  blearner_names <- names( extract(object, "variable.names") )
+  # differentiation between gamboost- and glmboost-object
+  blearner_names <- if( inherits(object, "gamboost") ) 
+    names(object$baselearner) else names(object$baselearner[[1]])  
   blearner_selected <- object$xselect()
    
   ### compute risks for each step
   # initial risk for the intercept model
   y <- object$response
-  if(is.factor(y)) y <- 2*as.numeric(y) -3
+  if(is.factor(y)) y <- 2*as.numeric(y) - 3
   risk0 <- object$family@risk( y = y, f = object$offset ) 
   # risk after each boosting-steps
   riskstep <- object$risk()
@@ -74,8 +77,8 @@ plot.varimp_mboost <- function(x, nbars = 20L, maxchar = 20L, xlim, ...) {
   names(xsorted) <- sapply(names(xsorted), FUN = function(name) {
     paste(strtrim(name, maxchar), if( nchar(name) < maxchar ) "" else "..") })
   
-  # Adjust left margin to length of horizontal y labels
-  leftmargin <-  max(strwidth(names(xsorted), "inch")+.4, na.rm = TRUE)
+  # adjust left margin to length of horizontal y labels
+  leftmargin <- max(strwidth(names(xsorted), "inch")+.4, na.rm = TRUE)
   opar <- par(mai=c(1.02, leftmargin, 0.82, 0.42))
   
   # plot risk reduction per variable 
