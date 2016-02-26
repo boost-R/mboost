@@ -1,13 +1,15 @@
-varimp_mboost <- function(object, percent = FALSE) {
+varimp <- function(object, ...)
+  UseMethod("varimp")
+
+varimp.mboost <- function(object) {
   
   ### check arguments
-  if( !(inherits(object, "gamboost") || inherits(object, "glmboost")) )
-    stop(paste(deparse(substitute(object)), 
-      "has to be a gamboost or glmboost object."))
+  if( !(inherits(object, "mboost")) )
+    stop(paste(deparse(substitute(object)), "has to be a mboost object."))
   
   ### which baselearners were selected in boosting steps
   # differentiation between gamboost- and glmboost-object
-  blearner_names <- if( inherits(object, "gamboost") ) 
+  blearner_names <- if( inherits(object, "mboost") && !(inherits(object, "glmboost")) ) 
     names(object$baselearner) else names(object$baselearner[[1]])  
   blearner_selected <- object$xselect()
    
@@ -29,20 +31,30 @@ varimp_mboost <- function(object, percent = FALSE) {
     sum( riskdiff[which(blearner_selected == i)] ) 
   })
   names(explained) <- blearner_names
-  if( percent ) { explained <- explained / sum(explained) }
   
-  class(explained) <- "varimp_mboost"
-  attr(explained, "percent") <- percent
+  class(explained) <- "varimp"
+  attr(explained, "selprobs") <- round(summary(object)$selprob, digits = 3)
+  
+  # add variable names per baselearner
+  variable_names = sapply(names(object$baselearner), 
+    function(x) names(object$baselearner[[x]]))
+  
+  attr(explained, "variables") <- unlist( lapply(variable_names, function(x) {
+    do.call(function(...) paste(..., sep = ","), as.list(x)) 
+  }) )
+  
   return(explained)
 }
 
 
-plot.varimp_mboost <- function(x, nbars = 20L, maxchar = 20L, xlim, ...) {
+plot.varimp <- function(x, percent = TRUE, type = "blearner", 
+  nbars = 20L, maxchar = 20L, xlim, ...) {
+  
   args <- as.list(match.call())
   
   ### check arguments
-  if( !(class(x) == "varimp_mboost") ) 
-    stop(paste(deparse(substitute(x)), "is not of class varimp_mboost."))
+  if( !(class(x) == "varimp") ) 
+    stop(paste(deparse(substitute(x)), "is not of class varimp."))
   
   if( !(is.numeric(nbars) && nbars > 0 && length(nbars) == 1) )
     stop("Parameter nbars has to be a positive integer.")
@@ -53,16 +65,37 @@ plot.varimp_mboost <- function(x, nbars = 20L, maxchar = 20L, xlim, ...) {
   if( hasArg(xlab) || hasArg(ylab) )
     stop("xlab, ylab already defined by default.")  
   
-  
   ### set x-axis label
-  if( attr(x, "percent") ) xlab = "Rel. Empirical Risk Reduction" else 
-    xlab = "Empirical Risk Reduction"
+  if( percent ) xlab = "In-bag Risk Reduction (%)" else 
+    xlab = "In-bag Risk Reduction"
   
   ### set range for x-axis
   if( !("xlim" %in% names(args)) ) {
-    if( attr(x, "percent") ) xlim = c(0,1)
-    else xlim = c(0,max(x))
+    if( percent ) xlim = c(0,1)
+    else xlim = c(0,sum(x))
   }  
+  
+  ### transform to pecent if corresponding argument is true
+  if( percent ) { x <- x / sum(x) }
+  
+  
+#   # add up values for baselearners that are based on same variable
+#   # e.g. bols(var1) and bbs(var1)
+#   if( type == "variable" ) {
+#     
+#     variable_order = order(unlist( lapply(unique(attr(x, "variables")), function(i) {
+#       sum(x[which(attr(x, "variables") == i)]) 
+#     }) ))
+#     
+#     plot_data = data.frame(reduction = as.numeric(x), 
+#                            blearner = factor(names(x)),
+#                            varname = ordered(attr(x, "variables"), 
+#       levels = unique(attr(x, "variables")[variable_order])) )
+#     
+#     barchart(varname ~ reduction, groups = blearner, stack = TRUE,
+#              horizontal = TRUE, data = plot_data, auto.key = list())
+#   }
+  
   
   ### sort values
   xsorted <- sort(x)
@@ -77,14 +110,11 @@ plot.varimp_mboost <- function(x, nbars = 20L, maxchar = 20L, xlim, ...) {
   names(xsorted) <- sapply(names(xsorted), FUN = function(name) {
     paste(strtrim(name, maxchar), if( nchar(name) < maxchar ) "" else "..") })
   
-  # adjust left margin to length of horizontal y labels
-  leftmargin <- max(strwidth(names(xsorted), "inch")+.4, na.rm = TRUE)
-  opar <- par(mai=c(1.02, leftmargin, 0.82, 0.42))
+  # add selection probabilities to bar labels
+  selprob_char = as.character(attr(x,"selprob")[order(x, decreasing = TRUE)])
+  selprob_char[is.na(selprob_char)] = 0
+  names(xsorted) = paste(names(xsorted), "\n" , paste0("sel. prob: ~", selprob_char))
   
-  # plot risk reduction per variable 
-  barplot(height = xsorted, horiz = TRUE, las = 1,
-          xlab = "Empirical Risk Reduction", #ylab = "Baselearner",
-          xlim = xlim, ...)
-  box()
-  par(opar)
+  barchart(x = xsorted, horizontal = TRUE, xlab = xlab, ylab = "Baselearner", 
+    xlim = xlim, ...)
 }
