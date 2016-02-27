@@ -74,24 +74,31 @@ plot.varimp <- function(x, percent = TRUE, type = "blearner",
   if( percent ) { x <- x / sum(x) }
   
   
-#   # add up values for baselearners that are based on same variable
-#   # e.g. bols(var1) and bbs(var1)
-#   if( type == "variable" ) {
+  # add up values for baselearners that are based on same variable
+  # e.g. bols(var1) and bbs(var1)
+  if( type == "variable" ) {
+    
+    variable_order <- order(unlist( lapply(attr(x, "variables"), function(i) {
+      sum(x[which(attr(x, "variables") == i)]) 
+    }) ))
+    
+    # Create data.frame for barchart
+    plot_data <- data.frame(reduction = as.numeric(x), 
+                           blearner = factor(names(x)),
+                           varname = ordered(attr(x, "variables"), 
+      levels = unique(attr(x, "variables")[variable_order])) )
+    
+#     # Sort and accumulate selprobs as character according to variables and in alphabetical order
+#     selprob_sorted <- unlist( lapply(attr(x, "variables"), function(i) {
+#       do.call( function(...) paste( ..., sep = " + " ), as.list( 
+#         attr(x, "selprobs")[attr(x, "variables")==i][order(names(x)[attr(x, "variables")==i])]) ) 
+#     }) )
 #     
-#     variable_order = order(unlist( lapply(unique(attr(x, "variables")), function(i) {
-#       sum(x[which(attr(x, "variables") == i)]) 
-#     }) ))
-#     
-#     plot_data = data.frame(reduction = as.numeric(x), 
-#                            blearner = factor(names(x)),
-#                            varname = ordered(attr(x, "variables"), 
-#       levels = unique(attr(x, "variables")[variable_order])) )
-#     
-#     barchart(varname ~ reduction, groups = blearner, stack = TRUE,
-#              horizontal = TRUE, data = plot_data, auto.key = list())
-#   }
+    barchart(varname ~ reduction, groups = blearner, stack = TRUE,
+             horizontal = TRUE, data = plot_data, auto.key = list(), ...)
+  } else
   
-  
+  {
   ### sort values
   xsorted <- sort(x)
   # if number of baselearners exceeds nbars, aggregate values of other blearners
@@ -116,4 +123,5 @@ plot.varimp <- function(x, percent = TRUE, type = "blearner",
   
   barchart(x = xsorted, horizontal = TRUE, xlab = xlab, ylab = "Baselearner", 
     xlim = xlim, ...)
+  }
 }
