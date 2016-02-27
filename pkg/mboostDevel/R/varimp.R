@@ -23,7 +23,7 @@ varimp.mboost <- function(object) {
   # risk reduction per step
   riskdiff <- c(risk0, riskstep[-length(riskstep)]) - riskstep  
   
-  ### compute empirical risk (according to output in cvrisk)
+  ### compute empirical inbag risk (according to output in cvrisk)
   riskdiff <- riskdiff / length(object$response)
   
   ### explained Risk attributed to baselearners
@@ -33,7 +33,7 @@ varimp.mboost <- function(object) {
   names(explained) <- blearner_names
   
   class(explained) <- "varimp"
-  attr(explained, "selprobs") <- round(summary(object)$selprob, digits = 3)
+  attr(explained, "selprobs") <- sapply(seq_along(blearner_names), function(i) mean(blearner_selected == i))
   
   # add variable names per baselearner
   variable_names = sapply(names(object$baselearner), 
@@ -111,8 +111,7 @@ plot.varimp <- function(x, percent = TRUE, type = "blearner",
     paste(strtrim(name, maxchar), if( nchar(name) < maxchar ) "" else "..") })
   
   # add selection probabilities to bar labels
-  selprob_char = as.character(attr(x,"selprob")[order(x, decreasing = TRUE)])
-  selprob_char[is.na(selprob_char)] = 0
+  selprob_char <- as.character(attr(x,"selprob")[order(x, decreasing = FALSE)])
   names(xsorted) = paste(names(xsorted), "\n" , paste0("sel. prob: ~", selprob_char))
   
   barchart(x = xsorted, horizontal = TRUE, xlab = xlab, ylab = "Baselearner", 
