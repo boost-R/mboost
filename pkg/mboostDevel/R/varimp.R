@@ -3,14 +3,10 @@ varimp <- function(object, ...)
 
 varimp.mboost <- function(object) {
   
-  ### check arguments
-  if( !(inherits(object, "mboost")) )
-    stop(paste(deparse(substitute(object)), "has to be a mboost object."))
-  
   ### which baselearners were selected in boosting steps
   # differentiation between gamboost- and glmboost-object
-  blearner_names <- if( inherits(object, "mboost") && !(inherits(object, "glmboost")) ) 
-    names(object$baselearner) else names(object$baselearner[[1]])  
+  blearner_names <- if( !(inherits(object, "glmboost")) ) 
+    names(object$baselearner) else variable.names(object)  
   blearner_selected <- object$xselect()
    
   ### compute risks for each step
@@ -36,8 +32,7 @@ varimp.mboost <- function(object) {
   attr(explained, "selprobs") <- sapply(seq_along(blearner_names), function(i) mean(blearner_selected == i))
   
   # add variable names per baselearner
-  variable_names = sapply(names(object$baselearner), 
-    function(x) names(object$baselearner[[x]]))
+  variable_names <- variable.names(object)
   
   attr(explained, "variables") <- unlist( lapply(variable_names, function(x) {
     do.call(function(...) paste(..., sep = ","), as.list(x)) 
