@@ -111,8 +111,13 @@ plot.varimp <- function(x, percent = TRUE, type = "blearner",
     paste(strtrim(name, maxchar), if( nchar(name) < maxchar ) "" else "..") })
   
   # add selection probabilities to bar labels
-  selprob_char <- as.character(attr(x,"selprob")[order(x, decreasing = FALSE)])
-  names(xsorted) = paste(names(xsorted), "\n" , paste0("sel. prob: ~", selprob_char))
+  selprob_sorted <- attr(x,"selprob")[order(x, decreasing = FALSE)]
+  # if number of baselearners exceeds nbars, aggregate selprobs of other blearners
+  if( length(selprob_sorted) > nbars ) {
+    selprob_sorted <- c( sum( head(selprob_sorted, length(selprob_sorted)-nbars+1) ), 
+                  tail(selprob_sorted, nbars-1) ) 
+  }
+  names(xsorted) <- paste(names(xsorted), "\n" , paste0("sel. prob: ~", as.character(round(selprob_sorted, digits = 3))) )
   
   barchart(x = xsorted, horizontal = TRUE, xlab = xlab, ylab = "Baselearner", 
     xlim = xlim, ...)
