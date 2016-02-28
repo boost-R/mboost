@@ -172,7 +172,7 @@ plot.varimp <- function(x, percent = TRUE, type = "variable",
     barchart(variable ~ reduction, groups = blearner, data = plot_data,
       horizontal = TRUE, xlab = xlab, ylab = "Variables", xlim = xlim,
       scales = list(x = list(tck = c(1,0), at = seq(0,sum(x), length.out = 5))),
-      stack = TRUE, auto.key = list(), ...)
+      stack = TRUE, auto.key = !identical(names(x), as.character(attr(x, "variable"))), ...)
   } else {
     barchart(blearner ~ reduction, data = plot_data,
       horizontal = TRUE, xlab = xlab, ylab = "Baselearner", xlim = xlim,
