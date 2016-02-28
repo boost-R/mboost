@@ -42,12 +42,13 @@ varimp.mboost <- function(object) {
     mean(learner_selected == i) 
   })
   
+  var_names <-  variable.names(object)   
+  var_order <- order( sapply(var_names, function(i) sum(explained[var_names==i]) ) )
+  var_names <- ordered(var_names, levels = unique(var_names[var_order]))
+  
   # add variable names per baselearner
-  attr(explained, "variable_names") <- unlist( 
-    lapply(variable.names(object) , function(x) {
-      do.call(function(...) paste(..., sep = ","), as.list(x)) 
-    }) 
-  )  
+  attr(explained, "variable_names") <- var_names
+  
   return(explained)
 }
 
@@ -101,59 +102,76 @@ plot.varimp <- function(x, percent = TRUE, type = "blearner",
     variable  = attr(x, "variable_names"),
     selprob   = attr(x, "selprob")
   )
-  # sort rows by risk reduction (ascending)
-  plot_data_sorted <- plot_data[order(plot_data$reduction),]
   
+  ### --------------------------------------------------
+  ### equip variable- or blearner - names with order depending on type and add "other" as lowest level
+  if( type == "blearner" ) 
+  {
+    plot_data$blearner <- factor(plot_data$blearner, levels = unique(plot_data$blearner[order(plot_data$reduction)]))
+  }
   
   ### --------------------------------------------------
   ### if number of baselearners/variables exceeds nbars, aggregate some values
-  plot_data_rows <- nrow(plot_data_sorted)
   
-  if( plot_data_rows > nbars ) {
+  if( nlevels(plot_data[, type]) > nbars ) {
+    # logical vector indicating rows to be subsumed
+    others <- !(plot_data[, type] %in% tail(levels(plot_data[,type]), nbars-1))
     # add new level OTHER to factor variable blearner/variable
-    plot_data_sorted[, type] <- factor(plot_data_sorted[, type],
-      levels = c(levels(plot_data_sorted[, type]), "other"))  
+    for(i in c("blearner","variable")) plot_data[, i] <- factor(plot_data[, i], levels = c("other", levels(plot_data[, i])))
     # set baselearner/variable names to OTHER depending on nbars
-    plot_data_sorted[1:(plot_data_rows-nbars+1), type] <- "other"  
-        
+    plot_data[others, c("blearner","variable")] <- "other"  
     # add up risk reduction and selprobs for OTHER
-    plot_data_sorted[1:(plot_data_rows-nbars+1), "reduction"] = 
-      sum( head(plot_data_sorted$reduction, plot_data_rows-nbars+1) )
-    plot_data_sorted[1:(plot_data_rows-nbars+1), "selprob"] = 
-      sum( head(plot_data_sorted$selprob, plot_data_rows-nbars+1) )
+    plot_data[others, "reduction"] <- 
+      sum( plot_data[others, "reduction"] )
+    plot_data[others, "selprob"] <- 
+      sum( plot_data[others, "selprob"] )
     
     # use only number of observations corresponding to nbars
-    plot_data_sorted = tail(plot_data_sorted, nbars)
+    plot_data <- rbind( plot_data[ c(which(!others), which(others)[1]), ] )
+    for(i in c("blearner","variable")) plot_data[, i] <- factor(plot_data[, i])
   }
   
   
   ### --------------------------------------------------
   ### create bar labels
   # (maybe) truncate labels for bars
-  plot_data_sorted[, type] <- sapply(as.character(plot_data_sorted[, type]), 
+  trunc_levels <- sapply(levels(plot_data[, type]), 
     FUN = function(name) {
       paste(strtrim(name, maxchar), if( nchar(name) < maxchar ) "" else "..") 
-    }
+    } 
   )
+  if(length(unique(trunc_levels))==nlevels(plot_data[, type])) levels(plot_data[, type]) <- trunc_levels
+  else {
+    warning(paste("'maxchar' to small to distiguish", type, "labels. Instead they are labeled with numberated according to their (first) apprearences in the model and 'o' for 'other'."))
+    levels(plot_data[,type]) <- if(type=="blearner") order(as.numeric(x)) else sapply(levels(plot_data$variable), function(i) if(i=="other") "o" else which(unique(attr(x,"variable"))==i)[1])
+  }
+  
+  # convert rounded selprobs to character
+  plot_data[,"selprob"] <- as.character(round(plot_data[, "selprob"], digits = 2))
+                                               
+  # for type = "variable" accumulate selprobs per variable in alphabetical order of particular baselearners
+  
+  if(type == "variable") plot_data[,"selprob"] <- sapply(plot_data[, "variable"], 
+                                                               function(i) do.call(function(...) paste(..., sep = " + "),
+                                                                                   as.list( plot_data[plot_data$variable == i,"selprob"]
+                                                                                            [order(plot_data[plot_data$variable == i,"blearner"])])))
   # add selprobs to bar labels
-  plot_data_sorted[, type] = paste( plot_data_sorted[, type], "\n", 
-    paste0("sel. prob: ~", as.character(round(plot_data_sorted[, "selprob"], 
-    digits = 2))) )
+  levels(plot_data[, type]) <- paste( levels(plot_data[ ,type]), "\n", 
+    paste0("sel. prob: ~", unique( plot_data[order(plot_data[, type]), "selprob"])) )
 
   # use an ordered factor for correct order of bars (descending)
-  plot_data_sorted[, type] = ordered(plot_data_sorted[, type],
-    levels = unique(plot_data_sorted[, type]))
+  plot_data[, type] <- ordered(plot_data[, type])
 
   
   ### --------------------------------------------------
   ### create final plot depending on type
   if( type == "variable" ) {
-    barchart(variable ~ reduction, groups = blearner, data = plot_data_sorted,
+    barchart(variable ~ reduction, groups = blearner, data = plot_data,
       horizontal = TRUE, xlab = xlab, ylab = "Variables", xlim = xlim,
       scales = list(x = list(tck = c(1,0), at = seq(0,sum(x), length.out = 5))),
       stack = TRUE, auto.key = list(), ...)
   } else {
-    barchart(blearner ~ reduction, data = plot_data_sorted,
+    barchart(blearner ~ reduction, data = plot_data,
       horizontal = TRUE, xlab = xlab, ylab = "Baselearner", xlim = xlim,
       scales = list(x = list(tck = c(1,0), at = seq(0,sum(x), length.out = 5))),
       ...)
