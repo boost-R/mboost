@@ -83,14 +83,15 @@ plot.varimp <- function(x, percent = TRUE, type = "blearner",
   ### --------------------------------------------------
   ### set range for x-axis
   if( !("xlim" %in% names(args)) ) {
-    if( percent ) xlim <- c(0,1)
-    else xlim <- c(0,sum(x))
+    xlim <- c(sum(x*(x<0)),sum(x*(x>=0)))     # Special calculation to include the case that risk reduction might be negative
+    if( percent ) xlim <- xlim / sum(abs(x))
   }  
   
   ### set x-axis label and transform values to percentages of necessary
   if( percent ) {
     xlab <- "In-bag Risk Reduction (%)"
-    x    <- x / sum(x)
+    x    <- x / sum(abs(x))
+    if( any(x<0) ) warning("At least one risk reduction value is negative. Percental reduction is thus calculated as 'reduction/sum(abs(reduction))'.")
   } else xlab <- "In-bag Risk Reduction"
   
   
