@@ -96,5 +96,6 @@ S3method(print, glmboost.ci)
 S3method(stabsel, mboost)
 S3method(stabsel_parameters, mboost)
 S3method(plot, varimp)
+S3method(as.data.frame, varimp)
 
 useDynLib(mboostDevel)

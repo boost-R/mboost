@@ -52,6 +52,13 @@ varimp.mboost <- function(object) {
   return(explained)
 }
 
+as.data.frame.varimp <- function(x, optional = FALSE, ...) data.frame(
+  reduction = as.numeric(x), 
+  blearner  = names(x),
+  variable  = attr(x, "variable_names"),
+  selprob   = attr(x, "selprob")
+)
+
 
 plot.varimp <- function(x, percent = TRUE, type = "blearner", 
   nbars = 20L, maxchar = 20L, xlim, ...) {
@@ -97,12 +104,7 @@ plot.varimp <- function(x, percent = TRUE, type = "blearner",
   
   ### --------------------------------------------------
   ### create data.frame for all values shown in barchart
-  plot_data <- data.frame(
-    reduction = as.numeric(x), 
-    blearner  = names(x),
-    variable  = attr(x, "variable_names"),
-    selprob   = attr(x, "selprob")
-  )
+  plot_data <- data.frame(x)
   
   ### --------------------------------------------------
   ### equip variable- or blearner - names with order depending on type and add "other" as lowest level
