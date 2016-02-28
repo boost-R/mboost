@@ -60,7 +60,7 @@ as.data.frame.varimp <- function(x, optional = FALSE, ...) data.frame(
 )
 
 
-plot.varimp <- function(x, percent = TRUE, type = "blearner", 
+plot.varimp <- function(x, percent = TRUE, type = "variable", 
   nbars = 20L, maxchar = 20L, xlim, ...) {
   
   args <- as.list(match.call())
