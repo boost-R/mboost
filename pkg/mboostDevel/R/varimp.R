@@ -61,7 +61,7 @@ as.data.frame.varimp <- function(x, optional = FALSE, ...) data.frame(
 
 
 plot.varimp <- function(x, percent = TRUE, type = "variable", 
-  nbars = 20L, maxchar = 20L, xlim, ...) {
+  nbars = 20L, maxchar = 20L, xlim, auto.key, ...) {
   
   args <- as.list(match.call())
   
@@ -101,6 +101,10 @@ plot.varimp <- function(x, percent = TRUE, type = "variable",
     if( any(x<0) ) warning("At least one risk reduction value is negative. Percental reduction is thus calculated as 'reduction/sum(abs(reduction))'.")
   } else xlab <- "In-bag Risk Reduction"
   
+  ### set auto.key
+  if( !("auto.key" %in% names(args)) ) {
+    auto.key <- !identical(names(x), as.character(attr(x, "variable")))
+  }
   
   ### --------------------------------------------------
   ### create data.frame for all values shown in barchart
@@ -172,7 +176,7 @@ plot.varimp <- function(x, percent = TRUE, type = "variable",
     barchart(variable ~ reduction, groups = blearner, data = plot_data,
       horizontal = TRUE, xlab = xlab, ylab = "Variables", xlim = xlim,
       scales = list(x = list(tck = c(1,0), at = seq(0,sum(x), length.out = 5))),
-      stack = TRUE, auto.key = !identical(names(x), as.character(attr(x, "variable"))), ...)
+      stack = TRUE, auto.key = auto.key, ...)
   } else {
     barchart(blearner ~ reduction, data = plot_data,
       horizontal = TRUE, xlab = xlab, ylab = "Baselearner", xlim = xlim,
