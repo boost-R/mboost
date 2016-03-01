@@ -101,11 +101,6 @@ plot.varimp <- function(x, percent = TRUE, type = "variable",
     if( any(x<0) ) warning("At least one risk reduction value is negative. Percental reduction is thus calculated as 'reduction/sum(abs(reduction))'.")
   } else xlab <- "In-bag Risk Reduction"
   
-  ### set auto.key
-  if( !("auto.key" %in% names(args)) ) {
-    auto.key <- !identical(names(x), as.character(attr(x, "variable")))
-  }
-  
   ### --------------------------------------------------
   ### create data.frame for all values shown in barchart
   plot_data <- data.frame(x)
@@ -169,6 +164,12 @@ plot.varimp <- function(x, percent = TRUE, type = "variable",
   # use an ordered factor for correct order of bars (descending)
   plot_data[, type] <- ordered(plot_data[, type])
 
+  ### --------------------------------------------------
+  ### set auto.key
+  if( !("auto.key" %in% names(args)) ) {
+    auto.key <- nlevels(plot_data$variable) < nrow(plot_data)
+  }
+  
   
   ### --------------------------------------------------
   ### create final plot depending on type
