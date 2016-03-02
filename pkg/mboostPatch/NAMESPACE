@@ -29,7 +29,7 @@ export(glmboost,
        nuisance, "%+%", "%X%", "%O%", extract, risk, "mstop<-",
        stabsel.mboost, stabsel_parameters.mboost, confint.mboost, confint.glmboost,
        ## exports to make FDboost happy:
-       df2lambda, hyper_bbs, bl_lin)
+       df2lambda, hyper_bbs, bl_lin, bl_lin_matrix)
        ###, basesel, fitsel)
 exportClasses("boost_family")
 exportMethods("show")

@@ -2,6 +2,7 @@
 \alias{df2lambda}
 \alias{bl_lin}
 \alias{hyper_bbs}
+\alias{bl_lin_matrix}
 
 \title{ Helper functions }
 \description{
@@ -19,6 +20,10 @@ hyper_bbs(mf, vary, knots = 20, boundary.knots = NULL, degree = 3,
 
 ## workhorse for fitting (ridge-penalized) baselearners
 bl_lin(blg, Xfun, args)
+
+## workhorse for fitting matrix-response (ridge-penalized) baselearners
+bl_lin_matrix(blg, Xfun, args)
+
 }
 \arguments{
   \item{X}{ the design matrix. }
