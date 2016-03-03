@@ -27,9 +27,9 @@ export(glmboost,
        bols, bspatial, brandom, btree, bss, bns, brad, bmono, bmrf, buser,
        survFit, selected, selected.mboost,
        nuisance, "%+%", "%X%", "%O%", extract, risk, "mstop<-",
-       stabsel.mboost, stabsel_parameters.mboost, confint.mboost, confint.glmboost,
-       ## exports to make FDboost happy:
-       df2lambda, hyper_bbs, bl_lin, bl_lin_matrix)
+       stabsel.mboost, stabsel_parameters.mboost,
+       confint.mboost, confint.glmboost,
+       mboost_intern)
        ###, basesel, fitsel)
 exportClasses("boost_family")
 exportMethods("show")
