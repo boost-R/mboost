@@ -68,7 +68,7 @@ as.data.frame.varimp <- function(x, optional = FALSE, ...) {
 
 
 plot.varimp <- function(x, percent = TRUE, type = "variable", 
-  nbars = 10L, maxchar = 20L, xlim, auto.key, ...) {
+  nbars = 10L, maxchar = 20L, blorder = "importance", xlim, auto.key, ...) {
   
   args <- as.list(match.call())
   
@@ -89,6 +89,9 @@ plot.varimp <- function(x, percent = TRUE, type = "variable",
   
   if( !(is.numeric(maxchar) && maxchar > 0 && length(maxchar) == 1) )
     stop("Parameter maxchar has to be a positive integer.")
+  
+  if( !(blorder %in% c("importance", "alphabetical", "rev_alphabetical", "formula")) )
+    stop("Parameter blorder has to be one of 'importance', 'alphabetical', 'rev_alphabetical' or 'formula'.")
   
   if( hasArg(xlab) || hasArg(ylab) )
     stop("xlab, ylab already defined by default.")  
@@ -118,7 +121,14 @@ plot.varimp <- function(x, percent = TRUE, type = "variable",
   ### create data.frame for all values shown in barchart
   plot_data <- data.frame(x)
   
+  ### --------------------------------------------------
+  # specify baselearner order (if blorder != "importance", the current order)
+  if( blorder %in% c("alphabetical", "rev_alphabetical") ) plot_data[, "blearner"] <- ordered(names(x))
   
+  # as baselearner order is reverted later, they are specified in reverted order here
+  if( blorder == "alphabetical" ) plot_data[, "blearner"] <- ordered(plot_data[, "blearner"], rev(levels(plot_data[, "blearner"])))
+  if( blorder == "formula" ) plot_data[, "blearner"] <- ordered(plot_data[, "blearner"], levels = rev(names(x)))
+     
   ### --------------------------------------------------
   ### if number of baselearners/variables exceeds nbars, aggregate some values
   if( nlevels(plot_data[, type]) > nbars ) {
