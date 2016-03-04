@@ -83,6 +83,17 @@ plot(varimp(gam), xlim = c(0,0.2))
 # change auto.key
 plot(varimp(gam), auto.key = FALSE)
 
+# change order of baselearners
+plot(varimp(gam), blorder = "alphabetical")
+plot(varimp(gam), blorder = "rev_alphabetical")
+plot(varimp(gam), blorder = "formula")
+
+# with type 'blearner'
+plot(varimp(gam), type = "blearner")
+plot(varimp(gam), type = "blearner", blorder = "alphabetical")
+plot(varimp(gam), type = "blearner", blorder = "rev_alphabetical")
+plot(varimp(gam), type = "blearner", blorder = "formula")
+
 
 ### again multiple baselearners (with simulated data)
 mydata = as.data.frame(matrix(nrow = 100, ncol = 100, data = rnorm(n = 10000)))
