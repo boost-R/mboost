@@ -44,6 +44,10 @@ varimp.mboost <- function(object) {
   
   # add variable names per baselearner to varimp-object
   var_names <- unname( variable.names(object) )
+  # for identifiability sort variable names in interactions (not required for glmboost interactions)
+  var_names <- sapply(strsplit(var_names, ", "), function(x) {
+    do.call( function(...) paste(... , sep = ", " ), 
+             as.list(x[order(x)]) ) })
   var_order <- order( sapply(var_names, function(i) {
     sum(explained[var_names == i]) 
   }) )
