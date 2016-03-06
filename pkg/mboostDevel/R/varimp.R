@@ -37,8 +37,8 @@ varimp.mboost <- function(object) {
   ### define new varimp-object
   class(explained) <- "varimp"
   
-  # add selection probabilities to varimp-object
-  attr(explained, "selprobs") <- sapply(seq_along(learner_names), function(i) {
+  # add selection frequencies to varimp-object
+  attr(explained, "selfreqs") <- sapply(seq_along(learner_names), function(i) {
     mean(learner_selected == i)
   })
   
@@ -66,7 +66,7 @@ as.data.frame.varimp <- function(x, optional = FALSE, ...) {
     # blearner as ordered factor (corresponding to variable(_names))
     blearner  = ordered(names(x), levels = unique(names(x)[order(x)])),
     variable  = attr(x, "variable_names"),
-    selprob   = attr(x, "selprob")
+    selfreq   = attr(x, "selfreq")
   )
 }
 
@@ -156,9 +156,9 @@ plot.varimp <- function(x, percent = TRUE, type = "variable",
       plot_data[others, i] <- "other"
     }    
     
-    # add up risk reduction and selprobs for OTHER
+    # add up risk reduction and selfreqs for OTHER
     plot_data[others, "reduction"] <- sum( plot_data[others, "reduction"] )
-    plot_data[others, "selprob"]   <- sum( plot_data[others, "selprob"] )
+    plot_data[others, "selfreq"]   <- sum( plot_data[others, "selfreq"] )
     
     # use only number of observations corresponding to nbars
     plot_data <- plot_data[c(which(!others), which(others)[1]),] 
@@ -186,31 +186,31 @@ plot.varimp <- function(x, percent = TRUE, type = "variable",
   }
   levels(plot_data[, type]) <- trunc_levels
   
-  # convert rounded selprobs to character
-  plot_data[, "selprob"] <- 
-    as.character(round(plot_data[, "selprob"], digits = 2))  
+  # convert rounded selfreqs to character
+  plot_data[, "selfreq"] <- 
+    as.character(round(plot_data[, "selfreq"], digits = 2))  
   
-  # for type = "variable" additionally accumulate selprobs per variable 
+  # for type = "variable" additionally accumulate selfreqs per variable 
   # in order of risk reduction of involved baselearners
   if( type == "variable" ) {    
     # reverse order of baselearners (larger stacks first)
     # (also compare line 128ff - setting of baselearner order)
     plot_data[, "blearner"] <- 
       ordered(plot_data[, "blearner"], rev(levels(plot_data[, "blearner"])))
-    # sum up selprobs
-    plot_data[, "selprob"] <- sapply(plot_data[, "variable"], function(i) {
+    # sum up selfreqs
+    plot_data[, "selfreq"] <- sapply(plot_data[, "variable"], function(i) {
       do.call( function(...) paste(..., sep = " + "), as.list( 
-        plot_data[plot_data$variable == i, "selprob"]
+        plot_data[plot_data$variable == i, "selfreq"]
         [order(plot_data[plot_data$variable == i, "blearner"])] 
       ) )
     })
   }
   
-  # add selprobs to bar labels
-  selprob_labels = unlist( unique(plot_data[, c(type, "selprob")])[2] )
+  # add selfreqs to bar labels
+  selfreq_labels = unlist( unique(plot_data[, c(type, "selfreq")])[2] )
   
   levels(plot_data[, type]) = paste0( levels(plot_data[, type]), "\n ",
-    "sel. prob: ~", selprob_labels[order(unique(plot_data[, type]))] )  
+    "sel. freq: ~", selfreq_labels[order(unique(plot_data[, type]))] )  
   
 
   ### --------------------------------------------------

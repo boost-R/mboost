@@ -1,39 +1,88 @@
-\name{varimp_mboost}
-\alias{varimp_mboost}
+\name{varimp}
+\alias{varimp}
 
 \title{ Variable Importance }
 \description{
-In-bag risk reduction per base learner as variable importance in boosting.
+In-bag risk reduction per base-learner as variable importance for boosting.
 }
 \usage{
-varimp_mboost(object, percent = FALSE)
+varimp(object)
+
+## S3 method for class 'varimp'
+plot(x, percent = TRUE, type = "variable", nbars = 10L, maxchar = 20L, blorder = "importance", xlim, auto.key, ...)
+
+## S3 method for class 'varimp'
+as.data.frame(x)
+
 }
 \arguments{
+  
   \item{object}{ an object of class \code{mboost}.}
-  \item{percent}{ logical indicating whether risk reduction should be returned in percent of the total reduction during boosting. }
+  
+  \item{x}{ an object of class \code{varimp}.}
+  
+  \item{percent}{ logical, indicating whether variable importance should be specified in percent.}
+  
+  \item{type}{ a character string specifying whether to draw bars for variables (\code{"variable"}, default) or baselearners (\code{"blearner"}) in the model. (No effect for a glmboost object.)}
+  
+  \item{nbars}{ integer, maximum number of bars to be plotted. If \code{nbars} is exceeded, variables / base-learners of lower importance are summarized as \code{"other"}.}
+  
+  \item{maxchar}{ integer, maximum number of characters in bar labels.}
+  
+  \item{blorder}{ a character string specifying the order of the base-learners in the plot. The default \code{"importance"} corresponds to the order of the base-learner importance, \code{"alphabetical"} and \code{"rev_alphabetical"} to alphabetical order, respectively its reverse, and \code{"formula"} to their order in the model formula. }
+  
+  \item{xlim}{ the x limits of the plot. Defaults are from \code{0} to total reduction, or from \code{0} to \code{1} for \code{percent=TRUE}. (In case of negative risk reductions, default limits are from total negative to total positve reduction, or the latter normalized by the total absolute reduction for \code{percent=TRUE}.)}
+  
+  \item{auto.key}{ A logical, or a list passed to \code{lattice::barchart}. By default \code{auto.key=TRUE} provides automatically generated legends showing the underlying base-learners in a stacked \code{type="variable"} plot. If there is a unique base-learner for each variable (-interaction), \code{auto.key=FALSE} is default. For \code{type="blearner"} the argument has no effect at all.}
+  
+  \item{...}{ additional arguments passed to \code{lattice::barchart}.}
 }
 \details{
-For each base learner this function accumulates the in-bag risk reduction achieved over all boosting iterations the particular base learner was selected in. This quantifies their specific contribution to risk reduction which can be used to compare the importance of different base learners in the model. 
+This function extracts the in-bag risk reductions per boosting step of a fitted \code{mboost} model and accumulates it individually for each base-learner contained in the model. This quantifies the individual contribution to risk reduction of each base learner and can thus be used to compare the importance of different base-learners or variables in the model. Starting from offset only, in each boosting step risk reduction is computed as the difference between in-bag risk of the current and the previous model and is accounted for the base learner selected in the particular step.
+
+The results can be plotted in a bar plot eather for the base-learners, or the variables contained in the model. The bars are ordered according to variable importance. If their number  exceeds \code{nbars} the least important are summarized as "other". If bars are plotted per  variable, all base-learners containing the same variable will be accumulated in a stacked bar. This is of use for models including seperate base-learners for e.g. the linear and non-linear part of a covariate effect (see \code{?bbs} option \code{center=TRUE}). However, variable interactions are treated as individual variables, as their desired handling might depend on context.
+
+For comparison the selection frequencies are added to the respective base-learner labels in the plot (rounded to three digits). For stacked bars they are ordered accordingly.
 }
-\value{ An object of class \code{varimp_mboost} with an available \code{plot} method. Risk reductions per base learner are ordered according to the \code{mboost} object. }
+
+\value{ An object of class \code{varimp} with available \code{plot} and \code{as.data.frame} methods. 
+
+Converting a \code{varimp} object results in a \code{data.frame} containing the risk reductions, selection frequencies and the corresponding baselearner and variable names as ordered \code{factor}, ordered according to their particular importance.}
 \references{
 }
 \author{
 }
 \note{
-%%  ~~further notes~~
 }
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+
 }
 \examples{
-cars.gb <- gamboost(dist ~ bols(speed) + bbs(speed, center=TRUE), data = cars, control = boost_control(mstop = 50))
-plot(varimp_mboost(cars.gb))
+## glmboost with multiple variables and intercept
+iris$setosa <- factor(iris$Species == "setosa")
+iris_glm <- glmboost(setosa ~ 1 + Sepal.Width + Sepal.Length + Petal.Width +Petal.Length,
+                     data = iris, control = boost_control(mstop = 50), 
+                     family = Binomial(link = c("logit")))
+## importance plot with four bars only
+plot(varimp(iris_glm), nbars = 4)
+
+## gamboost with multiple variables
+iris_gam <- gamboost(Sepal.Width ~ 
+                  bols(Sepal.Length, by = setosa) +
+                  bbs(Sepal.Length, by = setosa, center = TRUE) + 
+                  bols(Petal.Width) +
+                  bbs(Petal.Width, center = TRUE) + 
+                  bols(Petal.Length) +
+                  bbs(Petal.Length, center = TRUE),
+                data = iris)
+
+## stacked importance plot with base-learners ordered in reverse alphabetical order
+plot(varimp(iris_gam), blorder = "rev_alphabetical")
+
+## similar ggplot
+library(ggplot2)
+ggplot(data.frame(varimp(iris_gam)), aes(variable, reduction, fill = blearner)) + geom_bar(stat = "identity") + coord_flip()
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{ ~kwd1 } plot.varimp
+\keyword{ ~kwd2 } as.data.frame.varimp

@@ -38,7 +38,7 @@ iris$target <- factor(ifelse(iris$Species == "setosa", 1, 0))
 iris$int <- rep(1, nrow(iris)) 
 
 # gamboost with multiple variables
-gam = gamboost(target ~ bols(int, intercept = FALSE) +
+gam <- gamboost(target ~ bols(int, intercept = FALSE) +
                         bols(Sepal.Width, intercept = FALSE) +
                         bbs(Sepal.Width, center = TRUE) +
                         bols(Sepal.Length, intercept = FALSE) +
