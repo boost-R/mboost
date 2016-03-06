@@ -27,29 +27,29 @@ as.data.frame(x)
   
   \item{type}{ a character string specifying whether to draw bars for variables (\code{"variable"}, default) or baselearners (\code{"blearner"}) in the model. (No effect for a glmboost object.)}
   
-  \item{nbars}{ integer, maximum number of bars to be plotted. If \code{nbars} is exceeded, variables / base-learners of lower importance are summarized as \code{"other"}.}
+  \item{nbars}{ integer, maximum number of bars to be plotted. If \code{nbars} is exceeded, least important variables / base-learners are summarized as \code{"other"}.}
   
   \item{maxchar}{ integer, maximum number of characters in bar labels.}
   
-  \item{blorder}{ a character string specifying the order of the base-learners in the plot. The default \code{"importance"} corresponds to the order of the base-learner importance, \code{"alphabetical"} and \code{"rev_alphabetical"} to alphabetical order, respectively its reverse, and \code{"formula"} to their order in the model formula. }
+  \item{blorder}{ a character string specifying the order of base-learners in the plot. The default \code{"importance"} corresponds to the order of the base-learner importance, \code{"alphabetical"} and \code{"rev_alphabetical"} to alphabetical order, respectively its reverse, and \code{"formula"} to their order in the model formula. }
   
   \item{xlim}{ the x limits of the plot. Defaults are from \code{0} to total reduction, or from \code{0} to \code{1} for \code{percent=TRUE}. (In case of negative risk reductions, default limits are from total negative to total positve reduction, or the latter normalized by the total absolute reduction for \code{percent=TRUE}.)}
   
-  \item{auto.key}{ A logical, or a list passed to \code{lattice::barchart}. By default \code{auto.key=TRUE} provides automatically generated legends showing the underlying base-learners in a stacked \code{type="variable"} plot. If there is a unique base-learner for each variable (-interaction), \code{auto.key=FALSE} is default. For \code{type="blearner"} the argument has no effect at all.}
+  \item{auto.key}{ A logical, or a list passed to \code{lattice::barchart}. By default \code{auto.key=TRUE} provides automatically generated legends showing the underlying base-learners in a stacked \code{type="variable"} plot. If there is an unique base-learner for each variable (-interaction), \code{auto.key=FALSE} is default. For \code{type="blearner"} the argument has no effect at all.}
   
   \item{...}{ additional arguments passed to \code{lattice::barchart}.}
 }
 \details{
 This function extracts the in-bag risk reductions per boosting step of a fitted \code{mboost} model and accumulates it individually for each base-learner contained in the model. This quantifies the individual contribution to risk reduction of each base learner and can thus be used to compare the importance of different base-learners or variables in the model. Starting from offset only, in each boosting step risk reduction is computed as the difference between in-bag risk of the current and the previous model and is accounted for the base learner selected in the particular step.
 
-The results can be plotted in a bar plot eather for the base-learners, or the variables contained in the model. The bars are ordered according to variable importance. If their number  exceeds \code{nbars} the least important are summarized as "other". If bars are plotted per  variable, all base-learners containing the same variable will be accumulated in a stacked bar. This is of use for models including seperate base-learners for e.g. the linear and non-linear part of a covariate effect (see \code{?bbs} option \code{center=TRUE}). However, variable interactions are treated as individual variables, as their desired handling might depend on context.
+The results can be plotted in a bar plot either for the base-learners, or the variables contained in the model. The bars are ordered according to variable importance. If their number  exceeds \code{nbars} the least important are summarized as "other". If bars are plotted per  variable, all base-learners containing the same variable will be accumulated in a stacked bar. This is of use for models including for example seperate base-learners for the linear and non-linear part of a covariate effect (see \code{?bbs} option \code{center=TRUE}). However, variable interactions are treated as individual variables, as their desired handling might depend on context.
 
 For comparison the selection frequencies are added to the respective base-learner labels in the plot (rounded to three digits). For stacked bars they are ordered accordingly.
 }
 
 \value{ An object of class \code{varimp} with available \code{plot} and \code{as.data.frame} methods. 
 
-Converting a \code{varimp} object results in a \code{data.frame} containing the risk reductions, selection frequencies and the corresponding baselearner and variable names as ordered \code{factor}, ordered according to their particular importance.}
+Converting a \code{varimp} object results in a \code{data.frame} containing the risk reductions, selection frequencies and the corresponding base-learner and variable names as ordered \code{factor}, ordered according to their particular importance.}
 \references{
 }
 \author{
