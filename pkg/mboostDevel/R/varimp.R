@@ -44,7 +44,8 @@ varimp.mboost <- function(object) {
   
   # add variable names per baselearner to varimp-object
   var_names <- unname( variable.names(object) )
-  # for identifiability sort variable names in interactions (not required for glmboost interactions)
+  # for identifiability sort variable names in interactions 
+  # (not required for glmboost interactions)
   var_names <- sapply(strsplit(var_names, ", "), function(x) {
     do.call( function(...) paste(... , sep = ", " ), 
              as.list(x[order(x)]) ) })
@@ -66,7 +67,7 @@ as.data.frame.varimp <- function(x, optional = FALSE, ...) {
     # blearner as ordered factor (corresponding to variable(_names))
     blearner  = ordered(names(x), levels = unique(names(x)[order(x)])),
     variable  = attr(x, "variable_names"),
-    selfreq   = attr(x, "selfreq")
+    selfreq   = attr(x, "selfreqs")
   )
 }
 
