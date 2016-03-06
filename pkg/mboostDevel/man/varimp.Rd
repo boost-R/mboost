@@ -1,5 +1,7 @@
 \name{varimp}
 \alias{varimp}
+\alias{plot.varimp}
+\alias{as.data.frame.varimp}
 
 \title{ Variable Importance }
 \description{
@@ -59,15 +61,15 @@ Converting a \code{varimp} object results in a \code{data.frame} containing the 
 
 }
 \examples{
-## glmboost with multiple variables and intercept
+### glmboost with multiple variables and intercept
 iris$setosa <- factor(iris$Species == "setosa")
 iris_glm <- glmboost(setosa ~ 1 + Sepal.Width + Sepal.Length + Petal.Width +Petal.Length,
                      data = iris, control = boost_control(mstop = 50), 
                      family = Binomial(link = c("logit")))
-## importance plot with four bars only
+### importance plot with four bars only
 plot(varimp(iris_glm), nbars = 4)
 
-## gamboost with multiple variables
+### gamboost with multiple variables
 iris_gam <- gamboost(Sepal.Width ~ 
                   bols(Sepal.Length, by = setosa) +
                   bbs(Sepal.Length, by = setosa, center = TRUE) + 
@@ -77,12 +79,13 @@ iris_gam <- gamboost(Sepal.Width ~
                   bbs(Petal.Length, center = TRUE),
                 data = iris)
 
-## stacked importance plot with base-learners ordered in reverse alphabetical order
+### stacked importance plot with base-learners ordered in reverse alphabetical order
 plot(varimp(iris_gam), blorder = "rev_alphabetical")
 
-## similar ggplot
+### similar ggplot
+\dontrun{ 
 library(ggplot2)
-ggplot(data.frame(varimp(iris_gam)), aes(variable, reduction, fill = blearner)) + geom_bar(stat = "identity") + coord_flip()
+ggplot(data.frame(varimp(iris_gam)), aes(variable, reduction, fill = blearner)) + geom_bar(stat = "identity") + coord_flip() }
 }
-\keyword{ ~kwd1 } plot.varimp
-\keyword{ ~kwd2 } as.data.frame.varimp
+\keyword{ }
+\keyword{ } 
