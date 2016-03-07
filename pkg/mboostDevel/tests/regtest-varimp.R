@@ -3,6 +3,8 @@ require("lattice")
 
 set.seed(2102)
 
+
+### tests for variable importance functions
 ### a simple two-dimensional example
 data("cars")
 

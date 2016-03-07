@@ -2,7 +2,7 @@ varimp <- function(object, ...)
   UseMethod("varimp")
 
 
-varimp.mboost <- function(object) {  
+varimp.mboost <- function(object, ...) {  
 
   ### which baselearners/variables were selected in boosting steps
   learner_names <- if( !(inherits(object, "glmboost")) ) 
@@ -61,7 +61,7 @@ varimp.mboost <- function(object) {
 }
 
 
-as.data.frame.varimp <- function(x, optional = FALSE, ...) {
+as.data.frame.varimp <- function(x, row.names = NULL, optional = FALSE, ...) {
   data.frame(
     reduction = as.numeric(x), 
     # blearner as ordered factor (corresponding to variable(_names))
