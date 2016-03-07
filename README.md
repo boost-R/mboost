@@ -1,18 +1,14 @@
 mboost
 ======
 
-[![Build Status (Linux)](https://travis-ci.org/hofnerb/mboost.svg?branch=master)](https://travis-ci.org/hofnerb/mboost)
-[![Build status (Windows)](https://ci.appveyor.com/api/projects/status/05272ar5gksvfr4q/branch/master?svg=true)](https://ci.appveyor.com/project/hofnerb/mboost/branch/master)
+[![Build Status (Linux)](https://travis-ci.org/boost-R/mboost.svg?branch=master)](https://travis-ci.org/boost-R/mboost)
+[![Build status (Windows)](https://ci.appveyor.com/api/projects/status/05272ar5gksvfr4q/branch/master?svg=true)](https://ci.appveyor.com/project/boost-R/mboost/branch/master)
 [![CRAN Status Badge](http://www.r-pkg.org/badges/version/mboost)](http://cran.r-project.org/package=mboost)
-[![Coverage Status](https://coveralls.io/repos/hofnerb/mboost/badge.svg?branch=master&service=github)](https://coveralls.io/github/hofnerb/mboost?branch=master)
+[![Coverage Status](https://coveralls.io/repos/boost-R/mboost/badge.svg?branch=master&service=github)](https://coveralls.io/github/boost-R/mboost?branch=master)
 [![](http://cranlogs.r-pkg.org/badges/mboost)](http://cran.rstudio.com/web/packages/mboost/index.html)
 
 `mboost` implements boosting algorithms for fitting generalized linear, additive and interaction models
 to potentially high-dimensional data.
-
-This [GitHub repository](https://github.com/hofnerb/mboost) is essentially just
-a copy of the r-forge repository which is hosted at
-[R-forge](https://r-forge.r-project.org/projects/mboost).
 
 ## Using mboost
 
@@ -26,7 +22,7 @@ Instructions on how to use `mboost` can be found in various places:
 
 ## Reporting Issues (etc.)
 
-For issues, bugs, feature requests etc. please use the [GitHub Issues](https://github.com/hofnerb/mboost/issues).
+For issues, bugs, feature requests etc. please use the [GitHub Issues](https://github.com/boost-R/mboost/issues).
 
 ## Installation Instructions
 
@@ -38,14 +34,14 @@ For issues, bugs, feature requests etc. please use the [GitHub Issues](https://g
 - Latest **patch version** (under development) from GitHub:
   ```r
   library("devtools")
-  install_github("hofnerb/mboost/pkg/mboostPatch")
+  install_github("hofnerb/boost-R/pkg/mboostPatch")
   library("mboost")
   ```
 
 - Latest **development version** from GitHub:
   ```r
   library("devtools")
-  install_github("hofnerb/mboost/pkg/mboostDevel")
+  install_github("hofnerb/boost-R/pkg/mboostDevel")
   library("mboostDevel")
   ```
 
@@ -53,16 +49,5 @@ For issues, bugs, feature requests etc. please use the [GitHub Issues](https://g
   ```r
   install.packages("devtools")
   ```
-
-- Alternatively, both the current patch and development versions of `mboost` (or `mboostDevel` respectively)
-  can be downloaded from R-forge if it was successfully built:
-  ```r
-  install.packages("mboost", repos = "http://r-forge.r-project.org")
-  ## or
-  install.packages("mboostDevel", repos = "http://r-forge.r-project.org")
-  ```
-  However, currently these builds often don't succeed and furthermore are only available
-  for recent versions of R.
-
 [inst]: inst
 
