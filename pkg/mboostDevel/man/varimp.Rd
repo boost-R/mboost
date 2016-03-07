@@ -9,11 +9,11 @@
 In-bag risk reduction per base-learner as variable importance for boosting.
 }
 \usage{
-\method{varimp}{mboost}(object)
+\method{varimp}{mboost}(object, ...)
 
 \method{plot}{varimp}(x, percent = TRUE, type = "variable", nbars = 10L, 
   maxchar = 20L, blorder = "importance", xlim, auto.key, ...)
-\method{as.data.frame}{varimp}(x) 
+\method{as.data.frame}{varimp, }(x, row.names = NULL, optional = FALSE, ...) 
 }
 
 
