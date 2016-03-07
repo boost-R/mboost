@@ -54,7 +54,8 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         if (is.null(args$lambda)) {
 
             ### <FIXME>: is there a better way to feed XtX into lambdadf?
-            lambdadf <- df2lambda(X = diag(rankMatrix(X$X1, method = 'qr') * rankMatrix(X$X2, method = 'qr')),
+            lambdadf <- df2lambda(X = diag(rankMatrix(X$X1, method = 'qr', warn.t = FALSE) *
+                                           rankMatrix(X$X2, method = 'qr', warn.t = FALSE)),
                                   df = args$df, lambda = args$lambda,
                                   dmat = K, weights = weights, XtX = XtX)
             ### </FIXME>
