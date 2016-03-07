@@ -439,8 +439,30 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
 ### is evaluated as
 ###     y ~ bols3(x1) + baselearner(x2) + btree(x3)
 ### see mboost_fit for the dots
-mboost <- function(formula, data = list(),
+mboost <- function(formula, data = list(), na.action = na.omit,
     baselearner = c("bbs", "bols", "btree", "bss", "bns"), ...) {
+
+
+    ## We need at least variable names to go ahead
+    if (length(formula[[3]]) == 1) {
+        if (as.name(formula[[3]]) == ".") {
+            formula <- as.formula(paste(deparse(formula[[2]]),
+                "~", paste(names(data)[names(data) != all.vars(formula[[2]])],
+                           collapse = "+"), collapse = ""))
+        }
+    }
+
+    if (is.data.frame(data)) {
+        if (!all(complete.cases(data))) {
+            ## drop cases with missing values in any of the specified variables:
+            vars <- all.vars(formula)[all.vars(formula) %in% names(data)]
+            data <- na.action(data[, vars])
+        }
+    } else {
+        if (any(unlist(lapply(data, is.na))))
+            warning(sQuote("data"),
+                    " contains missing values. Results might be affected. Consider removing missing values.")
+    }
 
     if (is.character(baselearner)) {
         baselearner <- match.arg(baselearner)
@@ -456,14 +478,6 @@ mboost <- function(formula, data = list(),
     }
     stopifnot(is.function(baselearner))
 
-    ### OK, we need at least variable names to go ahead
-    if (length(formula[[3]]) == 1) {
-        if (as.name(formula[[3]]) == ".") {
-            formula <- as.formula(paste(deparse(formula[[2]]),
-                "~", paste(names(data)[names(data) != all.vars(formula[[2]])],
-                           collapse = "+"), collapse = ""))
-        }
-    }
     ### instead of evaluating a model.frame, we evaluate
     ### the expressions on the rhs of formula directly
     "+" <- function(a,b) {
@@ -539,7 +553,8 @@ gamboost <- function(formula, data = list(),
 
 
 ### just one single tree-based baselearner
-blackboost <- function(formula, data = list(),
+blackboost <- function(formula, data = list(), weights = NULL,
+    na.action = na.pass,
     tree_controls = party::ctree_control(teststat = "max",
                                testtype = "Teststatistic",
                                mincriterion = 0,
@@ -549,16 +564,19 @@ blackboost <- function(formula, data = list(),
     ### get the model frame first
     cl <- match.call()
     mf <- match.call(expand.dots = FALSE)
-    m <- match(c("formula", "data", "weights"), names(mf), 0L)
+    m <- match(c("formula", "data", "weights", "na.action"), names(mf), 0L)
     mf <- mf[c(1L, m)]
-    mf$na.action <- na.pass
     mf$drop.unused.levels <- TRUE
     mf[[1L]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
     response <- model.response(mf)
+    weights <- model.weights(mf)
+    ## drop outcome
     mf <- mf[,-1, drop = FALSE]
+    ## drop weights
+    mf$"(weights)" <- NULL
     bl <- list(btree(mf, tree_controls = tree_controls))
-    ret <- mboost_fit(bl, response = response, ...)
+    ret <- mboost_fit(bl, response = response, weights = weights, ...)
     ret$call <- cl
     ret$rownames <- rownames(mf)
     class(ret) <- c("blackboost", class(ret))
@@ -572,15 +590,25 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
                              na.action = na.pass, contrasts.arg = NULL,
                              center = TRUE, control = boost_control(), ...) {
 
+    ## We need at least variable names to go ahead
+    if (length(formula[[3]]) == 1) {
+        if (as.name(formula[[3]]) == ".") {
+            formula <- as.formula(paste(deparse(formula[[2]]),
+                "~", paste(names(data)[names(data) != all.vars(formula[[2]])],
+                           collapse = "+"), collapse = ""))
+        }
+    }
+
     ### get the model frame first
     cl <- match.call()
     mf <- match.call(expand.dots = FALSE)
-    m <- match(c("formula", "data", "weights"), names(mf), 0L)
+    m <- match(c("formula", "data", "weights", "na.action"), names(mf), 0L)
     mf <- mf[c(1L, m)]
-    mf$na.action <- na.action
     mf$drop.unused.levels <- TRUE
+    mf$data <- data ## use cc data
     mf[[1L]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
+
     ### center argument moved to this function
     if (!control$center) {
         center <- FALSE
@@ -667,7 +695,8 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     return(ret)
 }
 
-glmboost.matrix <- function(x, y, center = TRUE,
+glmboost.matrix <- function(x, y, center = TRUE, weights = NULL,
+                            na.action = na.pass,
                             control = boost_control(), ...) {
 
     X <- x
@@ -676,6 +705,15 @@ glmboost.matrix <- function(x, y, center = TRUE,
              " do not match")
     if (is.null(colnames(X)))
         colnames(X) <- paste("V", 1:ncol(X), sep = "")
+
+    ## drop cases with missing values in any of the specified variables:
+    if (any(!Complete.cases(cbind(X, y)))) {
+        X <- na.action(X)
+        if (!is.null(removed <- attr(X, "na.action"))) {
+            y <- y[-removed]
+        }
+    }
+
     if (!control$center) {
         center <- FALSE
         warning("boost_control(center = FALSE) is deprecated, use glmboost(..., center = FALSE)")

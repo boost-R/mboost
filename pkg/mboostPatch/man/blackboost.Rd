@@ -7,6 +7,7 @@
 }
 \usage{
 blackboost(formula, data = list(),
+           weights = NULL, na.action = na.pass,
            tree_controls = party::ctree_control(
                teststat = "max",
                testtype = "Teststatistic",
@@ -17,6 +18,10 @@ blackboost(formula, data = list(),
 \arguments{
   \item{formula}{ a symbolic description of the model to be fit. }
   \item{data}{ a data frame containing the variables in the model. }
+  \item{weights}{ an optional vector of weights to be used in the fitting
+    process. }
+  \item{na.action}{a function which indicates what should happen when the data
+    contain \code{NA}s. }
   \item{tree_controls}{ an object of class \code{"TreeControl"}, which
     can be obtained using \code{\link[party]{ctree_control}}. Defines
     hyper-parameters for the trees which are used as base-learners. It

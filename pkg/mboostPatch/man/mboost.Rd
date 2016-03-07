@@ -7,7 +7,7 @@
   models are utilized as base-learners.
 }
 \usage{
-mboost(formula, data = list(),
+mboost(formula, data = list(), na.action = na.omit,
        baselearner = c("bbs", "bols", "btree", "bss", "bns"), ...)
 mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
            family = Gaussian(), control = boost_control(), oobweights =
@@ -16,6 +16,8 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
 \arguments{
   \item{formula}{ a symbolic description of the model to be fit. }
   \item{data}{ a data frame containing the variables in the model. }
+  \item{na.action}{a function which indicates what should happen when
+    the data contain \code{NA}s.}
   \item{baselearner}{ a character specifying the component-wise base
     learner to be used: \code{\link{bbs}} means P-splines with a
     B-spline basis (see Schmid and Hothorn 2008), \code{\link{bols}}

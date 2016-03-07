@@ -13,20 +13,21 @@
 \method{glmboost}{formula}(formula, data = list(), weights = NULL,
           na.action = na.pass, contrasts.arg = NULL,
           center = TRUE, control = boost_control(), ...)
-\method{glmboost}{matrix}(x, y, center = TRUE, control = boost_control(), ...)
-\method{glmboost}{default}(x,  ...)
+\method{glmboost}{matrix}(x, y, center = TRUE, weights = NULL,
+          na.action = na.pass, control = boost_control(), ...)
+\method{glmboost}{default}(x, ...)
 }
 \arguments{
   \item{formula}{ a symbolic description of the model to be fit. }
   \item{data}{ a data frame containing the variables in the model. }
   \item{weights}{ an optional vector of weights to be used in the fitting
-                  process. }
-  \item{contrasts.arg}{a list, whose entries are contrasts suitable for input
-          to the \code{contrasts} replacement function and whose names are
-          the names of columns of \code{data} containing factors.
-          See \code{\link{model.matrix.default}}.}
+    process. }
   \item{na.action}{a function which indicates what should happen when the data
-          contain \code{NA}s.}
+    contain \code{NA}s.}
+  \item{contrasts.arg}{a list, whose entries are contrasts suitable for input
+    to the \code{contrasts} replacement function and whose names are
+    the names of columns of \code{data} containing factors.
+    See \code{\link{model.matrix.default}}.}
   \item{center}{logical indicating of the predictor variables are centered before fitting.}
   \item{control}{ a list of parameters controlling the algorithm.}
   \item{x}{ design matrix. Sparse matrices of class \code{Matrix} can be used as well.}
