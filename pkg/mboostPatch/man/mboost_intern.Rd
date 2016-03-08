@@ -7,10 +7,10 @@
   Call one of the internal mboost functions.
 }
 \usage{
-mboost_intern(..., fun = c("df2lambda", "hyper_bbs", "bl_lin", "bl_lin_matrix",
+mboost_intern(..., fun = c("df2lambda", "hyper_bbs", "hyper_ols",
+                  "bl_lin", "bl_lin_matrix",
                   "Complete.cases", "get_index", "isMATRIX",
-                  "hyper_bbs", "cbs", "bsplines", "names.blg",
-                  "model.frame.blg"))
+                  "cbs", "bsplines", "model.frame.blg"))
 }
 \arguments{
   \item{\dots}{ Arguments to \code{fun}. }
