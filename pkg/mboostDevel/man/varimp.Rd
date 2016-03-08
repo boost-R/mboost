@@ -56,6 +56,13 @@ In-bag risk reduction per base-learner as variable importance for boosting.
   For \code{type = "blearner"} the argument has no effect at all.}
   
   \item{...}{ additional arguments passed to \code{lattice::barchart}.}
+  
+  \item{row.names}{ NULL or a character vector giving the row names for the 
+  data frame. Missing values are not allowed.}
+
+  \item{optional}{logical. If TRUE, setting row names and converting column 
+  names (to syntactic names: see make.names) is optional.}
+  
 }
 \details{
 This function extracts the in-bag risk reductions per boosting step of a 
