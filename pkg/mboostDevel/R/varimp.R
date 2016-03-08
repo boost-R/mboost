@@ -77,6 +77,10 @@ plot.varimp <- function(x, percent = TRUE, type = "variable",
   
   args <- as.list(match.call())
   
+  ### --------------------------------------------------
+  ### Suppress Note: 'plot.varimp: no visible binding for global variable'
+  if (getRversion() >= "2.15.1") globalVariables(c("ylab", "blearner"))
+  
   
   ### --------------------------------------------------
   ### check arguments
