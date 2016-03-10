@@ -75,9 +75,9 @@ bl_lin_matrix <- function(blg, Xfun, args) {
             stop("only one dimension may be subject to constraints")
         constr <- constr > 0
 
-        ## matrizes of class dgeMatrix are dense generic matrices; they should
-        ## be coerced to class matrix and handled in the standard way
-        if (is(XtX, "Matrix") && !extends(class(XtX), "dgeMatrix")) {
+        ## dense matrizes should be coerced to class matrix and
+        ## handled in the standard way
+        if (is(XtX, "Matrix") && is(XtX, "sparseMatrix")) {
             XtXC <- Cholesky(forceSymmetric(XtX))
             mysolve <- function(y) {
                 Y <- matrix(y, nrow = n1) * W
