@@ -3,7 +3,7 @@ mboost_intern <- function(...,
             "bl_lin", "bl_lin_matrix",
             "Complete.cases", "get_index", "isMATRIX",
             "cbs", "bsplines", "model.frame.blg", 
-            "check_newdata")) {
+            "check_newdata", "do_trace", "rescale_weights")) {
 
     fun <- match.arg(fun)
     do.call(fun, list(...))
