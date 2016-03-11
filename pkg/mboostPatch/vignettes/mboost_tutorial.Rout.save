@@ -16,7 +16,7 @@
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.5-0. See ‘package?mboost’ and ‘news(package  = "mboost")’
+This is mboost 2.6-0. See ‘package?mboost’ and ‘news(package  = "mboost")’
 for a complete list of changes.
 
 
@@ -555,8 +555,6 @@ Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = arg
 
 > modspa <- gamboost(y ~ bspatial(x1, x2, knots = list(x1 = 12, 
 +     x2 = 12)))
-Warning in structure(if (useGrad) which.min(diff1) else if (Meth == "qr") { :
-  rankMatrix(x, method='qr'): computing t(x) as nrow(x) < ncol(x)
 
 > library(lattice)
 
@@ -702,4 +700,4 @@ pdf
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
-  9.986   1.171   9.636 
+ 10.959   1.069  10.518 

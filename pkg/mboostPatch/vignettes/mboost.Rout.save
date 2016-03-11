@@ -8,7 +8,7 @@
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.5-0. See ‘package?mboost’ and ‘news(package  = "mboost")’
+This is mboost 2.6-0. See ‘package?mboost’ and ‘news(package  = "mboost")’
 for a complete list of changes.
 
 
@@ -164,4 +164,4 @@ Number of baselearners:  19
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
- 53.380   1.662  32.171 
+ 67.587   2.399  40.595 

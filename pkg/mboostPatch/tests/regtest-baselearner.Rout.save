@@ -1,5 +1,5 @@
 
-R version 3.2.1 (2015-06-18) -- "World-Famous Astronaut"
+R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
 Copyright (C) 2015 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -19,7 +19,7 @@ Type 'q()' to quit R.
 > library("mboost")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.5-0. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.6-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > attach(asNamespace("mboost"))
@@ -28,12 +28,12 @@ The following objects are masked from package:mboost:
     %+%, %O%, %X%, AUC, AdaExp, Binomial, CoxPH, ExpectReg, FP, Family,
     GammaReg, GaussClass, GaussReg, Gaussian, Gehan, Huber, Hurdle,
     IPCweights, Laplace, Loglog, Lognormal, Multinomial, NBinomial,
-    Poisson, PropOdds, QuantReg, Weibull, bbs, bl_lin, blackboost,
-    bmono, bmrf, bns, bols, boost_control, brad, brandom, bspatial,
-    bss, btree, buser, confint.glmboost, confint.mboost, cv, cvrisk,
-    df2lambda, extract, gamboost, glmboost, hyper_bbs, mboost,
-    mboost_fit, mstop, mstop<-, nuisance, risk, selected.mboost,
-    stabsel.mboost, stabsel_parameters.mboost, survFit
+    Poisson, PropOdds, QuantReg, Weibull, bbs, blackboost, bmono, bmrf,
+    bns, bols, boost_control, brad, brandom, bspatial, bss, btree,
+    buser, confint.glmboost, confint.mboost, cv, cvrisk, extract,
+    gamboost, glmboost, mboost, mboost_fit, mboost_intern, mstop,
+    mstop<-, nuisance, risk, selected.mboost, stabsel.mboost,
+    stabsel_parameters.mboost, survFit
 
 > library("MASS")
 > library("Matrix")
@@ -432,21 +432,12 @@ In data.frame(..., check.names = FALSE) :
 > y <- rnorm(100, mean = f(x1, x2), sd = 0.5)
 > mod1 <- mboost(y ~ bspatial(x1, x2, df = 6, knots = list(x1 = 10, x2 = 5)),
 +                control = boost_control(mstop = 50))
-Warning message:
-In structure(if (useGrad) which.min(diff1) else if (Meth == "qr") { :
-  rankMatrix(x, method='qr'): computing t(x) as nrow(x) < ncol(x)
 > mod21 <- mboost(y ~ bmono(x1, x2, df = 6, knots = list(x1 = 10, x2 = 5),
 +                           lambda2 = list(x1 = 10e6, x2 = 0)),
 +                 control = boost_control(mstop = 50))
-Warning message:
-In structure(if (useGrad) which.min(diff1) else if (Meth == "qr") { :
-  rankMatrix(x, method='qr'): computing t(x) as nrow(x) < ncol(x)
 > mod22 <- mboost(y ~ bmono(x1, x2, df = 6, knots = list(x1 = 10, x2 = 5),
 +                           lambda2 = list(x1 = 0, x2 = 10e6)),
 +                 control = boost_control(mstop = 50))
-Warning message:
-In structure(if (useGrad) which.min(diff1) else if (Meth == "qr") { :
-  rankMatrix(x, method='qr'): computing t(x) as nrow(x) < ncol(x)
 > 
 > diff_order <- 1
 > D1 <- kronecker(diff(diag(10 + 3 + 1), differences = diff_order),
@@ -529,7 +520,7 @@ In df2lambda(X, df = args$df, lambda = args$lambda, dmat = K, weights = w,  :
 +       buser(X2, K = diag(ncol(X2)))
 > b2d <- b2$dpp(w)
 Warning message:
-In df2lambda(X = diag(rankMatrix(X$X1, method = "qr") * rankMatrix(X$X2,  :
+In df2lambda(X = diag(rankMatrix(X$X1, method = "qr", warn.t = FALSE) *  :
   'df' too large:
   Degrees of freedom cannot be larger than the rank of the design matrix.
   Unpenalized base-learner with df = 12 used. Re-consider model specification.
@@ -1292,4 +1283,4 @@ Error in cbs(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots
 > 
 > proc.time()
    user  system elapsed 
- 29.163   0.567  30.151 
+ 29.898   0.410  30.745 

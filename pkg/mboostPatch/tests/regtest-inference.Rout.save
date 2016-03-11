@@ -1,5 +1,5 @@
 
-R version 3.2.1 (2015-06-18) -- "World-Famous Astronaut"
+R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
 Copyright (C) 2015 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -19,7 +19,7 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.5-0. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.6-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > 
@@ -98,8 +98,6 @@ There were 50 or more warnings (use warnings() to see the first 50)
 > folds[1, 1] <- NA
 > 
 > cvrisk(glm, folds = folds, papply = lapply)
-Error in if (max(abs(w - floor(w))) < sqrt(.Machine$double.eps)) return(w) : 
-  missing value where TRUE/FALSE needed
 
 	 Cross-validated Squared Error (Regression) 
 	 glmboost.formula(formula = DEXfat ~ ., data = bodyfat) 
@@ -221,7 +219,7 @@ Error in if (max(abs(w - floor(w))) < sqrt(.Machine$double.eps)) return(w) :
 
 	 Optimal number of boosting iterations: 155 
 Warning messages:
-1: In papply(1:ncol(folds), function(i) dummyfct(weights = folds[,  :
+1: In papply(1:ncol(folds), function(i) try(dummyfct(weights = folds[,  :
   1 function calls resulted in an error
 2: In cvrisk.mboost(glm, folds = folds, papply = mclapply) :
   1 fold(s) encountered an error. Results are based on 9 folds only.
@@ -232,4 +230,4 @@ Error in if (max(abs(w - floor(w))) < sqrt(.Machine$double.eps)) return(w) :
 > 
 > proc.time()
    user  system elapsed 
- 37.871  10.398  42.425 
+ 39.501  10.816  43.886 

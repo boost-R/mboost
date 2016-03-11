@@ -2,7 +2,7 @@
 > source("setup.R")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.5-0. See ‘package?mboost’ and ‘news(package  = "mboost")’
+This is mboost 2.6-0. See ‘package?mboost’ and ‘news(package  = "mboost")’
 for a complete list of changes.
 
 
@@ -13,6 +13,15 @@ for a complete list of changes.
 > if (!require("TH.data")) stop("cannot attach package ", 
 +     sQuote("TH.data"))
 Loading required package: TH.data
+Loading required package: survival
+Loading required package: MASS
+
+Attaching package: ‘TH.data’
+
+The following object is masked from ‘package:MASS’:
+
+    geyser
+
 
 > if (!require("rpart")) stop("cannot attach package ", 
 +     sQuote("rpart"))
@@ -20,7 +29,6 @@ Loading required package: rpart
 
 > if (!require("survival")) stop("cannot attach package ", 
 +     sQuote("survival"))
-Loading required package: survival
 
 > if (!require("party")) stop("cannot attach package ", 
 +     sQuote("party"))
@@ -334,4 +342,4 @@ Warning in obs - pred :
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
-  5.311   0.087   5.572 
+  6.006   0.116   6.297 
