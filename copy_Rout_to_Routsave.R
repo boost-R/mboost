@@ -64,6 +64,7 @@ if (vignettes == FALSE) {
 
     ## Get relevant file names
     ROUT <- list.files(path = check_path, pattern = ".Rout$", recursive = TRUE)
+    ROUT <- ROUT[!grepl("testthat", ROUT)]
     ROUT2 <- paste(check_path, ROUT, sep ="")
 
     ROUT.SAVE <- list.files(path = path, pattern = ".Rout.save$", recursive = TRUE)
