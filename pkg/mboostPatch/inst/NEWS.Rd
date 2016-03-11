@@ -1,18 +1,53 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.5-1 (2015-08-xx)}{
-  \subsection{Miscellaneous}{
+\section{Changes in mboost version 2.6-0 (2016-03-11)}{
+  \subsection{User-visible changes}{
     \itemize{
       \item New maintainer: Benjamin Hofner follows Torsten Hothorn as
       maintainer.
       \item Package \pkg{party} is now imported. \pkg{mboost} no longer
       directly relies on unexported functions.
-      \item Improved checks for \code{newdata}: Warnings are no longer
-      issued if data has just different types of numeric values (i.e.,
-      integer vs. double).
+      \item  Allow extrapolation for predictions if kronecker products,
+      tensor  products or sums are used. Fixes
+      \href{https://github.com/boost-R/mboost/issues/23}{#23}.
+      \item Development now hosted entirely on github as
+      \href{https://github.com/boost-R/mboost/}{boost-R/mboost}.
+      \item Started using \pkg{testthat}.
     }
   }
+  \subsection{Miscellaneous}{
+    \itemize{
+      \item Improved checks for \code{newdata}: Warnings are no longer
+      issued if data has just different types of numeric values (i.e.,
+      integer vs. double). Resolves issue
+      \href{https://github.com/boost-R/mboost/issues/17}{#17}.
+      \item Fixed \file{CITATION} by removing duplicated string 'R package
+      version' (spotted by Heidi Seibold).
+      \item \code{predict}: Improve warning when \code{length(offset) >
+	1}. Closes issue
+      \href{https://github.com/boost-R/mboost/issues/20}{#20}.
+      \item Added test coverage using package \pkg{covr}.
+      \item Better error handling in \code{cvrisk} also for parallel
+      processes.
+      \item Suppress warning of \code{rankMatrix}. (Resolves issue
+      \href{https://github.com/boost-R/mboost/issues/24}{#24}).
+      \item Stop exporting internal functions for \pkg{FDboost}. Use
+      \code{mboost_intern()} instead. Caution: Do not use this function.
+    }
+  }
+  \subsection{Bug-fixes}{
+     \itemize{
+       \item Handling of missing values has been improved. Resolves issue
+       \href{https://github.com/boost-R/mboost/issues/12}{#12}.
+       \item Minor bug fixed in vignette
+       \file{mboost_illustrations.Rnw}.
+       \item Throw an error if model cannot be fitted. Fixes issue
+       \href{https://github.com/boost-R/mboost/issues/18}{#18}.
+       \item Fixed bug in bkronecker with dense matrices. Resolves issue
+       \href{https://github.com/boost-R/mboost/issues/30}{#30}.
+     }
+   }
 }
 
 \section{Changes in mboost version 2.5-0 (2015-08-13)}{
@@ -20,7 +55,7 @@
     \itemize{
       \item Added documentation for \code{plot.mboost} function and moved
       documentation of \code{plot.glmboost} to the same help page.
-      Resolves issue \href{https://github.com/hofnerb/mboost/issues/14}{#14}.
+      Resolves issue \href{https://github.com/boost-R/mboost/issues/14}{#14}.
       \item \code{bbs} and \code{bmono} no longer allow data outside of
       the \code{boundary.knots} during model fitting.
       \item Predictions for \code{bbs} and \code{bmono} now use linear
@@ -38,7 +73,7 @@
       matrices.
       \item Prediction now also possible with \code{newdata = list()}.
       Resolves issue
-      \href{https://github.com/hofnerb/mboost/issues/15}{#15}.
+      \href{https://github.com/boost-R/mboost/issues/15}{#15}.
     }
   }
   \subsection{Miscellaneous}{
@@ -47,7 +82,7 @@
       \item \code{Multinomial()}: Updated manual for multinomial logit
       model. Predictions for new data are now
       possible (resolves issue
-      \href{https://github.com/hofnerb/mboost/issues/13}{#13}, thanks to
+      \href{https://github.com/boost-R/mboost/issues/13}{#13}, thanks to
       Sarah Brockhaus).
       \item \file{inst/CITATION}: Added subheadings and
       tutorial paper.
@@ -71,9 +106,9 @@
       assumed to be of full rank.
       \item Truncate output of complete data structure when model is
       printed. Resolves issue
-      \href{https://github.com/hofnerb/mboost/issues/11}{#11}.
+      \href{https://github.com/boost-R/mboost/issues/11}{#11}.
       \item  Adhere to CRAN policies regarding import of base packages
-      (closes \href{https://github.com/hofnerb/mboost/issues/9}{#9}).
+      (closes \href{https://github.com/boost-R/mboost/issues/9}{#9}).
     }
   }
 }

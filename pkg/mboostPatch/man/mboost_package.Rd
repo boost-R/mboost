@@ -18,8 +18,8 @@
 \tabular{ll}{
 Package: \tab mboost\cr
 Type: \tab Package\cr
-Version: \tab 2.5-0\cr
-Date: \tab 2015-08-13\cr
+Version: \tab 2.6-0\cr
+Date: \tab 2016-03-11\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 LazyData: \tab yes\cr
@@ -61,6 +61,17 @@ LazyData: \tab yes\cr
   paper is a good starting point when you plan to analyze your data using
   \code{mboost}.
 
+}
+
+\section{NEWS in 2.6-series}{
+
+  Series 2.6 includes a lot of bug fixes and improvements. Most notably,
+  the development of the package is now hosted entirely on github in the
+  project \href{https://github.com/boost-R/mboost/}{boost-R/mboost}.
+  Furthermore, the package is now maintained by Benjamin Hofner.
+
+  \bold{For more changes see}\cr\code{news(Version >= "2.6-0", package  = "mboost")}
+  
 }
 
 \section{NEWS in 2.5-series}{
