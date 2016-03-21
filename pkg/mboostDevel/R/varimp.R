@@ -72,16 +72,17 @@ as.data.frame.varimp <- function(x, row.names = NULL, optional = FALSE, ...) {
 }
 
 
-plot.varimp <- function(x, percent = TRUE, type = "variable", 
-  nbars = 10L, maxchar = 20L, blorder = "importance", xlim, auto.key, ...) {
+plot.varimp <- function(x, percent = TRUE, type = c("variable", "blearner"), 
+  nbars = 10L, maxchar = 20L, xlab = NULL, ylab = NULL, xlim, auto.key,
+  blorder = c("importance", "alphabetical", "rev_alphabetical", "formula"), 
+  ...) {
   
-  args <- as.list(match.call())
-  
-#   ### --------------------------------------------------
-#   ### Suppress Note: 'plot.varimp: no visible binding for global variable'
-#   ### does not work
-#   if (getRversion() >= "2.15.1") 
-#     globalVariables(c("ylab", "blearner"))
+  ### --------------------------------------------------
+  ### get arguments
+  args <- as.list(match.call())  
+    
+  type <- match.arg(type) 
+  blorder <- match.arg(blorder)   
   
   
   ### --------------------------------------------------
@@ -106,9 +107,6 @@ plot.varimp <- function(x, percent = TRUE, type = "variable",
     stop(paste("Parameter blorder has to be one of 'importance',",
       "'alphabetical', 'rev_alphabetical' or 'formula'."))
   
-  if( hasArg(xlab) || hasArg(ylab) )
-    stop("xlab, ylab already defined by default.")  
-  
   
   ### --------------------------------------------------
   ### set plotting arguments
@@ -121,13 +119,19 @@ plot.varimp <- function(x, percent = TRUE, type = "variable",
   
   # set x-axis label and transform values to percentages if necessary
   if( percent ) {
-    xlab <- "In-bag Risk Reduction (%)"
-    x    <- x / sum(abs(x))
+    x <- x / sum(abs(x))
     # special handling if risk reduction is negative
     if( any(x < 0) ) 
       warning(paste("At least one risk reduction value is negative. Percental", 
         "reduction is thus calculated as 'reduction/sum(abs(reduction))'."))
-  } else xlab <- "In-bag Risk Reduction"
+  }
+  
+  # set axis labels
+  xlab <- ifelse(is.null(xlab), ifelse(percent, "In-bag Risk Reduction (%)", 
+    "In-bag Risk Reduction"), xlab) 
+  ylab <- ifelse(is.null(ylab), ifelse(type == "variable", "Variables", 
+    "Baselearner"), ylab) 
+  
   
   
   ### --------------------------------------------------
@@ -231,12 +235,12 @@ plot.varimp <- function(x, percent = TRUE, type = "variable",
   ### create final plot depending on type
   if( type == "variable" ) {
     barchart(variable ~ reduction, groups = blearner, data = plot_data,
-      horizontal = TRUE, xlab = xlab, ylab = "Variables", xlim = xlim,
+      horizontal = TRUE, xlab = xlab, ylab = ylab, xlim = xlim,
       scales = list(x = list(tck = c(1,0), at = seq(0,sum(x), length.out = 5))), 
       stack = TRUE, auto.key = auto.key, ...)
   } else {
     barchart(blearner ~ reduction, data = plot_data,
-      horizontal = TRUE, xlab = xlab, ylab = "Baselearner", xlim = xlim,
+      horizontal = TRUE, xlab = xlab, ylab = ylab, xlim = xlim,
       scales = list(x = list(tck = c(1,0), at = seq(0,sum(x), length.out = 5))),
       ...)
   }
