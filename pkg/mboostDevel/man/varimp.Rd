@@ -11,8 +11,9 @@ In-bag risk reduction per base-learner as variable importance for boosting.
 \usage{
 \method{varimp}{mboost}(object, ...)
 
-\method{plot}{varimp}(x, percent = TRUE, type = "variable", nbars = 10L, 
-  maxchar = 20L, blorder = "importance", xlim, auto.key, ...)
+\method{plot}{varimp}(x, percent = TRUE, type = c("variable", "blearner"), 
+  blorder = c("importance", "alphabetical", "rev_alphabetical", "formula"),
+  nbars = 10L, maxchar = 20L, xlab = NULL, ylab = NULL, xlim, auto.key, ...)
 \method{as.data.frame}{varimp}(x, row.names = NULL, optional = FALSE, ...) 
 }
 
@@ -30,17 +31,24 @@ In-bag risk reduction per base-learner as variable importance for boosting.
   (\code{"variable"}, default) or base-learners (\code{"blearner"}) in the 
   model (no effect for a glmboost object).}
   
+  \item{blorder}{ a character string specifying the order of the base-learners
+  in the plot. The default \code{"importance"} corresponds to the order of the
+  base-learner importance, \code{"alphabetical"} and \code{"rev_alphabetical"} 
+  to alphabetical order, respectively its reverse, and \code{"formula"} to 
+  their order in the model formula.}
+  
   \item{nbars}{ integer, maximum number of bars to be plotted. If \code{nbars} 
   is exceeded, least important variables / base-learners are summarized as
   "other".}
   
   \item{maxchar}{ integer, maximum number of characters in bar labels.}
   
-  \item{blorder}{ a character string specifying the order of the base-learners
-  in the plot. The default \code{"importance"} corresponds to the order of the
-  base-learner importance, \code{"alphabetical"} and \code{"rev_alphabetical"} 
-  to alphabetical order, respectively its reverse, and \code{"formula"} to 
-  their order in the model formula. }
+  \item{xlab}{text for the x-axis label. If not set (default is \code{NULL}) 
+    x-axis label is generated automatically depending on argument 
+    \code{percent}.}  
+  
+  \item{ylab}{text for the y-axis label. If not set (default is \code{NULL}) 
+    y-axis label is generated automatically depending on argument \code{type}.}
   
   \item{xlim}{ the x limits of the plot. Defaults are from \code{0} to total 
   reduction, or from \code{0} to \code{1} for \code{percent = TRUE}. (In case 
@@ -53,7 +61,7 @@ In-bag risk reduction per base-learner as variable importance for boosting.
   the underlying base-learners in the stacked barchart 
   (\code{type = "variable"}). If there is an unique base-learner for each 
   variable(-interaction), \code{auto.key = FALSE} is default setting. 
-  For \code{type = "blearner"} the argument has no effect at all.}
+  For \code{type = "blearner"} the argument has no effect at all.} 
   
   \item{...}{ additional arguments passed to \code{lattice::barchart}.}
   

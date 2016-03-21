@@ -73,9 +73,8 @@ as.data.frame.varimp <- function(x, row.names = NULL, optional = FALSE, ...) {
 
 
 plot.varimp <- function(x, percent = TRUE, type = c("variable", "blearner"), 
-  nbars = 10L, maxchar = 20L, xlab = NULL, ylab = NULL, xlim, auto.key,
   blorder = c("importance", "alphabetical", "rev_alphabetical", "formula"), 
-  ...) {
+  nbars = 10L, maxchar = 20L, xlab = NULL, ylab = NULL, xlim, auto.key, ...) {
   
   ### --------------------------------------------------
   ### get arguments
