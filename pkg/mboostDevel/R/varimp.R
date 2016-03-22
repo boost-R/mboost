@@ -233,8 +233,8 @@ plot.varimp <- function(x, percent = TRUE, type = c("variable", "blearner"),
   ### --------------------------------------------------
   ### create final plot depending on type
   if( type == "variable" ) {
-    barchart(variable ~ reduction, groups = blearner, data = plot_data,
-      horizontal = TRUE, xlab = xlab, ylab = ylab, xlim = xlim,
+    barchart(variable ~ reduction, groups = plot_data[, "blearner"], 
+      data = plot_data, horizontal = TRUE, xlab = xlab, ylab = ylab, xlim =xlim,
       scales = list(x = list(tck = c(1,0), at = seq(0,sum(x), length.out = 5))), 
       stack = TRUE, auto.key = auto.key, ...)
   } else {
