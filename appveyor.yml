@@ -2,7 +2,8 @@
 
 # Download script file from GitHub
 init:
-  ps: |
+  - mkdir src
+  - ps: |
         $ErrorActionPreference = "Stop"
         Invoke-WebRequest http://raw.github.com/krlmlr/r-appveyor/master/scripts/appveyor-tool.ps1 -OutFile "..\appveyor-tool.ps1"
         Import-Module '..\appveyor-tool.ps1'
@@ -17,7 +18,6 @@ environment:
   - TEST_DIR: pkg\mboostDevel
 
 before_build:
-  - mkdir src
   - cp travis-tool.sh.cmd %TEST_DIR%/travis-tool.sh.cmd
   - cp ../travis-tool.sh pkg/travis-tool.sh
   - cd %TEST_DIR%
