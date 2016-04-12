@@ -42,7 +42,7 @@
     distributions of the selection probabilities and simultaneous
     selection probabilities. Only applicable for
     \code{sampling.type = "SS"}. For \code{sampling.type = "MB"} we
-    always use code{"none"}.}
+    always use \code{"none"}.}
   \item{sampling.type}{ use sampling scheme of of Shah & Samworth
     (2013), i.e., with complementarty pairs (\code{sampling.type = "SS"}),
     or the original sampling scheme of Meinshausen & Buehlmann (2010).}
@@ -68,7 +68,7 @@
 \details{
 
   For details see \code{\link[stabs]{stabsel}} in package \pkg{stabs}
-  and Hofner et al. (2014).
+  and Hofner et al. (2015).
 
 }
 \value{
@@ -88,10 +88,9 @@
 }
 \references{
 
-  B. Hofner, L. Boccuto and M. Goeker (2014),
+  B. Hofner, L. Boccuto and M. Goeker (2015),
   Controlling false discoveries in high-dimensional situations: Boosting
-  with stability selection. \emph{Technical Report}, arXiv:1411.1285.\cr
-  \url{http://arxiv.org/abs/1411.1285}.
+  with stability selection. \emph{BMC Bioinformatics}, \bold{16:144}.
 
   N. Meinshausen and P. Buehlmann (2010), Stability selection.
   \emph{Journal of the Royal Statistical Society, Series B},
