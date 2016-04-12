@@ -44,12 +44,12 @@
     \code{sampling.type = "SS"}. For \code{sampling.type = "MB"} we
     always use \code{"none"}.}
   \item{sampling.type}{ use sampling scheme of of Shah & Samworth
-    (2013), i.e., with complementarty pairs (\code{sampling.type = "SS"}),
+    (2013), i.e., with complementary pairs (\code{sampling.type = "SS"}),
     or the original sampling scheme of Meinshausen & Buehlmann (2010).}
   \item{B}{ number of subsampling replicates. Per default, we use 50
     complementary pairs for the error bounds of Shah & Samworth (2013)
     and 100 for the error bound derived in  Meinshausen & Buehlmann
-    (2010). As we use \eqn{B} complementray pairs in the former case
+    (2010). As we use \eqn{B} complementary pairs in the former case
     this leads to \eqn{2B} subsamples.}
   \item{papply}{ (parallel) apply function, defaults to
     \code{\link[parallel]{mclapply}}. Alternatively, \code{parLapply}
