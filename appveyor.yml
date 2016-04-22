@@ -12,15 +12,15 @@ install:
 
 # Adapt as necessary starting from here
 
-environment:
-  matrix:
-  - TEST_DIR: pkg\mboostPatch
-  - TEST_DIR: pkg\mboostDevel
+# environment:
+#   matrix:
+#   - TEST_DIR: pkg\mboostPatch
+#   - TEST_DIR: pkg\mboostDevel
 
 before_build:
-  - cp travis-tool.sh.cmd %TEST_DIR%/travis-tool.sh.cmd
-  - cp ../travis-tool.sh pkg/travis-tool.sh
-  - cd %TEST_DIR%
+#   - cp travis-tool.sh.cmd %TEST_DIR%/travis-tool.sh.cmd
+#   - cp ../travis-tool.sh pkg/travis-tool.sh
+#   - cd %TEST_DIR%
   - bash -c "echo '^travis-tool\.sh\.cmd$' >> .Rbuildignore"
 
 build_script:
@@ -31,27 +31,27 @@ test_script:
 
 on_failure:
   - travis-tool.sh dump_logs
-  - appveyor PushArtifact C:/projects/mboost/pkg/mboostPatch/mboost.Rcheck/00install.out
-  - cat C:/projects/mboost/pkg/mboostPatch/mboost.Rcheck/00install.out
+  - appveyor PushArtifact C:/projects/mboost/mboost.Rcheck/00install.out
+  - cat C:/projects/mboost/mboost.Rcheck/00install.out
 
 # on_finish:
 #   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 artifacts:
-  - path: '$(TEST_DIR)\*.Rcheck\**\*.log'
+  - path: '*.Rcheck\**\*.log'
     name: Logs
 
-  - path: '$(TEST_DIR)\*.Rcheck\**\*.out'
+  - path: '*.Rcheck\**\*.out'
     name: Logs
 
-  - path: '$(TEST_DIR)\*.Rcheck\**\*.fail'
+  - path: '*.Rcheck\**\*.fail'
     name: Logs
 
-  - path: '$(TEST_DIR)\*.Rcheck\**\*.Rout'
+  - path: '*.Rcheck\**\*.Rout'
     name: Logs
 
-  - path: '$(TEST_DIR)\*_*.tar.gz'
+  - path: '*_*.tar.gz'
     name: Bits
 
-  - path: '$(TEST_DIR)\*_*.zip'
+  - path: '*_*.zip'
     name: Bits

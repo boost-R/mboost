@@ -4,31 +4,36 @@
   ############################################################
 
 
-  Structure of the repository
-  ---------------------------
+  Structure of the repository (branches)
+  --------------------------------------
 
-    pkg/mboostDevel/    current development version
-            add bug fixes and new functionality
+    patch   (master branch) current version on CRAN
+    
+            > add bug fixes only
 
-    pkg/mboostPatch/  current version on CRAN
-            add bug fixes only
+    devel   current development version
+    
+            > add bug fixes and new functionality
 
-    devel/  next generation development version; experimental stuff
-            add experimental material or
-            start new generation package
+    experimental   next generation development version / experimental stuff
+    
+            > add experimental material or start new generation package
 
 
   Making a patch release
   ----------------------
+  
+    Change to patch branch: 
+      git checkout master
 
-    A bug was fixed in pkg/mboostPatch/.
+    A bug was fixed in "patch"
 
     Increase patch level in DESCRIPTION
     Update Date: field in DESCRIPTION
     Update inst/NEWS.Rd (see also "How to preview NEWS.Rd files")
     Update Date and Version in /man/mboost_package.Rd
 
-    R CMD build --resave-data --compact-vignettes pkg/mboostPatch && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
+    R CMD build --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
 
     If differences to .Rout.save occure:
        - Manually check differences. You might want to use something like:
@@ -57,33 +62,29 @@
 
     Gives no warnings / errors.
 
-    Commit changes to pkg/mboostPatch/
+    Commit changes to "patch"
 
     Now build package without test folder to be submitted to CRAN
-       R CMD buildCRAN --resave-data --compact-vignettes pkg/mboostPatch && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
+       R CMD buildCRAN --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
     To use the script copy it to R RHOME (< enter this in the console) /bin and make it executable.
 
     Check that reverse dependencies don't break.
 
     Use web form at http://xmpalantir.wu.ac.at/cransubmit/.
 
-    Merge changes to R code or documentation to pkg/mboostDevel/
-        cd pkg/mboostDevel/R
-        svn merge -r(LATEST letzte Version):HEAD --dry-run
-            svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/pkg/mboostPatch/R .
-        cd ../man
-        svn merge -r(LATEST letzte Version)
-           svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/pkg/mboostPatch/man
-        probabily only *R files in tests
-    Make sure not to modify version numbers etc. in pkg/mboostDevel
-    and to add recents NEWS to pkg/mboostDevel/inst/NEWS.Rd
+    Merge changes to R code or documentation to "devel"
+    Make sure not to modify version numbers etc. in "devel" and 
+    to add recents NEWS to inst/NEWS.Rd in "devel"
 
-   Update webpage. See www_src.
+    Update webpage. See www_src.
 
   Making a minor release
   ----------------------
+  
+    Change to development branch: 
+      git checkout devel
 
-    Several new tools have been added to pkg/mboostDevel/.
+    Several new tools have been added to "devel".
 
     Increase minor level in DESCRIPTION (patch level 0)
     Update Date: field in DESCRIPTION
@@ -92,7 +93,7 @@
     Add a new section "NEWS in X.Y-series" to /man/mboost_package.Rd
       and explain the most important changes there.
 
-    R CMD build --resave-data --compact-vignettes pkg/mboostDevel && R CMD check --as-cran --run-donttest mboostDevel_XXX.tar.gz
+    R CMD build --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
 
     If differences to .Rout.save occure:
        - Manually check differences
@@ -116,33 +117,19 @@
 
     Gives no warnings / errors.
 
-    Commit changes to pkg/mboostDevel/
+    Commit changes to "devel"
 
-    IMPORTANT:
-        - Replace all occurences of mboostDevel with mboost:
-	     Rscript change_mboostDevel_to_mboost.R
-	- Run build and check again on mboost_XXX (*not* mboostDevel this time!)
-	  Build package without test folder to be submitted to CRAN
-	     R CMD buildCRAN --resave-data --compact-vignettes pkg/mboostDevel
-       	     R CMD check --as-cran mboost_XXX.tar.gz
-          To use the script copy it to $(R RHOME)/bin and make it executable.
-
-	- ATTENTION: Do NOT commit the new, modified files to mboostDevel
-	  	     (only to mboostPatch and CRAN)
+    Now build package without test folder to be submitted to CRAN
+       R CMD buildCRAN --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
+    To use the script copy it to R RHOME (< enter this in the console) /bin and make it executable.
 
     Check that reverse dependencies don't break.
 
     Use web form at http://xmpalantir.wu.ac.at/cransubmit/.
 
-    Merge changes to pkg/mboostPatch/
-       (NOTE: This should not work that way as we didn't commit the name changes mboostDevel --> mboost.
-        However, if one uses this path, change_mboostDevel_to_mboost.R needs to be used with mboostPatch)
-       cd pkg/mboostPatch
-       svn merge (--dry-run) -r601:HEAD svn+ssh://thothorn@R-Forge.R-project.org/svnroot/mboost/pkg/mboostDevel
+    Merge changes to "patch"
 
-       where 601 is the version of the last merge (2.1-0, here)
-
-    After a minor release, pkg/mboostDevel/ and pkg/mboostPatch/ are identical
+    After a minor release, "devel" and "patch" are identical
     (with the exeption of the package names -- mboost vs. mboostDevel).
 
    Update webpage. See www_src.
@@ -151,8 +138,8 @@
   Starting a new experimental version
   -----------------------------------
 
-    cd mboost
-    svn copy pkg/mboostDevel ng/mboost_XXX
+    git checkout master
+    git checkout -b <NEW_BRANCH_NAME>
 
 
   Checking the package with latest development verstion of R

@@ -31,18 +31,18 @@ For issues, bugs, feature requests etc. please use the [GitHub Issues](https://g
   install.packages("mboost")
   ```
 
-- Latest **patch version** (under development) from GitHub:
+- Latest **patch version** (patched version of CRAN packages; under development) from GitHub:
   ```r
   library("devtools")
-  install_github("boost-R/mboost/pkg/mboostPatch")
+  install_github("boost-R/mboost")
   library("mboost")
   ```
 
-- Latest **development version** from GitHub:
+- Latest **development version** (version with new features; under development) from GitHub:
   ```r
   library("devtools")
-  install_github("boost-R/mboost/pkg/mboostDevel")
-  library("mboostDevel")
+  install_github("boost-R/mboost", ref = "devel")
+  library("mboost")
   ```
 
   To be able to use the `install_github()` command, one needs to install `devtools` first:
