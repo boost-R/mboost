@@ -1,4 +1,6 @@
 demo
+www
+www_src
 inst/NEWS.html
 inst/NEWS.pdf
 checks.R
@@ -8,7 +10,6 @@ svn_release.txt
 to_do_list.txt
 ^\..*
 .*/auto
-ww*
 .*\.yml
 ^.*\.Rproj$
 ^\.Rproj\.user$
