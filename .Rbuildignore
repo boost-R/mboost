@@ -10,3 +10,5 @@ to_do_list.txt
 .*/auto
 ww*
 .*\.yml
+^.*\.Rproj$
+^\.Rproj\.user$
