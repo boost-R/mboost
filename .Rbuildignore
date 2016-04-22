@@ -1,0 +1,13 @@
+demo
+devel
+inst/NEWS.html
+inst/NEWS.pdf
+checks.R
+buildCRAN
+copy_Rout_to_Routsave.R
+svn_release.txt
+to_do_list.txt
+^\..*
+.*/auto
+ww*
+.*\.yml
