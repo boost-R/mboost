@@ -3,15 +3,15 @@
 
 > set.seed(290875)
 
-> if (!require("mboostDevel")) install.packages("mboostDevel", 
+> if (!require("mboost")) install.packages("mboost", 
 +     dependencies = TRUE)
-Loading required package: mboostDevel
+Loading required package: mboost
 Loading required package: parallel
-This is mboostDevel 2.4-0. See ‘package?mboostDevel’ and the NEWS file
+This is mboost 2.4-0. See ‘package?mboost’ and the NEWS file
 for a complete list of changes.
 
 
-> library("mboostDevel")
+> library("mboost")
 
 > if (!require("party")) install.packages("party", dependencies = TRUE)
 Loading required package: party
@@ -51,7 +51,7 @@ Loading required package: stats4
 > fm <- as.formula(paste("DEXfat", paste(fml, fms, fmt, 
 +     sep = "+"), sep = "~"))
 
-> library("mboostDevel")
+> library("mboost")
 
 > print(fm)
 DEXfat ~ bols(age) + bols(waistcirc) + bols(hipcirc) + bols(elbowbreadth) + 

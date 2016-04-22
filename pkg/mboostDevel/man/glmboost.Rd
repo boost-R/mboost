@@ -73,13 +73,13 @@
   Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
   \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
 
-  Available as vignette via: \code{vignette(package = "mboostDevel", "mboost_tutorial")}
+  Available as vignette via: \code{vignette(package = "mboost", "mboost_tutorial")}
 }
 \seealso{\code{\link{mboost}} for the generic boosting function and
   \code{\link{gamboost}} for boosted additive models and
   \code{\link{blackboost}} for boosted trees. See \code{\link{cvrisk}} for
   cross-validated stopping iteration. Furthermore see
-  \code{\link{boost_control}}, \code{\link{Family}} and  \code{\link[mboostDevel]{methods}}}
+  \code{\link{boost_control}}, \code{\link{Family}} and  \code{\link[mboost]{methods}}}
 \examples{
 
     ### a simple two-dimensional example: cars data

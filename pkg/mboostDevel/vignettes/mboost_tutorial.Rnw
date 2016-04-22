@@ -3,7 +3,7 @@
 \documentclass[10pt]{scrartcl}
 
 %%\VignetteIndexEntry{mboost Tutorial}
-%%\VignetteDepends{mboostDevel,lattice,RColorBrewer,TH.data}
+%%\VignetteDepends{mboost,lattice,RColorBrewer,TH.data}
 
 \usepackage{threeparttable}  % needed for \tnote (footnotes in table)
 \usepackage[utf8]{inputenc}
@@ -79,16 +79,16 @@
 <<init, echo=false, results = hide>>=
 ## set up R session
 options(prompt = "R> ", continue = "+  ", width = 80)
-pd <- packageDescription("mboostDevel")
+pd <- packageDescription("mboost")
 if (any(is.na(pd))){
-    install.packages("mboostDevel", repos = "http://cran.at.r-project.org")
-    pd <- packageDescription("mboostDevel")
+    install.packages("mboost", repos = "http://cran.at.r-project.org")
+    pd <- packageDescription("mboost")
 }
 if (compareVersion(pd$Version, "2.1-0") < 0){ # must be mboost 2.1-X or newer
     warning("Current version of mboost is installed!")
-    install.packages("mboostDevel", repos = "http://cran.at.r-project.org")
+    install.packages("mboost", repos = "http://cran.at.r-project.org")
 }
-require("mboostDevel")
+require("mboost")
 set.seed(190781)
 ### make graphics directory if not existing
 if (!file.exists("graphics"))
@@ -496,7 +496,7 @@ included in \textbf{mboost}. We first load the package and the data set%
 \footnote{The data set \R{bodyfat} has been moved to the package \textbf{TH.data}.}.
 
 <<setup, echo = true, results = hide>>=
-library("mboostDevel")                         ## load package
+library("mboost")                         ## load package
 data("bodyfat", package = "TH.data")      ## load data
 @
 
@@ -1653,7 +1653,7 @@ highlighting its usage from a practical perspective. Readers who are interested
 in further illustrations, as well as in a more technical description of the
 \textbf{mboost} package, are referred to the package manual and the vignettes
 that are found at \url{http://cran.r-project.org/package=mboost} or in
-\textsf{R} via \R{vignette(package = "mboostDevel")}.
+\textsf{R} via \R{vignette(package = "mboost")}.
 
 \bibliographystyle{abbrvnat}
 \bibliography{mboost_tutorial}   % name your BibTeX data base
@@ -1809,7 +1809,7 @@ red <- rgb(103,0,31, max = 255) ## define red color
 
 <<center_false,width=2.94,height=2.5>>=
 ## load library mboost
-library("mboostDevel")
+library("mboost")
 library("RColorBrewer")
 ## define colors
 cols <- paste(brewer.pal(11,"RdBu")[c(10,2)], "E6", sep="")

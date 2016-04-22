@@ -1,5 +1,5 @@
 
-require("mboostDevel")
+require("mboost")
 require("survival")
 
 set.seed(290875)

@@ -16,11 +16,11 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
-> require("mboostDevel")
-Loading required package: mboostDevel
+> require("mboost")
+Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboostDevel 2.4-0. See 'package?mboostDevel' and the NEWS file
+This is mboost 2.4-0. See 'package?mboost' and the NEWS file
 for a complete list of changes.
 
 > if (require("party")) {

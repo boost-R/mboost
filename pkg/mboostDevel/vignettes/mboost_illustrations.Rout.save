@@ -1,7 +1,7 @@
 
 > source("setup.R")
 Loading required package: parallel
-This is mboostDevel 2.4-0. See ‘package?mboostDevel’ and the NEWS file
+This is mboost 2.4-0. See ‘package?mboost’ and the NEWS file
 for a complete list of changes.
 
 
@@ -28,7 +28,7 @@ elbowbreadth  kneebreadth     anthro3a     anthro3b
 attr(,"offset")
 [1] 30.783
 
-> load(system.file("cache/bodyfat_benchmarks.rda", package = "mboostDevel"))
+> load(system.file("cache/bodyfat_benchmarks.rda", package = "mboost"))
 
 > aic <- AIC(bf_glm)
 

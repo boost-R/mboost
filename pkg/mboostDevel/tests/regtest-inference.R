@@ -1,4 +1,4 @@
-require("mboostDevel")
+require("mboost")
 
 set.seed(1907)
 

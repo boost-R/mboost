@@ -78,7 +78,7 @@ hatvalues.gamboost <- function(model, ...) {
     ### </FIXME>
     if (checkL2(model) || L2) {
         op <- .Call("R_trace_gamboost", as.integer(n), H,
-                    as.integer(model$xselect()), PACKAGE = "mboostDevel")
+                    as.integer(model$xselect()), PACKAGE = "mboost")
     } else {
         fitm <- predict(model, aggregate = "cumsum")
         op <- bhatmat(n, H, model$xselect(), fitm, model$family@fW)
@@ -356,7 +356,7 @@ hatvalues.glmboost <- function(model, ...) {
     X <- model$baselearner[[1]]$get_data()
     op <- .Call("R_trace_glmboost", as(X, "matrix"), as(Xf, "matrix"),
                 as.integer(model$xselect()),
-                PACKAGE = "mboostDevel")
+                PACKAGE = "mboost")
     RET <- diag(op[[1]])
     attr(RET, "hatmatrix") <- op[[1]]
     attr(RET, "trace") <- op[[2]]

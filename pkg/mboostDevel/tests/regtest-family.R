@@ -1,5 +1,5 @@
 
-library("mboostDevel")
+library("mboost")
 
 set.seed(290875)
 x <- rnorm(100)

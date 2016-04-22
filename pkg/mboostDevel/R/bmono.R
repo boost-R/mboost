@@ -245,7 +245,7 @@ bl_mono <- function(blg, Xfun, args) {
         w <- weights
         if (!is.null(index))
             w <- .Call("R_ysum", as.double(weights), as.integer(index),
-                       PACKAGE = "mboostDevel")
+                       PACKAGE = "mboost")
         lambdadf <- df2lambda(X, df = args$df, lambda = args$lambda,
                               dmat = K, weights = w)
         lambda <- lambdadf["lambda"]
@@ -261,7 +261,7 @@ bl_mono <- function(blg, Xfun, args) {
         fit <- function(y) {
             if (!is.null(index)) {
                 y <- .Call("R_ysum", as.double(weights * y), as.integer(index),
-                           PACKAGE = "mboostDevel")
+                           PACKAGE = "mboost")
             } else {
                 y <- y * weights
             }
@@ -350,7 +350,7 @@ bl_mono <- function(blg, Xfun, args) {
                 as(X %*% rowSums(cf), "matrix"),
             "cumsum" = {
                 as(X %*% .Call("R_mcumsum", as(cf, "matrix"),
-                               PACKAGE = "mboostDevel"), "matrix")
+                               PACKAGE = "mboost"), "matrix")
             },
             "none" = as(X %*% cf, "matrix"))
             if (is.null(index))

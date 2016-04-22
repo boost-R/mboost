@@ -1,5 +1,5 @@
 
-require("mboostDevel")
+require("mboost")
 require("Matrix")
 
 set.seed(290875)
@@ -380,10 +380,10 @@ X <- runif(1000)
 X <- matrix(X, nrow = 100)
 y <- rnorm(100)
 glmboost(x = X, y = y)
-b <- list(mboostDevel:::bolscw(X))
+b <- list(mboost:::bolscw(X))
 mboost_fit(blg = b, response = y)
 z <- rnorm(100)
-b <- list(b1 = mboostDevel:::bolscw(X), b2 = bbs(z))
+b <- list(b1 = mboost:::bolscw(X), b2 = bbs(z))
 mboost_fit(blg = b, response = y)
 mod <- mboost_fit(blg = b, response = y)
 cf <- coef(mod, which = 1)[[1]]

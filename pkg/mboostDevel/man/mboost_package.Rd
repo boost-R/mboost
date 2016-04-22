@@ -73,7 +73,7 @@ LazyData: \tab yes\cr
   while linear extrapolation is used for prediction). Further perfomance
   improvements and a lot of bug fixes have been added.
 
-  \bold{For more changes see}\cr\code{news(Version >= "2.5-0", package  = "mboostDevel")}
+  \bold{For more changes see}\cr\code{news(Version >= "2.5-0", package  = "mboost")}
 }
 
 \section{NEWS in 2.4-series}{
@@ -85,7 +85,7 @@ LazyData: \tab yes\cr
   selection with other fitting functions. A generic function for
   \code{"mboost"} models is implemented in \pkg{mboost}.
 
-  \bold{For more changes see}\cr\code{news(Version >= "2.4-0", package  = "mboostDevel")}
+  \bold{For more changes see}\cr\code{news(Version >= "2.4-0", package  = "mboost")}
 }
 
 \section{NEWS in 2.3-series}{
@@ -109,7 +109,7 @@ LazyData: \tab yes\cr
      (based on out-of-bag data) during fitting to \code{boost_control}.
   }
 
-  \bold{For more changes see}\cr\code{news(Version >= "2.3-0", package  = "mboostDevel")}
+  \bold{For more changes see}\cr\code{news(Version >= "2.3-0", package  = "mboost")}
 }
 
 \section{NEWS in 2.2-series}{
@@ -140,7 +140,7 @@ LazyData: \tab yes\cr
     boundaries (per default).
   }
 
-  \bold{For more changes see}\cr\code{news(Version >= "2.2-0" & Version < "2.3-0", package  = "mboostDevel")}
+  \bold{For more changes see}\cr\code{news(Version >= "2.2-0" & Version < "2.3-0", package  = "mboost")}
 }
 \section{NEWS in 2.1-series}{
 
@@ -154,7 +154,7 @@ LazyData: \tab yes\cr
   Starting from this version, we now also automatically center the
   variables in \code{\link{glmboost}} (argument \code{center = TRUE}).
 
-  \bold{For more changes see}\cr\code{news(Version >= "2.1-0" & Version < "2.2-0", package  = "mboostDevel")}
+  \bold{For more changes see}\cr\code{news(Version >= "2.1-0" & Version < "2.2-0", package  = "mboost")}
 }
 \section{NEWS in 2.0-series}{
 
@@ -184,7 +184,7 @@ LazyData: \tab yes\cr
   The most important advancement is a generic implementation
   of the optimizer in function \code{\link{mboost_fit}}.
 
-  \bold{For more changes see}\cr\code{news(Version >= "2.0-0" & Version < "2.1-0", package  = "mboostDevel")}
+  \bold{For more changes see}\cr\code{news(Version >= "2.0-0" & Version < "2.1-0", package  = "mboost")}
 
 }
 \author{

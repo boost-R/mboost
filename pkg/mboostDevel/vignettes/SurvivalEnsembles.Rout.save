@@ -1,7 +1,7 @@
 
 > source("setup.R")
 Loading required package: parallel
-This is mboostDevel 2.4-0. See ‘package?mboostDevel’ and the NEWS file
+This is mboost 2.4-0. See ‘package?mboost’ and the NEWS file
 for a complete list of changes.
 
 
@@ -48,7 +48,7 @@ Loading required package: stats4
 +     d <- obs - pred
 +     plot(m, d, xlab = "(Observed + Predicted) / 2" .... [TRUNCATED] 
 
-> load(system.file("AML_Bullinger.Rda", package = "mboostDevel"))
+> load(system.file("AML_Bullinger.Rda", package = "mboost"))
 
 > AMLw <- IPCweights(Surv(clinical$time, clinical$event))
 

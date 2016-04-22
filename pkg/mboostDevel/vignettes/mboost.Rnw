@@ -6,7 +6,7 @@
 \newcommand{\argmin}{\operatorname{argmin}\displaylimits}
 
 %%\VignetteIndexEntry{mboost}
-%%\VignetteDepends{mboostDevel, party, TH.data}
+%%\VignetteDepends{mboost, party, TH.data}
 
 %% software markup
 \let\proglang=\textsf
@@ -181,7 +181,7 @@ by applying sparse matrix techniques \citep[package
 cross-validation-based choice of the number of boosting iterations
 per default via package \pkg{parallel}. A more
 elaborate description of \pkg{mboost} 2.0 features is available
-from the \texttt{mboost} vignette\footnote{Accessible via \code{vignette("mboost", package = "mboostDevel")}.}.
+from the \texttt{mboost} vignette\footnote{Accessible via \code{vignette("mboost", package = "mboost")}.}.
 
 %% Regression tests
 
@@ -211,9 +211,9 @@ The model structure (specified using the formula \code{fm}), the data and the fa
 are then passed to function \code{mboost()} for model fitting:
 <<setup, echo = FALSE>>=
 ### make sure package mboost is available
-if (!require("mboostDevel"))
-    install.packages("mboostDevel", dependencies = TRUE)
-library("mboostDevel")
+if (!require("mboost"))
+    install.packages("mboost", dependencies = TRUE)
+library("mboost")
 ### package party is necessary for fitting trees
 if (!require("party"))
     install.packages("party", dependencies = TRUE)
@@ -239,7 +239,7 @@ fmt <- "btree(hipcirc, waistcirc, tree_controls = ctree_control(maxdepth = 2, mi
 fm <- as.formula(paste("DEXfat", paste(fml, fms, fmt, sep = "+"), sep = "~"))
 @
 <<mboost-fm>>=
-library("mboostDevel")               ### attach package `mboost'
+library("mboost")               ### attach package `mboost'
 print(fm)                       ### model structure
 @
 <<mboost-bodyfat, results = hide>>=

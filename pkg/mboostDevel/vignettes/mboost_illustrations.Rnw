@@ -11,7 +11,7 @@
 %%\usepackage{Sweave}
 
 %%\VignetteIndexEntry{mboost Illustrations}
-%%\VignetteDepends{mboostDevel, survival, TH.data}
+%%\VignetteDepends{mboost, survival, TH.data}
 
 \newcommand{\Rpackage}[1]{{\normalfont\fontseries{b}\selectfont #1}}
 \newcommand{\Robject}[1]{\texttt{#1}}
@@ -143,7 +143,7 @@ coef(bf_glm)
 \begin{figure}
 \begin{center}
 <<bodyfat-oob-plot, echo = FALSE, fig = FALSE, results = hide>>=
-load(system.file("cache/bodyfat_benchmarks.rda", package = "mboostDevel"))
+load(system.file("cache/bodyfat_benchmarks.rda", package = "mboost"))
 aic <- AIC(bf_glm)
 pdf("figures/bodyfat_glmboost-bodyfat-oob-plot.pdf", version = "1.4", width = 6, height = 10)
 par(mai = par("mai") * c(1, 1, 0.5, 1))
@@ -546,7 +546,7 @@ boosting iterations.
 %%\begin{figure}
 %%\begin{center}
 %%<<wpbc-benchmarks-plot, echo = FALSE, fig = TRUE>>=
-%%load(system.file("cache/wpbc_benchmarks.rda", package = "mboostDevel"))
+%%load(system.file("cache/wpbc_benchmarks.rda", package = "mboost"))
 %%grid <- seq(from = 5, to = 500, by = 5)
 %%plot(c(0, grid[-1] - 5), -colMeans(boob), type = "b",
 %%     ylab = "Log-Likelihood / n",

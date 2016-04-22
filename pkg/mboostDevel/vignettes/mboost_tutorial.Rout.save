@@ -1,21 +1,21 @@
 
 > options(prompt = "R> ", continue = "+  ", width = 80)
 
-> pd <- packageDescription("mboostDevel")
+> pd <- packageDescription("mboost")
 
 > if (any(is.na(pd))) {
-+     install.packages("mboostDevel", repos = "http://cran.at.r-project.org")
-+     pd <- packageDescription("mboostDevel")
++     install.packages("mboost", repos = "http://cran.at.r-project.org")
++     pd <- packageDescription("mboost")
 +  .... [TRUNCATED] 
 
 > if (compareVersion(pd$Version, "2.1-0") < 0) {
 +     warning("Current version of mboost is installed!")
-+     install.packages("mboostDevel", repos  .... [TRUNCATED] 
++     install.packages("mboost", repos  .... [TRUNCATED] 
 
-> require("mboostDevel")
-Loading required package: mboostDevel
+> require("mboost")
+Loading required package: mboost
 Loading required package: parallel
-This is mboostDevel 2.4-0. See ‘package?mboostDevel’ and the NEWS file
+This is mboost 2.4-0. See ‘package?mboost’ and the NEWS file
 for a complete list of changes.
 
 
@@ -23,7 +23,7 @@ for a complete list of changes.
 
 > if (!file.exists("graphics")) dir.create("graphics")
 
-> library("mboostDevel")
+> library("mboost")
 
 > data("bodyfat", package = "TH.data")
 
@@ -296,7 +296,7 @@ Loss function: tau * (y - f) * ((y - f) >= 0) + (tau - 1) * (y - f) * ((y -
 
 > red <- rgb(103, 0, 31, max = 255)
 
-> library("mboostDevel")
+> library("mboost")
 
 > library("RColorBrewer")
 

@@ -732,7 +732,7 @@ bl_lin <- function(blg, Xfun, args) {
         weights[!Complete.cases(mf)] <- 0
         w <- weights
         if (!is.null(index))
-            w <- .Call("R_ysum", as.double(weights), as.integer(index), PACKAGE = "mboostDevel")
+            w <- .Call("R_ysum", as.double(weights), as.integer(index), PACKAGE = "mboost")
         XtX <- crossprod(X * w, X)
         lambdadf <- df2lambda(X, df = args$df, lambda = args$lambda,
                               dmat = K, weights = w, XtX = XtX)
@@ -767,7 +767,7 @@ bl_lin <- function(blg, Xfun, args) {
         fit <- function(y) {
             if (!is.null(index)) {
                 y <- .Call("R_ysum", as.double(weights * y), as.integer(index),
-                           PACKAGE = "mboostDevel")
+                           PACKAGE = "mboost")
             } else {
                 y <- y * weights
             }
@@ -814,7 +814,7 @@ bl_lin <- function(blg, Xfun, args) {
                 as(X %*% rowSums(cf), "matrix"),
             "cumsum" = {
                 as(X %*% .Call("R_mcumsum", as(cf, "matrix"),
-                               PACKAGE = "mboostDevel"), "matrix")
+                               PACKAGE = "mboost"), "matrix")
             },
             "none" = as(X %*% cf, "matrix"))
             if (is.null(index))

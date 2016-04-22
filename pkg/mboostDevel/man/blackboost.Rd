@@ -78,7 +78,7 @@ blackboost(formula, data = list(),
   \code{\link{gamboost}} for boosted additive models. See
   \code{\link{cvrisk}} for cross-validated stopping iteration.
   Furthermore see \code{\link{boost_control}},  \code{\link{Family}} and
-  \code{\link[mboostDevel]{methods}}}
+  \code{\link[mboost]{methods}}}
 \examples{
 
 ### a simple two-dimensional example: cars data

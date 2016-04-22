@@ -1,5 +1,5 @@
 
-require("mboostDevel")
+require("mboost")
 if (require("party")) {
 
 set.seed(290875)

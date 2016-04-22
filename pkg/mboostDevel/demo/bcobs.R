@@ -24,14 +24,14 @@ bcobs <- function(..., index = NULL, lambda = 1, knots = 20,
                      to = boundary.knots[2], length = knots + 2)
     }
 
-    CC <- all(mboostDevel:::Complete.cases(mf))
+    CC <- all(mboost:::Complete.cases(mf))
     ### option
     DOINDEX <- is.data.frame(mf) && (nrow(mf) > 10000 || is.factor(mf[[1]]))
     if (is.null(index)) {
         ### try to remove duplicated observations or
         ### observations with missings
         if (!CC || DOINDEX) {
-            index <- mboostDevel:::get_index(mf)
+            index <- mboost:::get_index(mf)
             mf <- mf[index[[1]],,drop = FALSE]
             index <- index[[2]]
         }
@@ -49,7 +49,7 @@ bcobs <- function(..., index = NULL, lambda = 1, knots = 20,
 
     ret$dpp <- function(weights) {
 
-        weights[!mboostDevel:::Complete.cases(mf)] <- 0
+        weights[!mboost:::Complete.cases(mf)] <- 0
         w <- weights
         if (!is.null(index)) w <- as.vector(tapply(weights, index, sum))
 
@@ -97,10 +97,10 @@ bcobs <- function(..., index = NULL, lambda = 1, knots = 20,
     return(ret)
 }
 
-library("mboostDevel")
+library("mboost")
 library("cobs")
 
-data("bodyfat", package = "mboostDevel")
+data("bodyfat", package = "mboost")
 
 bb <- function(...) bcobs(..., constraint = "increase")
 bmod <- mboost(DEXfat ~ . , data = bodyfat, baselearner = bb,

@@ -16,11 +16,11 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
-> require("mboostDevel")
-Loading required package: mboostDevel
+> require("mboost")
+Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboostDevel 2.4-0. See 'package?mboostDevel' and the NEWS file
+This is mboost 2.4-0. See 'package?mboost' and the NEWS file
 for a complete list of changes.
 
 > require("Matrix")
@@ -504,7 +504,7 @@ attr(,"offset")
 Warning message:
 In glmboost.matrix(x = X, y = y) :
   model with centered covariates does not contain intercept
-> b <- list(mboostDevel:::bolscw(X))
+> b <- list(mboost:::bolscw(X))
 > mboost_fit(blg = b, response = y)
 
 	 Model-based Boosting
@@ -521,7 +521,7 @@ Offset:  0.1193473
 Number of baselearners:  1 
 
 > z <- rnorm(100)
-> b <- list(b1 = mboostDevel:::bolscw(X), b2 = bbs(z))
+> b <- list(b1 = mboost:::bolscw(X), b2 = bbs(z))
 > mboost_fit(blg = b, response = y)
 
 	 Model-based Boosting

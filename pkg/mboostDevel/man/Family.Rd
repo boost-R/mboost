@@ -264,7 +264,7 @@ distribution approximation used in Ma and Huang (2005).
     Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
     \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
 
-    Available as vignette via: \code{vignette(package = "mboostDevel", "mboost_tutorial")}
+    Available as vignette via: \code{vignette(package = "mboost", "mboost_tutorial")}
 
     Brent A. Johnson and Qi Long (2011) Survival ensembles by the sum of pairwise
     differences with application to lung cancer microarray studies.

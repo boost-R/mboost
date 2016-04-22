@@ -1,5 +1,5 @@
 
-library("mboostDevel")
+library("mboost")
 library("glmnet")
 
 url <- "http://www-stat.stanford.edu/~hastie/glmnet/glmnetData"

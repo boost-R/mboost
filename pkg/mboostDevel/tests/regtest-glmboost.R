@@ -1,5 +1,5 @@
 
-require("mboostDevel")
+require("mboost")
 
 set.seed(290875)
 

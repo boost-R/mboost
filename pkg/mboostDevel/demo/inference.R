@@ -1,7 +1,7 @@
 
-library("mboostDevel")
+library("mboost")
 
-data("bodyfat", package = "mboostDevel")
+data("bodyfat", package = "mboost")
 
 object <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)
 a <- stabsel(object, cutoff = 0.9)

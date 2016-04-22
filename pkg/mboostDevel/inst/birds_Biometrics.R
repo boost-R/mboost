@@ -1,5 +1,5 @@
 
-library("mboostDevel")
+library("mboost")
 data("birds", package = "TH.data")
 
 # define characteristics of the boosting algorithm

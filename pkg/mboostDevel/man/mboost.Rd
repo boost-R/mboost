@@ -111,7 +111,7 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
   \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
 
-  Available as vignette via: \code{vignette(package = "mboostDevel", "mboost_tutorial")}
+  Available as vignette via: \code{vignette(package = "mboost", "mboost_tutorial")}
 
 }
 \seealso{\code{\link{glmboost}} for boosted linear models and
@@ -119,7 +119,7 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   for possible base-learners. See \code{\link{cvrisk}} for
   cross-validated stopping iteration. Furthermore see
   \code{\link{boost_control}}, \code{\link{Family}} and
-  \code{\link[mboostDevel]{methods}}. }
+  \code{\link[mboost]{methods}}. }
 \examples{
   data("bodyfat", package = "TH.data")
 

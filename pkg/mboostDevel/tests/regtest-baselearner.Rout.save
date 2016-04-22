@@ -16,14 +16,14 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
-> library("mboostDevel")
+> library("mboost")
 Loading required package: parallel
 Loading required package: stabs
-This is mboostDevel 2.4-0. See 'package?mboostDevel' and the NEWS file
+This is mboost 2.4-0. See 'package?mboost' and the NEWS file
 for a complete list of changes.
 
-> attach(asNamespace("mboostDevel"))
-The following objects are masked from package:mboostDevel:
+> attach(asNamespace("mboost"))
+The following objects are masked from package:mboost:
 
     %+%, %O%, %X%, AUC, AdaExp, Binomial, CoxPH, ExpectReg, FP, Family,
     GammaReg, GaussClass, GaussReg, Gaussian, Gehan, Huber, Hurdle,

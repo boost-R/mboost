@@ -1,6 +1,6 @@
 
-library("mboostDevel")
-attach(asNamespace("mboostDevel"))
+library("mboost")
+attach(asNamespace("mboost"))
 library("MASS")
 library("Matrix")
 

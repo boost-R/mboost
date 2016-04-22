@@ -160,7 +160,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
     cl <- makeCluster(25) # e.g. to run cvrisk on 25 nodes via PVM
     myApply <- function(X, FUN, ...) {
       myFun <- function(...) {
-          library("mboostDevel") # load mboostDevel on nodes
+          library("mboost") # load mboost on nodes
           FUN(...)
       }
       ## further set up steps as required

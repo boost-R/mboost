@@ -282,7 +282,7 @@ CoxPH <- function() {
                storage.mode(f) <- "double"
                w[is.na(f)] <- 0.0
                f[is.na(f)] <- 0.0
-               .Call("ngradientCoxPLik", time, event, f, w, package = "mboostDevel")
+               .Call("ngradientCoxPLik", time, event, f, w, package = "mboost")
            },
            risk = risk <- function(y, f, w = 1) -sum(plloss(y, f, w), na.rm = TRUE),
            offset = function(y, w = 1) 0, ## perhaps use something different

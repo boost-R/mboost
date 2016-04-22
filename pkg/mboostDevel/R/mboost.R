@@ -276,7 +276,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             if (!nw) {
                 pr <- lapply(which, pfun, agg = "none")
                 pr <- lapply(pr, function(x) {
-                    .Call("R_mcumsum", as(x, "matrix"), PACKAGE = "mboostDevel")
+                    .Call("R_mcumsum", as(x, "matrix"), PACKAGE = "mboost")
                 })
                 names(pr) <- bnames[which]
                 attr(pr, "offset") <- offset
@@ -284,7 +284,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             } else {
                 pr <- 0
                 for (i in 1:max(xselect)) pr <- pr + pfun(i, agg = "none")
-                pr <- .Call("R_mcumsum", as(pr, "matrix"), PACKAGE = "mboostDevel")
+                pr <- .Call("R_mcumsum", as(pr, "matrix"), PACKAGE = "mboost")
                 if (length(offset) != 1 && !is.null(newdata)) {
                     warning("Offset not used for prediction when ", sQuote("newdata"), " is specified")
                 } else {
@@ -383,7 +383,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
                               "sum" = rowSums(cf) * nu,
                               "cumsum" = {
                                   .Call("R_mcumsum", as(cf, "matrix") * nu,
-                                        PACKAGE = "mboostDevel")
+                                        PACKAGE = "mboost")
                               },
                               "none" = nu * cf
                               )

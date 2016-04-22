@@ -94,4 +94,4 @@ S3method(print, glmboost.ci)
 S3method(stabsel, mboost)
 S3method(stabsel_parameters, mboost)
 
-useDynLib(mboostDevel)
+useDynLib(mboost)
