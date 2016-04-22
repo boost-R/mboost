@@ -1,11 +1,11 @@
 ## check development version of mboost
 ## see http://docs.travis-ci.com/user/languages/r/
 
-## test multiple directories 
-## (see https://lord.io/blog/2014/travis-multiple-subdirs/)
-env:
- - TEST_DIR=pkg/mboostPatch
- - TEST_DIR=pkg/mboostDevel
+# ## test multiple directories 
+# ## (see https://lord.io/blog/2014/travis-multiple-subdirs/)
+# env:
+#  - TEST_DIR=pkg/mboostPatch
+#  - TEST_DIR=pkg/mboostDevel
 
 language: r
 sudo: required
