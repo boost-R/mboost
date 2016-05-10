@@ -107,12 +107,21 @@ Multinomial()
 
   Pre-fabricated functions for the most commonly used loss functions are
   available as well. Buehlmann and Hothorn (2007) give a detailed
-  overview of the available loss functions. The \code{offset} function
-  returns the population minimizers evaluated at the response, i.e.,
-  \eqn{1/2 \log(p / (1 - p))} for \code{Binomial()} or \code{AdaExp()}
+  overview of the available loss functions. An updated overview can 
+  be found in Hofner et al (2014). 
+  
+  The \code{offset} function returns the population minimizers evaluated at the 
+  response, i.e., \eqn{1/2 \log(p / (1 - p))} for \code{Binomial()} or \code{AdaExp()}
   and \eqn{(\sum w_i)^{-1} \sum w_i y_i} for \code{Gaussian()} and the
-  median for \code{Huber()} and \code{Laplace()}. A short summary of the
-  available families is given in the following paragraphs:
+  median for \code{Huber()} and \code{Laplace()}. 
+  
+  Note that all families are functions and thus need to be specified either with
+  empty brackets (e.g., \code{family = Gaussian()} for Gaussian regression) or 
+  with additional arguments if these are supported by the respective family 
+  (e.g., \code{family = QuantReg(tau = 0.2)} for quantile regression for the 
+  20\% quantile).
+  
+  \strong{A short summary of the available families is given in the following paragraphs:}
 
 \code{AdaExp()}, \code{Binomial()} and \code{AUC()} implement
 families for binary classification. \code{AdaExp()} uses the
@@ -284,6 +293,11 @@ MyGaussian <- function(){
        loss = function(y, f) (y - f)^2,
        name = "My Gauss Variant")
 }
+# Now use the new family
+data(bodyfat, package = "TH.data")
+mod <- mboost(DEXfat ~ ., data = bodyfat, family = MyGaussian())
+# N.B. that the family needs to be called with empty brackets
+
 
 \donttest{############################################################
 ## Do not run and check these examples automatically as
