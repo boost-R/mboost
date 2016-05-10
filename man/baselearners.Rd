@@ -378,12 +378,12 @@ bl1 \%O\% bl2
   for new observations if they correspond to this category.
 
   By default, all linear base-learners include an intercept term (which can
-  be removed using \code{intercept = FALSE} for \code{bols} or
-  \code{center = TRUE} for \code{bbs}). In this case, an explicit global
-  intercept term should be added to \code{gamboost} via \code{bols} (see
-  example below). With \code{bols(x, intercept = FALSE)} with categorical
-  covariate \code{x} a separate effect for each group (mean effect) is
-  estimated (see examples for resulting design matrices).
+  be removed using \code{intercept = FALSE} for \code{bols}). In this case, 
+  the respective covariate should be mean centered (if continuous) and an 
+  explicit global intercept term should be added to \code{gamboost} 
+  via \code{bols} (see example below). With \code{bols(x, intercept = FALSE)} 
+  with categorical covariate \code{x} a separate effect for each group 
+  (mean effect) is estimated (see examples for resulting design matrices).
 
   Smooth estimates with constraints can be computed using the
   base-learner \code{bmono()} which specifies P-spline base-learners
