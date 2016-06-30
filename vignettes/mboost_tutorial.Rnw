@@ -1346,6 +1346,13 @@ gam2 <- gamboost(DEXfat ~ ., baselearner = "bbs", data = bodyfat,
                  control = boost_control(trace = TRUE))
 gam2[ mstop(cvm) ]
 @
+<<coef_gamboost_save, echo = false, results = hide>>=
+n_coef <- length(coef(gam2))
+coef_string <-
+    paste(c("zero", "one", "two", "three", "four",
+            "five", "six", "seven", "eight", "nine")[n_coef + 1],
+          if (n_coef == 1) "predictor" else "predictors")
+@
 <<coef_gamboost>>=
 names(coef(gam2)) ## displays the selected base-learners at iteration "mstop(cvm)"
 ## To see that nothing got lost we now increase mstop to 1000:
@@ -1361,7 +1368,7 @@ controls the complexity of the model. Larger values for \R{mstop} lead to larger
 and more complex models, while for smaller values the complexity of the model is
 generally reduced. In our example the final model at iteration 1000 includes all
 available variables as predictors for body fat, while the model at the optimal
-iteration \Sexpr{m_cvm} included only five predictors. Optimizing the stopping iteration usually
+iteration \Sexpr{m_cvm} included only \Sexpr{coef_string}. Optimizing the stopping iteration usually
 leads to selecting the most influential predictors.
 
 \subsection{Specifying the Fitting Problem: The \R{family}}
