@@ -21,7 +21,7 @@
 \usepackage{hyperref}
 \definecolor{Blue}{rgb}{0,0,0.5}
 \hypersetup{%
-  pdftitle = {Model-based Boosting in R: A Hands-on Tutorial Using the R Package mboost.}
+  pdftitle = {Model-based Boosting in R: A Hands-on Tutorial Using the R Package mboost.},
   pdfsubject = {},
   pdfkeywords = {},
   pdfauthor = {Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Mattthias Schmid},
