@@ -122,8 +122,8 @@ if (!file.exists("graphics"))
   \small
   \textbf{This is an extended and (slightly) modified version of the manuscript}\\
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Mattthias Schmid (2014),
-  Model-based Boosting in \textsf{R} - A Hands-on Tutorial Using the \textsf{R}
-  Package mboost. \emph{Computational Statistics}, 29:3-35.\\
+  Model-based Boosting in \textsf{R} -- A Hands-on Tutorial Using the \textsf{R}
+  Package mboost. \emph{Computational Statistics}, 29:3--35.\\
   DOI \href{http://dx.doi.org/10.1007/s00180-012-0382-5}{10.1007/s00180-012-0382-5}.\\
   The final publication is available at \url{http://link.springer.com}.\\[2em]
   Changes to the results in the original manuscript are due to changes in some
@@ -1349,7 +1349,7 @@ names(coef(gam2)) ## displays the selected base-learners at iteration 30
 gam2[1000, return = FALSE]  # return = FALSE just supresses "print(gam2)"
 @
 Although we earlier had reduced to iteration 30, the fitting algorithm started
-at iteration 101. The iterations 31-100 are not re-computed.
+at iteration 101. The iterations 31--100 are not re-computed.
 <<coef_gamboost2>>=
 names(coef(gam2))  ## displays the selected base-learners, now at iteration 1000
 @
