@@ -34,7 +34,8 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
     stopifnot(length(ylab) %in% c(1, length(variable.names(x))))
     ## FIXED?
 
-    RET <- vector("list", length = length(which))
+    RET <- NULL
+    n_levelplot <- 0
 
     for (w in which) {
 
@@ -115,7 +116,8 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                     }
                 }
             }
-            if (ncol(data) == 2) {
+            n_levelplot <<- n_levelplot + (ncol(data) == 2)
+            if (ncol(data) == 2 && n_levelplot == 1) {
                 if (is.null(newdata)){
                     tmp <- expand.grid(unique(data[,1]), unique(data[,2]))
                     colnames(tmp) <- colnames(data)
@@ -129,7 +131,7 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                     pr <- predict(x, newdata = tmp, which = w)
                 }
                 fm <- as.formula(paste("pr ~ ", paste(colnames(data), collapse = "*"), sep = ""))
-                RET[[w]] <<- levelplot(fm, data = data, ...)
+                RET <<- levelplot(fm, data = data, ...)
             }
             if (ncol(data) > 2) {
                 for (v in colnames(data)) {
@@ -170,9 +172,9 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                           " of matrices", sep=""))
         }
     }
-    if (any(foo <- !sapply(RET, is.null))){
-        if (sum(foo) == 1)
-            return(RET[foo][[1]])
+    if (n_levelplot > 0){
+        if (n_levelplot == 1)
+            return(RET)
         stop(paste("Cannot plot multiple surfaces via levelplot;",
              "Plot base-learners seperately via plot(model, which = ...)!"))
     }
