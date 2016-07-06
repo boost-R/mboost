@@ -21,7 +21,7 @@
 \usepackage{hyperref}
 \definecolor{Blue}{rgb}{0,0,0.5}
 \hypersetup{%
-  pdftitle = {Model-based Boosting in R: A Hands-on Tutorial Using the R Package mboost.}
+  pdftitle = {Model-based Boosting in R: A Hands-on Tutorial Using the R Package mboost.},
   pdfsubject = {},
   pdfkeywords = {},
   pdfauthor = {Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Mattthias Schmid},
@@ -122,8 +122,8 @@ if (!file.exists("graphics"))
   \small
   \textbf{This is an extended and (slightly) modified version of the manuscript}\\
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Mattthias Schmid (2014),
-  Model-based Boosting in \textsf{R} - A Hands-on Tutorial Using the \textsf{R}
-  Package mboost. \emph{Computational Statistics}, 29:3-35.\\
+  Model-based Boosting in \textsf{R} -- A Hands-on Tutorial Using the \textsf{R}
+  Package mboost. \emph{Computational Statistics}, 29:3--35.\\
   DOI \href{http://dx.doi.org/10.1007/s00180-012-0382-5}{10.1007/s00180-012-0382-5}.\\
   The final publication is available at \url{http://link.springer.com}.\\[2em]
   Changes to the results in the original manuscript are due to changes in some
@@ -1332,7 +1332,10 @@ mstop(cvm)    ## extract the optimal mstop
 <<mstop_ctd, results = hide>>=
 gam2[ mstop(cvm) ]    ## set the model automatically to the optimal mstop
 @
-We have now reduced the model of the object \R{gam2} to the one with only 30
+<<mstop_save, echo = false, results = hide>>=
+m_cvm <- mstop(cvm)
+@
+We have now reduced the model of the object \R{gam2} to the one with only \Sexpr{m_cvm}
 boosting iterations, without further assignment. However, as pointed out above,
 the other iterations are not lost. To check which variables are now included in
 the additive predictor we again use the function \R{coef()}:
@@ -1343,13 +1346,20 @@ gam2 <- gamboost(DEXfat ~ ., baselearner = "bbs", data = bodyfat,
                  control = boost_control(trace = TRUE))
 gam2[ mstop(cvm) ]
 @
+<<coef_gamboost_save, echo = false, results = hide>>=
+n_coef <- length(coef(gam2))
+coef_string <-
+    paste(c("zero", "one", "two", "three", "four",
+            "five", "six", "seven", "eight", "nine")[n_coef + 1],
+          if (n_coef == 1) "predictor" else "predictors")
+@
 <<coef_gamboost>>=
-names(coef(gam2)) ## displays the selected base-learners at iteration 30
+names(coef(gam2)) ## displays the selected base-learners at iteration "mstop(cvm)"
 ## To see that nothing got lost we now increase mstop to 1000:
 gam2[1000, return = FALSE]  # return = FALSE just supresses "print(gam2)"
 @
-Although we earlier had reduced to iteration 30, the fitting algorithm started
-at iteration 101. The iterations 31-100 are not re-computed.
+Although we earlier had reduced to iteration \Sexpr{m_cvm}, the fitting algorithm started
+at iteration 101. The iterations \Sexpr{m_cvm+1}--100 are not re-computed.
 <<coef_gamboost2>>=
 names(coef(gam2))  ## displays the selected base-learners, now at iteration 1000
 @
@@ -1358,7 +1368,7 @@ controls the complexity of the model. Larger values for \R{mstop} lead to larger
 and more complex models, while for smaller values the complexity of the model is
 generally reduced. In our example the final model at iteration 1000 includes all
 available variables as predictors for body fat, while the model at the optimal
-iteration 30 included only five predictors. Optimizing the stopping iteration usually
+iteration \Sexpr{m_cvm} included only \Sexpr{coef_string}. Optimizing the stopping iteration usually
 leads to selecting the most influential predictors.
 
 \subsection{Specifying the Fitting Problem: The \R{family}}
