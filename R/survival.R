@@ -6,7 +6,7 @@ survFit.mboost <- function(object, newdata = NULL, ...)
 {
 
     n <- length(w <- model.weights(object))
-    if (!all.equal(w,rep(1,n)))
+    if (!isTRUE(all.equal(w,rep(1,n))))
         stop("survFit cannot (yet) deal with weights")
     y <- object$response
     stopifnot(inherits(y, "Surv"))
