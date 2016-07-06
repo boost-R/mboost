@@ -72,7 +72,7 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
     ## use case weights as out-of-bag weights (but set inbag to 0)
     OOBweights <- matrix(rep(weights, ncol(folds)), ncol = ncol(folds))
     OOBweights[folds > 0] <- 0
-    if (all.equal(papply, mclapply) == TRUE) {
+    if (identical(papply, mclapply)) {
         oobrisk <- papply(1:ncol(folds),
                           function(i) try(dummyfct(weights = folds[, i],
                                                    oobweights = OOBweights[, i]),
