@@ -12,7 +12,7 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
                            fun = NULL, corrected = TRUE, mc.preschedule = FALSE,
                            ...) {
 
-    appfun <- match.fun(papply)
+    papply <- match.fun(papply)
     weights <- model.weights(object)
     if (any(weights == 0))
         warning("zero weights")
@@ -73,15 +73,15 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
     ## use case weights as out-of-bag weights (but set inbag to 0)
     OOBweights <- matrix(rep(weights, ncol(folds)), ncol = ncol(folds))
     OOBweights[folds > 0] <- 0
-    if (identical(appfun, mclapply)) {
-        oobrisk <- appfun(1:ncol(folds),
+    if (identical(papply, mclapply)) {
+        oobrisk <- papply(1:ncol(folds),
                           function(i) try(dummyfct(weights = folds[, i],
                                                    oobweights = OOBweights[, i]),
                                           silent = TRUE),
                           mc.preschedule = mc.preschedule,
                           ...)
     } else {
-        oobrisk <- appfun(1:ncol(folds),
+        oobrisk <- papply(1:ncol(folds),
                           function(i) try(dummyfct(weights = folds[, i],
                                                    oobweights = OOBweights[, i]),
                                           silent = TRUE),
