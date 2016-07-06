@@ -90,7 +90,9 @@ Multinomial()
                be specified via the \dots argument.}
   \item{d}{ delta parameter for Huber loss function. If omitted, it is chosen adaptively.}
   \item{tau}{ the quantile or expectile to be estimated, a number strictly between 0 and 1.}
-  \item{qoffset}{ quantile of response distribution to be used as offset.}
+  \item{qoffset}{ quantile of response distribution to be used as offset, i.e., 
+      starting values for the intercept. Per default the median of the response is used,
+      which is in general a good choice (see Fenske et al. 2011, for details).}
   \item{nuirange}{ a vector containing the end-points of the interval to be
           searched for the minimum risk w.r.t. the nuisance parameter.
 	  In case of \code{PropOdds}, the starting values for
@@ -113,7 +115,8 @@ Multinomial()
   The \code{offset} function returns the population minimizers evaluated at the 
   response, i.e., \eqn{1/2 \log(p / (1 - p))} for \code{Binomial()} or \code{AdaExp()}
   and \eqn{(\sum w_i)^{-1} \sum w_i y_i} for \code{Gaussian()} and the
-  median for \code{Huber()} and \code{Laplace()}. 
+  median for \code{Huber()} and \code{Laplace()}. The offset is used as starting 
+  value for the boosting algorithm.
   
   Note that all families are functions and thus need to be specified either with
   empty brackets (e.g., \code{family = Gaussian()} for Gaussian regression) or 
