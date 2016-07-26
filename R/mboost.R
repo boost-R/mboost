@@ -567,7 +567,7 @@ blackboost <- function(formula, data = list(), weights = NULL,
     m <- match(c("formula", "data", "weights", "na.action"), names(mf), 0L)
     mf <- mf[c(1L, m)]
     mf$drop.unused.levels <- TRUE
-    mf[[1L]] <- as.name("model.frame")
+    mf[[1L]] <- quote(stats::model.frame)
     mf <- eval(mf, parent.frame())
     response <- model.response(mf)
     weights <- model.weights(mf)
@@ -606,7 +606,7 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     mf <- mf[c(1L, m)]
     mf$drop.unused.levels <- TRUE
     mf$data <- data ## use cc data
-    mf[[1L]] <- as.name("model.frame")
+    mf[[1L]] <- quote(stats::model.frame)
     mf <- eval(mf, parent.frame())
 
     ### center argument moved to this function
