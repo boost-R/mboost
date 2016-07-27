@@ -503,6 +503,12 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
 
     cll <- match.call()
     cll[[1]] <- as.name("bbs")
+    
+    constraint <- match.arg(constraint)
+    if (constraint != "none")
+        warning("Using ", sQuote('bbs()'), ' with constraint != "none" is discouraged. Preferably use ', 
+                sQuote('bmono()'), " instead.\n",
+                "See section ", sQuote("Details"), " of ?bbs for more information.")
 
     mf <- list(...)
     if (length(mf) == 1 && ((is.matrix(mf[[1]]) || is.data.frame(mf[[1]])) &&
