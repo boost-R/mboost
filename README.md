@@ -20,7 +20,7 @@ Instructions on how to use `mboost` can be found in various places:
   - [mboost 2.0](http://cran.r-project.org/web/packages/mboost/vignettes/mboost.pdf)
 - Visit the [project homepage](http://mboost.r-forge.r-project.org/) and see further tutorials and references there.
 
-## Reporting Issues (etc.)
+## Issues & Feature Requests
 
 For issues, bugs, feature requests etc. please use the [GitHub Issues](https://github.com/boost-R/mboost/issues).
 
@@ -31,7 +31,7 @@ For issues, bugs, feature requests etc. please use the [GitHub Issues](https://g
   install.packages("mboost")
   ```
 
-- Latest **patch version** (patched version of CRAN packages; under development) from GitHub:
+- Latest **patch version** (patched version of CRAN package; under development) from GitHub:
   ```r
   library("devtools")
   install_github("boost-R/mboost")
@@ -49,5 +49,4 @@ For issues, bugs, feature requests etc. please use the [GitHub Issues](https://g
   ```r
   install.packages("devtools")
   ```
-[inst]: inst
 
