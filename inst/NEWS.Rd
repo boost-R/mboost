@@ -1,6 +1,25 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
+\section{Changes in mboost version 2.6-1 (2016-xx-yy)}{
+  \subsection{User-visible changes}{
+    \itemize{
+      \item .
+    }
+  }
+  \subsection{Miscellaneous}{
+    \itemize{
+      \item .
+    }
+  }
+  \subsection{Bug-fixes}{
+     \itemize{
+       \item Drop unobserved factor levels from \code{bols()}. Fixes
+      \href{https://github.com/boost-R/mboost/issues/47}{#47}.
+      }
+   }
+}      
+
 \section{Changes in mboost version 2.6-0 (2016-03-11)}{
   \subsection{User-visible changes}{
     \itemize{

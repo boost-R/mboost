@@ -1,4 +1,3 @@
-
 ### compute Ridge shrinkage parameter lambda from df
 ### or the other way round
 df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
@@ -462,6 +461,16 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
             mf <- mf[index[[1]],,drop = FALSE]
             index <- index[[2]]
         }
+    }
+    
+    ## check if factors with unobserved levels exist
+    if (any(fac <- sapply(mf, is.factor))) {
+        tmp <- droplevels(mf)
+        if (!identical(tmp, mf)) {
+            warning("Dropped unobserved factor levels")
+            mf <- tmp
+        } 
+        rm("tmp")  
     }
 
     ret <- list(model.frame = function()
