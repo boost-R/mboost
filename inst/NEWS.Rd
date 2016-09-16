@@ -7,6 +7,7 @@
       \item Strong speed-up of \code{stabsel.mboost}: We now only compute
       the model on each subsample until \code{q} variables were selected
       (or \code{mstop} is reached)
+      \item Added new \code{Binomial_glm} family as an alternative to \code{Binomial()}. 
     }
   }
 }

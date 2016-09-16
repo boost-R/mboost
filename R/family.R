@@ -913,3 +913,66 @@ Multinomial <- function() {
            check_y = biny,
            name = "Negative Multinomial Likelihood"))
 }
+
+### Additional Binomial family 
+### Works not only with two-level factors but also 
+### with a two-column matrix of number of successes and
+### number of failures (see github issue #34 by fabian-s). 
+### In case of factors or binary vectors it uses the standard
+### 0 and 1 coding; the coefficients hence have the same level
+### as the ones resulting from glm() with family = "binomial".
+### Can deal with logit and probit link
+
+Binomial_glm <- function(link = "logit")
+{
+  if(! link %in% c("logit", "probit")) stop("link function must be either 'logit' or
+                                            'probit'")
+  link <- make.link(link)
+  
+  y_check <- function(y) {
+    if ((is.matrix(y) && NCOL(y)!=2)){
+      stop("response should be either a two-column matrix (no. successes  and  
+           no. failures), a two level factor or a vector of 0 and 1's for this family")
+    }
+    if(is.factor(y)){
+      if (nlevels(y) != 2) stop("response should be either a two-column matrix 
+                                (no. successes  and  no. failures), a two level 
+                                factor or a vector of 0 and 1's for this family")
+      y <- c(0, 1)[as.integer(y)]
+    }
+    if(!is.matrix(y)){
+      if(!all(y %in% c(0,1))) stop("response should be either a two-column matrix 
+                                   (no. successes  and  no. failures), a two level 
+                                   factor or a vector of 0 and 1's for this family")
+      y <- cbind(y, 1-y)
+    }
+    return(y)  
+    }
+  
+  loss <- function(y, f, w = 1) {
+    ntrials <- rowSums(y)
+    y <- y[,1]
+    p <- link$linkinv(f)
+    -dbinom(x = y, size = ntrials, prob = p, log = log)
+  }
+  risk <- function(y, f, w = 1) {
+    sum(w * loss(y = y, f = f))
+  }
+  
+  ngradient <- function(y, f, w = 1) {
+    ntrials <- rowSums(y)
+    y <- y[,1]
+    p <- link$linkinv(f)
+    ngr <-  link$mu.eta(f)*(y - ntrials * p)/(p * (1 - p))
+  }
+  
+  offset <-function(y, w = 1) {
+    ntrials <- rowSums(y)
+    y <- y[,1]
+    p <- mean((y + 0.5)/(ntrials + 1))
+    return(link$linkfun(p))
+  }
+  Family(ngradient = ngradient, risk = risk, loss = loss, check_y = y_check, 
+         response = function(f) link$linkinv(f), offset = offset,
+         name = "Binomial Distribution (similar to glm)")
+  }
