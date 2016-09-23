@@ -4,7 +4,7 @@
 \section{Changes in mboost version 2.6-1 (2016-xx-yy)}{
   \subsection{User-visible changes}{
     \itemize{
-      \item .
+      \item New \code{Cindex} family to optimize survival models w.r.t. the concordance index.
     }
   }
   \subsection{Miscellaneous}{
