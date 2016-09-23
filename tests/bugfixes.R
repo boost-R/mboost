@@ -516,3 +516,21 @@ mod <- mboost(vol ~ bbs(x1, df = 3, knots = 10)%O%
 mod <- mboost(vol ~ bbs(x1, df = 3, knots = 3) %O%
                 bbs(x2, df = 3, knots = 3),
               control = boost_control(nu = 0.25))
+
+
+### IPCweights problem, see github issue #54
+
+if (require("survival")){
+  x1 <- rnorm(100)
+  x2 <- x1 + rnorm(100)
+  X <- cbind(x1, x2)
+  beta <- c(1, 0.5)
+  survtime <- exp(X%*%beta)
+  event <- rep(c(TRUE, FALSE), 50)
+  
+  ipcw1 <- IPCweights(Surv(survtime, event))
+  ipcw2 <- IPCweights(Surv(as.numeric(survtime), event))
+  summary(cbind(ipcw1, ipcw2))
+  
+  stopifnot(identical(ipcw1, ipcw2))
+}

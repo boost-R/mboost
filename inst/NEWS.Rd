@@ -14,6 +14,8 @@
   }
   \subsection{Bug-fixes}{
      \itemize{
+      \item Solve potential problem with \code{IPCweights()}. Fixes
+      \href{https://github.com/boost-R/mboost/issues/54}{#54}.
        \item Drop unobserved factor levels from \code{bols()}. Fixes
       \href{https://github.com/boost-R/mboost/issues/47}{#47}.
       }
