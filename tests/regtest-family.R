@@ -183,6 +183,7 @@ modSubset <- glmboost(x = x[as.logical(wMat[, 1]),],
 round(coef(modWeighted) - coef(modSubset), 3)
 }
 
+
 ## Binomial
 y <- as.factor(sample(0:1, 100, replace = TRUE))
 x1 <- rnorm(100)
@@ -195,3 +196,50 @@ coef(mod)
 glmMod <- glm(y ~ x1 + x2, family = 'binomial')
 coef(glmMod)
 stopifnot(all((coef(glmMod) - coef(mod, off2int = TRUE) * 2) < .Machine$double.eps))
+
+## C-index boosting
+
+if (require("survival")) {
+  
+  sigma <- 0.5
+  w <- rnorm(100)
+  w.1 <- rnorm(100)
+  
+  x1 <- rnorm(100,sd=1)
+  x2 <- x1 + rnorm(100,sd=1)
+  x1.1 <- rnorm(100,sd=1)
+  x2.1 <- x1.1 + rnorm(100,sd=1)
+  X <- cbind(x1,x2)
+  X.1 <- cbind(x1.1,x2.1)
+  beta <- c(1,0.5)
+  survtime <- exp(X%*%beta + sigma*w)
+  censtime <- exp(X.1%*%beta + sigma*w.1)
+  event <- survtime < censtime
+  stime <- pmin(survtime,censtime)
+  dat <- data.frame(time = stime, event = event, x1 = x1, x2 = x2)
+  
+  # compute ipcweights outside the family
+  ipcw <- IPCweights(x = Surv(dat$time, dat$event))
+  model1 <- glmboost(Surv(time,event)~x1+x2, family=Cindex(ipcw = ipcw),
+                     control = boost_control(mstop=50), data = dat)
+  
+  
+  # compute ipcweights inside
+  model2 <- glmboost(Surv(time,event)~x1+x2, family=Cindex(ipcw = 1),
+                     control = boost_control(mstop=50), data = dat)
+  rbind(coef(model1, off2int = TRUE, which = ""), 
+        coef(model2, off2int = TRUE, which = ""))
+  
+  stopifnot(identical(coef(model1), coef(model2)))
+  
+  # change sigma
+  model1 <- glmboost(Surv(time,event)~x1+x2, family=Cindex(sigma = 0.01),
+                     control = boost_control(mstop=20), data = dat)
+  model2 <- glmboost(Surv(time,event)~x1+x2, family=Cindex(sigma = 0.2),
+                     control = boost_control(mstop=20), data = dat)
+  rbind(coef(model1, off2int = TRUE, which = ""), 
+        coef(model2, off2int = TRUE, which = ""))
+  stopifnot(!identical(coef(model1), coef(model2)))
+  
+}
+

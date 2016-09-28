@@ -4,7 +4,7 @@
 \section{Changes in mboost version 2.6-1 (2016-xx-yy)}{
   \subsection{User-visible changes}{
     \itemize{
-      \item .
+      \item New \code{Cindex} family to optimize survival models w.r.t. the concordance index.
     }
   }
   \subsection{Miscellaneous}{
@@ -14,6 +14,8 @@
   }
   \subsection{Bug-fixes}{
      \itemize{
+      \item Solve potential problem with \code{IPCweights()}. Fixes
+      \href{https://github.com/boost-R/mboost/issues/54}{#54}.
        \item Drop unobserved factor levels from \code{bols()}. Fixes
       \href{https://github.com/boost-R/mboost/issues/47}{#47}.
       }
