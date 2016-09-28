@@ -7,7 +7,7 @@ import(Matrix)
 import(parallel)
 importFrom(survival, Surv, survfit)
 importFrom(splines, bs, splineDesign)
-importFrom(lattice, levelplot)
+importFrom(lattice, levelplot, barchart)
 importFrom(nnls, nnls)
 importFrom(quadprog, solve.QP)
 importFrom(utils, packageDescription)
@@ -29,7 +29,7 @@ export(glmboost,
        nuisance, "%+%", "%X%", "%O%", extract, risk, "mstop<-",
        stabsel.mboost, stabsel_parameters.mboost,
        confint.mboost, confint.glmboost,
-       mboost_intern)
+       varimp, mboost_intern)
        ###, basesel, fitsel)
 exportClasses("boost_family")
 exportMethods("show")
@@ -94,5 +94,8 @@ S3method(lines, mboost.ci)
 S3method(print, glmboost.ci)
 S3method(stabsel, mboost)
 S3method(stabsel_parameters, mboost)
+S3method(varimp, mboost)
+S3method(plot, varimp)
+S3method(as.data.frame, varimp)
 
 useDynLib(mboost)
