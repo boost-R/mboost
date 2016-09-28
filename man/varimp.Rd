@@ -106,7 +106,7 @@ variable names as ordered \code{factors} (ordered according to their particular
 importance).}
 
 \author{
-Tobias Kühn, Almond Stöcker  
+Tobias Kuehn, Almond Stoecker  
 }
 
 \examples{

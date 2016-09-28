@@ -5,6 +5,10 @@
   \subsection{User-visible changes}{
     \itemize{
       \item New \code{Cindex} family to optimize survival models w.r.t. the concordance index.
+      Fixes \href{https://github.com/boost-R/mboost/issues/53}{#53}.
+      \item Added function \code{varimp} to extract variable importance. 
+      A dedicated plot function exists (\code{plot(varimp())}). Code was provided 
+      by Tobias Kuehn and Almond Stoecker. See pull request \href{https://github.com/boost-R/mboost/pull/29}{#29}.
     }
   }
   \subsection{Miscellaneous}{
