@@ -244,3 +244,11 @@ plot.varimp <- function(x, percent = TRUE, type = c("variable", "blearner"),
       ...)
   }
 }  
+
+print.varimp <- function(x, ...) {
+    cat("Variable importance (fraction of in-bag risk reduction):\n\n")
+    attr(x, "selfreqs") <- NULL
+    attr(x, "variable_names") <- NULL
+    class(x) <- "numeric"
+    NextMethod()
+}
