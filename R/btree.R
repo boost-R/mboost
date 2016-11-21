@@ -4,7 +4,7 @@
 btree <- function(...,
     tree_controls = party::ctree_control(stump = TRUE,
                                   mincriterion = 0,
-                                  savesplitstats = FALSE)) {
+                                  savesplitstats = FALSE, remove_weights = TRUE)) {
 
     if (!requireNamespace("party"))
         stop("cannot load ", sQuote("party"))
@@ -52,17 +52,20 @@ btree <- function(...,
         df <- mf
         df[[rname]] <- y
         object <- party_intern(fm, data = df, fun = "ctreedpp")
-        fitmem <- party::ctree_memory(object, TRUE)
-        where <- rep.int(0, nrow(mf))
-        storage.mode(where) <- "integer"
+#         fitmem <- party::ctree_memory(object, TRUE)
+#        where <- rep.int(0, nrow(mf))
+#        storage.mode(where) <- "integer"
         storage.mode(weights) <- "double"
 
         fitfun <- function(y) {
-
-            party_intern(y, object@responses, fun = "R_modify_response")
-            tree <- party_intern(object, weights, fitmem, ctrl, where,
-                                 fun = "R_TreeGrow")
-            party_intern(tree, TRUE, fun = "R_remove_weights")
+            tmp <- data.frame(y = y)
+            names(tmp) <- rname
+            object@responses <- party_intern(tmp[rname], response = TRUE, fun = "initVariableFrame") 
+            ### party_intern(y, object@responses, fun = "R_modify_response")
+            tree <- party_intern(object, weights, ctrl, fun = "R_TreeGrow")
+            where <- tree[[1]]
+            tree <- tree[[2]]
+            ### party_intern(tree, TRUE, fun = "R_remove_weights")
 
             fitted <- function() {
                 wh <- party_intern(tree, object@inputs, 0.0,

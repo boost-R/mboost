@@ -47,7 +47,8 @@ brandom(..., by = NULL, index = NULL, df = 4, lambda = NULL,
 ## tree based base-learner
 btree(..., tree_controls = party::ctree_control(stump = TRUE,
                                                 mincriterion = 0,
-                                                savesplitstats = FALSE))
+                                                savesplitstats = FALSE,
+                                                remove_weights = TRUE))
 
 ## constrained effects base-learner
 bmono(...,
