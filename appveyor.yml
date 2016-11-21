@@ -24,6 +24,7 @@ before_build:
 
 build_script:
   - travis-tool.sh install_deps
+  - Rscript -e 'install.packages("party", repos = "http://R-Forge.R-project.org")'
 
 test_script:
   - travis-tool.sh run_tests
