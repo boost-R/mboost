@@ -1,13 +1,13 @@
 Package: mboost
 Title: Model-Based Boosting
-Version: 2.6-0
-Date: 2016-03-11
+Version: 2.6-1
+Date: 2016-xx-yy
 Authors@R: c(person("Torsten", "Hothorn", role = "aut"),
              person("Peter", "Buehlmann", role = "aut"),
              person("Thomas", "Kneib", role = "aut"),
              person("Matthias", "Schmid", role = "aut"),
              person("Benjamin", "Hofner", role = c("aut", "cre"),
-	            email = "benjamin.hofner@fau.de"),
+	            email = "benjamin.hofner@pei.de"),
              person("Fabian", "Sobotka", role = "ctb"),
              person("Fabian", "Scheipl", role = "ctb"))
 Description: Functional gradient descent algorithm
