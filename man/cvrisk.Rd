@@ -1,7 +1,10 @@
 \name{cvrisk}
 \alias{cvrisk}
 \alias{cvrisk.mboost}
+\alias{print.cvrisk}
+\alias{plot.cvrisk}
 \alias{cv}
+
 \title{ Cross-Validation }
 \description{
   Cross-validated estimation of the empirical risk for hyper-parameter selection.
@@ -13,6 +16,11 @@
        fun = NULL, corrected = TRUE, mc.preschedule = FALSE, ...)
 cv(weights, type = c("bootstrap", "kfold", "subsampling"),
    B = ifelse(type == "kfold", 10, 25), prob = 0.5, strata = NULL)
+
+## Plot cross-valiation results   
+\method{plot}{cvrisk}(x, 
+     xlab = "Number of boosting iterations", ylab = attr(x, "risk"),
+     ylim = range(x), main = attr(x, "type"), ...)
 }
 \arguments{
   \item{object}{ an object of class \code{mboost}.}
@@ -50,7 +58,12 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   \item{prob}{ percentage of observations to be included in the learning samples
                for subsampling.}
   \item{strata}{ a factor of the same length as \code{weights} for stratification.}
-  \item{...}{additional arguments passed to \code{\link[parallel]{mclapply}}.}
+  \item{x}{ an object of class \code{cvrisk}.}
+  \item{xlab, ylab}{axis labels.}
+  \item{ylim}{limits of y-axis.}
+  \item{main}{main title of graphic.}
+  \item{...}{additional arguments passed to \code{\link[parallel]{mclapply}} or 
+     \code{\link{plot}}.}
 }
 \details{
 
@@ -75,6 +88,10 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   weight matrix to be used with \code{cvrisk}. If \code{strata} is defined
   sampling is performed in each stratum separately thus preserving
   the distribution of the \code{strata} variable in each fold.
+  
+  There exist various functions to display and work with 
+  cross-validation results. One can \code{print} and \code{plot} (see above)
+  results and extract the optimal iteration via \code{\link{mstop}}.
 }
 \value{
   An object of class \code{cvrisk} (when \code{fun} wasn't specified), basically a matrix
