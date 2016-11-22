@@ -1,7 +1,7 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.6-1 (2016-xx-yy)}{
+\section{Changes in mboost version 2.7-0 (2016-xx-yy)}{
   \subsection{User-visible changes}{
     \itemize{
       \item New \code{Cindex} family to optimize survival models w.r.t. the concordance index.
@@ -10,11 +10,34 @@
       A dedicated plot function exists (\code{plot(varimp())}). Code was provided 
       by Tobias Kuehn and Almond Stoecker. 
       See pull request \href{https://github.com/boost-R/mboost/pull/29}{#29}.
+      \item Improved \code{plot} function for boosting models:
+      \itemize{
+        \item \code{plot} fails earlier in case of multiple \code{levelplots},
+          i.e., maps (thanks to Mikko Korpela).
+          See pull request \href{https://github.com/boost-R/mboost/pull/39}{#39}.
+        \item Provide sensible defaults for \code{xlab} and \code{ylab} and allow 
+          user-specified axis labels for bi- and multivariate plots.
+          Fixes \href{https://github.com/boost-R/mboost/issues/51}{#51}.
+        \item Export \code{plot} functions (\code{plot.glmboost}, \code{plot.mboost}, 
+          \code{lines.mboost}, \code{plot.varimp} and \code{plot.cvrisk}) for 
+          better usability and visibility.  
+      }
     }
   }
   \subsection{Miscellaneous}{
     \itemize{
-      \item .
+      \item Updated manual regarding the usage of families and clarified the usage 
+        of argument \code{qoffset}.
+      \item Updated manual for base-learners:
+      \itemize{
+        \item Highlight that \code{x} should be centered if \code{bols(x, intercept = FALSE)} 
+          is used.
+        \item Discourage using \code{bbs(, constraint != "none")}; Preferably use 
+          \code{bmono} for constrained effect estimates.
+          Fixes \href{https://github.com/boost-R/mboost/issues/36}{#36}.
+      }
+      \item Improved vignettes (thanks to Mikko Korpela).
+        See pull request \href{https://github.com/boost-R/mboost/pull/38}{#38}.
     }
   }
   \subsection{Bug-fixes}{
@@ -23,8 +46,12 @@
       \href{https://github.com/boost-R/mboost/issues/54}{#54}.
        \item Drop unobserved factor levels from \code{bols()}. Fixes
       \href{https://github.com/boost-R/mboost/issues/47}{#47}.
-      \item Make \pkg{party} happy again: Adapt \code{btree} to changes 
-        introduced there.
+      \item Adapt \code{btree} to changes introduced in package \pkg{party}.
+      \item Improved \code{cvrisk} to be more robust in various use cases 
+        (thanks to Mikko Korpela). 
+        See pull request \href{https://github.com/boost-R/mboost/pull/42}{#42}.
+      \item Be more careful regarding namespace scoping rules.
+        Fixes \href{https://github.com/boost-R/mboost/issues/45}{#45}.
       }
    }
 }      
