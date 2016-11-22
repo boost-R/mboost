@@ -119,8 +119,8 @@ print.cvrisk <- function(x, ...) {
     return(invisible(x))
 }
 
-plot.cvrisk <- function(x, ylab = attr(x, "risk"),
-                        xlab = "Number of boosting iterations",
+plot.cvrisk <- function(x, xlab = "Number of boosting iterations",
+                        ylab = attr(x, "risk"),
                         ylim = range(x), main = attr(x, "type"), ...) {
 
     cm <- colMeans(x)
