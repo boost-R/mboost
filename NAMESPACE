@@ -23,13 +23,15 @@ export(glmboost,
        GaussReg, Gaussian, GaussClass, Laplace, Binomial, Poisson, GammaReg, QuantReg,
        ExpectReg, NBinomial, PropOdds, Weibull, Loglog, Lognormal, AUC, mboost_fit,
        Huber, AdaExp, Gehan, CoxPH, Hurdle, Multinomial, Cindex, FP, IPCweights,
-       cvrisk, cv, bbs,
-       bols, bspatial, brandom, btree, bss, bns, brad, bmono, bmrf, buser,
+       cvrisk, cv, 
+       bbs, bols, bspatial, brandom, btree, bss, bns, brad, bmono, bmrf, buser,
        survFit, selected, selected.mboost,
        nuisance, "%+%", "%X%", "%O%", extract, risk, "mstop<-",
+       plot.glmboost, plot.mboost, lines.mboost, plot.cvrisk,
        stabsel.mboost, stabsel_parameters.mboost,
-       confint.mboost, confint.glmboost,
-       varimp, mboost_intern)
+       confint.mboost, confint.glmboost, plot.mboost.ci, lines.mboost.ci, print.glmboost.ci,
+       varimp, plot.varimp, as.data.frame.varimp,
+       mboost_intern)
        ###, basesel, fitsel)
 exportClasses("boost_family")
 exportMethods("show")
