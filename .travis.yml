@@ -12,7 +12,7 @@ sudo: required
 
 repos:
   CRAN: https://cloud.r-project.org
-  Rforge: http://R-Forge.R-project.org
+  # Rforge: http://R-Forge.R-project.org
 
 before_install:
   - sudo apt-get update -qq
