@@ -52,9 +52,6 @@ btree <- function(...,
         df <- mf
         df[[rname]] <- y
         object <- party_intern(fm, data = df, fun = "ctreedpp")
-#         fitmem <- party::ctree_memory(object, TRUE)
-#        where <- rep.int(0, nrow(mf))
-#        storage.mode(where) <- "integer"
         storage.mode(weights) <- "double"
 
         fitfun <- function(y) {
