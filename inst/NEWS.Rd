@@ -47,6 +47,7 @@
        \item Drop unobserved factor levels from \code{bols()}. Fixes
       \href{https://github.com/boost-R/mboost/issues/47}{#47}.
       \item Adapt \code{btree} to changes introduced in package \pkg{party}.
+        Fixes \href{https://github.com/boost-R/mboost/issues/58}{#58}.
       \item Improved \code{cvrisk} to be more robust in various use cases 
         (thanks to Mikko Korpela). 
         See pull request \href{https://github.com/boost-R/mboost/pull/42}{#42}.
