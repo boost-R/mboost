@@ -1,5 +1,6 @@
+require("tools")
+
 make_check <- function(srcpkg, dir = "./") {
-   require("tools")
    if (dir == "") dir <- "./"
    .libPaths("")
    options(repos = "http://CRAN.at.R-project.org")
@@ -39,3 +40,4 @@ make_check <- function(srcpkg, dir = "./") {
 }
 
 package_dependencies("mboost", available.packages(), reverse = TRUE)
+make_check("mboost")
