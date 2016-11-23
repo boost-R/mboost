@@ -16,8 +16,8 @@ For installation instructions see below.
 
 Instructions on how to use `mboost` can be found in various places:
 - Have a look at the tutorials:
-  - [mboost tutorial](http://CRAN.R-project.org/web/packages/mboost/vignettes/mboost_tutorial.pdf)
-  - [mboost 2.0](http://CRAN.R-project.org/web/packages/mboost/vignettes/mboost.pdf)
+  - [mboost tutorial](https://CRAN.R-project.org/package=mboost/vignettes/mboost_tutorial.pdf)
+  - [mboost 2.0](https://CRAN.R-project.org/package=mboost/vignettes/mboost.pdf)
 - Visit the [project homepage](http://mboost.R-forge.R-project.org/) and see further tutorials and references there.
 
 ## Issues & Feature Requests
