@@ -1,7 +1,7 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.7-0 (2016-xx-yy)}{
+\section{Changes in mboost version 2.7-0 (2016-11-23)}{
   \subsection{User-visible changes}{
     \itemize{
       \item New \code{Cindex} family to optimize survival models w.r.t. the concordance index.
