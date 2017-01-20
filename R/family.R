@@ -132,10 +132,10 @@ Binomial_adaboost <- function(link = c("logit", "probit", "cloglog", "cauchit", 
     
     tmp <- try(match.arg(link), silent = TRUE)
     if (inherits(tmp, "try-error") || link == "probit") {
-        ## use old interface if link is not one of the above (i.e. a distribution)
+        ## use old interface if link is not one of the above (i.e. if link is a distribution)
         link <- link2dist(link, ...)    
     } else {
-        ## use new interface otherwise (not working at the moment)
+        ## use new interface otherwise
         link <- make.link(tmp)   
     }
     
@@ -148,7 +148,8 @@ Binomial_adaboost <- function(link = c("logit", "probit", "cloglog", "cauchit", 
                  sQuote("family = Binomial()"))
         return(c(-1, 1)[as.integer(y)])
     }
-    if (isTRUE(all.equal(link$name, "logit")))
+    
+    if (inherits(link, "link-glm") && isTRUE(all.equal(link$name, "logit"))) {
         return(
             Family(ngradient = function(y, f, w = 1) {
                 exp2yf <- exp(-2 * y * f)
@@ -178,6 +179,10 @@ Binomial_adaboost <- function(link = c("logit", "probit", "cloglog", "cauchit", 
             check_y = biny,
             name = "Negative Binomial Likelihood")
         )
+    } 
+    if (inherits(link, "link-glm")) {
+        stop("Not implemented yet")
+    }
     
     trf <- function(f) {
         thresh <- -link$q(.Machine$double.eps)
