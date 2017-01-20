@@ -87,10 +87,9 @@
 }
 \references{
 
-  B. Hofner, L. Boccuto and M. Goeker (2014),
+  B. Hofner, L. Boccuto and M. Goeker (2015),
   Controlling false discoveries in high-dimensional situations: Boosting
-  with stability selection. \emph{Technical Report}, arXiv:1411.1285.\cr
-  \url{http://arxiv.org/abs/1411.1285}.
+  with stability selection. \emph{BMC Bioinformatics}, \bold{16:144}.
 
   N. Meinshausen and P. Buehlmann (2010), Stability selection.
   \emph{Journal of the Royal Statistical Society, Series B},
