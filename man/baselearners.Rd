@@ -9,10 +9,6 @@
   Base-learners for fitting base-models in the generic implementation of
   component-wise gradient boosting in function \code{mboost}.
 }
-\usage{
-}
-\arguments{
-}
 \details{
   Three global options affect the base-learners:
 
