@@ -22,6 +22,7 @@
 \alias{Hurdle}
 \alias{Multinomial}
 \alias{Cindex}
+\alias{Binomial_glm}
 \title{ Gradient Boosting Families }
 \description{
     \code{boost_family} objects provide a convenient way to specify loss functions
@@ -61,6 +62,7 @@ Gehan()
 Hurdle(nuirange = c(0, 100))
 Multinomial()
 Cindex(sigma = 0.1, ipcw = 1)
+Binomial_glm(link = "logit")
 }
 \arguments{
   \item{ngradient}{ a function with arguments \code{y}, \code{f} and \code{w} implementing the
@@ -150,7 +152,10 @@ of the response to \eqn{-1} and \eqn{+1} (see below).
 family \code{Binomial} is the preferred choice for binary
 classification. For binary classification problems the response
 \code{y} has to be a \code{factor}. Internally \code{y} is re-coded
-to \eqn{-1} and \eqn{+1} (Buehlmann and Hothorn 2007).
+to \eqn{-1} and \eqn{+1} (Buehlmann and Hothorn 2007). 
+
+\code{Binomial_glm()} is an alternative to \code{Binomial()} leading to coefficients of the same size as coefficients from a classical logit model via \code{\link{glm}}. Additionally, it works not only with a two-level factor but also with a two-column matrix containing number of successes and number of failures (again, similar to \code{\link{glm}}). 
+
 \code{AUC()} uses \eqn{1-AUC(y, f)} as the loss function.
 The area under the ROC curve (AUC) is defined as
 \eqn{AUC = (n_{-1} n_1)^{-1} \sum_{i: y_i = 1} \sum_{j: y_j = -1} I(f_i > f_j)}.
