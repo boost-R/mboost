@@ -242,33 +242,28 @@ if (require("survival")) {
   
 }
 
-## check Binomial_glm
-glmModboost <- glmboost(y ~ x1 + x2, family = Binomial_glm())
+## check Binomial(type = "glm")
+glmModboost <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm"))
 glmModboost[1000] 
 round(rbind(coef(glmMod), coef(glmModboost, off2int =TRUE), 2*coef(mod, off2int = TRUE)),3)
-
-
 ## use different link
 glmMod <- glm(y ~ x1 + x2, family = binomial(link = "probit"))
 coef(glmMod)
-glmModboost <- glmboost(y ~ x1 + x2, family = Binomial_glm(link = "probit"))
+glmModboost <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm", link = "probit"))
 glmModboost[500]
 round(rbind(coef(glmMod), coef(glmModboost, off2int =TRUE)),3)
-
 ## use matrix of successes and failures
 y <- matrix(ncol = 2, nrow = length(x1), data = rpois(lambda = 30, n = 2*length(x)) )
 glmMod <- glm(y ~ x1 + x2, family = binomial())
 coef(glmMod)
-glmModboost <- glmboost(y ~ x1 + x2, family = Binomial_glm())
+glmModboost <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm"))
 glmModboost[500]
 round(rbind(coef(glmMod), coef(glmModboost, off2int =TRUE)),3)
-
-
 ## use binary vector
 y <- rbinom(prob = plogis(x1 + x2), size = 1, n = length(x1))
 glmMod <- glm(y ~ x1 + x2, family = binomial())
 coef(glmMod)
-glmModboost <- glmboost(y ~ x1 + x2, family = Binomial_glm(),
+glmModboost <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm"),
                         control = boost_control(nu = 0.2))
 glmModboost[1000]
 round(rbind(coef(glmMod), coef(glmModboost, off2int =TRUE)),2)
