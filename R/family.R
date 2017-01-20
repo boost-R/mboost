@@ -142,34 +142,36 @@ Binomial_adaboost <- function(link = c("logit", "probit", "cloglog", "cauchit", 
                  sQuote("family = Binomial()"))
         return(c(-1, 1)[as.integer(y)])
     }
-    if (isTRUE(all.equal(link, "logit")))
-        return(Family(ngradient = function(y, f, w = 1) {
-            exp2yf <- exp(-2 * y * f)
-            -(-2 * y * exp2yf) / (log(2) * (1 + exp2yf))
-        },
-        loss = function(y, f) {
-            f <- pmin(abs(f), 36) * sign(f)
-            p <- exp(f) / (exp(f) + exp(-f))
-            y <- (y + 1) / 2
-            -y * log(p) - (1 - y) * log(1 - p)
-        },
-        offset = function(y, w) {
-            p <- weighted.mean(y > 0, w)
-            1/2 * log(p / (1 - p))
-        },
-        fW = function(f) {
-            f <- pmin(abs(f), 36) * sign(f)
-            p <- exp(f) / (exp(f) + exp(-f))
-            4 * p * (1 - p)
-        },
-        response = function(f) {
-            f <- pmin(abs(f), 36) * sign(f)
-            p <- exp(f) / (exp(f) + exp(-f))
-            return(p)
-        },
-        rclass = function(f) (f > 0) + 1 ,
-        check_y = biny,
-        name = "Negative Binomial Likelihood"))
+    if (isTRUE(all.equal(link$name, "logit")))
+        return(
+            Family(ngradient = function(y, f, w = 1) {
+                exp2yf <- exp(-2 * y * f)
+                -(-2 * y * exp2yf) / (log(2) * (1 + exp2yf))
+            },
+            loss = function(y, f) {
+                f <- pmin(abs(f), 36) * sign(f)
+                p <- exp(f) / (exp(f) + exp(-f))
+                y <- (y + 1) / 2
+                -y * log(p) - (1 - y) * log(1 - p)
+            },
+            offset = function(y, w) {
+                p <- weighted.mean(y > 0, w)
+                1/2 * log(p / (1 - p))
+            },
+            fW = function(f) {
+                f <- pmin(abs(f), 36) * sign(f)
+                p <- exp(f) / (exp(f) + exp(-f))
+                4 * p * (1 - p)
+            },
+            response = function(f) {
+                f <- pmin(abs(f), 36) * sign(f)
+                p <- exp(f) / (exp(f) + exp(-f))
+                return(p)
+            },
+            rclass = function(f) (f > 0) + 1 ,
+            check_y = biny,
+            name = "Negative Binomial Likelihood")
+        )
     
     trf <- function(f) {
         thresh <- -link$q(.Machine$double.eps)
@@ -198,7 +200,7 @@ Binomial_adaboost <- function(link = c("logit", "probit", "cloglog", "cauchit", 
     rclass = function(f) (f > 0) + 1 ,
     check_y = biny,
     name = paste("Negative Binomial Likelihood --",
-                 attr(link, "link"), "Link")))
+                 link$name, "Link")))
 }
 
 ### Additional Binomial family 
@@ -217,20 +219,20 @@ Binomial_glm <- function(link = c("logit", "probit", "cloglog", "cauchit", "log"
     y_check <- function(y) {
         if ((is.matrix(y) && NCOL(y)!=2)){
             stop("response should be either a two-column matrix (no. successes ",
-                 "and no. failures), a two level factor or a vector of 0 and 1's ",
+                 "and no. failures) or a two level factor or a vector of 0 and 1's ",
                  "for this family")
         }
         if(is.factor(y)){
             if (nlevels(y) != 2) 
                 stop("response should be either a two-column matrix ",
-                     "(no. successes  and  no. failures), a two level ", 
+                     "(no. successes  and  no. failures) or a two level ", 
                      "factor or a vector of 0 and 1's for this family")
             y <- c(0, 1)[as.integer(y)]
         }
         if(!is.matrix(y)){
             if(!all(y %in% c(0,1))) 
                 stop("response should be either a two-column matrix ",
-                     "(no. successes  and  no. failures), a two level ",
+                     "(no. successes  and  no. failures) or a two level ",
                      "factor or a vector of 0 and 1's for this family")
             y <- cbind(y, 1-y)
         }
@@ -260,6 +262,7 @@ Binomial_glm <- function(link = c("logit", "probit", "cloglog", "cauchit", "log"
         p <- mean((y + 0.5)/(ntrials + 1))
         return(link$linkfun(p))
     }
+    
     Family(ngradient = ngradient, risk = risk, loss = loss, check_y = y_check, 
            response = function(f) link$linkinv(f), offset = offset,
            name = "Binomial Distribution (similar to glm)")
