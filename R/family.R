@@ -115,76 +115,154 @@ link2dist <- function(link, choices = c("logit", "probit"), ...) {
     ret
 }
 
+Binomial <- function(type = c("adaboost", "glm"),
+                     link = c("logit", "probit", "cloglog", "cauchit", "log")) {
+    type <- match.arg(type)
+    link <- match.arg(link)
+    if (type == "adaboost") {
+        return(Binomial_adaboost(link = link, ...))
+    } else {
+        return(Binomial_glm(link = link, ...))
+    }
+}
+
 ### Binomial
 # lfinv <- binomial()$linkinv
-Binomial <- function(link = c("logit", "probit"), ...) {
-    link <- link2dist(link, ...)
+Binomial_adaboost <- function(link = c("logit", "probit", "cloglog", "cauchit", "log")) {
+    
+    link <- match.arg(link)
+    link <- make.link(link)
+    
     biny <- function(y) {
         if (!is.factor(y))
             stop("response is not a factor but ",
-                  sQuote("family = Binomial()"))
-            if (nlevels(y) != 2)
-                stop("response is not a factor at two levels but ",
-                      sQuote("family = Binomial()"))
+                 sQuote("family = Binomial()"))
+        if (nlevels(y) != 2)
+            stop("response is not a factor at two levels but ",
+                 sQuote("family = Binomial()"))
         return(c(-1, 1)[as.integer(y)])
     }
     if (isTRUE(all.equal(link, "logit")))
-    return(Family(ngradient = function(y, f, w = 1) {
-               exp2yf <- exp(-2 * y * f)
-               -(-2 * y * exp2yf) / (log(2) * (1 + exp2yf))
-           },
-           loss = function(y, f) {
-               f <- pmin(abs(f), 36) * sign(f)
-               p <- exp(f) / (exp(f) + exp(-f))
-               y <- (y + 1) / 2
-               -y * log(p) - (1 - y) * log(1 - p)
-           },
-           offset = function(y, w) {
-               p <- weighted.mean(y > 0, w)
-               1/2 * log(p / (1 - p))
-           },
-           fW = function(f) {
-               f <- pmin(abs(f), 36) * sign(f)
-               p <- exp(f) / (exp(f) + exp(-f))
-               4 * p * (1 - p)
-           },
-           response = function(f) {
-               f <- pmin(abs(f), 36) * sign(f)
-               p <- exp(f) / (exp(f) + exp(-f))
-               return(p)
-           },
-           rclass = function(f) (f > 0) + 1 ,
-           check_y = biny,
-           name = "Negative Binomial Likelihood"))
-
+        return(Family(ngradient = function(y, f, w = 1) {
+            exp2yf <- exp(-2 * y * f)
+            -(-2 * y * exp2yf) / (log(2) * (1 + exp2yf))
+        },
+        loss = function(y, f) {
+            f <- pmin(abs(f), 36) * sign(f)
+            p <- exp(f) / (exp(f) + exp(-f))
+            y <- (y + 1) / 2
+            -y * log(p) - (1 - y) * log(1 - p)
+        },
+        offset = function(y, w) {
+            p <- weighted.mean(y > 0, w)
+            1/2 * log(p / (1 - p))
+        },
+        fW = function(f) {
+            f <- pmin(abs(f), 36) * sign(f)
+            p <- exp(f) / (exp(f) + exp(-f))
+            4 * p * (1 - p)
+        },
+        response = function(f) {
+            f <- pmin(abs(f), 36) * sign(f)
+            p <- exp(f) / (exp(f) + exp(-f))
+            return(p)
+        },
+        rclass = function(f) (f > 0) + 1 ,
+        check_y = biny,
+        name = "Negative Binomial Likelihood"))
+    
     trf <- function(f) {
         thresh <- -link$q(.Machine$double.eps)
         pmin(pmax(f, -thresh), thresh)
     }
-
+    
     return(Family(ngradient = function(y, f, w = 1) {
-               y <- (y + 1) / 2
-               p <- link$p(trf(f))
-               d <- link$d(trf(f))
-               d * (y / p - (1 - y) / (1 - p))
-           },
-           loss = function(y, f) {
-               p <- link$p(trf(f))
-               y <- (y + 1) / 2
-               -y * log(p) - (1 - y) * log(1 - p)
-           },
-           offset = function(y, w) {
-               p <- weighted.mean(y > 0, w)
-               link$q(p)
-           },
-           response = function(f) {
-               p <- link$p(trf(f))
-               return(p)
-           },
-           rclass = function(f) (f > 0) + 1 ,
-           check_y = biny,
-           name = paste("Negative Binomial Likelihood --",
-                        attr(link, "link"), "Link")))
+        y <- (y + 1) / 2
+        p <- link$p(trf(f))
+        d <- link$d(trf(f))
+        d * (y / p - (1 - y) / (1 - p))
+    },
+    loss = function(y, f) {
+        p <- link$p(trf(f))
+        y <- (y + 1) / 2
+        -y * log(p) - (1 - y) * log(1 - p)
+    },
+    offset = function(y, w) {
+        p <- weighted.mean(y > 0, w)
+        link$q(p)
+    },
+    response = function(f) {
+        p <- link$p(trf(f))
+        return(p)
+    },
+    rclass = function(f) (f > 0) + 1 ,
+    check_y = biny,
+    name = paste("Negative Binomial Likelihood --",
+                 attr(link, "link"), "Link")))
+}
+
+### Additional Binomial family 
+### Works not only with two-level factors but also 
+### with a two-column matrix of number of successes and
+### number of failures (see github issue #34 by fabian-s). 
+### In case of factors or binary vectors it uses the standard
+### 0 and 1 coding; the coefficients hence have the same level
+### as the ones resulting from glm() with family = "binomial".
+### Can deal with logit and probit link
+Binomial_glm <- function(link = c("logit", "probit", "cloglog", "cauchit", "log")) {
+    
+    link <- match.arg(link)
+    link <- make.link(link)
+    
+    y_check <- function(y) {
+        if ((is.matrix(y) && NCOL(y)!=2)){
+            stop("response should be either a two-column matrix (no. successes ",
+                 "and no. failures), a two level factor or a vector of 0 and 1's ",
+                 "for this family")
+        }
+        if(is.factor(y)){
+            if (nlevels(y) != 2) 
+                stop("response should be either a two-column matrix ",
+                     "(no. successes  and  no. failures), a two level ", 
+                     "factor or a vector of 0 and 1's for this family")
+            y <- c(0, 1)[as.integer(y)]
+        }
+        if(!is.matrix(y)){
+            if(!all(y %in% c(0,1))) 
+                stop("response should be either a two-column matrix ",
+                     "(no. successes  and  no. failures), a two level ",
+                     "factor or a vector of 0 and 1's for this family")
+            y <- cbind(y, 1-y)
+        }
+        return(y)  
+    }
+    
+    loss <- function(y, f, w = 1) {
+        ntrials <- rowSums(y)
+        y <- y[,1]
+        p <- link$linkinv(f)
+        -dbinom(x = y, size = ntrials, prob = p, log = log)
+    }
+    risk <- function(y, f, w = 1) {
+        sum(w * loss(y = y, f = f))
+    }
+    
+    ngradient <- function(y, f, w = 1) {
+        ntrials <- rowSums(y)
+        y <- y[,1]
+        p <- link$linkinv(f)
+        ngr <-  link$mu.eta(f)*(y - ntrials * p)/(p * (1 - p))
+    }
+    
+    offset <-function(y, w = 1) {
+        ntrials <- rowSums(y)
+        y <- y[,1]
+        p <- mean((y + 0.5)/(ntrials + 1))
+        return(link$linkfun(p))
+    }
+    Family(ngradient = ngradient, risk = risk, loss = loss, check_y = y_check, 
+           response = function(f) link$linkinv(f), offset = offset,
+           name = "Binomial Distribution (similar to glm)")
 }
 
 ### Poisson
@@ -1010,65 +1088,4 @@ Cindex <- function (sigma = 0.1, ipcw = 1) {
     name = paste("Concordance Probability by Uno"))
 }
 
-### Additional Binomial family 
-### Works not only with two-level factors but also 
-### with a two-column matrix of number of successes and
-### number of failures (see github issue #34 by fabian-s). 
-### In case of factors or binary vectors it uses the standard
-### 0 and 1 coding; the coefficients hence have the same level
-### as the ones resulting from glm() with family = "binomial".
-### Can deal with logit and probit link
 
-Binomial_glm <- function(link = "logit")
-{
-  if(! link %in% c("logit", "probit")) stop("link function must be either 'logit' or
-                                            'probit'")
-  link <- make.link(link)
-  
-  y_check <- function(y) {
-    if ((is.matrix(y) && NCOL(y)!=2)){
-      stop("response should be either a two-column matrix (no. successes  and  
-           no. failures), a two level factor or a vector of 0 and 1's for this family")
-    }
-    if(is.factor(y)){
-      if (nlevels(y) != 2) stop("response should be either a two-column matrix 
-                                (no. successes  and  no. failures), a two level 
-                                factor or a vector of 0 and 1's for this family")
-      y <- c(0, 1)[as.integer(y)]
-    }
-    if(!is.matrix(y)){
-      if(!all(y %in% c(0,1))) stop("response should be either a two-column matrix 
-                                   (no. successes  and  no. failures), a two level 
-                                   factor or a vector of 0 and 1's for this family")
-      y <- cbind(y, 1-y)
-    }
-    return(y)  
-    }
-  
-  loss <- function(y, f, w = 1) {
-    ntrials <- rowSums(y)
-    y <- y[,1]
-    p <- link$linkinv(f)
-    -dbinom(x = y, size = ntrials, prob = p, log = log)
-  }
-  risk <- function(y, f, w = 1) {
-    sum(w * loss(y = y, f = f))
-  }
-  
-  ngradient <- function(y, f, w = 1) {
-    ntrials <- rowSums(y)
-    y <- y[,1]
-    p <- link$linkinv(f)
-    ngr <-  link$mu.eta(f)*(y - ntrials * p)/(p * (1 - p))
-  }
-  
-  offset <-function(y, w = 1) {
-    ntrials <- rowSums(y)
-    y <- y[,1]
-    p <- mean((y + 0.5)/(ntrials + 1))
-    return(link$linkfun(p))
-  }
-  Family(ngradient = ngradient, risk = risk, loss = loss, check_y = y_check, 
-         response = function(f) link$linkinv(f), offset = offset,
-         name = "Binomial Distribution (similar to glm)")
-  }

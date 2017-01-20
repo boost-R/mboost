@@ -22,7 +22,6 @@
 \alias{Hurdle}
 \alias{Multinomial}
 \alias{Cindex}
-\alias{Binomial_glm}
 \title{ Gradient Boosting Families }
 \description{
     \code{boost_family} objects provide a convenient way to specify loss functions
@@ -42,7 +41,8 @@ Family(ngradient, loss = NULL, risk = NULL,
        rclass = function(f) NA)
 AdaExp()
 AUC()
-Binomial(link = c("logit", "probit"), ...)
+Binomial(type = c("adaboost", "glm"),
+         link = c("logit", "probit", "cloglog", "cauchit", "log"))
 GaussClass()
 GaussReg()
 Gaussian()
@@ -62,7 +62,6 @@ Gehan()
 Hurdle(nuirange = c(0, 100))
 Multinomial()
 Cindex(sigma = 0.1, ipcw = 1)
-Binomial_glm(link = "logit")
 }
 \arguments{
   \item{ngradient}{ a function with arguments \code{y}, \code{f} and \code{w} implementing the
@@ -88,10 +87,7 @@ Binomial_glm(link = "logit")
     (non-negative) interger weights \code{"case"}, or no weights are
     allowed \code{"none"}.}
   \item{name}{ a character giving the name of the loss function for pretty printing. }
-  \item{link}{ link function for binomial family. Alternatively,
-               one may supply the name of a distribution (for example
-               \code{link = "norm"}), parameters of which may
-               be specified via the \dots argument.}
+  \item{link}{ link function. For possible values see Usage section.}
   \item{d}{ delta parameter for Huber loss function. If omitted, it is chosen adaptively.}
   \item{tau}{ the quantile or expectile to be estimated, a number strictly between 0 and 1.}
   \item{qoffset}{ quantile of response distribution to be used as offset, i.e., 
@@ -106,6 +102,7 @@ Binomial_glm(link = "logit")
   \item{ipcw}{vector containing inverse probability of censoring weights for all observations. If omitted, it is estimated inside \code{Cindex} family.}
   \item{\dots}{ additional arguments to link functions.}
 }
+
 \details{
   The boosting algorithm implemented in \code{\link{mboost}} minimizes the
   (weighted) empirical risk function \code{risk(y, f, w)} with respect to \code{f}.
@@ -139,10 +136,7 @@ of Freund and Schapire (1996). \code{Binomial()} implements the
 negative binomial log-likelihood of a logistic regression model
 as loss function. Thus, using \code{Binomial} family closely corresponds
 to fitting a logistic model. Alternative link functions
-can be specified via the name of the corresponding distribution, for
-example \code{link = "cauchy"} lead to \code{\link{pcauchy}}
-used as link function. This feature is still experimental and
-not well tested.
+can be specified.
 
 However, the coefficients resulting from boosting with family
 \code{Binomial(link = "logit")} are \eqn{1/2} of the coefficients of a logit model
@@ -154,7 +148,11 @@ classification. For binary classification problems the response
 \code{y} has to be a \code{factor}. Internally \code{y} is re-coded
 to \eqn{-1} and \eqn{+1} (Buehlmann and Hothorn 2007). 
 
-\code{Binomial_glm()} is an alternative to \code{Binomial()} leading to coefficients of the same size as coefficients from a classical logit model via \code{\link{glm}}. Additionally, it works not only with a two-level factor but also with a two-column matrix containing number of successes and number of failures (again, similar to \code{\link{glm}}). 
+\code{Binomial(type = "glm")} is an alternative to \code{Binomial()} leading to 
+coefficients of the same size as coefficients from a classical logit 
+model via \code{\link{glm}}. Additionally, it works not only with a 
+two-level factor but also with a two-column matrix containing the number 
+of successes and number of failures (again, similar to \code{\link{glm}}). 
 
 \code{AUC()} uses \eqn{1-AUC(y, f)} as the loss function.
 The area under the ROC curve (AUC) is defined as

@@ -1,6 +1,28 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
+\section{Changes in mboost version 2.7-1 (2017-xx-yy)}{
+  \subsection{User-visible changes}{
+    \itemize{
+      \item \code{Binomial} now uses link functions by making use of \code{make.link}. 
+        Furthermore, an alternative implementation of \code{Binomial} models 
+        along the lines of the \code{glm} implementation can be used via 
+        \code{Binomial(type = "glm")}. Additionally, it works not only with a 
+        two-level factor but also with a two-column matrix containing the number 
+        of successes and number of failures. 
+        Fixes \href{https://github.com/boost-R/mboost/issues/34}{#34}.
+    }
+  }
+  \subsection{Miscellaneous}{
+    \itemize{
+    }
+  }
+  \subsection{Bug-fixes}{
+     \itemize{
+     }
+  }
+}
+
 \section{Changes in mboost version 2.7-0 (2016-11-23)}{
   \subsection{User-visible changes}{
     \itemize{
