@@ -120,9 +120,9 @@ Binomial <- function(type = c("adaboost", "glm"),
     type <- match.arg(type)
     link <- match.arg(link)
     if (type == "adaboost") {
-        return(Binomial_adaboost(link = link, ...))
+        return(Binomial_adaboost(link = link))
     } else {
-        return(Binomial_glm(link = link, ...))
+        return(Binomial_glm(link = link))
     }
 }
 
