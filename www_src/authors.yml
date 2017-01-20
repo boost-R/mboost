@@ -1,0 +1,42 @@
+- name: Torsten Hothorn
+  given: Torsten
+  family: Hothorn
+  role:
+  - aut
+  - cre
+  email: Torsten.Hothorn_@_R-project.org
+  url: http://user.math.uzh.ch/hothorn/
+  image: /img/torsten_hothorn.jpg
+  comment: ~
+- name: Peter B&uuml;hlmann
+  given: Peter
+  family: B&uuml;hlmann
+  role: aut
+  email: ~
+  comment: ~
+  url: http://stat.ethz.ch/~buhlmann/
+  image: /img/peter_buehlmann.jpg
+- name: Thomas Kneib
+  given: Thomas
+  family: Kneib
+  role: aut
+  email: ~
+  comment: ~
+  url: http://www.uni-goettingen.de/de/264255.html
+  image: /img/thomas_kneib.jpg
+- name: Matthias Schmid
+  given: Matthias
+  family: Schmid
+  role: aut
+  email: ~
+  comment: ~
+  url: https://www3.uni-bonn.de/imbie
+  image: /img/matthias_schmid.jpg
+- name: Benjamin Hofner
+  given: Benjamin
+  family: Hofner
+  role: aut
+  email: ~
+  comment: ~
+  url: http://benjaminhofner.de/
+  image: /img/benjamin_hofner.jpg

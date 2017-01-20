@@ -10,4 +10,5 @@ svn_release.txt
 to_do_list.txt
 ^\..*
 .*/auto
+ww*
 .*\.yml
