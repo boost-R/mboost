@@ -116,11 +116,11 @@ link2dist <- function(link, choices = c("logit", "probit"), ...) {
 }
 
 Binomial <- function(type = c("adaboost", "glm"),
-                     link = c("logit", "probit", "cloglog", "cauchit", "log")) {
+                     link = c("logit", "probit", "cloglog", "cauchit", "log"), ...) {
+    
     type <- match.arg(type)
-    link <- match.arg(link)
     if (type == "adaboost") {
-        return(Binomial_adaboost(link = link))
+        return(Binomial_adaboost(link = link, ...))
     } else {
         return(Binomial_glm(link = link))
     }
@@ -128,10 +128,16 @@ Binomial <- function(type = c("adaboost", "glm"),
 
 ### Binomial
 # lfinv <- binomial()$linkinv
-Binomial_adaboost <- function(link = c("logit", "probit", "cloglog", "cauchit", "log")) {
+Binomial_adaboost <- function(link = c("logit", "probit", "cloglog", "cauchit", "log"), ...) {
     
-    link <- match.arg(link)
-    link <- make.link(link)
+    tmp <- try(match.arg(link), silent = TRUE)
+    if (inherits(tmp, "try-error") || link == "probit") {
+        ## use old interface if link is not one of the above (i.e. a distribution)
+        link <- link2dist(link, ...)    
+    } else {
+        ## use new interface otherwise (not working at the moment)
+        link <- make.link(tmp)   
+    }
     
     biny <- function(y) {
         if (!is.factor(y))
@@ -200,7 +206,7 @@ Binomial_adaboost <- function(link = c("logit", "probit", "cloglog", "cauchit", 
     rclass = function(f) (f > 0) + 1 ,
     check_y = biny,
     name = paste("Negative Binomial Likelihood --",
-                 link$name, "Link")))
+                 attr(link, "link"), "Link")))
 }
 
 ### Additional Binomial family 

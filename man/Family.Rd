@@ -42,7 +42,7 @@ Family(ngradient, loss = NULL, risk = NULL,
 AdaExp()
 AUC()
 Binomial(type = c("adaboost", "glm"),
-         link = c("logit", "probit", "cloglog", "cauchit", "log"))
+         link = c("logit", "probit", "cloglog", "cauchit", "log"), ...)
 GaussClass()
 GaussReg()
 Gaussian()
@@ -87,6 +87,7 @@ Cindex(sigma = 0.1, ipcw = 1)
     (non-negative) interger weights \code{"case"}, or no weights are
     allowed \code{"none"}.}
   \item{name}{ a character giving the name of the loss function for pretty printing. }
+  \item{type}{ which parameterization of \code{Binomial} shoule be used?} b
   \item{link}{ link function. For possible values see Usage section.}
   \item{d}{ delta parameter for Huber loss function. If omitted, it is chosen adaptively.}
   \item{tau}{ the quantile or expectile to be estimated, a number strictly between 0 and 1.}
