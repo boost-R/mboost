@@ -1,7 +1,8 @@
 
 > source("setup.R")
 Loading required package: parallel
-This is mboost 2.4-0. See ‘package?mboost’ and the NEWS file
+Loading required package: stabs
+This is mboost 2.6-0. See ‘package?mboost’ and ‘news(package  = "mboost")’
 for a complete list of changes.
 
 
@@ -12,6 +13,15 @@ for a complete list of changes.
 > if (!require("TH.data")) stop("cannot attach package ", 
 +     sQuote("TH.data"))
 Loading required package: TH.data
+Loading required package: survival
+Loading required package: MASS
+
+Attaching package: ‘TH.data’
+
+The following object is masked from ‘package:MASS’:
+
+    geyser
+
 
 > if (!require("rpart")) stop("cannot attach package ", 
 +     sQuote("rpart"))
@@ -19,13 +29,22 @@ Loading required package: rpart
 
 > if (!require("survival")) stop("cannot attach package ", 
 +     sQuote("survival"))
-Loading required package: survival
-Loading required package: splines
 
 > if (!require("party")) stop("cannot attach package ", 
 +     sQuote("party"))
 Loading required package: party
 Loading required package: grid
+Loading required package: mvtnorm
+Loading required package: modeltools
+Loading required package: stats4
+
+Attaching package: ‘modeltools’
+
+The following object is masked from ‘package:stabs’:
+
+    parameters
+
+Loading required package: strucchange
 Loading required package: zoo
 
 Attaching package: ‘zoo’
@@ -35,9 +54,6 @@ The following objects are masked from ‘package:base’:
     as.Date, as.Date.numeric
 
 Loading required package: sandwich
-Loading required package: strucchange
-Loading required package: modeltools
-Loading required package: stats4
 
 > set.seed(290875)
 
@@ -48,7 +64,8 @@ Loading required package: stats4
 +     d <- obs - pred
 +     plot(m, d, xlab = "(Observed + Predicted) / 2" .... [TRUNCATED] 
 
-> load(system.file("AML_Bullinger.Rda", package = "mboost"))
+> load(file.path(path.package(package = "TH.data"), 
++     "rda", "AML_Bullinger.rda"))
 
 > AMLw <- IPCweights(Surv(clinical$time, clinical$event))
 
@@ -325,4 +342,4 @@ Warning in obs - pred :
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
-  8.157   0.381   8.760 
+  6.006   0.116   6.297 

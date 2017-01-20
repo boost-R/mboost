@@ -7,14 +7,15 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
     if (inherits(x, "blackboost"))
         stop("partial dependency plots for ", sQuote("blackboost"), " not yet implemented.",
              "See ?blackboost.")
-
+    
     which <- x$which(which, usedonly = is.null(which))
+    
 
     if (is.null(xlab)){
-        userspec <- FALSE
+        userspec.xlab <- FALSE
         xlab <- variable.names(x)
     } else {
-        userspec <- TRUE
+        userspec.xlab <- TRUE
         if (length(which) == length(xlab) & length(which) != length(variable.names(x))){
             ## if labels are user specified but not all base-learners are selected
             foo <- rep(NA, length(variable.names(x)))
@@ -22,19 +23,26 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
             xlab <- foo
         }
     }
-    if (length(which) == length(ylab) & length(which) != length(variable.names(x))){
-        ## if labels are user specified but not all base-learners are selected
-        foo <- rep(NA, length(variable.names(x)))
-        foo[which] <- ylab ## ylab is supposed to be in the same ordering as which
-        ylab <- foo
+    
+    if (missing(ylab)) {
+        userspec.ylab <- FALSE
+    } else {
+        userspec.ylab <- TRUE
+        if (length(which) == length(ylab) & length(which) != length(variable.names(x))){
+            ## if labels are user specified but not all base-learners are selected
+            foo <- rep(NA, length(variable.names(x)))
+            foo[which] <- ylab ## ylab is supposed to be in the same ordering as which
+            ylab <- foo
+        }
     }
-
+    
     ## labs must have either length 1 or length(variable.names(x))
     stopifnot(length(xlab) %in% c(1, length(variable.names(x))))
     stopifnot(length(ylab) %in% c(1, length(variable.names(x))))
     ## FIXED?
 
-    RET <- vector("list", length = length(which))
+    RET <- NULL
+    n_levelplot <- 0
 
     for (w in which) {
 
@@ -115,7 +123,8 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                     }
                 }
             }
-            if (ncol(data) == 2) {
+            n_levelplot <<- n_levelplot + (ncol(data) == 2)
+            if (ncol(data) == 2 && n_levelplot == 1) {
                 if (is.null(newdata)){
                     tmp <- expand.grid(unique(data[,1]), unique(data[,2]))
                     colnames(tmp) <- colnames(data)
@@ -129,7 +138,11 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                     pr <- predict(x, newdata = tmp, which = w)
                 }
                 fm <- as.formula(paste("pr ~ ", paste(colnames(data), collapse = "*"), sep = ""))
-                RET[[w]] <<- levelplot(fm, data = data, ...)
+                if (!userspec.xlab)
+                    xl <- colnames(data)[1]
+                if (!userspec.ylab)
+                    yl <- colnames(data)[2]
+                RET <<- levelplot(fm, data = data, xlab = xl, ylab = yl, ...)
             }
             if (ncol(data) > 2) {
                 for (v in colnames(data)) {
@@ -138,8 +151,10 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                         tmp[[v]] <- vv
                         mean(predict(x, newdata = tmp, which = w))
                     })
+                    if (!userspec.xlab)
+                        xl <- v
                     plot(sort(data[[v]]), pardep[order(data[[v]], na.last = NA)], type = type,
-                         xlab = v, ylab = "Partial Dependency", ylim = ylim, ...)
+                         xlab = xl, ylab = yl, ylim = ylim, ...)
                 }
             }
         } # END plot_helper()
@@ -156,7 +171,7 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
             if (vary != ""){
                 for (i in 1:length(v)){
                     data[[vary]] <- v[rep(i, nrow(data))]
-                    if (!userspec){
+                    if (!userspec.xlab){
                         ## xlab not user specified
                         plot_helper(paste(xl, "=", v[i]), yl)
                     } else {
@@ -170,9 +185,9 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                           " of matrices", sep=""))
         }
     }
-    if (any(foo <- !sapply(RET, is.null))){
-        if (sum(foo) == 1)
-            return(RET[foo][[1]])
+    if (n_levelplot > 0){
+        if (n_levelplot == 1)
+            return(RET)
         stop(paste("Cannot plot multiple surfaces via levelplot;",
              "Plot base-learners seperately via plot(model, which = ...)!"))
     }

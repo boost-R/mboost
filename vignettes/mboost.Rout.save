@@ -7,7 +7,8 @@
 +     dependencies = TRUE)
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.4-0. See ‘package?mboost’ and the NEWS file
+Loading required package: stabs
+This is mboost 2.6-0. See ‘package?mboost’ and ‘news(package  = "mboost")’
 for a complete list of changes.
 
 
@@ -16,6 +17,17 @@ for a complete list of changes.
 > if (!require("party")) install.packages("party", dependencies = TRUE)
 Loading required package: party
 Loading required package: grid
+Loading required package: mvtnorm
+Loading required package: modeltools
+Loading required package: stats4
+
+Attaching package: ‘modeltools’
+
+The following object is masked from ‘package:stabs’:
+
+    parameters
+
+Loading required package: strucchange
 Loading required package: zoo
 
 Attaching package: ‘zoo’
@@ -25,9 +37,6 @@ The following objects are masked from ‘package:base’:
     as.Date, as.Date.numeric
 
 Loading required package: sandwich
-Loading required package: strucchange
-Loading required package: modeltools
-Loading required package: stats4
 
 > library("party")
 
@@ -155,4 +164,4 @@ Number of baselearners:  19
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
- 42.153   0.279  45.487 
+ 67.587   2.399  40.595 

@@ -679,7 +679,7 @@ of the partial likelihood (see \cite{ridgew99}) via
 %%@
 \begin{Schunk}
 \begin{Sinput}
-R> glmboost(Surv(wpbc$time, wpbc$status == "N") ~ .,
+R> glmboost(Surv(wpbc$time, wpbc$status == "R") ~ .,
          data = wpbc, family = CoxPH(), center = TRUE)
 \end{Sinput}
 \end{Schunk}

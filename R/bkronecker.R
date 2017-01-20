@@ -54,7 +54,8 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         if (is.null(args$lambda)) {
 
             ### <FIXME>: is there a better way to feed XtX into lambdadf?
-            lambdadf <- df2lambda(X = diag(rankMatrix(X$X1, method = 'qr') * rankMatrix(X$X2, method = 'qr')),
+            lambdadf <- df2lambda(X = diag(rankMatrix(X$X1, method = 'qr', warn.t = FALSE) *
+                                           rankMatrix(X$X2, method = 'qr', warn.t = FALSE)),
                                   df = args$df, lambda = args$lambda,
                                   dmat = K, weights = weights, XtX = XtX)
             ### </FIXME>
@@ -74,9 +75,9 @@ bl_lin_matrix <- function(blg, Xfun, args) {
             stop("only one dimension may be subject to constraints")
         constr <- constr > 0
 
-        ## matrizes of class dgeMatrix are dense generic matrices; they should
-        ## be coerced to class matrix and handled in the standard way
-        if (is(XtX, "Matrix") && !extends(class(XtX), "dgeMatrix")) {
+        ## dense matrizes should be coerced to class matrix and
+        ## handled in the standard way
+        if (is(XtX, "Matrix") && is(XtX, "sparseMatrix")) {
             XtXC <- Cholesky(forceSymmetric(XtX))
             mysolve <- function(y) {
                 Y <- matrix(y, nrow = n1) * W
@@ -241,7 +242,8 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         newX1 <- environment(bl1$dpp)$newX
         newX2 <- environment(bl2$dpp)$newX
 
-        X1 <- newX1(as.data.frame(mf[bl1$get_names()]))
+        X1 <- newX1(as.data.frame(mf[bl1$get_names()]),
+                    prediction = args$prediction)
         K1 <- X1$K
         X1 <- X1$X
         if (!is.null(l1)) K1 <- l1 * K1
@@ -251,7 +253,8 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         if (MATRIX & !is(K1, "Matrix"))
             K1 <- Matrix(K1)
 
-        X2 <- newX2(as.data.frame(mf[bl2$get_names()]))
+        X2 <- newX2(as.data.frame(mf[bl2$get_names()]),
+                    prediction = args$prediction)
         K2 <- X2$K
         X2 <- X2$X
         if (!is.null(l2)) K2 <- l2 * K2

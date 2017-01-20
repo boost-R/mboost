@@ -141,9 +141,10 @@ mstop(x) <- value
                     or coefficients of single base-learners. The default
                     returns the prediction or coefficient for the final number of
                     boosting iterations. \code{"cumsum"} returns a
-                    matrix with the predictions for all iterations
+                    list with matrices (one per base-learner) with the
+                    cumulative coefficients for all iterations
                     simultaneously (in columns). \code{"none"} returns a
-                    list with matrices where the \eqn{j}th columns of the
+                    list of matrices where the \eqn{j}th columns of the
                     respective matrix contains the predictions
                     of the base-learner of the \eqn{j}th boosting
                     iteration (and zero if the base-learner is not

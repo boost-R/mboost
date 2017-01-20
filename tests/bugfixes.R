@@ -479,7 +479,7 @@ extract(mod2, "bnames")
 extract(mod3, "bnames")
 
 ## check handling of newdata = list(), at least for common scenarios with lists
-## [https://github.com/hofnerb/mboost/issues/15]
+## [https://github.com/boost-R/mboost/issues/15]
 data("bodyfat", package = "TH.data")
 bf <- as.list(bodyfat)
 mod <- mboost(DEXfat ~ bols(waistcirc) + bmono(hipcirc) + btree(age),
@@ -498,3 +498,39 @@ plot(mod, which = 2, newdata = nd)
 nd <- data.frame(waistcirc = 1, age = 1,
                  hipcirc = seq(min(bf$hipcirc), max(bf$hipcirc), length = 100))
 plot(mod, which = 2, newdata = nd)
+
+
+## check if model fitting with very few knots works
+## [https://github.com/boost-R/mboost/issues/30]
+# kronecker product for matrix-valued responses
+data("volcano", package = "datasets")
+# estimate mean of image treating image as matrix
+x1 <- 1:nrow(volcano)
+x2 <- 1:ncol(volcano)
+vol <- as.vector(volcano)
+# do the model fit with default number of knots
+mod <- mboost(vol ~ bbs(x1, df = 3, knots = 10)%O%
+                bbs(x2, df = 3, knots = 10),
+              control = boost_control(nu = 0.25))
+# do the model fit with very few knots
+mod <- mboost(vol ~ bbs(x1, df = 3, knots = 3) %O%
+                bbs(x2, df = 3, knots = 3),
+              control = boost_control(nu = 0.25))
+
+
+### IPCweights problem, see github issue #54
+
+if (require("survival")){
+  x1 <- rnorm(100)
+  x2 <- x1 + rnorm(100)
+  X <- cbind(x1, x2)
+  beta <- c(1, 0.5)
+  survtime <- exp(X%*%beta)
+  event <- rep(c(TRUE, FALSE), 50)
+  
+  ipcw1 <- IPCweights(Surv(survtime, event))
+  ipcw2 <- IPCweights(Surv(as.numeric(survtime), event))
+  summary(cbind(ipcw1, ipcw2))
+  
+  stopifnot(identical(ipcw1, ipcw2))
+}

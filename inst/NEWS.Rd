@@ -1,7 +1,7 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.6-0 (2015-xx-yy)}{
+\section{Changes in mboost version 2.8-0 (2017-xx-yy)}{
   \subsection{User-visible changes}{
     \itemize{
       \item Strong speed-up of \code{stabsel.mboost}: We now only compute
@@ -12,13 +12,117 @@
   }
 }
 
+\section{Changes in mboost version 2.7-0 (2016-11-23)}{
+  \subsection{User-visible changes}{
+    \itemize{
+      \item New \code{Cindex} family to optimize survival models w.r.t. the concordance index.
+      Fixes \href{https://github.com/boost-R/mboost/issues/53}{#53}.
+      \item Added function \code{varimp} to extract variable importance. 
+      A dedicated plot function exists (\code{plot(varimp())}). Code was provided 
+      by Tobias Kuehn and Almond Stoecker. 
+      See pull request \href{https://github.com/boost-R/mboost/pull/29}{#29}.
+      \item Improved \code{plot} function for boosting models:
+      \itemize{
+        \item \code{plot} fails earlier in case of multiple \code{levelplots},
+          i.e., maps (thanks to Mikko Korpela).
+          See pull request \href{https://github.com/boost-R/mboost/pull/39}{#39}.
+        \item Provide sensible defaults for \code{xlab} and \code{ylab} and allow 
+          user-specified axis labels for bi- and multivariate plots.
+          Fixes \href{https://github.com/boost-R/mboost/issues/51}{#51}.
+        \item Export \code{plot} functions (\code{plot.glmboost}, \code{plot.mboost}, 
+          \code{lines.mboost}, \code{plot.varimp} and \code{plot.cvrisk}) for 
+          better usability and visibility.  
+      }
+    }
+  }
+  \subsection{Miscellaneous}{
+    \itemize{
+      \item Updated manual regarding the usage of families and clarified the usage 
+        of argument \code{qoffset}.
+      \item Updated manual for base-learners:
+      \itemize{
+        \item Highlight that \code{x} should be centered if \code{bols(x, intercept = FALSE)} 
+          is used.
+        \item Discourage using \code{bbs(, constraint != "none")}; Preferably use 
+          \code{bmono} for constrained effect estimates.
+          Fixes \href{https://github.com/boost-R/mboost/issues/36}{#36}.
+      }
+      \item Improved vignettes (thanks to Mikko Korpela).
+        See pull request \href{https://github.com/boost-R/mboost/pull/38}{#38}.
+    }
+  }
+  \subsection{Bug-fixes}{
+     \itemize{
+      \item Solve potential problem with \code{IPCweights()}. Fixes
+      \href{https://github.com/boost-R/mboost/issues/54}{#54}.
+       \item Drop unobserved factor levels from \code{bols()}. Fixes
+      \href{https://github.com/boost-R/mboost/issues/47}{#47}.
+      \item Adapt \code{btree} to changes introduced in package \pkg{party}.
+        Fixes \href{https://github.com/boost-R/mboost/issues/58}{#58}.
+      \item Improved \code{cvrisk} to be more robust in various use cases 
+        (thanks to Mikko Korpela). 
+        See pull request \href{https://github.com/boost-R/mboost/pull/42}{#42}.
+      \item Be more careful regarding namespace scoping rules.
+        Fixes \href{https://github.com/boost-R/mboost/issues/45}{#45}.
+      }
+   }
+}      
+
+\section{Changes in mboost version 2.6-0 (2016-03-11)}{
+  \subsection{User-visible changes}{
+    \itemize{
+      \item New maintainer: Benjamin Hofner follows Torsten Hothorn as
+      maintainer.
+      \item Package \pkg{party} is now imported. \pkg{mboost} no longer
+      directly relies on unexported functions.
+      \item  Allow extrapolation for predictions if kronecker products,
+      tensor  products or sums are used. Fixes
+      \href{https://github.com/boost-R/mboost/issues/23}{#23}.
+      \item Development now hosted entirely on github as
+      \href{https://github.com/boost-R/mboost/}{boost-R/mboost}.
+      \item Started using \pkg{testthat}.
+    }
+  }
+  \subsection{Miscellaneous}{
+    \itemize{
+      \item Improved checks for \code{newdata}: Warnings are no longer
+      issued if data has just different types of numeric values (i.e.,
+      integer vs. double). Resolves issue
+      \href{https://github.com/boost-R/mboost/issues/17}{#17}.
+      \item Fixed \file{CITATION} by removing duplicated string 'R package
+      version' (spotted by Heidi Seibold).
+      \item \code{predict}: Improve warning when \code{length(offset) >
+	1}. Closes issue
+      \href{https://github.com/boost-R/mboost/issues/20}{#20}.
+      \item Added test coverage using package \pkg{covr}.
+      \item Better error handling in \code{cvrisk} also for parallel
+      processes.
+      \item Suppress warning of \code{rankMatrix}. (Resolves issue
+      \href{https://github.com/boost-R/mboost/issues/24}{#24}).
+      \item Stop exporting internal functions for \pkg{FDboost}. Use
+      \code{mboost_intern()} instead. Caution: Do not use this function.
+    }
+  }
+  \subsection{Bug-fixes}{
+     \itemize{
+       \item Handling of missing values has been improved. Resolves issue
+       \href{https://github.com/boost-R/mboost/issues/12}{#12}.
+       \item Minor bug fixed in vignette
+       \file{mboost_illustrations.Rnw}.
+       \item Throw an error if model cannot be fitted. Fixes issue
+       \href{https://github.com/boost-R/mboost/issues/18}{#18}.
+       \item Fixed bug in bkronecker with dense matrices. Resolves issue
+       \href{https://github.com/boost-R/mboost/issues/30}{#30}.
+     }
+   }
+}
 
 \section{Changes in mboost version 2.5-0 (2015-08-13)}{
   \subsection{User-visible changes}{
     \itemize{
       \item Added documentation for \code{plot.mboost} function and moved
       documentation of \code{plot.glmboost} to the same help page.
-      Resolves issue \href{https://github.com/hofnerb/mboost/issues/14}{#14}.
+      Resolves issue \href{https://github.com/boost-R/mboost/issues/14}{#14}.
       \item \code{bbs} and \code{bmono} no longer allow data outside of
       the \code{boundary.knots} during model fitting.
       \item Predictions for \code{bbs} and \code{bmono} now use linear
@@ -36,7 +140,7 @@
       matrices.
       \item Prediction now also possible with \code{newdata = list()}.
       Resolves issue
-      \href{https://github.com/hofnerb/mboost/issues/15}{#15}.
+      \href{https://github.com/boost-R/mboost/issues/15}{#15}.
     }
   }
   \subsection{Miscellaneous}{
@@ -45,7 +149,7 @@
       \item \code{Multinomial()}: Updated manual for multinomial logit
       model. Predictions for new data are now
       possible (resolves issue
-      \href{https://github.com/hofnerb/mboost/issues/13}{#13}, thanks to
+      \href{https://github.com/boost-R/mboost/issues/13}{#13}, thanks to
       Sarah Brockhaus).
       \item \file{inst/CITATION}: Added subheadings and
       tutorial paper.
@@ -69,9 +173,9 @@
       assumed to be of full rank.
       \item Truncate output of complete data structure when model is
       printed. Resolves issue
-      \href{https://github.com/hofnerb/mboost/issues/11}{#11}.
+      \href{https://github.com/boost-R/mboost/issues/11}{#11}.
       \item  Adhere to CRAN policies regarding import of base packages
-      (closes \href{https://github.com/hofnerb/mboost/issues/9}{#9}).
+      (closes \href{https://github.com/boost-R/mboost/issues/9}{#9}).
     }
   }
 }

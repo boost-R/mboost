@@ -1,4 +1,3 @@
-
 ### compute Ridge shrinkage parameter lambda from df
 ### or the other way round
 df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
@@ -6,7 +5,7 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
 
     stopifnot(xor(is.null(df), is.null(lambda)))
     if (!is.null(df)) {
-        rank_X <- rankMatrix(X, method = 'qr')
+        rank_X <- rankMatrix(X, method = 'qr', warn.t = FALSE)
         if (df >= rank_X) {
             if (df > rank_X)
                 warning(sQuote("df"),
@@ -463,6 +462,16 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
             index <- index[[2]]
         }
     }
+    
+    ## check if factors with unobserved levels exist
+    if (any(fac <- sapply(mf, is.factor))) {
+        tmp <- droplevels(mf)
+        if (!identical(tmp, mf)) {
+            warning("Dropped unobserved factor levels")
+            mf <- tmp
+        } 
+        rm("tmp")  
+    }
 
     ret <- list(model.frame = function()
                     if (is.null(index)) return(mf) else return(mf[index,,drop = FALSE]),
@@ -503,6 +512,12 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
 
     cll <- match.call()
     cll[[1]] <- as.name("bbs")
+    
+    constraint <- match.arg(constraint)
+    if (constraint != "none")
+        warning("Using ", sQuote('bbs()'), ' with constraint != "none" is discouraged. Preferably use ', 
+                sQuote('bmono()'), " instead.\n",
+                "See section ", sQuote("Details"), " of ?bbs for more information.")
 
     mf <- list(...)
     if (length(mf) == 1 && ((is.matrix(mf[[1]]) || is.data.frame(mf[[1]])) &&
@@ -980,12 +995,14 @@ fit.bl <- function(object, y)
         newX1 <- environment(bl1$dpp)$newX
         newX2 <- environment(bl2$dpp)$newX
 
-        X1 <- newX1(mf[, bl1$get_names(), drop = FALSE])
+        X1 <- newX1(mf[, bl1$get_names(), drop = FALSE],
+                    prediction = args$prediction)
         K1 <- X1$K
         if (!is.null(l1)) K1 <- l1 * K1
         X1 <- X1$X
 
-        X2 <- newX2(mf[, bl2$get_names(), drop = FALSE])
+        X2 <- newX2(mf[, bl2$get_names(), drop = FALSE],
+                    prediction = args$prediction)
         K2 <- X2$K
         if (!is.null(l2)) K2 <- l2 * K2
         X2 <- X2$X
@@ -1085,7 +1102,8 @@ fit.bl <- function(object, y)
         newX1 <- environment(bl1$dpp)$newX
         newX2 <- environment(bl2$dpp)$newX
 
-        X1 <- newX1(mf[, bl1$get_names(), drop = FALSE])
+        X1 <- newX1(mf[, bl1$get_names(), drop = FALSE],
+                    prediction = args$prediction)
         K1 <- X1$K
         X1 <- X1$X
         if (!is.null(l1)) K1 <- l1 * K1
@@ -1095,7 +1113,8 @@ fit.bl <- function(object, y)
         if (MATRIX & !is(K1, "Matrix"))
             K1 <- Matrix(K1)
 
-        X2 <- newX2(mf[, bl2$get_names(), drop = FALSE])
+        X2 <- newX2(mf[, bl2$get_names(), drop = FALSE],
+                    prediction = args$prediction)
         K2 <- X2$K
         X2 <- X2$X
         if (!is.null(l2)) K2 <- l2 * K2

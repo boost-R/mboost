@@ -1,5 +1,7 @@
 demo
 test
+www
+www_src
 inst/NEWS.html
 inst/NEWS.pdf
 vignettes/.*\.Rout\.save$
@@ -10,5 +12,4 @@ svn_release.txt
 to_do_list.txt
 ^\..*
 .*/auto
-ww*
 .*\.yml

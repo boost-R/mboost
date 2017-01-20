@@ -47,7 +47,8 @@ brandom(..., by = NULL, index = NULL, df = 4, lambda = NULL,
 ## tree based base-learner
 btree(..., tree_controls = party::ctree_control(stump = TRUE,
                                                 mincriterion = 0,
-                                                savesplitstats = FALSE))
+                                                savesplitstats = FALSE,
+                                                remove_weights = TRUE))
 
 ## constrained effects base-learner
 bmono(...,
@@ -170,11 +171,14 @@ bl1 \%O\% bl2
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners,
                   stumps are fitted by default.}
-  \item{constraint}{ type of constraint to be used. The constraint can
-    be either monotonic "increasing" (default), "decreasing" or "convex"
-    or "concave". Additionally, "none" can be used to specify
-    unconstrained P-splines. This is especially of interest in
-    conjunction with \code{boundary.constraints = TRUE}.}
+  \item{constraint}{type of constraint to be used. For \code{bmono}, 
+    the constraint can be either monotonic \code{"increasing"} (default), 
+    \code{"decreasing"}, or \code{"convex"} or \code{"concave"}. 
+    Additionally, \code{"none"} can  be used to specify unconstrained P-splines. 
+    This is especially of interest in conjunction with \code{boundary.constraints = TRUE}.
+    For \code{bbs}, the constraint can be \code{"none"}, monotonic \code{"increasing"}, or
+    \code{"decreasing"}. In general it is advisable to use \code{bmono} to fit 
+    monotonic splines.}
   \item{type}{
     determines how the constrained least squares problem should be
     solved. If \code{type = "quad.prog"}, a numeric quadratic
@@ -263,7 +267,7 @@ bl1 \%O\% bl2
   \code{boundary.knots = c(0, 2 * pi)} for angles as in a sine function
   or \code{boundary.knots = c(0, 24)} for hours during the day). For
   details on cylcic splines in the context of boosting see Hofner et
-  al. (2014).
+  al. (2014). 
 
   \code{bspatial} implements bivariate tensor product P-splines for the
   estimation of either spatial effects or interaction surfaces. Note
@@ -378,12 +382,12 @@ bl1 \%O\% bl2
   for new observations if they correspond to this category.
 
   By default, all linear base-learners include an intercept term (which can
-  be removed using \code{intercept = FALSE} for \code{bols} or
-  \code{center = TRUE} for \code{bbs}). In this case, an explicit global
-  intercept term should be added to \code{gamboost} via \code{bols} (see
-  example below). With \code{bols(x, intercept = FALSE)} with categorical
-  covariate \code{x} a separate effect for each group (mean effect) is
-  estimated (see examples for resulting design matrices).
+  be removed using \code{intercept = FALSE} for \code{bols}). In this case, 
+  the respective covariate should be mean centered (if continuous) and an 
+  explicit global intercept term should be added to \code{gamboost} 
+  via \code{bols} (see example below). With \code{bols(x, intercept = FALSE)} 
+  with categorical covariate \code{x} a separate effect for each group 
+  (mean effect) is estimated (see examples for resulting design matrices).
 
   Smooth estimates with constraints can be computed using the
   base-learner \code{bmono()} which specifies P-spline base-learners
@@ -393,7 +397,9 @@ bl1 \%O\% bl2
   Mueller and Hothorn (2011b). The quadratic-programming based algorithm
   is described in Hofner et al. (2014). Alternative monotonicity
   constraints are implemented via T-splines in \code{bbs()} (Beliakov,
-  2000).
+  2000). In general it is advisable to use \code{bmono} to fit monotonic splines 
+  as T-splines show undesirable behaviour if the observed data deviates 
+  from monotonicty.
 
   Two or more linear base-learners can be joined using \code{\%+\%}. A
   tensor product of two or more linear base-learners is returned by

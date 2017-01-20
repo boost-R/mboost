@@ -6,7 +6,7 @@ survFit.mboost <- function(object, newdata = NULL, ...)
 {
 
     n <- length(w <- model.weights(object))
-    if (!all.equal(w,rep(1,n)))
+    if (!isTRUE(all.equal(w,rep(1,n))))
         stop("survFit cannot (yet) deal with weights")
     y <- object$response
     stopifnot(inherits(y, "Surv"))
@@ -53,10 +53,10 @@ IPCweights <- function(x, maxweight = 5) {
     if (!extends(class(x), "Surv"))
         stop(sQuote("x"), " is not a Surv object")
 
-    event <- x[,"status"]
-    x[,"status"] <- 1 - event
+    event <- x[,2]
+    x[,2] <- 1 - event
     km <- survfit(x ~ 1)
-    Ghat <- getsurv(km, times = x[,"time"])
+    Ghat <- getsurv(km, times = x[,1]) ## see github issue #54
     Ghat[event == 0] <- 1
     w <- event / Ghat
     w[w > maxweight] <- maxweight

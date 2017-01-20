@@ -11,13 +11,13 @@ citEntry(entry="Manual",
                              as.person("Benjamin Hofner")),
          year = year,
          note = paste("{R} package version", vers),
-         url = "http://CRAN.R-project.org/package=mboost",
+         url = "https://CRAN.R-project.org/package=mboost",
          header = "To cite the package 'mboost' itself use:",
          textVersion = paste(
              "T. Hothorn, P. Buehlmann, T. Kneib, M. Schmid, and B. Hofner (",
              year, "). mboost: Model-Based Boosting, ",
              paste("R package version", vers),
-             ", http://CRAN.R-project.org/package=mboost", ".", sep = ""
+             ", https://CRAN.R-project.org/package=mboost", ".", sep = ""
              )
          )
 

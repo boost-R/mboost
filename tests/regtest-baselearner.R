@@ -508,3 +508,17 @@ lines(seq(-3, 5, by = 0.1), pr2, col = "red")
 mod <- mboost(y ~ bbs(x, cyclic = TRUE))
 try(predict(mod, newdata = data.frame(x = seq(-3, 5, by = 0.1))))
 
+## make sure bols works for factors with unobserved levels breaks
+## (https://github.com/boost-R/mboost/issues/47)
+x <- rnorm(100)
+z <- factor(sample(1:5, 100, replace = TRUE), levels = 1:6)
+z2 <- factor(sample(1:2, 100, replace = TRUE), levels = 0:5)
+z3 <- factor(sample(1:2, 100, replace = TRUE))
+y <- rnorm(100)
+mod <- mboost(y ~ bols(z3)) # no warning
+# warnings but it works
+mod <- mboost(y ~ bols(z))
+mod <- mboost(y ~ bols(x, by = z))
+mod <- mboost(y ~ bols(z2, by = z))
+mod <- mboost(y ~ bols(z2, by = z3))
+

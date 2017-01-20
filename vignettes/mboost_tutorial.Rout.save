@@ -6,16 +6,17 @@
 > if (any(is.na(pd))) {
 +     install.packages("mboost", repos = "http://cran.at.r-project.org")
 +     pd <- packageDescription("mboost")
-+  .... [TRUNCATED] 
++ }
 
 > if (compareVersion(pd$Version, "2.1-0") < 0) {
 +     warning("Current version of mboost is installed!")
-+     install.packages("mboost", repos  .... [TRUNCATED] 
++     install.packages("mboost", repos = "ht ..." ... [TRUNCATED] 
 
 > require("mboost")
 Loading required package: mboost
 Loading required package: parallel
-This is mboost 2.4-0. See ‘package?mboost’ and the NEWS file
+Loading required package: stabs
+This is mboost 2.6-0. See ‘package?mboost’ and ‘news(package  = "mboost")’
 for a complete list of changes.
 
 
@@ -517,9 +518,13 @@ Number of baselearners:  1
 
 > lines(newX, predict(mod, data.frame(x = newX)), col = "black", 
 +     lwd = 2)
+Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
 
 > lines(newX + 2 * pi, predict(mod, data.frame(x = newX)), 
 +     col = "black", lwd = 2)
+Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
 
 > legend("bottomleft", c("cyclic = FALSE"), lty = c(1), 
 +     col = c("black"), lwd = 2, bty = "n")
@@ -564,6 +569,10 @@ Number of baselearners:  1
 +     x2 = seq(-pi, pi, length = 100))
 
 > preds <- predict(modspa, newdata = nd)
+Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
+Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
 
 > breaks <- seq(min(preds), max(preds), length = nCols + 
 +     1)
@@ -577,6 +586,10 @@ Number of baselearners:  1
 > nd <- expand.grid(x1 = x1, x2 = x2)
 
 > preds <- predict(modspa, newdata = nd)
+Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
+Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
 
 > z <- matrix(preds, ncol = length(x1))
 
@@ -687,4 +700,4 @@ pdf
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
- 13.124   0.359  13.845 
+ 10.959   1.069  10.518 
