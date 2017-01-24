@@ -3,13 +3,75 @@
 \alias{baselearners}
 \alias{base-learner}
 \alias{base-learners}
+\alias{bss}
+\alias{bns}
 
 \title{ Base-learners for Gradient Boosting }
 \description{
-  Base-learners for fitting base-models in the generic implementation of
-  component-wise gradient boosting in function \code{mboost}.
+  Overview of base-learners in the generic implementation of component-wise 
+  gradient boosting in function \code{\link{mboost}} and some some general 
+  remarks on base-learners. Details of the base-learners are available on
+  dedicated help pages.
 }
 \details{
+
+    \subsection{Base-learner (Overview)}{
+    A variety of base-learners exist to model the influence of possible 
+    predictors. Each base-learner can be considered to represent a modeling
+    alternative. The following base-learners are implemented:
+    
+    \describe{
+    \item{\code{\link{bols}}}{ 
+      \bold{Linear effects} (for continuous variables and factors) 
+      to be fitted via penalized  or unpenalized ordinary least squares.
+    }
+    \item{\code{\link{bbs}}}{ 
+      \bold{Smooth effects} fitted via penalized B-splines.
+    }
+    \item{\code{\link{bspatial}}}{ 
+      \bold{Smooth, spatial effects} (or other smooth bivariate interactions)
+      fitted via penalized bivariate B-splines.
+    }
+    \item{\code{\link{brad}}}{ 
+      \bold{Smooth effects} (uni- or multivariate) fitted via radial basis 
+      functions (also known as reproducive kernel Hilbert spaces).
+    }
+    \item{\code{\link{brandom}}}{
+      \bold{Random effects} base-learner.
+    }
+    \item{\code{\link{btree}}}{
+      \bold{Stumps} (trees with single split) for one or more variables.
+    }
+    \item{\code{\link{bmrf}}}{
+      \bold{Markov random field} consisting of several regions with a 
+      neighborhood structure.
+    }
+    \item{\code{\link{bmono}}}{
+      \bold{Smooth monotonic effects}, or otherise \bold{constrained} effect 
+      estimates, i.e., convex or concave estimates or positive/negative estimates
+      possibly with additional constraints on the boundaries of the estimated 
+      funciton.
+    }
+    \item{\code{\link{buser}}}{
+      \bold{User-specified} base-learner with freely specified design and penalty matrix.
+      \emph{For experts only}.
+    }
+    \item{\code{bns}}{
+      \emph{No longer available. Use \code{\link{bbs}} instead.}
+    }
+    \item{\code{bss}}{
+      \emph{No longer available. Use \code{\link{bbs}} instead.}
+    }
+    }
+
+  Note that the base-learners \code{bns} and \code{bss} are deprecated
+  (and no longer available). Please use \code{bbs} instead, which
+  results in qualitatively the same models but is computationally much
+  more attractive.
+  }
+
+
+\subsection{Global Options}{
   Three global options affect the base-learners:
 
   \describe{
@@ -39,6 +101,8 @@
 
   }
 }
+}
+
 
 \value{
  An object of class \code{blg} (base-learner generator) with a
