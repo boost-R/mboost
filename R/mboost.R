@@ -203,10 +203,9 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
 
     ### which basemodels have been selected so far?
     RET$xselect <- function() {
-        if (mstop > 0)
-            return(xselect[1:mstop])
-        else 
+        if (mstop == 0)
             return(NULL)
+        return(xselect[1:mstop])
     }
 
     ### current fitted values
@@ -216,7 +215,11 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     RET$resid <- function() u
 
     ### current risk fct.
-    RET$risk <- function() mrisk[1:mstop]
+    RET$risk <- function() {
+        if (mstop == 0)
+            return(NA)
+        mrisk[1:mstop]
+    }
 
     ### negative risk (at current iteration)
     RET$logLik <- function() -mrisk[mstop]
@@ -249,6 +252,8 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     RET$predict <- function(newdata = NULL, which = NULL,
                             aggregate = c("sum", "cumsum", "none")) {
 
+        if (mstop == 0)
+            return(offset)
         if (!is.null(xselect))
             indx <- ((1:length(xselect)) <= mstop)
         which <- thiswhich(which, usedonly = nw <- is.null(which))
