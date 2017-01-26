@@ -131,7 +131,7 @@ Binomial <- function(type = c("adaboost", "glm"),
 Binomial_adaboost <- function(link = c("logit", "probit", "cloglog", "cauchit", "log"), ...) {
     
     tmp <- try(match.arg(link), silent = TRUE)
-    if (inherits(tmp, "try-error") || link == "probit") {
+    if (inherits(tmp, "try-error") ) {
         ## use old interface if link is not one of the above (i.e. if link is a distribution)
         link <- link2dist(link, ...)    
     } else {
@@ -150,7 +150,12 @@ Binomial_adaboost <- function(link = c("logit", "probit", "cloglog", "cauchit", 
     }
     
     if (inherits(link, "link-glm") && isTRUE(all.equal(link$name, "logit"))) {
-        return(
+        return(  
+          # This is the classic logit family
+          # ngradient refers to loss
+          # log_2(1 + exp(-2yf))
+          # with f = log(p/(1-p))/2 and y in (-1,1)
+          # leading to coefs half the size as usually 
             Family(ngradient = function(y, f, w = 1) {
                 exp2yf <- exp(-2 * y * f)
                 -(-2 * y * exp2yf) / (log(2) * (1 + exp2yf))
@@ -177,18 +182,47 @@ Binomial_adaboost <- function(link = c("logit", "probit", "cloglog", "cauchit", 
             },
             rclass = function(f) (f > 0) + 1 ,
             check_y = biny,
-            name = "Negative Binomial Likelihood")
+            name = "Negative Binomial Likelihood (logit link)")
         )
-    } 
+    }
+    
     if (inherits(link, "link-glm")) {
-        stop("Not implemented yet")
+      # now for glm type links that are not logit
+      # loss is now 
+      # -y * log(p) - (1 - y) * log(1 - p)
+      # coefficients hace the usual size! 
+      return(Family(ngradient = function(y, f, w = 1) {
+        y <- (y + 1) / 2
+        p <- link$linkinv(f)
+        link$mu.eta(f) * (y / p - (1 - y) / (1 - p))
+      },
+      loss = function(y, f) {
+        p <- link$linkinv(f)
+        y <- (y + 1) / 2
+        -y * log(p) - (1 - y) * log(1 - p)
+      },
+      offset = function(y, w) {
+        p <- weighted.mean(y > 0, w)
+        link$linkfun(p)
+      },
+      response = function(f) {
+        p <- link$linkinv(f)
+        return(p)
+      },
+      rclass = function(f) (f > 0) + 1 ,
+      check_y = biny,
+      name = paste("Negative Binomial Likelihood --",
+                   link$name, "link")))
+      
+      
     }
     
     trf <- function(f) {
-        thresh <- -link$q(.Machine$double.eps)
-        pmin(pmax(f, -thresh), thresh)
+      thresh <- -link$q(.Machine$double.eps)
+      pmin(pmax(f, -thresh), thresh)
     }
     
+    # now with link2dist (distributions)
     return(Family(ngradient = function(y, f, w = 1) {
         y <- (y + 1) / 2
         p <- link$p(trf(f))
@@ -221,7 +255,6 @@ Binomial_adaboost <- function(link = c("logit", "probit", "cloglog", "cauchit", 
 ### In case of factors or binary vectors it uses the standard
 ### 0 and 1 coding; the coefficients hence have the same level
 ### as the ones resulting from glm() with family = "binomial".
-### Can deal with logit and probit link
 Binomial_glm <- function(link = c("logit", "probit", "cloglog", "cauchit", "log")) {
     
     link <- match.arg(link)
