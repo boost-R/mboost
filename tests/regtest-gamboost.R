@@ -314,3 +314,24 @@ K <- extract(bbs(x), "penalty")
 mod10 <- gamboost(y ~  buser(X, K) + buser(X, K, by = z),
                  control = boost_control(mstop = 1000))
 stopifnot(max(abs(predict(mod9) - predict(mod10))) < sqrt(.Machine$double.eps))
+
+
+## test that mstop = 0 is possible
+mod <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
+              data = bodyfat, control = boost_control(mstop = 0))
+mod2 <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
+               data = bodyfat, control = boost_control(mstop = 1))
+mod3 <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
+               data = bodyfat, control = boost_control(mstop = 1))
+## now reduce third model
+# mod3[0]
+mod[1]
+if (!all.equal(coef(mod), coef(mod2)))
+    stop("Coefficients of offset model + 1 step and model with 1 step not identical")
+## remove obvious differences from objects
+mod$control <- mod2$control <- NULL
+mod$call <- mod2$call <- NULL
+if (!all.equal(mod, mod2))
+    stop("Objects of offset model + 1 step and model with 1 step not identical")
+
+

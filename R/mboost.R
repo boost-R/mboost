@@ -55,7 +55,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     blfit <- lapply(bl, function(x) x$fit)
     fit1 <- blfit[[1]]
 
-    xselect <- NA
+    xselect <- NULL
     ens <- vector(mode = "list", length = control$mstop)
     nuisance <- vector(mode = "list", length = control$mstop)
 
@@ -161,8 +161,11 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
         mstop <<- mstop + niter
         return(TRUE)
     }
-    ### actually go for initial mstop iterations!
-    tmp <- boost(control$mstop)
+    
+    if (control$mstop > 0) {
+        ### actually go for initial mstop iterations!
+        tmp <- boost(control$mstop)
+    }
 
     ### prepare a (very) rich objects
     RET <- list(baselearner = blg,          ### the baselearners (without weights)
