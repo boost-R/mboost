@@ -267,3 +267,38 @@ glmModboost <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm"),
                         control = boost_control(nu = 0.2))
 glmModboost[1000]
 round(rbind(coef(glmMod), coef(glmModboost, off2int =TRUE)),2)
+
+
+## 
+## Binomial with other links
+## and interface type = "adaboost" or "glm"
+set.seed(123)
+y <- as.factor(sample(0:1, 100, replace = TRUE))
+x1 <- rnorm(100)
+x2 <- rnorm(100)
+
+mod <- glmboost(y ~ x1 + x2, family = Binomial(type = "adaboost", link = "cauchit"))
+mod[500]
+mod2 <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm", link = "cauchit"))
+mod2[500]
+glmMod <- glm(y ~ x1 + x2 , family = binomial(link = "cauchit"))
+stopifnot(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
+rbind(coef(glmMod), coef(mod, off2int = TRUE), coef(mod2, off2int = TRUE))
+
+mod <- glmboost(y ~ x1 + x2, family = Binomial(type = "adaboost", link = "probit"))
+mod[500]
+glmMod <- glm(y ~ x1 + x2 , family = binomial(link = "probit"))
+stopifnot(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
+mod2 <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm", link = "probit"))
+mod2[500]
+rbind(coef(glmMod), coef(mod, off2int = TRUE), coef(mod2, off2int = TRUE))
+
+
+mod <- glmboost(y ~ x1 + x2, family = Binomial(type = "adaboost", link = "log"))
+mod[500]
+glmMod <- glm(y ~ x1 + x2 , family = binomial(link = "log"))
+stopifnot(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
+mod2 <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm", link = "log"))
+mod2[500]
+rbind(coef(glmMod), coef(mod, off2int = TRUE), coef(mod2, off2int = TRUE))
+
