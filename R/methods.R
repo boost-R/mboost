@@ -1,4 +1,3 @@
-### compute predictions
 ### <FIXME>:
 ###          add link argument (family needs to be touched)
 ### </FIXME>
@@ -222,7 +221,8 @@ logLik.mboost <- function(object, ...)
 ### boosting iterations.
 ### ATTENTION: x gets CHANGED!
 "[.mboost" <- function(x, i, return = TRUE, ...) {
-    stopifnot(length(i) == 1 && i > 0)
+    if (!(length(i) == 1 && i >= 0))
+        stop("Please provide a single non-negative number")
     x$subset(i)
     if (return) return(x)
     invisible(NULL)
