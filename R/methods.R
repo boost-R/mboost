@@ -36,7 +36,7 @@ predict.mboost <- function(object, newdata = NULL,
     nm <- rownames(newdata)
     if (is.null(newdata)) 
         nm <- object$rownames
-    if (length(pr == 1) && length(nm) != length(pr))
+    if (length(pr) == 1 && length(nm) != length(pr))
         nm <- NULL
     if (is.list(pr)){
         RET <- lapply(pr, .predictmboost, y = object$response,
@@ -274,7 +274,7 @@ predict.glmboost <- function(object, newdata = NULL,
     nm <- rownames(newdata)
     if (is.null(newdata)) 
         nm <- object$rownames
-    if (length(pr == 1) && length(nm) != length(pr))
+    if (length(pr) == 1 && length(nm) != length(pr))
         nm <- NULL
     if (is.list(pr))
         return(lapply(pr, .predictmboost, y = object$response,
