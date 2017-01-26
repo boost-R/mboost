@@ -33,8 +33,11 @@ predict.mboost <- function(object, newdata = NULL,
         stopifnot(type == "link")
     pr <- object$predict(newdata = newdata,
                          which = which, aggregate = aggregate)
+    if (is.null(pr))
+        return(pr)
     nm <- rownames(newdata)
-    if (is.null(newdata)) nm <- object$rownames
+    if (is.null(newdata)) 
+        nm <- object$rownames
     if (is.list(pr)){
         RET <- lapply(pr, .predictmboost, y = object$response,
                       type = type, nm = nm, family = object$family)
@@ -201,7 +204,8 @@ fitted.mboost <- function(object, ...) {
     args <- list(...)
     if (length(args) == 0) {
         ret <- object$fitted()
-        names(ret) <- object$rownames
+        if (length(ret) == length(object$rownames))
+            names(ret) <- object$rownames
     } else {
         ret <- predict(object, newdata=NULL, ...)
         #if (NROW(ret) == length(ret))
@@ -266,9 +270,12 @@ predict.glmboost <- function(object, newdata = NULL,
 
     pr <- object$predict(newdata = newdata, which = which,
                          aggregate = aggregate)
+    if (is.null(pr))
+        return(pr)
     type <- match.arg(type)
     nm <- rownames(newdata)
-    if (is.null(newdata)) nm <- object$rownames
+    if (is.null(newdata)) 
+        nm <- object$rownames
     if (is.list(pr))
         return(lapply(pr, .predictmboost, y = object$response,
                       type = type, nm = nm, family = object$family))
@@ -291,7 +298,10 @@ coef.glmboost <- function(object, which = NULL,
 
     aggregate <- match.arg(aggregate)
     cf <- object$coef(which = which, aggregate = aggregate)
-    offset <- attr(cf, "offset")
+    offset <- object$offset
+    
+    if (is.null(cf))
+        return(cf)
 
     ### intercept = hat(beta[1]) - bar(x) %*% hat(beta[-1])
     assign <- object$assign

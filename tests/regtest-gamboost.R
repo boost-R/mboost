@@ -317,21 +317,55 @@ stopifnot(max(abs(predict(mod9) - predict(mod10))) < sqrt(.Machine$double.eps))
 
 
 ## test that mstop = 0 is possible
+compare_models <- function (m1, m2) {
+    if (!all.equal(coef(m1), coef(m2)))
+        stop("Coefficients of offset model + 1 step and model with 1 step not identical")
+    ## remove obvious differences from objects
+    m1$control <- m2$control <- NULL
+    m1$call <- m2$call <- NULL
+    if (!all.equal(m1, m2))
+        stop("Objects of offset model + 1 step and model with 1 step not identical")
+    invisible(NULL)
+}
+# set up models
 mod <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
               data = bodyfat, control = boost_control(mstop = 0))
 mod2 <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
                data = bodyfat, control = boost_control(mstop = 1))
 mod3 <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
                data = bodyfat, control = boost_control(mstop = 1))
-## now reduce third model
-# mod3[0]
-mod[1]
-if (!all.equal(coef(mod), coef(mod2)))
-    stop("Coefficients of offset model + 1 step and model with 1 step not identical")
-## remove obvious differences from objects
-mod$control <- mod2$control <- NULL
-mod$call <- mod2$call <- NULL
-if (!all.equal(mod, mod2))
-    stop("Objects of offset model + 1 step and model with 1 step not identical")
+stopifnot(is.null(coef(mod)))
+predict(mod) ## should be offset
+fitted(mod)
+residuals(mod)
+selected(mod)
+risk(mod)
 
+mstop(mod3) <- 0
+compare_models(mod, mod3)
+mstop(mod) <- 1
+compare_models(mod, mod2)
+mstop(mod3) <- 1
+compare_models(mod, mod3)
+
+## same with glmboost
+mod <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
+                data = bodyfat, control = boost_control(mstop = 0))
+mod2 <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
+                 data = bodyfat, control = boost_control(mstop = 1))
+mod3 <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
+                 data = bodyfat, control = boost_control(mstop = 1))
+coef(mod)
+predict(mod) ## should be offset
+fitted(mod)
+residuals(mod)
+selected(mod)
+risk(mod)
+
+mstop(mod3) <- 0
+compare_models(mod, mod3)
+mstop(mod) <- 1
+compare_models(mod, mod2)
+mstop(mod3) <- 1
+compare_models(mod, mod3)
 
