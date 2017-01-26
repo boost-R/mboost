@@ -11,7 +11,8 @@ boost_control(mstop = 100, nu = 0.1,
               center = TRUE, trace = FALSE)
 }
 \arguments{
-  \item{mstop}{ an integer giving the number of initial boosting iterations. }
+  \item{mstop}{ an integer giving the number of initial boosting iterations. 
+        If \code{mstop = 0}, the offset model is returned.}
   \item{nu}{ a double (between 0 and 1) defining the step size or shrinkage parameter.
              The default is probably too large for many applications
              with \code{family = Poisson()} and a smaller value is better.}

@@ -153,11 +153,11 @@ mstop(x) <- value
                      added to the intercept (if there is any)
                      or if the offset is returned as attribute of
                      the coefficient (default).}
-  \item{i}{ integer. Index specifying the model to extract. If \code{i}
-            is smaller than the initial \code{mstop}, a subset is used.
-            If \code{i} is larger than the initial \code{mstop},
-            additional boosting steps are performed until step \code{i}
-            is reached. See details for more information. }
+  \item{i}{ integer. Index specifying the model to extract. If \code{i = 0}, 
+            the offset model is returned. If \code{i} is smaller than the initial 
+            \code{mstop}, a subset is used. If \code{i} is larger than the 
+            initial \code{mstop}, additional boosting steps are performed until 
+            step \code{i} is reached. See details for more information. }
   \item{value}{ integer. See \code{i}.}
   \item{return}{ a logical indicating whether the changed object is
                  returned. }
