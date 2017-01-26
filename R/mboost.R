@@ -202,8 +202,12 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     RET$mstop <- function() mstop
 
     ### which basemodels have been selected so far?
-    RET$xselect <- function()
-        return(xselect[1:mstop])
+    RET$xselect <- function() {
+        if (mstop > 0)
+            return(xselect[1:mstop])
+        else 
+            return(NULL)
+    }
 
     ### current fitted values
     RET$fitted <- function() as.vector(fit)
@@ -245,7 +249,8 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     RET$predict <- function(newdata = NULL, which = NULL,
                             aggregate = c("sum", "cumsum", "none")) {
 
-        indx <- ((1:length(xselect)) <= mstop)
+        if (!is.null(xselect))
+            indx <- ((1:length(xselect)) <= mstop)
         which <- thiswhich(which, usedonly = nw <- is.null(which))
         if (length(which) == 0) return(NULL)
 
@@ -365,7 +370,8 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     ### aggregated at all ("none")
     RET$coef <- function(which = NULL, aggregate = c("sum", "cumsum", "none")) {
 
-        indx <- ((1:length(xselect)) <= mstop)
+        if (!is.null(xselect)) 
+            indx <- ((1:length(xselect)) <= mstop)
         which <- thiswhich(which, usedonly = is.null(which))
         if (length(which) == 0) return(NULL)
 
