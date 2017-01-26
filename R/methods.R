@@ -33,11 +33,11 @@ predict.mboost <- function(object, newdata = NULL,
         stopifnot(type == "link")
     pr <- object$predict(newdata = newdata,
                          which = which, aggregate = aggregate)
-    if (is.null(pr))
-        return(pr)
     nm <- rownames(newdata)
     if (is.null(newdata)) 
         nm <- object$rownames
+    if (length(pr == 1) && length(nm) != length(pr))
+        nm <- NULL
     if (is.list(pr)){
         RET <- lapply(pr, .predictmboost, y = object$response,
                       type = type, nm = nm, family = object$family)
@@ -270,12 +270,12 @@ predict.glmboost <- function(object, newdata = NULL,
 
     pr <- object$predict(newdata = newdata, which = which,
                          aggregate = aggregate)
-    if (is.null(pr))
-        return(pr)
     type <- match.arg(type)
     nm <- rownames(newdata)
     if (is.null(newdata)) 
         nm <- object$rownames
+    if (length(pr == 1) && length(nm) != length(pr))
+        nm <- NULL
     if (is.list(pr))
         return(lapply(pr, .predictmboost, y = object$response,
                       type = type, nm = nm, family = object$family))
