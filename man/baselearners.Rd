@@ -11,7 +11,9 @@
   Overview of base-learners in the generic implementation of component-wise 
   gradient boosting in function \code{\link{mboost}} and some some general 
   remarks on base-learners. Details of the base-learners are available on
-  dedicated help pages.
+  dedicated help pages. All base-learner names are composed of a suffix
+  \code{b} for base-learner followed by the type of base-learner, e.g., 
+  \code{ols} for ordinary least squares, i.e., linear effects.
 }
 \details{
 

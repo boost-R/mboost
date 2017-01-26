@@ -4,7 +4,7 @@
 \title{ Linear Base-learner }
 \description{
   Base-learners for fitting penalized or unpenalized 
-  ordinary least squares (OLS; hence, \code{bols}).
+  ordinary least squares (OLS; hence, the name \code{bols}).
 }
 \usage{
 ## linear base-learner
