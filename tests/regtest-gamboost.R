@@ -318,8 +318,12 @@ stopifnot(max(abs(predict(mod9) - predict(mod10))) < sqrt(.Machine$double.eps))
 
 ## test that mstop = 0 is possible
 compare_models <- function (m1, m2) {
-    if (!all.equal(coef(m1), coef(m2)))
-        stop("Coefficients of offset model + 1 step and model with 1 step not identical")
+    stopifnot(all.equal(coef(m1), coef(m2)))
+    stopifnot(all.equal(predict(m1), predict(m2)))
+    stopifnot(all.equal(fitted(m1), fitted(m2)))
+    stopifnot(all.equal(as.vector(residuals(m1)), as.vector(residuals(m2))))
+    stopifnot(all.equal(selected(m1), selected(m2)))
+    stopifnot(all.equal(risk(m1), risk(m2)))
     ## remove obvious differences from objects
     m1$control <- m2$control <- NULL
     m1$call <- m2$call <- NULL
@@ -335,11 +339,11 @@ mod2 <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
 mod3 <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
                data = bodyfat, control = boost_control(mstop = 1))
 stopifnot(is.null(coef(mod)))
-predict(mod) ## should be offset
-fitted(mod)
-residuals(mod)
-selected(mod)
-risk(mod)
+stopifnot(predict(mod) == mod$offset)
+stopifnot(fitted(mod) == mod$offset)
+stopifnot(all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat)))
+stopifnot(is.null(selected(mod)))
+stopifnot(is.na(risk(mod)))
 
 mstop(mod3) <- 0
 compare_models(mod, mod3)
@@ -355,12 +359,12 @@ mod2 <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
                  data = bodyfat, control = boost_control(mstop = 1))
 mod3 <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
                  data = bodyfat, control = boost_control(mstop = 1))
-coef(mod)
-predict(mod) ## should be offset
-fitted(mod)
-residuals(mod)
-selected(mod)
-risk(mod)
+stopifnot(is.null(coef(mod)))
+stopifnot(!is.null(predict(mod))) ## should be offset
+stopifnot(fitted(mod) == mod$offset)
+stopifnot(all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat), check.attributes = FALSE))
+stopifnot(is.null(selected(mod)))
+stopifnot(is.na(risk(mod)))
 
 mstop(mod3) <- 0
 compare_models(mod, mod3)
