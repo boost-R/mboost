@@ -57,11 +57,13 @@ coef.mboost <- function(object, which = NULL,
     args <- list(...)
     if (length(args) > 0)
         warning("Arguments ", paste(names(args), sep = ", "), " unknown")
-    if (grepl("Negative Binomial Likelihood", object$family@name))
+    if (grepl("Negative Binomial Likelihood (logit link)", object$family@name))
         message("\nNOTE: Coefficients from a Binomial model are half the size of ",
                 "coefficients\n from a model fitted via ",
                 "glm(... , family = 'binomial').\n",
                 "See Warning section in ?coef.mboost\n")
+    ### NOTE: This is only the case for type = "adaboost" and link = "logit" ! 
+    ###       see github #63 and #65
     object$coef(which = which, aggregate = aggregate)
 }
 
