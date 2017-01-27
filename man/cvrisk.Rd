@@ -11,7 +11,7 @@
 }
 \usage{
 \method{cvrisk}{mboost}(object, folds = cv(model.weights(object)),
-       grid = 1:mstop(object),
+       grid = 0:mstop(object),
        papply = mclapply,
        fun = NULL, corrected = TRUE, mc.preschedule = FALSE, ...)
 cv(weights, type = c("bootstrap", "kfold", "subsampling"),
