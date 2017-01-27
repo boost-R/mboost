@@ -42,7 +42,7 @@ ctrl$risk <- "oobag"
 tmp <- blackboost(DEXfat ~ ., data = bodyfat, control = ctrl,
                  weights = bs[,3])
 
-stopifnot(identical(max(abs(tmp$risk()[x] / sum(bs[,3] == 0)  - cv[3,])), 0))
+stopifnot(identical(max(abs(tmp$risk()[x + 1] / sum(bs[,3] == 0)  - cv[3,])), 0))
 
 ### center = TRUE and cvrisk were broken; same issue with masking original data
 
@@ -51,7 +51,7 @@ cv1 <- cvrisk(gb, folds = bs, papply = lapply)
 tmp <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE,
                 control = boost_control(risk = "oobag"),
                 weights = bs[,3])
-stopifnot(identical(max(tmp$risk()[attr(cv1, "mstop")] / sum(bs[,3] == 0) - cv1[3,]), 0))
+stopifnot(identical(max(tmp$risk()[attr(cv1, "mstop") + 1] / sum(bs[,3] == 0) - cv1[3,]), 0))
 
 ### same problem, just another check
 
