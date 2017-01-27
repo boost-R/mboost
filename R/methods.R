@@ -145,15 +145,15 @@ AICboost <- function(object, method = c("corrected", "classical", "gMDL"), df, k
 
     sumw <- sum(model.weights(object)[!is.na(fitted(object))])
     if (method == "corrected")
-        AIC <- log(object$risk() / sumw) +
+        AIC <- log(object$risk()[-1] / sumw) +
                (1 + df/sumw) / (1 - (df + 2)/sumw)
 
     ### loss-function is to be MINIMIZED, take -2 * logLik == 2 * risk
     if (method == "classical")
-        AIC <- 2 * object$risk() + k * df
+        AIC <- 2 * object$risk()[-1] + k * df
     if (method == "gMDL"){
-        s <- object$risk()/(sumw - df)
-        AIC <- log(s) + df/sumw * log((sum(object$response^2) - object$risk())
+        s <- object$risk()[-1]/(sumw - df)
+        AIC <- log(s) + df/sumw * log((sum(object$response^2) - object$risk()[-1])
                       /(df * s))
         }
     mstop <- which.min(AIC)
