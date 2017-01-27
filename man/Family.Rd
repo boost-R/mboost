@@ -141,9 +141,7 @@ can be specified.
 
 However, the coefficients resulting from boosting with family
 \code{Binomial(link = "logit")} are \eqn{1/2} of the coefficients of a logit model
-obtained via \code{\link{glm}}. This is due to the internal recoding
-of the response to \eqn{-1} and \eqn{+1} (see below).
-  However, Buehlmann and Hothorn (2007) argue that the
+obtained via \code{\link{glm}}.  Buehlmann and Hothorn (2007) argue that the
 family \code{Binomial} is the preferred choice for binary
 classification. For binary classification problems the response
 \code{y} has to be a \code{factor}. Internally \code{y} is re-coded
@@ -236,9 +234,8 @@ distribution approximation used in Ma and Huang (2005).
 }
 \section{Warning}{
   The coefficients resulting from boosting with family
-  \code{Binomial} are \eqn{1/2} of the coefficients of a logit model
-  obtained via \code{\link{glm}}. This is due to the internal recoding
-  of the response to \eqn{-1} and \eqn{+1} (see above).
+  \code{Binomial(link = "logit")} are \eqn{1/2} of the coefficients of a logit model
+  obtained via \code{\link{glm}} (see above). 
 
   For \code{AUC()}, variables should be centered and scaled and observations with weight > 0 must not contain missing values.
   The estimated coefficients for \code{AUC()} have no probabilistic interpretation.
