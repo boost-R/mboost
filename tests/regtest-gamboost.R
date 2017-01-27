@@ -343,7 +343,7 @@ stopifnot(predict(mod) == mod$offset)
 stopifnot(fitted(mod) == mod$offset)
 stopifnot(all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat)))
 stopifnot(is.null(selected(mod)))
-stopifnot(is.na(risk(mod)))
+stopifnot(all.equal(risk(mod), risk(mod2)[1]))
 
 mstop(mod3) <- 0
 compare_models(mod, mod3)
@@ -364,7 +364,7 @@ stopifnot(!is.null(predict(mod))) ## should be offset
 stopifnot(fitted(mod) == mod$offset)
 stopifnot(all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat), check.attributes = FALSE))
 stopifnot(is.null(selected(mod)))
-stopifnot(is.na(risk(mod)))
+stopifnot(all.equal(risk(mod), risk(mod2)[1]))
 
 mstop(mod3) <- 0
 compare_models(mod, mod3)

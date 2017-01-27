@@ -10,7 +10,14 @@
         \code{Binomial(type = "glm")}. Additionally, it works not only with a 
         two-level factor but also with a two-column matrix containing the number 
         of successes and number of failures. 
-        Fixes \href{https://github.com/boost-R/mboost/issues/34}{#34}.
+        Fixes \href{https://github.com/boost-R/mboost/issues/34}{#34}, 
+        \href{https://github.com/boost-R/mboost/issues/63}{#63} and
+        \href{https://github.com/boost-R/mboost/issues/65}{#65}.
+      \item Models with zero steps (i.e., models containing only the offset) can
+        now be fitted. Furthermore, cross-validation can now also select a model
+        without base-learners.
+        Fixes \href{https://github.com/boost-R/mboost/issues/64}{#64} and 
+        \href{https://github.com/boost-R/mboost/issues/66}{#66}.
     }
   }
   \subsection{Miscellaneous}{

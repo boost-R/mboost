@@ -8,10 +8,10 @@ cvrisk <- function(object, ...)
     UseMethod("cvrisk")
 
 cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
-                           grid = 1:mstop(object), papply = mclapply,
+                           grid = 0:mstop(object), papply = mclapply,
                            fun = NULL, corrected = TRUE, mc.preschedule = FALSE,
                            ...) {
-
+    
     papply <- match.fun(papply)
     weights <- model.weights(object)
     if (any(weights == 0))
@@ -32,22 +32,27 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
             dummyfct <- function(weights, oobweights) {
                 mod <- fitfct(weights = weights, oobweights = oobweights)
                 mod[max(grid)]
-                mod$risk()[grid]
+                mod$risk()[grid + 1]
             }
         } else {
             ## If family = CoxPH(), cross-validation needs to be computed as in
             ## Verweij, van Houwelingen (1993), Cross-validation in survival
             ## analysis, Statistics in Medicine, 12:2305-2314.
             plloss <- environment(object$family@risk)[["plloss"]]
-
+            
             if (is.null(fun)) {
+                if (0 %in% grid) {
+                    warning("All values in ", sQuote("grid"), " must be greater 0 if ",
+                            'family = "CoxPH", hence 0 is dropped from grid')
+                    grid <- grid[grid != 0]
+                }
                 dummyfct <- function(weights, oobweights) {
                     ## <FIXME> Should the risk be computed on the inbag
                     ## (currently done) or on the oobag observations?
                     mod <- fitfct(weights = weights, oobweights = oobweights,
                                   risk = "inbag")
                     mod[max(grid)]
-
+                    
                     pr <- predict(mod, aggregate = "cumsum")
                     ## <FIXME> are the weights w really equal to 1? Shouldn't it
                     ## be equal to the original fitting weights? Is this
@@ -56,7 +61,7 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
                     lplk <- apply(pr[, grid], 2, function(f)
                         sum(plloss(y = object$response, f = f, w = 1)))
                     ## return negative "cvl"
-                    - mod$risk()[grid] - lplk
+                    - mod$risk()[1:(grid + 1)] - lplk
                 }
             }
         }
@@ -69,7 +74,7 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
             fun(mod)
         }
     }
-
+    
     ## use case weights as out-of-bag weights (but set inbag to 0)
     OOBweights <- matrix(rep(weights, ncol(folds)), ncol = ncol(folds))
     OOBweights[folds > 0] <- 0
@@ -107,14 +112,14 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
     attr(oobrisk, "call") <- call
     attr(oobrisk, "mstop") <- grid
     attr(oobrisk, "type") <- ifelse(!is.null(attr(folds, "type")),
-        attr(folds, "type"), "user-defined")
+                                    attr(folds, "type"), "user-defined")
     class(oobrisk) <- "cvrisk"
     oobrisk
 }
 
 print.cvrisk <- function(x, ...) {
     cat("\n\t Cross-validated", attr(x, "risk"), "\n\t",
-              attr(x, "call"), "\n\n")
+        attr(x, "call"), "\n\n")
     print(colMeans(x))
     cat("\n\t Optimal number of boosting iterations:", mstop(x), "\n")
     return(invisible(x))
@@ -123,7 +128,7 @@ print.cvrisk <- function(x, ...) {
 plot.cvrisk <- function(x, xlab = "Number of boosting iterations",
                         ylab = attr(x, "risk"),
                         ylim = range(x), main = attr(x, "type"), ...) {
-
+    
     cm <- colMeans(x)
     plot(1:ncol(x), cm, ylab = ylab, ylim = ylim,
          type = "n", lwd = 2, xlab = xlab,
@@ -145,21 +150,21 @@ mstop.cvrisk <- function(object, ...)
 cv <- function(weights, type = c("bootstrap", "kfold", "subsampling"),
                B = ifelse(type == "kfold", 10, 25),
                prob = 0.5, strata = NULL) {
-
+    
     type <- match.arg(type)
     n <- length(weights)
-
+    
     if (is.null(strata)) strata <- gl(1, n)
     if (!is.factor(strata)) stop(sQuote("strata"), " must be a factor")
     folds <- matrix(0, nrow = n, ncol = B)
-
+    
     ### <FIXME> handling of weights needs careful documentation </FIXME>
     for (s in levels(strata)) {
         indx <- which(strata == s)
         folds[indx,] <- switch(type,
-            "bootstrap" = cvboot(length(indx), B = B, weights[indx]),
-            "kfold" = cvkfold(length(indx), k = B) * weights[indx],
-            "subsampling" = cvsub(length(indx), prob = prob, B = B) * weights[indx])
+                               "bootstrap" = cvboot(length(indx), B = B, weights[indx]),
+                               "kfold" = cvkfold(length(indx), k = B) * weights[indx],
+                               "subsampling" = cvsub(length(indx), prob = prob, B = B) * weights[indx])
     }
     attr(folds, "type") <- paste(B, "-fold ", type, sep = "")
     return(folds)

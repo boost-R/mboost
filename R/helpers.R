@@ -102,11 +102,11 @@ do_trace <- function(m, mstop, risk, step = options("width")$width / 2,
             if ((m %/% step != m / step)) {
                 cat(".")
             } else {
-                cat(" -- risk:", risk[m+mstop], "\n")
+                cat(" -- risk:", risk[m+mstop+1], "\n")
             }
         }
     } else {
-        cat("\nFinal risk:", risk[m+mstop], "\n")
+        cat("\nFinal risk:", risk[m+mstop+1], "\n")
     }
 }
 

@@ -59,18 +59,18 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     ens <- vector(mode = "list", length = control$mstop)
     nuisance <- vector(mode = "list", length = control$mstop)
 
-    ### vector of empirical risks for all boosting iterations
-    ### (either in-bag or out-of-bag)
-    mrisk <- NA
-    tsums <- numeric(length(bl))
-    ss <- vector(mode = "list", length = length(bl))
-
     ### initialized the boosting algorithm
     fit <- offset
     offsetarg <- offset
     if (is.null(offset))
         fit <- offset <- family@offset(y, weights)
     u <- ustart <- ngradient(y, fit, weights)
+    
+    ### vector of empirical risks for all boosting iterations
+    ### (either in-bag or out-of-bag)
+    mrisk <- triskfct(y, fit)
+    tsums <- numeric(length(bl))
+    ss <- vector(mode = "list", length = length(bl))
 
     ### set up function for fitting baselearner(s)
     cwlin <- FALSE
@@ -141,7 +141,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
 
             ### evaluate risk, either for the learning sample (inbag)
             ### or the test sample (oobag)
-            mrisk[m] <<- triskfct(y, fit)
+            mrisk[m + 1] <<- triskfct(y, fit)
 
             ### save the model
             ens[[m]] <<- basess
@@ -154,8 +154,8 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
                          step = tracestep, width = niter)
 
             ### internal stopping (for oobag risk only)
-            if (stopintern & (m > 1)) {
-                if ((mrisk[m] - mrisk[m - 1]) > stopeps) break
+            if (stopintern) {
+                if ((mrisk[m + 1] - mrisk[m]) > stopeps) break
             }
         }
         mstop <<- mstop + niter
@@ -216,13 +216,11 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
 
     ### current risk fct.
     RET$risk <- function() {
-        if (mstop == 0)
-            return(NA)
-        mrisk[1:mstop]
+        mrisk[1:(mstop + 1)]
     }
 
     ### negative risk (at current iteration)
-    RET$logLik <- function() -mrisk[mstop]
+    RET$logLik <- function() -mrisk[mstop + 1]
 
     ### figure out which baselearners are requested
     thiswhich <- function(which = NULL, usedonly = FALSE) {

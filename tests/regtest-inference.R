@@ -23,7 +23,9 @@ plot(confint.gam, which = 3)
 
 ### check cvrisk (it should run even if a fold leads to an error)
 folds <- cv(model.weights(glm), type = "kfold")
-folds[1, 1] <- NA
+cvrisk(glm, folds = folds)
+cvrisk(gam, folds = folds)
 
+folds[1, 1] <- NA
 cvrisk(glm, folds = folds, papply = lapply)
 cvrisk(glm, folds = folds, papply = mclapply)
