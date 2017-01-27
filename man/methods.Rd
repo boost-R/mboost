@@ -310,8 +310,7 @@ mstop(x) <- value
 }
 \section{Warning}{
   The coefficients resulting from boosting with family
-  \code{\link{Binomial(type = "adaboost", link = "logit")}} are \eqn{1/2} of the coefficients of a logit  model obtained via \code{\link{glm}} (see
-  \code{\link{Binomial}}).
+  \code{Binomial(link = "logit")} are \eqn{1/2} of the coefficients of a logit  model obtained via \code{\link{glm}} (see \code{\link{Binomial}}).
 }
 \references{
 
