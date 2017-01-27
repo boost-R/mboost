@@ -95,6 +95,7 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
                 "Original error message(s):\n",
                 sapply(oobrisk[idx], function(x) x))
         oobrisk[idx] <- NULL
+        OOBweights <- OOBweights[, !idx]
     }
     if (!is.null(fun))
         return(oobrisk)
