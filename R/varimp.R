@@ -11,15 +11,8 @@ varimp.mboost <- function(object, ...) {
   
   
   ### --------------------------------------------------
-  ### compute risks for each step
-  # initial risk for the intercept model
-  y <- object$response
-  if(is.factor(y)) y <- 2*as.numeric(y) - 3
-  risk0 <- object$family@risk( y = y, f = object$offset ) 
-  # risk after each boosting-step
-  riskstep <- object$risk()
-  # risk reduction per step
-  riskdiff <- c(risk0, riskstep[-length(riskstep)]) - riskstep  
+  ### compute inbag risk reduction for each step
+  riskdiff <- -1 * diff(risk(object))
   
   ### compute empirical in-bag risk (according to output in cvrisk)
   riskdiff <- riskdiff / length(object$response)
