@@ -242,7 +242,7 @@ check_newdata <- function(newdata, blg, mf, to.data.frame = TRUE) {
         stop(sQuote("newdata"),
              " must contain all predictor variables,",
              " which were used to specify the model.")
-    if (!class(newdata) %in% c("list", "data.frame"))
+    if (!any(class(newdata) %in% c("list", "data.frame")))
         stop(sQuote("newdata"), " must be either a data.frame or a list")
     if (any(duplicated(nm)))  ## removes duplicates
         nm <- unique(nm)
