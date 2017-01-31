@@ -23,9 +23,18 @@ plot(confint.gam, which = 3)
 
 ### check cvrisk (it should run even if a fold leads to an error)
 folds <- cv(model.weights(glm), type = "kfold")
-cvrisk(glm, folds = folds)
-cvrisk(gam, folds = folds)
 
 folds[1, 1] <- NA
 cvrisk(glm, folds = folds, papply = lapply)
 cvrisk(glm, folds = folds, papply = mclapply)
+
+## test if cvrisk starts at 0 and provides a sensible model
+
+data <- data.frame(y = rnorm(100), x1 = rnorm(100), x2 = rnorm(100), x3 = rnorm(100))
+glm <- glmboost(y ~ ., data = data)
+gam <- gamboost(y ~ ., data = data)
+
+cvr.glm <- cvrisk(glm)
+cvr.gam <- cvrisk(gam)
+stopifnot(mstop(cvr.glm) == 0)
+stopifnot(mstop(cvr.gam) == 0)

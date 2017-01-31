@@ -39,7 +39,7 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
             ## Verweij, van Houwelingen (1993), Cross-validation in survival
             ## analysis, Statistics in Medicine, 12:2305-2314.
             plloss <- environment(object$family@risk)[["plloss"]]
-            
+
             if (is.null(fun)) {
                 if (0 %in% grid) {
                     warning("All values in ", sQuote("grid"), " must be greater 0 if ",
@@ -52,7 +52,7 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
                     mod <- fitfct(weights = weights, oobweights = oobweights,
                                   risk = "inbag")
                     mod[max(grid)]
-                    
+
                     pr <- predict(mod, aggregate = "cumsum")
                     ## <FIXME> are the weights w really equal to 1? Shouldn't it
                     ## be equal to the original fitting weights? Is this
@@ -74,7 +74,7 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
             fun(mod)
         }
     }
-    
+
     ## use case weights as out-of-bag weights (but set inbag to 0)
     OOBweights <- matrix(rep(weights, ncol(folds)), ncol = ncol(folds))
     OOBweights[folds > 0] <- 0
@@ -128,7 +128,7 @@ print.cvrisk <- function(x, ...) {
 plot.cvrisk <- function(x, xlab = "Number of boosting iterations",
                         ylab = attr(x, "risk"),
                         ylim = range(x), main = attr(x, "type"), ...) {
-    
+
     cm <- colMeans(x)
     plot(1:ncol(x), cm, ylab = ylab, ylim = ylim,
          type = "n", lwd = 2, xlab = xlab,
@@ -150,14 +150,14 @@ mstop.cvrisk <- function(object, ...)
 cv <- function(weights, type = c("bootstrap", "kfold", "subsampling"),
                B = ifelse(type == "kfold", 10, 25),
                prob = 0.5, strata = NULL) {
-    
+
     type <- match.arg(type)
     n <- length(weights)
-    
+
     if (is.null(strata)) strata <- gl(1, n)
     if (!is.factor(strata)) stop(sQuote("strata"), " must be a factor")
     folds <- matrix(0, nrow = n, ncol = B)
-    
+
     ### <FIXME> handling of weights needs careful documentation </FIXME>
     for (s in levels(strata)) {
         indx <- which(strata == s)

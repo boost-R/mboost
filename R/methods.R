@@ -22,7 +22,6 @@
     return(ret)
 }
 
-
 predict.mboost <- function(object, newdata = NULL,
     type = c("link", "response", "class"), which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...) {
