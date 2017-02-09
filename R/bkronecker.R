@@ -169,7 +169,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         ret <- list(fit = fit, hatvalues = hatvalues,
                     predict = predict, df = df,
                     Xnames = as.vector(Xnames))
-        class(ret) <- c("bl_lin", "bl")
+        class(ret) <- c("bl_kronecker", "bl_lin", "bl")
         return(ret)
 
     }

@@ -26,6 +26,8 @@
   }
   \subsection{Bug-fixes}{
      \itemize{
+       \item Make sure that family = Multinomial is only used with Kronecker 
+         product base-learners. Fixes \href{https://github.com/boost-R/mboost/issues/46}{#46}.
      }
   }
 }

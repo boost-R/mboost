@@ -54,7 +54,14 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     bl <- lapply(blg, dpp, weights = weights)
     blfit <- lapply(bl, function(x) x$fit)
     fit1 <- blfit[[1]]
-
+    
+    if (identical("Negative Multinomial Likelihood", family@name)
+        && ! all(vapply(bl, inherits, FALSE, what = "bl_kronecker")))
+        stop(sQuote("family = Multinomial()"), " only works with Kronecker prodcut base-learners, ",
+             "i.e., combined base-learners of the form ", sQuote("bl1 %O% bl2"), " fitted via ",
+             sQuote("gamboost()"), " or ", sQuote("mboost()"),
+             ".\n See ", sQuote("?Multinomial"), " for details.")
+        
     xselect <- NULL
     ens <- vector(mode = "list", length = control$mstop)
     nuisance <- vector(mode = "list", length = control$mstop)
