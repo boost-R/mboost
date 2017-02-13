@@ -180,7 +180,7 @@ modSubset <- glmboost(x = x[as.logical(wMat[, 1]),],
                       family = Gehan())
 ## <FIXME> there are still some minor discrepancies. Perhaps this is due to
 ## different pre-processing? </FIXME>
-round(coef(modWeighted) - coef(modSubset), 3)
+round(coef(modWeighted, which = "") - coef(modSubset, which = ""), 3)
 }
 
 
