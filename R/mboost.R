@@ -71,6 +71,8 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     offsetarg <- offset
     if (is.null(offset))
         fit <- offset <- family@offset(y, weights)
+    if (length(fit) == 1)
+        fit <- rep(fit, NROW(y))
     u <- ustart <- ngradient(y, fit, weights)
     
     ### vector of empirical risks for all boosting iterations
@@ -257,8 +259,11 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     RET$predict <- function(newdata = NULL, which = NULL,
                             aggregate = c("sum", "cumsum", "none")) {
 
-        if (mstop == 0)
+        if (mstop == 0) {
+            if (length(offset) == 1)
+                return(rep(offset, NROW(y)))
             return(offset)
+        }
         if (!is.null(xselect))
             indx <- ((1:length(xselect)) <= mstop)
         which <- thiswhich(which, usedonly = nw <- is.null(which))

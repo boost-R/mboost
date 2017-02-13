@@ -339,8 +339,8 @@ mod2 <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
 mod3 <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
                data = bodyfat, control = boost_control(mstop = 1))
 stopifnot(is.null(coef(mod)))
-stopifnot(predict(mod) == mod$offset)
-stopifnot(fitted(mod) == mod$offset)
+stopifnot(predict(mod) == rep(mod$offset, nrow(bodyfat)))
+stopifnot(fitted(mod) == rep(mod$offset, nrow(bodyfat)))
 stopifnot(all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat)))
 stopifnot(is.null(selected(mod)))
 stopifnot(all.equal(risk(mod), risk(mod2)[1]))
@@ -360,8 +360,8 @@ mod2 <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
 mod3 <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
                  data = bodyfat, control = boost_control(mstop = 1))
 stopifnot(is.null(coef(mod)))
-stopifnot(!is.null(predict(mod))) ## should be offset
-stopifnot(fitted(mod) == mod$offset)
+stopifnot(predict(mod) == rep(mod$offset, nrow(bodyfat)))
+stopifnot(fitted(mod) == rep(mod$offset, nrow(bodyfat)))
 stopifnot(all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat), check.attributes = FALSE))
 stopifnot(is.null(selected(mod)))
 stopifnot(all.equal(risk(mod), risk(mod2)[1]))
