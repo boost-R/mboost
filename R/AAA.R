@@ -19,9 +19,7 @@
             mboost_dftraceS = FALSE,  ### df = trace(S) or df = trace(2 S - StS)
             mboost_lambdaMax = 1e+15,### maximum value for lambda as used in df2lambda
             mboost_Xmonotone = FALSE,### don't force monotonicity in %X%
-            mboost_eps = 10e-10, ### factor for dmat in df2lambda
-            mboost_check_df2lambda = TRUE) ### check if max(abs(X)) > 10 in df2lambda
-                                 ### as this might take a while experts can skip this check
+            mboost_eps = 10e-10) ### factor for dmat in df2lambda
 }
 
 .onUnload <- function(libpath) {

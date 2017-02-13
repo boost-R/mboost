@@ -18,6 +18,10 @@
         without base-learners.
         Fixes \href{https://github.com/boost-R/mboost/issues/64}{#64} and 
         \href{https://github.com/boost-R/mboost/issues/66}{#66}.
+      \item Removed check if \code{df2lambda} is stable. Hence,  
+        \code{options(mboost_check_df2lambda)} (introduced in mboost 2.5-0) 
+        is no longer used. 
+        Closes \href{https://github.com/boost-R/mboost/issues/26}{#26}.
     }
   }
   \subsection{Miscellaneous}{

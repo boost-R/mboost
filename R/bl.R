@@ -20,16 +20,6 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
         if (lambda == 0)
             return(c(df = rankMatrix(X), lambda = 0))
 
-    ## check for possible instability
-    if (options("mboost_check_df2lambda")[[1]] && max(abs(X)) > 10)
-        warning("Some absolute values in design matrix are greater 10. Hence, ",
-                sQuote("df2lambda"), " might be numerically instable.\n  ",
-                "See documentation of argument ", sQuote("by"),
-                " in ?bbs for further information.",
-                immediate. = TRUE)
-    ## instable df2lambda might for example occure if one uses bbs(x, by = z)
-    ## with large values of z
-
     # Demmler-Reinsch Orthogonalization (cf. Ruppert et al., 2003,
     # Semiparametric Regression, Appendix B.1.1).
 
