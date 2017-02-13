@@ -66,7 +66,7 @@ LazyData: \tab yes\cr
 \section{NEWS in 2.7-series}{
 
   Series 2.7 provides a new family (\code{Cindex}), variable importance measures
-  (\code{varimp}) and imrpoved plotting facilities. The manual was updated in 
+  (\code{varimp}) and improved plotting facilities. The manual was updated in 
   various places, vignettes were improved and a lot of bugs were fixed. 
 
   \bold{For more changes see}\cr\code{news(Version >= "2.7-0", package  = "mboost")}
@@ -141,7 +141,7 @@ LazyData: \tab yes\cr
   \eqn{S = X(X^{\top}X + \lambda K)^{-1} X}{S = X(X'X + \lambda K)^(-1)
   X} (see Hofner et al., 2011). Earlier versions used the trace of the
   smoother matrix \eqn{\mathrm{df}(\lambda) = \mathrm{trace}(S)} as
-  degrees of freedom. One can change the deployed definition using
+  degrees of freedom. One can change the old definition using
   \code{options(mboost_dftraceS = TRUE)} (see also B. Hofner et al.,
   2011 and \code{\link{bols}}).
 
