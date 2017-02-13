@@ -375,8 +375,10 @@ CoxPH <- function() {
         time <- y[,1]
         event <- y[,2]
         n <- length(time)
-        if (length(f) == 1) f <- rep(f, n)
-        if (length(w) == 1) w <- rep(w, n)
+        if (length(f) == 1) 
+            f <- rep(f, n)
+        if (length(w) == 1) 
+            w <- rep(w, n)
         indx <- rep(1:n, w)
         time <- time[indx]
         event <- event[indx]
@@ -472,7 +474,8 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
         delta[1] + cumsum(c(0, exp(delta[-1])))
 
     plloss <- function(sigma, y, f, w = 1) {
-        if (length(f) == 1) f <- rep(f, length(y))
+        if (length(f) == 1) 
+            f <- rep(f, length(y))
         tmp <- lapply(1:(length(sigma) + 1), function(i) {
             if (i == 1) return(1 + exp(f - sigma[i]))
             if (i == (length(sigma) + 1))
@@ -495,7 +498,8 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
         delta <<- optim(par = delta, fn = riskS, y = y,
                         fit = f, w = w, method = "BFGS")$par
         sigma <<- d2s(delta)
-        if (length(f) == 1) f <- rep(f, length(y))
+        if (length(f) == 1) 
+            f <- rep(f, length(y))
         ng <- sapply(1:(length(sigma) + 1), function(i) {
             if (i > 1 & i < (length(sigma) + 1)) {
                 ret <- (1 - exp(2 * f - sigma[i - 1] - sigma[i])) /
@@ -749,15 +753,15 @@ AUC <- function() {
 					n1 <- length(ind1)
 					n0 <- length(ind0)
 				}
-				#need this for first iteration
-				if (length(f) == 1) {
-					f <- rep(f, n1 + n0)
-				} else {
-					# scale scores s.t. a gradient of zero makes sense for
-					# differences in f that are bigger than +/-1
-					f <- f/sd(f)
-				}
-
+				
+	            if (length(f) == 1)
+	                f <- rep(f, n1 + n0)
+	            # skip this in the first iteration
+	            if (length(unique(f)) != 1) 
+	                # scale scores s.t. a gradient of zero makes sense for
+	                # differences in f that are bigger than +/-1
+	                f <- f/sd(f)
+				
 				M0 <<- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) -
 							f[ind0])
 				M1 <- approxGrad(M0)
@@ -773,9 +777,11 @@ AUC <- function() {
 					ind0 <- which(rep(y, w) == -1)
 					n1 <- length(ind1)
 					n0 <- length(ind0)
-					if (length(f) == 1) {
-						f <- rep(f, n1 + n0)
-					} else f <- f/sd(f)
+					if (length(f) == 1)
+					    f <- rep(f, n1 + n0)
+					# skip this in the first iteration
+					if (length(unique(f)) != 1) 
+					    f <- f/sd(f)
 					M0 <- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) -
 								f[ind0])
 				}
@@ -793,8 +799,6 @@ AUC <- function() {
 						warning("response is constant - AUC is 1.")
 						return(0)
 					}
-					if (length(f) == 1)
-						f <- rep(f, n1 + n0)
 					M0 <- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) -
 								f[ind0])
 				}
@@ -1080,11 +1084,13 @@ Cindex <- function (sigma = 0.1, ipcw = 1) {
     
     survtime <- y[,1]
     event <- y[,2]
-    if (length(w) == 1) w <- rep(1, length(event))
-    if (length(f) == 1) {
-      f <- rep(f, length(survtime))}
-    
     n <- length(survtime)
+    
+    if (length(w) == 1) 
+        w <- rep(1, n)
+    if (length(f) == 1)
+        f <- rep(f, n)
+    
     etaj <- matrix(f, nrow = n, ncol = n, byrow = TRUE)
     etak <- matrix(f, nrow = n, ncol = n)
     etaMat <- etak - etaj
@@ -1100,10 +1106,10 @@ Cindex <- function (sigma = 0.1, ipcw = 1) {
   risk = function(y, f, w = 1) { ## empirical risk
     survtime <- y[,1]
     event <- y[,2]
-    if (length(f) == 1) {
-      f <- rep(f, length(y))
-    }
     n <- length(survtime)
+    
+    if (length(f) == 1)
+      f <- rep(f, n)
     
     etaj <- matrix(f, nrow = n, ncol = n, byrow = TRUE)
     etak <- matrix(f, nrow = n, ncol = n)
