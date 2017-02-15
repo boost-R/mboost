@@ -414,8 +414,15 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
 
     cll <- match.call()
     cll[[1]] <- as.name("bols")
-
+    
     mf <- list(...)
+    
+    ## check that center = TRUE/FALSE is not specified in ...
+    if ("center" %in% names(mf) && 
+        (length(mf[["center"]]) == 1 && is.logical(mf[["center"]])))
+        stop(sQuote("bols(, center = TRUE/FALSE)"), " is deprecated. Please use ",
+             sQuote("bols(, intercept = TRUE/FALSE)"), " instead.")
+    
     if (length(mf) == 1 && ((isMATRIX(mf[[1]]) || is.data.frame(mf[[1]])) &&
                             ncol(mf[[1]]) > 1 )) {
         mf <- mf[[1]]
