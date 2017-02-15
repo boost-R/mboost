@@ -1721,7 +1721,7 @@ ngradient = function(y, f, w = NULL)  tau * ((y - f) >= 0) +
 Of further interest is also the starting value for the algorithm, which is
 specified via the \R{offset} argument. For quantile regression it was
 demonstrated that the offset may be set to the median of the response
-\citep{Fens2011}. With this information, we can already specify our new family
+\citep{Fenske:2011}. With this information, we can already specify our new family
 for quantile regression:
 <<OurQR>>=
 OurQuantReg <- function(tau = 0.5){    ## function to include dependency on tau
@@ -1798,7 +1798,7 @@ the slight heteroscedasticity found in this data example: For smaller values of
 \R{hipcirc} the range between the quantiles is smaller than for higher values.
 Note that the outer quantile-lines can be interpreted as prediction intervals for new
 observations \citep{Meins2006, MayrPI}. For more on quantile regression in the context of
-boosting we refer to \cite{Fens2011}.
+boosting we refer to \cite{Fenske:2011}.
 
 \end{document}
 
