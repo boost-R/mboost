@@ -44,3 +44,23 @@ test_that("extrapolation is possible for kronecker product, kronecker product an
 })
 
 
+test_that("center = TRUE/FALSE throws an error in bols", {
+    data("bodyfat", package = "TH.data")
+    
+    expect_error(mboost(DEXfat ~ bols(waistcirc, center=TRUE), data = bodyfat), regexp = ".*deprecated.*")
+    expect_error(mboost(DEXfat ~ bols(waistcirc, center=FALSE), data = bodyfat), regexp = ".*deprecated.*")
+    expect_error(mboost(DEXfat ~ bols(waistcirc, center=T), data = bodyfat), regexp = ".*deprecated.*")
+    expect_error(mboost(DEXfat ~ bols(waistcirc, center=F), data = bodyfat), regexp = ".*deprecated.*")
+    
+    ## not throw errors if variable is called center
+    bodyfat$center <- rnorm(nrow(bodyfat))
+    mod <- mboost(DEXfat ~ bols(waistcirc, center), data = bodyfat)
+    expect_length(coef(mod)[[1]], 3)
+    expect_equal(names(coef(mod)[[1]])[3], "center")
+    
+    ## not throw errors if logical variable is called center
+    bodyfat$center <- sample(c(TRUE, FALSE), nrow(bodyfat), replace = TRUE)
+    mod <- mboost(DEXfat ~ bols(waistcirc, center), data = bodyfat)
+    expect_length(coef(mboost(DEXfat ~ bols(waistcirc, center), data = bodyfat))[[1]], 3)
+    expect_equal(names(coef(mod)[[1]])[3], "centerTRUE")
+})
