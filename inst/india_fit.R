@@ -16,27 +16,27 @@ QuantileReg <- function(q = 0.25) {
    )
  }
 
-fm <- stunting ~ bbs(cage, center=FALSE, df=5, knots = 20) +
-  bbs(breastfeeding, center=FALSE, df=5, knots=20) +
-  bols(csex, center=FALSE) +
-  bols(ctwin, center=FALSE) +
-  bols(cbirthorder, center=FALSE) +
-  bbs(mbmi, center=FALSE, df=5, knots=20) +
-  bbs(mage, center=FALSE, df=5, knots=20) +
-  bbs(medu, center=FALSE, df=5, knots=20) +
-  bbs(edupartner, center=FALSE, df=5, knots=20) +
-  bols(munemployed, center=FALSE) +
-  bols(mreligion, center=FALSE) +
-  bols(mresidence, center=FALSE) +
-  bols(deadchildren, center=FALSE) +
-  bols(wealth, center=FALSE) +
-  bols(electricity, center=FALSE) +
-  bols(radio, center=FALSE) +
-  bols(television, center=FALSE) +
-  bols(refrigerator, center=FALSE) +
-  bols(bicycle, center=FALSE) +
-  bols(motorcycle, center=FALSE) +
-  bols(car, center=FALSE)
+fm <- stunting ~ bbs(cage, df=5, knots = 20) +
+  bbs(breastfeeding, df=5, knots=20) +
+  bols(csex) +
+  bols(ctwin) +
+  bols(cbirthorder) +
+  bbs(mbmi, df=5, knots=20) +
+  bbs(mage, df=5, knots=20) +
+  bbs(medu, df=5, knots=20) +
+  bbs(edupartner, df=5, knots=20) +
+  bols(munemployed) +
+  bols(mreligion) +
+  bols(mresidence) +
+  bols(deadchildren) +
+  bols(wealth) +
+  bols(electricity) +
+  bols(radio) +
+  bols(television) +
+  bols(refrigerator) +
+  bols(bicycle) +
+  bols(motorcycle) +
+  bols(car)
 
 inb1 <- gamboost(fm,
                     data = india,
