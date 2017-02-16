@@ -39,10 +39,10 @@ fm <- stunting ~ bbs(cage, df=5, knots = 20) +
   bols(car)
 
 inb1 <- gamboost(fm,
-                    data = india,
-                    control = boost_control(mstop = 200000, nu=0.25, trace = TRUE, save_ensembless=FALSE, risk = "oob"),
-                    weights = india$cv,
-                    family = QuantileReg(0.05))
+                 data = india,
+                 control = boost_control(mstop = 200000, nu=0.25, trace = TRUE, risk = "oob"),
+                 weights = india$cv,
+                 family = QuantileReg(0.05))
 mstop1 <- which.min(inb1$risk)
 its1 <- round(seq(from=1000, to=mstop1, length=20))
 fit1 <- extractfit(inb1, fm, its1)

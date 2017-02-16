@@ -10,7 +10,7 @@ load("india.Rdata")
 
 quantiles <- c(0.05, 0.1, 0.5)
 
-inds <- paste("w", 1:length(inds), sep="")
+inds <- paste("w", 1:50, sep="")
 
 fmadd <- stunting ~ bols(intercept, intercept=FALSE) + 
   bols(cage) + bbs(cage, center=TRUE, df=1, knots = 20) +
@@ -19,21 +19,21 @@ fmadd <- stunting ~ bols(intercept, intercept=FALSE) +
   bols(mage) + bbs(mage, center=TRUE, df=1, knots=20) +
   bols(medu) + bbs(medu, center=TRUE, df=1, knots=20) +
   bols(edupartner) + bbs(edupartner, center=TRUE, df=1, knots=20) +
-  bols(csex, center=FALSE) +
-  bols(ctwin, center=FALSE) +
-  bols(cbirthorder, center=FALSE) +
-  bols(munemployed, center=FALSE) +
-  bols(mreligion, center=FALSE) +
-  bols(mresidence, center=FALSE) +
-  bols(deadchildren, center=FALSE) +
-  bols(wealth, center=FALSE) +
-  bols(electricity, center=FALSE) +
-  bols(radio, center=FALSE) +
-  bols(television, center=FALSE) +
-  bols(refrigerator, center=FALSE) +
-  bols(bicycle, center=FALSE) +
-  bols(motorcycle, center=FALSE) +
-  bols(car, center=FALSE)
+  bols(csex) +
+  bols(ctwin) +
+  bols(cbirthorder) +
+  bols(munemployed) +
+  bols(mreligion) +
+  bols(mresidence) +
+  bols(deadchildren) +
+  bols(wealth) +
+  bols(electricity) +
+  bols(radio) +
+  bols(television) +
+  bols(refrigerator) +
+  bols(bicycle) +
+  bols(motorcycle) +
+  bols(car)
 
 for(i in 1:50)
   {
