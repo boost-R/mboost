@@ -3,40 +3,40 @@ library("mboost")
 source("india_helpfunc.R")
 
 QuantileReg <- function(q = 0.25) {
-   Family(
-   ngradient = function(y, f, w = 1) q*((y-f)>0) - (1-q)*((y-f)<0) + 0*((y-f)==0) ,
-   loss = function(y, f) q*(y-f)*((y-f)>=0) - (1-q)*(y-f)*((y-f)<0) ,
-   offset = function(y, w = rep(1, length(y))) quantile(y[w==1], q),
-   check_y = function(y) {
-     if (!is.numeric(y) || !is.null(dim(y)))
-         stop("response is not a numeric vector but ", sQuote("family = QuantileReg()"))
-     TRUE
-     },
-   name = "Quantile Regression",
-   )
- }
+    Family(
+        ngradient = function(y, f, w = 1) q*((y-f)>0) - (1-q)*((y-f)<0) + 0*((y-f)==0) ,
+        loss = function(y, f) q*(y-f)*((y-f)>=0) - (1-q)*(y-f)*((y-f)<0) ,
+        offset = function(y, w = rep(1, length(y))) quantile(y[w==1], q),
+        check_y = function(y) {
+            if (!is.numeric(y) || !is.null(dim(y)))
+                stop("response is not a numeric vector but ", sQuote("family = QuantileReg()"))
+            TRUE
+        },
+        name = "Quantile Regression",
+    )
+}
 
 fm <- stunting ~ bbs(cage, df=5, knots = 20) +
-  bbs(breastfeeding, df=5, knots=20) +
-  bols(csex) +
-  bols(ctwin) +
-  bols(cbirthorder) +
-  bbs(mbmi, df=5, knots=20) +
-  bbs(mage, df=5, knots=20) +
-  bbs(medu, df=5, knots=20) +
-  bbs(edupartner, df=5, knots=20) +
-  bols(munemployed) +
-  bols(mreligion) +
-  bols(mresidence) +
-  bols(deadchildren) +
-  bols(wealth) +
-  bols(electricity) +
-  bols(radio) +
-  bols(television) +
-  bols(refrigerator) +
-  bols(bicycle) +
-  bols(motorcycle) +
-  bols(car)
+    bbs(breastfeeding, df=5, knots=20) +
+    bols(csex) +
+    bols(ctwin) +
+    bols(cbirthorder) +
+    bbs(mbmi, df=5, knots=20) +
+    bbs(mage, df=5, knots=20) +
+    bbs(medu, df=5, knots=20) +
+    bbs(edupartner, df=5, knots=20) +
+    bols(munemployed) +
+    bols(mreligion) +
+    bols(mresidence) +
+    bols(deadchildren) +
+    bols(wealth) +
+    bols(electricity) +
+    bols(radio) +
+    bols(television) +
+    bols(refrigerator) +
+    bols(bicycle) +
+    bols(motorcycle) +
+    bols(car)
 
 inb1 <- gamboost(fm,
                  data = india,
@@ -48,19 +48,19 @@ its1 <- round(seq(from=1000, to=mstop1, length=20))
 fit1 <- extractfit(inb1, fm, its1)
 
 inb2 <- gamboost(fm,
-                    data = india,
-                    control = boost_control(mstop = 200000, nu=0.25, trace = TRUE, save_ensembless=FALSE, risk = "oob"),
-                    weights = india$cv,
-                    family = QuantileReg(0.1))
+                 data = india,
+                 control = boost_control(mstop = 200000, nu=0.25, trace = TRUE, save_ensembless=FALSE, risk = "oob"),
+                 weights = india$cv,
+                 family = QuantileReg(0.1))
 mstop2 <- which.min(inb2$risk)
 its2 <- round(seq(from=1000, to=mstop2, length=20))
 fit2 <- extractfit(inb2, fm, its2)
 
 inb3 <- gamboost(fm,
-                    data = india,
-                    control = boost_control(mstop = 200000, nu=0.25, trace = TRUE, save_ensembless=FALSE, risk = "oob"),
-                    weights = india$cv,
-                    family = QuantileReg(0.5))
+                 data = india,
+                 control = boost_control(mstop = 200000, nu=0.25, trace = TRUE, save_ensembless=FALSE, risk = "oob"),
+                 weights = india$cv,
+                 family = QuantileReg(0.5))
 mstop3 <- which.min(inb3$risk)
 its3 <- round(seq(from=1000, to=mstop3, length=20))
 fit3 <- extractfit(inb3, fm, its3)

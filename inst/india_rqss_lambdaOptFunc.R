@@ -17,21 +17,21 @@
 #
 
 lambdaOpt <- function(lambdas, fitdata, evaldata, tau){
-
-          # Model formula
-          form <- buildFormula(lambdas=lambdas)
-
-          # Generate rqss object
-          rqssLambda <- rqss(form, data=fitdata, tau=tau)
-
-          # Prediction with test data  
-          predLambda <- predict(rqssLambda, newdata=evaldata)
-
-          # Calculate empirical risk
-          CVrisk <-loss(evaldata$stunting, predLambda, tau=tau)
-
-          return(CVrisk)
-
+    
+    # Model formula
+    form <- buildFormula(lambdas=lambdas)
+    
+    # Generate rqss object
+    rqssLambda <- rqss(form, data=fitdata, tau=tau)
+    
+    # Prediction with test data  
+    predLambda <- predict(rqssLambda, newdata=evaldata)
+    
+    # Calculate empirical risk
+    CVrisk <-loss(evaldata$stunting, predLambda, tau=tau)
+    
+    return(CVrisk)
+    
 }
 
 #==============================================================================
@@ -43,17 +43,17 @@ rho <- function(u, tau){u*(tau - (u<0))}
 # Risk
 #==============================================================================
 loss <- function(yTrue,yHat,tau){sum(rho(yTrue-yHat,tau))/length(yTrue)}
-  
+
 #======================================================================
 # Function buildFormula()
 #======================================================================
 # Aim: Building formula for function rqss()
 
 buildFormula <- function(lambdas){
-
-      return(as.formula(paste("stunting ~ qss(cage,lambda =", lambdas[1],") + qss(breastfeeding, lambda =", lambdas[2],
-      ") + qss(mbmi, lambda =", lambdas[3],") + qss(mage, lambda =", lambdas[4],") + qss(medu, lambda =", lambdas[5],
-      ") + qss(edupartner, lambda =", lambdas[6],") + csex + ctwin + cbirthorder + munemployed + mreligion + mresidence
+    
+    return(as.formula(paste("stunting ~ qss(cage,lambda =", lambdas[1],") + qss(breastfeeding, lambda =", lambdas[2],
+                            ") + qss(mbmi, lambda =", lambdas[3],") + qss(mage, lambda =", lambdas[4],") + qss(medu, lambda =", lambdas[5],
+                            ") + qss(edupartner, lambda =", lambdas[6],") + csex + ctwin + cbirthorder + munemployed + mreligion + mresidence
       + deadchildren + wealth + electricity + radio + television + refrigerator + bicycle + motorcycle + car", sep="")))
 }
 
@@ -76,38 +76,38 @@ buildFormula <- function(lambdas){
 #
 
 convexHull <- function(dataOrg, dataRef){
-
-        conNames <- c("cage", "breastfeeding", "mbmi", "mage", "medu", "edupartner")
-        indMat <- matrix(0, nrow=nrow(dataOrg), ncol=6)
-
-        for(i in 1:length(conNames)){
-              indMat[,i] <- as.numeric(dataOrg[,conNames[i]] <= min(dataRef[,conNames[i]]) | dataOrg[,conNames[i]] >= max(dataRef[,conNames[i]]))
-        }
-        indVec <- apply(indMat, MARGIN=1, sum)
-
-        # Observations with indVec>0 are removed from the dataOrg
-        evaldata <- dataOrg[indVec==0,]
-
-        return(evaldata=evaldata)
-
+    
+    conNames <- c("cage", "breastfeeding", "mbmi", "mage", "medu", "edupartner")
+    indMat <- matrix(0, nrow=nrow(dataOrg), ncol=6)
+    
+    for(i in 1:length(conNames)){
+        indMat[,i] <- as.numeric(dataOrg[,conNames[i]] <= min(dataRef[,conNames[i]]) | dataOrg[,conNames[i]] >= max(dataRef[,conNames[i]]))
+    }
+    indVec <- apply(indMat, MARGIN=1, sum)
+    
+    # Observations with indVec>0 are removed from the dataOrg
+    evaldata <- dataOrg[indVec==0,]
+    
+    return(evaldata=evaldata)
+    
 }
 
 
 convexHullInd <- function(dataOrg, dataRef){
-
-        conNames <- c("cage", "breastfeeding", "mbmi", "mage", "medu", "edupartner")
-        indMat <- matrix(0, nrow=nrow(dataOrg), ncol=6)
-
-        for(i in 1:length(conNames)){
-              indMat[,i] <- as.numeric(dataOrg[,conNames[i]] <= min(dataRef[,conNames[i]]) | dataOrg[,conNames[i]] >= max(dataRef[,conNames[i]]))
-        }
-        indVec <- apply(indMat, MARGIN=1, sum)
-
-        # Observations with indVec>0 are removed from the dataOrg
-        #evaldata <- dataOrg[indVec==0,]
-
-        return(indVec=indVec)
-
+    
+    conNames <- c("cage", "breastfeeding", "mbmi", "mage", "medu", "edupartner")
+    indMat <- matrix(0, nrow=nrow(dataOrg), ncol=6)
+    
+    for(i in 1:length(conNames)){
+        indMat[,i] <- as.numeric(dataOrg[,conNames[i]] <= min(dataRef[,conNames[i]]) | dataOrg[,conNames[i]] >= max(dataRef[,conNames[i]]))
+    }
+    indVec <- apply(indMat, MARGIN=1, sum)
+    
+    # Observations with indVec>0 are removed from the dataOrg
+    #evaldata <- dataOrg[indVec==0,]
+    
+    return(indVec=indVec)
+    
 }
 
 

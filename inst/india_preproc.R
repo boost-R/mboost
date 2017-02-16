@@ -206,7 +206,7 @@ india <- india[complete.cases(india),]
 india$intercept <- 1
 
 center <- function(x)
-  return(x-mean(x))
+    return(x-mean(x))
 
 india$cagec <- center(india$cage)
 india$magec <- center(india$mage)
