@@ -10,20 +10,13 @@ install:
   - ps: Bootstrap
 
 # Adapt as necessary starting from here
-
-# environment:
-#   matrix:
-#   - TEST_DIR: pkg\mboostPatch
-#   - TEST_DIR: pkg\mboostDevel
-
 before_build:
-#   - cp travis-tool.sh.cmd %TEST_DIR%/travis-tool.sh.cmd
-#   - cp ../travis-tool.sh pkg/travis-tool.sh
-#   - cd %TEST_DIR%
   - bash -c "echo '^travis-tool\.sh\.cmd$' >> .Rbuildignore"
 
 build_script:
   - travis-tool.sh install_deps
+  - travis-tool.sh install_github hofnerb/stabs
+  - travis-tool.sh install_github boost-R/gamboostLSS
 
 test_script:
   - travis-tool.sh run_tests
@@ -32,9 +25,6 @@ on_failure:
   - travis-tool.sh dump_logs
   ## push complete mboost.Rcheck folder as artifact
   - appveyor PushArtifact mboost.Rcheck
-
-# on_finish:
-#   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 artifacts:
   - path: '*.Rcheck\**\*.log'
