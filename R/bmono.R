@@ -46,12 +46,7 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
     stopifnot(is.data.frame(mf))
     if (!(all(sapply(mf, is.numeric))) && !all(sapply(mf, is.ordered))) {
         stop("cannot compute ", sQuote("bmono"),
-             ": variables must be numeric or ordered")
-    }
-    ### use bols when appropriate
-    if (!is.null(df)) {
-        if (df <= (ncol(mf) + 1))
-            return(bols(as.data.frame(...), by = by, index = index))
+             ": all variables must be numeric or ordered")
     }
     vary <- ""
     if (!is.null(by)){
