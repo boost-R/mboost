@@ -3,6 +3,9 @@ www
 www_src
 inst/NEWS.html
 inst/NEWS.pdf
+inst/IAKR51FL.DTA
+inst/india.Rdata
+inst/india.raw
 checks.R
 buildCRAN
 copy_Rout_to_Routsave.R
