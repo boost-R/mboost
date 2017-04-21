@@ -51,9 +51,20 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     }
 
     ### set up the fitting functions
-    bl <- lapply(blg, dpp, weights = weights)
+    if (trace) {
+        cat("\nSet up base-learners ")
+        bl <- lapply(blg, function(x) {
+            cat(".")
+            dpp(x, weights = weights)
+        })
+    } else { 
+        bl <- lapply(blg, dpp, weights = weights)
+    }
     blfit <- lapply(bl, function(x) x$fit)
     fit1 <- blfit[[1]]
+
+    if (trace) 
+        cat("\n\nFit model\n")
     
     if (identical("Negative Multinomial Likelihood", family@name)
         && ! all(vapply(bl, inherits, FALSE, what = "bl_kronecker")))
