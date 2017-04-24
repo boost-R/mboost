@@ -1,7 +1,7 @@
 Package: mboost
 Title: Model-Based Boosting
 Version: 2.8-0
-Date: 2016-11-23
+Date: 2017-04-24
 Authors@R: c(person("Torsten", "Hothorn", role = "aut"),
              person("Peter", "Buehlmann", role = "aut"),
              person("Thomas", "Kneib", role = "aut"),
@@ -10,7 +10,7 @@ Authors@R: c(person("Torsten", "Hothorn", role = "aut"),
 	            email = "benjamin.hofner@pei.de"),
              person("Fabian", "Sobotka", role = "ctb"),
              person("Fabian", "Scheipl", role = "ctb"),
-	     person("Andreas", "Mayr", role = "ctb"))
+	           person("Andreas", "Mayr", role = "ctb"))
 Description: Functional gradient descent algorithm
   (boosting) for optimizing general risk functions utilizing
   component-wise (penalised) least squares estimates or regression
