@@ -24,6 +24,8 @@
         S. Friedrichs, J. Manitz, P. Burger, C.I. Amos, A. Risch, J.C. Chang-Claude, 
         H.E. Wichmann, T. Kneib, H. Bickeboeller, and B. Hofner (2017), 
         Pathway-Based Kernel Boosting for the Analysis of Genome-Wide Association Studies.
+        Submitted to \emph{Computational and Mathematical Methods in Medicine}.
+        
       \item Removed check if \code{df2lambda} is stable. Hence,  
         \code{options(mboost_check_df2lambda)} (introduced in mboost 2.5-0) 
         is no longer used. 

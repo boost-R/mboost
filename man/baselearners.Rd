@@ -503,6 +503,7 @@ bl1 \%O\% bl2
   S. Friedrichs, J. Manitz, P. Burger, C.I. Amos, A. Risch, J.C. Chang-Claude, 
   H.E. Wichmann, T. Kneib, H. Bickeboeller, and B. Hofner (2017), 
   Pathway-Based Kernel Boosting for the Analysis of Genome-Wide Association Studies.
+  Submitted to \emph{Computational and Mathematical Methods in Medicine}.
 
   Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011a),
   A framework for unbiased model selection based on boosting.
