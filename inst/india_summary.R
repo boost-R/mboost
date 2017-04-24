@@ -2,7 +2,7 @@
 library("mboost")
 load("india.Rdata")
 
-inds <- paste("w", 1:44, sep="")
+inds <- paste("w", 1:50, sep="")
 quantiles <- c(0.05, 0.1, 0.5)
 pred1 <- pred2 <- pred3 <- matrix(0, ncol=4, nrow=length(inds))
 colnames(pred1) <- colnames(pred2) <- colnames(pred3) <- c("add","vcm","stump","tree")

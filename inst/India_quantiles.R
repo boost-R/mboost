@@ -1,8 +1,20 @@
-
-# Note: Requires Data File IAKR51FL.DTA 
-# (Children`s recode for the 2005/2006 India DHS in Stata format)
-# Freely available from www.measuredhs.com for research purposes
-# (-> Data -> Available Datasets -> India)
+###########################################################
+##
+## This code replicates the analysis presented in 
+## 
+##   N. Fenske, T. Kneib, and T. Hothorn (2011), 
+##   Identifying risk factors for severe childhood malnutrition by 
+##   boosting additive quantile regression.
+##   Journal of the American Statistical Association, 106:494-510.
+## 
+###########################################################
+## 
+## Note: Requires Data File IAKR51FL.DTA 
+## (Children`s recode for the 2005/2006 India DHS in Stata format)
+## Freely available from www.measuredhs.com for research purposes
+## (-> Data -> Available Datasets -> India)
+##
+###########################################################
 
 # Preprocessing of the raw data
 source("india_preproc.R", echo=TRUE)
