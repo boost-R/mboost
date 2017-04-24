@@ -31,6 +31,8 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
         dmat <- diag(ncol(XtX))
     }
     A <- XtX + dmat * options("mboost_eps")[[1]]
+    ## make sure that A is also numerically positiv semi-definite
+    A <- make_psd(as.matrix(A))
     ## make sure that A is also numerically symmetric
     if (is(A, "Matrix"))
         A <- forceSymmetric(A)

@@ -1,6 +1,6 @@
 Package: mboost
 Title: Model-Based Boosting
-Version: 2.7-0
+Version: 2.8-0
 Date: 2016-11-23
 Authors@R: c(person("Torsten", "Hothorn", role = "aut"),
              person("Peter", "Buehlmann", role = "aut"),
@@ -21,7 +21,7 @@ Imports: Matrix, survival, splines, lattice, nnls, quadprog, utils,
 	graphics, grDevices, party (>= 1.1-0)
 Suggests: TH.data, MASS, fields, BayesX, gbm, mlbench,
     RColorBrewer, rpart (>= 4.0-3), randomForest, nnet,
-	testthat (>= 0.10.0)
+	testthat (>= 0.10.0), kangar00
 LazyData: yes
 License: GPL-2
 BugReports: https://github.com/boost-R/mboost/issues

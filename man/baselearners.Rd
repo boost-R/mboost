@@ -6,6 +6,7 @@
 \alias{bbs}
 \alias{bspatial}
 \alias{brad}
+\alias{bkernel}
 \alias{brandom}
 \alias{btree}
 \alias{bmono}
@@ -39,6 +40,10 @@ bspatial(..., df = 6)
 brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
      covFun = fields::stationary.cov,
      args = list(Covariance="Matern", smoothness = 1.5, theta=NULL))
+     
+## (genetic) pathway-based kernel base-learner
+bkernel(..., df = 4, lambda = NULL, kernel = c("lin", "sia", "net"),
+        pathway = NULL, knots = NULL, args = list())
 
 ## random effects base-learner
 brandom(..., by = NULL, index = NULL, df = 4, lambda = NULL,
@@ -155,6 +160,10 @@ bl1 \%O\% bl2
   \item{args}{ a named list of arguments to be passed to
                \code{cov.function}. Thus strongly dependent on the
                specified \code{cov.function}. }
+  \item{kernel}{one of \code{"lin"} (linear kernel), \code{"sia"} (size adjusted kernel), 
+                or \code{"net"} (network kernel). For details see 
+                \code{\link[kangar00]{calc_kernel}}}
+  \item{pathway}{name of pathway; Pathway needs to be contained in the GWAS data set.}
   \item{contrasts.arg}{ a named list of characters suitable for input to
     the \code{\link{contrasts}} replacement function, or the contrast
     matrix itself, see \code{\link{model.matrix}}, or a single character
