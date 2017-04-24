@@ -499,6 +499,10 @@ bl1 \%O\% bl2
   D. Goldfarb and A. Idnani (1983),  A numerically stable dual
   method for solving strictly convex quadratic programs.
   \emph{Mathematical Programming}, \bold{27}, 1--33.
+  
+  S. Friedrichs, J. Manitz, P. Burger, C.I. Amos, A. Risch, J.C. Chang-Claude, 
+  H.E. Wichmann, T. Kneib, H. Bickeboeller, and B. Hofner (2017), 
+  Pathway-Based Kernel Boosting for the Analysis of Genome-Wide Association Studies.
 
   Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011a),
   A framework for unbiased model selection based on boosting.
