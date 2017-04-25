@@ -2,16 +2,16 @@ bkernel <- function(..., df = 4, lambda = NULL,
                     kernel = c("lin", "sia", "net"),
                     pathway = NULL, knots = NULL, args = list()) {
 
+    if (!requireNamespace("kangar00", quietly = TRUE))
+        stop("Please install package 'kangar00' for using bkernel base-learners.")
+
     cll <- match.call()
     cll[[1]] <- as.name("bkernel")
-    
-    if (!requireNamespace("kangar00"))
-        stop("kangar00 is required for bkernel")
 
     mf <- list(...)
     if (length(mf) > 1 || !inherits(mf[[1]], "GWASdata"))
         stop(sQuote("..."), " must be a single object of class ",
-             sQuote("GWASdata"))
+             sQuote("GWASdata"), " as defined in package 'kangar00'")
     mf <- mf[[1]]
 
     kernel <- match.arg(kernel)
@@ -51,8 +51,7 @@ bkernel <- function(..., df = 4, lambda = NULL,
 
 ## <FIXME> Slot @anno should be an hyper argument
 
-
-### model.matrix for kriging base-learners
+### model.matrix for kernel base-learners
 X_kernel <- function(mf, vary, args) {
 
     if (length(args$args) > 0)
@@ -99,7 +98,6 @@ X_kernel <- function(mf, vary, args) {
 
     X <- X %*% PEN_sqrt_INV
     K <- diag(ncol(X))
-    cat(".")
     return(list(X = X, K = K))
 }
 
