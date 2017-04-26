@@ -510,14 +510,13 @@ bl1 \%O\% bl2
   \emph{Journal of Computational and Graphical Statistics}, \bold{20}, 956--971.
 
   Benjamin Hofner, Joerg Mueller, and Torsten Hothorn (2011b),
-  Monotonicity-Constrained Species Distribution Models,
+  Monotonicity-Constrained Species Distribution Models.
   \emph{Ecology}, \bold{92}, 1895--1901.
 
-  Benjamin Hofner, Thomas Kneib and Torsten Hothorn (2014), A Unified
-  Framework of Constrained Regression. \emph{Statistics & Computing}.
-  Online first. DOI:10.1007/s11222-014-9520-y.\cr
-  Preliminary version: \url{http://arxiv.org/abs/1403.7118}
-
+  Benjamin Hofner, Thomas Kneib and Torsten Hothorn (2014), 
+  A Unified Framework of Constrained Regression. 
+  \emph{Statistics & Computing}, \bold{26}, 1--14.
+  
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable
   selection and model choice in geoadditive regression models,
   \emph{Biometrics}, \bold{65}(2), 626--634.

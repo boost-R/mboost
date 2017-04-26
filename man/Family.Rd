@@ -262,7 +262,10 @@ distribution approximation used in Ma and Huang (2005).
     disease classification and biomarker selection with microarray
     data. \emph{Bioinformatics}, \bold{21}(24), 4356--4362.
     
-    Andreas Mayr and Matthias Schmid (2014). Boosting the concordance index for          survival data -- a unified framework to derive and evaluate biomarker combination.     \emph{PloS ONE}, \bold{9}(1):84483.
+    Andreas Mayr and Matthias Schmid (2014). 
+    Boosting the concordance index for survival data -- a unified 
+    framework to derive and evaluate biomarker combination.     
+    \emph{PloS ONE}, \bold{9}(1):84483.
 
     Whitney K. Newey and James L. Powell (1987),
     Asymmetric least squares estimation and testing.
@@ -282,7 +285,10 @@ distribution approximation used in Ma and Huang (2005).
     condition. \emph{Environmental and Ecological Statistics},
     \bold{18}(4), 709--733.
 
-    Uno H, Cai T, Pencina MJ, D Agostino RB and Wei LJ (2011). On the C-statistics       for evaluating overall adequacy of risk prediction procedures with censored          survival data. \emph{Stat Med}, \bold{30}(10), 1105--17.
+    Uno H, Cai T, Pencina MJ, D Agostino RB and Wei LJ (2011). 
+    On the C-statistics for evaluating overall adequacy of risk prediction 
+    procedures with censored survival data. 
+    \emph{Statistics in Medicine}, \bold{30}(10), 1105--17.
 
     Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
     (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
