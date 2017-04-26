@@ -67,7 +67,7 @@
 \details{
 
   For details see \code{\link[stabs]{stabsel}} in package \pkg{stabs}
-  and Hofner et al. (2014).
+  and Hofner et al. (2015).
 
 }
 \value{

@@ -151,8 +151,8 @@ bl1 \%O\% bl2
                  The latter option is the default (and currently only option) for \code{bbs}
                  with multiple covariates or \code{bmrf}.}
   \item{cyclic}{ if \code{cyclic = TRUE} the fitted values coincide at the boundaries
-                 (useful for cyclic covariates such as day time etc.). For details see
-		 Hofner et al. (2014).}
+                 (useful for cyclic covariates such as day time etc.). 
+                 For details see Hofner et al. (2016).}
   \item{covFun}{ the covariance function (i.e. radial basis)
                  needed to compute the basis functions. Per
                  default \code{\link[fields]{stationary.cov}} function
@@ -196,7 +196,7 @@ bl1 \%O\% bl2
     \code{type = "iterative"}, the iterative procedure described in
     Hofner et al. (2011b) is used. The quadratic programming approach is
     usually much faster than the iterative approach. For details see
-    Hofner et al. (2014).
+    Hofner et al. (2016).
   }
   \item{lambda2}{ penalty parameter for the (monotonicity) constraint. }
   \item{niter}{ maximum number of iterations used to compute constraint
@@ -276,7 +276,7 @@ bl1 \%O\% bl2
   \code{boundary.knots = c(0, 2 * pi)} for angles as in a sine function
   or \code{boundary.knots = c(0, 24)} for hours during the day). For
   details on cylcic splines in the context of boosting see Hofner et
-  al. (2014). 
+  al. (2016). 
 
   \code{bspatial} implements bivariate tensor product P-splines for the
   estimation of either spatial effects or interaction surfaces. Note
@@ -404,7 +404,7 @@ bl1 \%O\% bl2
   convexity/concavity (see and Eilers, 2005). For more details in the
   boosting context and monotonic effects of ordinal factors see Hofner,
   Mueller and Hothorn (2011b). The quadratic-programming based algorithm
-  is described in Hofner et al. (2014). Alternative monotonicity
+  is described in Hofner et al. (2016). Alternative monotonicity
   constraints are implemented via T-splines in \code{bbs()} (Beliakov,
   2000). In general it is advisable to use \code{bmono} to fit monotonic splines 
   as T-splines show undesirable behaviour if the observed data deviates 
@@ -513,7 +513,7 @@ bl1 \%O\% bl2
   Monotonicity-Constrained Species Distribution Models.
   \emph{Ecology}, \bold{92}, 1895--1901.
 
-  Benjamin Hofner, Thomas Kneib and Torsten Hothorn (2014), 
+  Benjamin Hofner, Thomas Kneib and Torsten Hothorn (2016), 
   A Unified Framework of Constrained Regression. 
   \emph{Statistics & Computing}, \bold{26}, 1--14.
   
