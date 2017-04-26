@@ -76,4 +76,19 @@ citEntry(entry="Article",
              )
          )
 
+citEntry(entry="Article",
+         title = "Controlling false discoveries in high-dimensional situations: Boosting with stability selection",
+         author = personList(as.person("Benjamin Hofner"), as.person("Luigi Boccuto"), as.person("Markus Goeker")),
+         journal      = "{BMC} Bioinformatics",
+         year         = "2015",
+         volume       = "16",
+         number       = "144",
+         header = "Details of stability selection in the context of boosting are described in:",
+         textVersion = paste(
+             "Benjamin Hofner, Luigi Boccuto and Markus Goeker (2015).",
+             "Controlling false discoveries in high-dimensional situations: Boosting with stability selection.",
+             "BMC Bioinformatics, 16:144."
+             )
+         )
+         
 citFooter('\nUse ', sQuote('toBibtex(citation("mboost"))'), ' to extract BibTeX references.')

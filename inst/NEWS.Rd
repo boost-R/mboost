@@ -35,14 +35,17 @@
   \subsection{Miscellaneous}{
     \itemize{
       \item Added Andreas Mayr as contributor.
-      \item Fixed code of India example, which can be used to reproduce the data analysis presented in
+      \item Updated references and added reference to \code{citation("mboost")}.
+      \item Fixed code of India example, which can be used to reproduce the data analysis 
+        presented in
         
         N. Fenske, T. Kneib, and T. Hothorn (2011), 
-        Identifying risk factors for severe childhood malnutrition by boosting additive quantile regression.
-	      \emph{Journal of the American Statistical Association}, \bold{106}:494-510.
+        Identifying risk factors for severe childhood malnutrition by boosting 
+        additive quantile regression.
+        \emph{Journal of the American Statistical Association}, \bold{106}:494-510.
 	      
-	      (see \code{system.file("India_quantiles.R", package = "mboost")})
-	    \item Fixed package citation.
+	    (see \code{system.file("India_quantiles.R", package = "mboost")})
+	  \item Fixed package citation.
     }
   }
   \subsection{Bug-fixes}{
