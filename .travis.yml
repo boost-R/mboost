@@ -9,6 +9,7 @@
 
 language: r
 sudo: required
+dist: trusty
 
 repos:
   CRAN: https://cloud.r-project.org
