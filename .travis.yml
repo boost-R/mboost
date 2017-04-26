@@ -21,6 +21,7 @@ before_install:
   
 r_github_packages:
   - hofnerb/stabs
+  - boost-R/mboost
   - boost-R/gamboostLSS
   - jimhester/covr
   
