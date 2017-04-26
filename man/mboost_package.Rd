@@ -17,12 +17,9 @@
 \details{
 \tabular{ll}{
 Package: \tab mboost\cr
-Type: \tab Package\cr
-Version: \tab 2.7-0\cr
-Date: \tab 2016-11-23\cr
+Version: \tab 2.8-0\cr
+Date: \tab 2017-xx-yy\cr
 License: \tab GPL-2\cr
-LazyLoad: \tab yes\cr
-LazyData: \tab yes\cr
 }
 
   This package is intended for modern regression modeling and stands
@@ -63,13 +60,29 @@ LazyData: \tab yes\cr
 
 }
 
+\section{NEWS in 2.8-series}{
+
+  Series 2.8 allows to fit models with zero boosting steps (i.e., models containing 
+  only the offset). Furthermore, cross-validation can now also select a model
+  without base-learners. In a \code{\link{Binomial}} family one can now specifiy
+  links via \code{make.link}. With \code{Binomial(type = "glm")} an alternative 
+  implementation of \code{Binomial} models is now existing and defines the model
+  along the lines of the \code{glm} implementation. Additionally, it works not only with a 
+  two-level factor but also with a two-column matrix containing the number of 
+  successes and number of failures. Finally, a new base-learner \code{\link{bkernel}} for
+  kernel boosting was added. The references were updated and a lot of bugs fixed. 
+
+  \bold{For more details and other changes see}\cr\code{news(Version >= "2.8-0", package  = "mboost")}
+  
+}
+
 \section{NEWS in 2.7-series}{
 
   Series 2.7 provides a new family (\code{Cindex}), variable importance measures
   (\code{varimp}) and improved plotting facilities. The manual was updated in 
   various places, vignettes were improved and a lot of bugs were fixed. 
 
-  \bold{For more changes see}\cr\code{news(Version >= "2.7-0", package  = "mboost")}
+  \bold{For more details and other changes see}\cr\code{news(Version >= "2.7-0", package  = "mboost")}
   
 }
 
@@ -80,7 +93,7 @@ LazyData: \tab yes\cr
   project \href{https://github.com/boost-R/mboost/}{boost-R/mboost}.
   Furthermore, the package is now maintained by Benjamin Hofner.
 
-  \bold{For more changes see}\cr\code{news(Version >= "2.6-0", package  = "mboost")}
+  \bold{For more details and other changes see}\cr\code{news(Version >= "2.6-0", package  = "mboost")}
   
 }
 
@@ -94,7 +107,7 @@ LazyData: \tab yes\cr
   while linear extrapolation is used for prediction). Further perfomance
   improvements and a lot of bug fixes have been added.
 
-  \bold{For more changes see}\cr\code{news(Version >= "2.5-0", package  = "mboost")}
+  \bold{For more details and other changes see}\cr\code{news(Version >= "2.5-0", package  = "mboost")}
 }
 
 \section{NEWS in 2.4-series}{
@@ -106,7 +119,7 @@ LazyData: \tab yes\cr
   selection with other fitting functions. A generic function for
   \code{"mboost"} models is implemented in \pkg{mboost}.
 
-  \bold{For more changes see}\cr\code{news(Version >= "2.4-0", package  = "mboost")}
+  \bold{For more details and other changes see}\cr\code{news(Version >= "2.4-0", package  = "mboost")}
 }
 
 \section{NEWS in 2.3-series}{
@@ -130,7 +143,7 @@ LazyData: \tab yes\cr
      (based on out-of-bag data) during fitting to \code{boost_control}.
   }
 
-  \bold{For more changes see}\cr\code{news(Version >= "2.3-0", package  = "mboost")}
+  \bold{For more details and other changes see}\cr\code{news(Version >= "2.3-0", package  = "mboost")}
 }
 
 \section{NEWS in 2.2-series}{
@@ -161,7 +174,7 @@ LazyData: \tab yes\cr
     boundaries (per default).
   }
 
-  \bold{For more changes see}\cr\code{news(Version >= "2.2-0" & Version < "2.3-0", package  = "mboost")}
+  \bold{For more details and other changes see}\cr\code{news(Version >= "2.2-0" & Version < "2.3-0", package  = "mboost")}
 }
 \section{NEWS in 2.1-series}{
 
@@ -175,7 +188,7 @@ LazyData: \tab yes\cr
   Starting from this version, we now also automatically center the
   variables in \code{\link{glmboost}} (argument \code{center = TRUE}).
 
-  \bold{For more changes see}\cr\code{news(Version >= "2.1-0" & Version < "2.2-0", package  = "mboost")}
+  \bold{For more details and other changes see}\cr\code{news(Version >= "2.1-0" & Version < "2.2-0", package  = "mboost")}
 }
 \section{NEWS in 2.0-series}{
 
@@ -205,13 +218,12 @@ LazyData: \tab yes\cr
   The most important advancement is a generic implementation
   of the optimizer in function \code{\link{mboost_fit}}.
 
-  \bold{For more changes see}\cr\code{news(Version >= "2.0-0" & Version < "2.1-0", package  = "mboost")}
+  \bold{For more details and other changes see}\cr\code{news(Version >= "2.0-0" & Version < "2.1-0", package  = "mboost")}
 
 }
 \author{
-  Torsten Hothorn \email{Torsten.Hothorn@R-project.org},\cr
-  Peter Buehlmann, Thomas Kneib, Matthias Schmid and
-  Benjamin Hofner
+  Torsten Hothorn,Peter Buehlmann, Thomas Kneib, Matthias Schmid and
+  Benjamin Hofner <\email{Benjamin.Hofner@pei.de}>
 }
 
 \references{
@@ -244,9 +256,12 @@ LazyData: \tab yes\cr
 
 \seealso{
   The main fitting functions include:\cr
-  \code{\link{gamboost}} for boosted (generalized) additive models,
-  \code{\link{glmboost}} for boosted linear models and
-  \code{\link{blackboost}} for boosted trees.\cr
+  \itemize{
+    \item \code{\link{gamboost}} for boosted (generalized) additive models,
+    \item \code{\link{glmboost}} for boosted linear models and
+    \item \code{\link{blackboost}} for boosted trees.
+  }
+  Model tuning is done via cross-validation as implemented in \code{\link{cvrisk}}.\cr
   See there for more details and further links.
 }
 
