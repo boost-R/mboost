@@ -154,6 +154,9 @@ win-bu
     ../relative/path/to/R-devel/bin/R
 
   Run
+    source("https://bioconductor.org/biocLite.R")
+    biocLite("biomaRt")
+    biocLite("KEGGgraph")
     install.packages(c("party", "TH.data", "fields", "BayesX", "gbm",
                        "mlbench", "RColorBrewer", "randomForest", "nnet",
                        "nnls", "quadprog", "stabs", "testthat", "kangar00"))
