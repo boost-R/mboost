@@ -18,6 +18,10 @@ repos:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install latex-xcolor texlive-generic-recommended texlive-fonts-recommended texlive-fonts-extra texlive-extra-utils texlive-latex-recommended texlive-latex-extra
+
+bioc_packages:
+  - KEGGgraph
+  - biomaRt
   
 r_github_packages:
   - hofnerb/stabs
