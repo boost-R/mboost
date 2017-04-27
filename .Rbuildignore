@@ -16,3 +16,4 @@ to_do_list.txt
 .*\.yml
 ^.*\.Rproj$
 ^\.Rproj\.user$
+revdep
