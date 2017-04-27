@@ -297,7 +297,7 @@ Mmod <- sum(GBSG2w * GBSG2learn$ltime)/sum(GBSG2w)
 
 mdplot(GBSG2learn$ltime, predict(LMmod), cex = GBSG2w / 4, main = "Linear Model",
        ylim = c(-3, 3), xlim = c(5, 8))
-mdplot(GBSG2learn$ltime, predict(TRmod), cex = GBSG2w / 4, main = "Tree",
+mdplot(GBSG2learn$ltime[pos], predict(TRmod), cex = GBSG2w / 4, main = "Tree",
        ylim = c(-3, 3), xlim = c(5, 8))
 mdplot(GBSG2learn$ltime, predict(RFmod, newdata = GBSG2learn), cex = GBSG2w / 4,
        main = "Random Forest", ylim = c(-3, 3), xlim = c(5, 8))
