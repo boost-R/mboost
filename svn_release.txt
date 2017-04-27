@@ -1,4 +1,4 @@
-
+win-bu
   ############################################################
   #  Standard operating procedures for `mboost' development  #
   ############################################################
@@ -156,7 +156,7 @@
   Run
     install.packages(c("party", "TH.data", "fields", "BayesX", "gbm",
                        "mlbench", "RColorBrewer", "randomForest", "nnet",
-                       "nnls", "quadprog", "stabs", "testthat"))
+                       "nnls", "quadprog", "stabs", "testthat", "kangar00"))
 
   Quit R and run
    ../relative/path/to/R-devel/bin/R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
