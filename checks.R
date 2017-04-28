@@ -29,14 +29,15 @@ make_check <- function(srcpkg, dir = "./") {
    check_packages_in_dir(cdir, reverse = list(), Ncpus = 4)
    check_packages_in_dir(ddir, reverse = list(), Ncpus = 4)
 
-   cat("Reverse tests with CRAN package:\n")
+   cat("\n\nReverse tests with CRAN package:\n")
    summarize_check_packages_in_dir_results(cdir, all = TRUE)
    summarize_check_packages_in_dir_timings(cdir, all = TRUE)
 
-   cat("Reverse tests with NEW package:\n")
+   cat("\n\nReverse tests with NEW package:\n")
    summarize_check_packages_in_dir_results(ddir, all = TRUE)
    summarize_check_packages_in_dir_timings(ddir, all = TRUE)
 
+   cat("\n\nComparison of results:\n")
    check_packages_in_dir_changes(ddir, cdir, outputs = TRUE, sources = TRUE)
    # setwd(odir)
 }
