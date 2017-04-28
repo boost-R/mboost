@@ -161,19 +161,31 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   bs25_2 <- cv(model.weights(model), type="bootstrap")
   all(bs25 == bs25_2)
 
+\donttest{
+############################################################
+## Do not run this example automatically as it takes
+## some time (~ 5 seconds depending on the system)
+
   ### trees
   blackbox <- blackboost(DEXfat ~ ., data = bodyfat)
   cvtree <- cvrisk(blackbox, papply = lapply)
   plot(cvtree)
+  
+## End(Not run this automatically)  
+}
 
 
-  ### cvrisk in parallel modes:
+### cvrisk in parallel modes:
 
-  \dontrun{## parallel:::mclapply only runs properly on unix systems
-    cvrisk(model)
-  }
+\dontrun{automatically
 
-  \dontrun{## infrastructure needs to be set up in advance
+## parallel::mclapply() which is used here for parallelization only runs 
+## on unix systems (here we use 2 cores)
+
+    cvrisk(model, mc.cores = 2)
+
+## infrastructure needs to be set up in advance
+
     cl <- makeCluster(25) # e.g. to run cvrisk on 25 nodes via PVM
     myApply <- function(X, FUN, ...) {
       myFun <- function(...) {
@@ -185,7 +197,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
     }
     cvrisk(model, papply = myApply)
     stopCluster(cl)
-  }
+}
 
 }
 \keyword{models}

@@ -95,6 +95,11 @@ cars.gb
 plot(dist ~ speed, data = cars)
 lines(cars$speed, predict(cars.gb), col = "red")
 
+\donttest{
+############################################################
+## Do not run this example automatically as it takes
+## some time (~ 5-10 seconds depending on the system)
+
 ### set up and plot additive tree model
 if (require("party")) {
     ctrl <- ctree_control(maxdepth = 3)
@@ -107,6 +112,7 @@ if (require("party")) {
                    data = viris, family = Binomial())[500]
     layout(matrix(1:4, ncol = 2))
     plot(imod)
+}
 }
 
 }

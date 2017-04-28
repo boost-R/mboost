@@ -266,7 +266,10 @@ License: \tab GPL-2\cr
 }
 
 \examples{
-
+\donttest{
+############################################################
+## Do not run this example automatically as it takes
+## some time (~ 5-10 seconds depending on the system)
 
   data("bodyfat", package = "TH.data")
   set.seed(290875)
@@ -274,7 +277,7 @@ License: \tab GPL-2\cr
   ### model conditional expectation of DEXfat given
   model <- mboost(DEXfat ~
       bols(age) +                 ### a linear function of age
-      btree(hipcirc, waistcirc) + ### a non-linear interaction of
+      btree(hipcirc, waistcirc) + ### a smooth non-linear interaction of
                                   ### hip and waist circumference
       bbs(kneebreadth),           ### a smooth function of kneebreadth
       data = bodyfat, control = boost_control(mstop = 100))
@@ -306,6 +309,7 @@ License: \tab GPL-2\cr
   pr <- predict(model, which = "hip", newdata = nd)
   persp(x = h, y = w, z = matrix(pr, nrow = 100, ncol = 100))
 
+}
 }
 
 \keyword{ package }
