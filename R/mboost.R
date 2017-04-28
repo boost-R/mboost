@@ -271,8 +271,17 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
                             aggregate = c("sum", "cumsum", "none")) {
 
         if (mstop == 0) {
-            if (length(offset) == 1)
+            if (length(offset) == 1) {
+                if (!is.null(newdata))
+                    return(rep(offset, NCOL(newdata)))
                 return(rep(offset, NROW(y)))
+            } 
+            if (!is.null(newdata)) {
+                warning("User-specified offset is not a scalar, ",
+                        "thus it cannot be used for predictions when ",
+                        sQuote("newdata"), " is specified.")
+                return(rep(0, NCOL(newdata)))
+            }
             return(offset)
         }
         if (!is.null(xselect))
@@ -306,10 +315,9 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
                 ## was made via the `which' argument
                 ret <- matrix(rowSums(pr), ncol = 1)
                 if (length(offset) != 1 && !is.null(newdata)) {
-                    warning(sQuote("length(offset) > 1"),
-                            ": User-specified offset is not a scalar, ",
-                            "thus offset not used for prediction when ",
-                            sQuote("newdata"), " is specified")
+                    warning("User-specified offset is not a scalar, ",
+                            "thus it cannot be used for predictions when ",
+                            sQuote("newdata"), " is specified.")
                 } else {
                     ret <- ret + offset
                 }
