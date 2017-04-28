@@ -155,8 +155,8 @@
 
   Run
     source("https://bioconductor.org/biocLite.R")
-    biocLite("biomaRt")
-    biocLite("KEGGgraph")
+    biocLite("biomaRt", suppressUpdates = FALSE)
+    biocLite("KEGGgraph", suppressUpdates = FALSE)
     install.packages(c("party", "TH.data", "fields", "BayesX", "gbm",
                        "mlbench", "RColorBrewer", "randomForest", "nnet",
                        "nnls", "quadprog", "stabs", "testthat", "kangar00"))
