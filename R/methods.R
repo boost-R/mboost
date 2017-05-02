@@ -470,19 +470,23 @@ summary.mboost <- function(object, ...) {
     ret <- list(object = object, selprob = NULL)
     xs <- selected(object)
     nm <- variable.names(object)
-    selprob <- tabulate(xs, nbins = length(nm)) / length(xs)
-    names(selprob) <- names(nm)
-    selprob <- sort(selprob, decreasing = TRUE)
-    ret$selprob <- selprob[selprob > 0]
+    if (length(xs) > 0) {
+        selprob <- tabulate(xs, nbins = length(nm)) / length(xs)
+        names(selprob) <- names(nm)
+        selprob <- sort(selprob, decreasing = TRUE)
+        ret$selprob <- selprob[selprob > 0]
+    }
     class(ret) <- "summary.mboost"
     return(ret)
 }
 
 print.summary.mboost <- function(x, ...) {
     print(x$object)
-    cat("Selection frequencies:\n")
-    print(x$selprob)
-    cat("\n")
+    if (!is.null(x$selprob)) {
+        cat("Selection frequencies:\n")
+        print(x$selprob)
+        cat("\n")
+    } 
 }
 
 nuisance <- function(object)
