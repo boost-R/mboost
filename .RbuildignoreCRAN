@@ -4,6 +4,9 @@ www
 www_src
 inst/NEWS.html
 inst/NEWS.pdf
+inst/IAKR51FL.DTA
+inst/india.Rdata
+inst/india.raw
 vignettes/.*\.Rout\.save$
 checks.R
 buildCRAN
