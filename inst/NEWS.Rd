@@ -46,6 +46,8 @@
 	      
 	    (see \code{system.file("India_quantiles.R", package = "mboost")})
 	  \item Fixed package citation.
+	  \item Register C routines to make CRAN happy (again).
+        Fixes \href{https://github.com/boost-R/mboost/issues/77}{#77}. 
     }
   }
   \subsection{Bug-fixes}{
