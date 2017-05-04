@@ -208,9 +208,13 @@ fitted.mboost <- function(object, ...) {
         if (length(ret) == length(object$rownames))
             names(ret) <- object$rownames
     } else {
-        ret <- predict(object, newdata=NULL, ...)
-        #if (NROW(ret) == length(ret))
-        #    rownames(ret) <- object$rownames
+        if ("newdata" %in% names(args)) {
+            args$newdata <- NULL
+            warning("Argument ", sQuote("newdata"), " was  ignored. Please use ", 
+                    sQuote("predict()"), " to make predictions for new data.")
+        }
+        args$object <- object
+        ret <- do.call(predict, args)
     }
     ret
 }

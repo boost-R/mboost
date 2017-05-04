@@ -534,3 +534,14 @@ if (require("survival")){
   
   stopifnot(identical(ipcw1, ipcw2))
 }
+
+## make sure newdata is not used in fitted() but other arguments are:
+data("bodyfat", package = "TH.data")
+mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc),
+              control = boost_control(mstop = 10),
+              data = bodyfat)
+fitted(mod, newdata = bodyfat)
+stopifnot(all.equal(fitted(mod, aggregate = "cumsum")[,10], 
+                    fitted(mod), check.attributes = FALSE))
+stopifnot(all.equal(fitted(mod, aggregate = "cumsum"), 
+                    fitted(mod, newdata = bodyfat, aggregate = "cumsum")))
