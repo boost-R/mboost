@@ -18,7 +18,7 @@
 \tabular{ll}{
 Package: \tab mboost\cr
 Version: \tab 2.8-0\cr
-Date: \tab 2017-04-27\cr
+Date: \tab 2017-05-04\cr
 License: \tab GPL-2\cr
 }
 

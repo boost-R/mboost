@@ -1,7 +1,7 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.8-0 (2017-04-27)}{
+\section{Changes in mboost version 2.8-0 (2017-05-04)}{
   \subsection{User-visible changes}{
     \itemize{
       \item Models with zero steps (i.e., models containing only the offset) can

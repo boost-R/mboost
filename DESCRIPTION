@@ -1,7 +1,7 @@
 Package: mboost
 Title: Model-Based Boosting
 Version: 2.8-0
-Date: 2017-04-27
+Date: 2017-05-04
 Authors@R: c(person("Torsten", "Hothorn", role = "aut"),
              person("Peter", "Buehlmann", role = "aut"),
              person("Thomas", "Kneib", role = "aut"),
