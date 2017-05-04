@@ -43,5 +43,6 @@ make_check <- function(srcpkg, dir = "./") {
 }
 
 # package_dependencies("mboost", available.packages(), reverse = TRUE)
-setwd("../")
+owd <- setwd("../")
 make_check(srcpkg = "mboost_2.8-0.tar.gz")
+setwd(owd)
