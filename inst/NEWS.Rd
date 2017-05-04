@@ -62,6 +62,8 @@
         first iteration.
       \item Check for new data, e.g., in \code{predict}, was broken.
         Fixes \href{https://github.com/boost-R/mboost/issues/68}{#68}. 
+     \item Make sure that \code{newdata} is discarded in \code{fitted}. 
+        Fixes \href{https://github.com/boost-R/mboost/issues/76}{#76}.
      }
   }
 }
