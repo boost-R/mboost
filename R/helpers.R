@@ -13,13 +13,13 @@ get_index <- function(x) {
         if (length(x) == 1) {
             x <- x[[1]]
             nd <- which(!duplicated(x))
-            nd <- nd[complete.cases(x[nd])]
+            nd <- nd[Complete.cases(x[nd])]
             index <- match(x, x[nd])
         ### go for data.frames with >= 2 variables
         } else {
             tmp <- do.call("paste", x)
             nd <- which(!duplicated(tmp))
-            nd <- nd[complete.cases(x[nd,])]
+            nd <- nd[Complete.cases(x[nd,])]
             index <- match(tmp, tmp[nd])
         }
     }

@@ -51,21 +51,10 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     }
 
     ### set up the fitting functions
-    if (trace) {
-        cat("\nSet up base-learners ")
-        bl <- lapply(blg, function(x) {
-            cat(".")
-            dpp(x, weights = weights)
-        })
-    } else { 
-        bl <- lapply(blg, dpp, weights = weights)
-    }
+    bl <- lapply(blg, dpp, weights = weights)
     blfit <- lapply(bl, function(x) x$fit)
     fit1 <- blfit[[1]]
 
-    if (trace) 
-        cat("\n\nFit model\n")
-    
     if (identical("Negative Multinomial Likelihood", family@name)
         && ! all(vapply(bl, inherits, FALSE, what = "bl_kronecker")))
         stop(sQuote("family = Multinomial()"), " only works with Kronecker prodcut base-learners, ",
@@ -496,13 +485,13 @@ mboost <- function(formula, data = list(), na.action = na.omit,
     }
 
     if (is.data.frame(data)) {
-        if (!all(complete.cases(data))) {
+        if (!all(Complete.cases(data))) {
             ## drop cases with missing values in any of the specified variables:
             vars <- all.vars(formula)[all.vars(formula) %in% names(data)]
             data <- na.action(data[, vars])
         }
     } else {
-        if (any(unlist(lapply(data, is.na))))
+        if (any(unlist(lapply(data, function(x) !all(Complete.cases(x))))))
             warning(sQuote("data"),
                     " contains missing values. Results might be affected. Consider removing missing values.")
     }
