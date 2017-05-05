@@ -7,15 +7,15 @@
   Structure of the repository (branches)
   --------------------------------------
 
-    patch   (master branch) current version on CRAN
+    master branch: current version on CRAN
     
             > add bug fixes only
 
-    devel   current development version
+    devel branch: current development version
     
             > add bug fixes and new functionality
 
-    experimental   next generation development version / experimental stuff
+    other branches: next generation development version / experimental stuff
     
             > add experimental material or start new generation package
 
@@ -23,10 +23,10 @@
   Making a patch release
   ----------------------
   
-    Change to patch branch: 
+    Change to master branch: 
       git checkout master
 
-    A bug was fixed in "patch"
+    A bug was fixed in "master"
 
     Increase patch level in DESCRIPTION
     Update Date: field in DESCRIPTION
@@ -36,21 +36,16 @@
     R CMD build --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
 
     If differences to .Rout.save occure:
-       - Manually check differences. You might want to use something like:
-            cd mboost.Rcheck/tests
-	    meld Examples/mboost-Ex.Rout.save ../mboost-Ex.Rout &
-	or
-	    meld regtest-XXX.Rout.save regtest-XXX.Rout &
+    
+         - Copy new .Rout files to .Rout.save [1,2]:
+     	    Rscript copy_Rout_to_Routsave.R "vignettes=FALSE"
 
-       - If ok, copy new .Rout files to .Rout.save [1,2]:
+         - Update vignette .Rout.save files if necessary [1,2]:
+            Rscript copy_Rout_to_Routsave.R "vignettes=TRUE"
+            
+         - Now check for differences, e.g. using "git diff" or "meld"
 
-       	    Rscript copy_Rout_to_Routsave.R "which='mboostPatch'" "vignettes=FALSE"
-
-       - Update vignette .Rout.save files if necessary [1,2]:
-
-            Rscript copy_Rout_to_Routsave.R "which='mboostPatch'" "vignettes=TRUE"
-
-	 [1] For details see
+         [1] For details see
              http://r.789695.n4.nabble.com/Generate-Rout-save-files-for-vignettes-td4652752.html
          [2] NOTE: Reference output should be produced without having the --timings option set.
 
@@ -62,11 +57,15 @@
 
     Gives no warnings / errors.
 
-    Commit changes to "patch"
+    Commit changes to "master"
 
     Now build package without test folder to be submitted to CRAN
        R CMD buildCRAN --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
     To use the script copy it to R RHOME (< enter this in the console) /bin and make it executable.
+    Alternatively do the following:
+        mv .RbuildignoreCRAN .Rbuildignore
+        R CMD build --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
+        git checkout -- .RbuildignoreCRAN .Rbuildignore
 
     Check that reverse dependencies don't break.
 
@@ -96,16 +95,18 @@
     R CMD build --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
 
     If differences to .Rout.save occure:
-       - Manually check differences
-       - If ok, copy new .Rout files to .Rout.save [3,4]:
+       
+       - Copy new .Rout files to .Rout.save [3,4]:
 
-       	    Rscript copy_Rout_to_Routsave.R "which='mboostDevel'" "vignettes=FALSE"
+       	    Rscript copy_Rout_to_Routsave.R "vignettes=FALSE"
 
        - Update vignette .Rout.save files if necessary [3,4]:
 
-            Rscript copy_Rout_to_Routsave.R "which='mboostDevel'" "vignettes=TRUE"
+            Rscript copy_Rout_to_Routsave.R "vignettes=TRUE"
+            
+       - Now check for differences, e.g. using "git diff" or "meld"     
 
-	 [3] For details see
+         [3] For details see
              http://r.789695.n4.nabble.com/Generate-Rout-save-files-for-vignettes-td4652752.html
          [4] NOTE: Reference output should be produced without having the --timings option set.
 
@@ -122,14 +123,18 @@
     Now build package without test folder to be submitted to CRAN
        R CMD buildCRAN --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
     To use the script copy it to R RHOME (< enter this in the console) /bin and make it executable.
+    Alternatively do the following:
+        mv .RbuildignoreCRAN .Rbuildignore
+        R CMD build --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
+        git checkout -- .RbuildignoreCRAN .Rbuildignore
 
     Check that reverse dependencies don't break.
 
     Use web form at http://xmpalantir.wu.ac.at/cransubmit/.
 
-    Merge changes to "patch"
+    Merge changes to "master"
 
-    After a minor release, "devel" and "patch" are identical
+    After a minor release, "devel" and "master" are identical
     (with the exeption of the package names -- mboost vs. mboostDevel).
 
    Update webpage. See www_src.

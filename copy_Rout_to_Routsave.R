@@ -5,57 +5,29 @@
 # Author: Benjamin Hofner, 2012
 #
 # USAGE:
-#   Use either
 #     ## To copy test output
-#     Rscript copy_Rout_to_Routsave.R "which='mboostDevel'" "vignettes=FALSE"
+#     Rscript copy_Rout_to_Routsave.R "vignettes=FALSE"
 #     ## To copy vignette output
-#     Rscript copy_Rout_to_Routsave.R "which='mboostDevel'" "vignettes=TRUE"
-#   or
-#     ## To copy test output
-#     Rscript copy_Rout_to_Routsave.R "which='mboostPatch'" "vignettes=FALSE"
-#     ## To copy vignette output
-#     Rscript copy_Rout_to_Routsave.R "which='mboostPatch'" "vignettes=TRUE"
-#
+#     Rscript copy_Rout_to_Routsave.R "vignettes=TRUE"
 #
 # ALTERNATIVE USAGE (with R CMD BATCH):
-#   Use either
 #     ## To copy test output
-#     R CMD BATCH "--args which='mboostDevel' vignettes=FALSE" copy_Rout_to_Routsave.R
+#     R CMD BATCH "--args vignettes=FALSE" copy_Rout_to_Routsave.R
 #     ## To copy vignette output
-#     R CMD BATCH "--args which='mboostDevel' vignettes=TRUE" copy_Rout_to_Routsave.R
-#   or
-#     ## To copy test output
-#     R CMD BATCH "--args which='mboostPatch' vignettes=FALSE" copy_Rout_to_Routsave.R
-#     ## To copy vignette output
-#     R CMD BATCH "--args which='mboostPatch' vignettes=TRUE" copy_Rout_to_Routsave.R
+#     R CMD BATCH "--args vignettes=TRUE" copy_Rout_to_Routsave.R
 #
 ################################################################################
 
 ## Get command line arguments
 args <- commandArgs(TRUE)
-if (length(args) > 2)
-    stop("specify (at maximum) two arguments (i.e., which and vignettes)")
+if (length(args) > 1)
+    stop("specify (at maximum) one arguments (i.e., vignettes)")
 eval(parse(text=args))
 if (length(args) == 0) {
-    which <- "mboostDevel"
-    vignettes <- FALSE
-}
-if (is.null(which))
-    which <- "mboostDevel"
-if (is.null(vignettes))
     vignettes <- FALSE
 
-if (which == "mboostDevel") {
-    path <- "pkg/mboostDevel"
-    check_path <- "mboostDevel.Rcheck/"
-} else {
-    if (which == "mboostPatch") {
-        path <- "pkg/mboostPatch"
-        check_path <- "mboost.Rcheck/"
-    } else {
-        stop("which is not correctly specified")
-    }
-}
+path <- "."
+check_path <- "../mboost.Rcheck/"
 
 ################################################################################
 ## Copy output of test files
@@ -65,7 +37,9 @@ if (vignettes == FALSE) {
     ## Get relevant file names
     ROUT <- list.files(path = check_path, pattern = ".Rout$", recursive = TRUE)
     ROUT <- ROUT[!grepl("testthat", ROUT)]
+    ROUT <- ROUT[!grepl("386", ROUT)]
     ROUT2 <- paste(check_path, ROUT, sep ="")
+    ROUT <- gsub("_x64", "", ROUT)
 
     ROUT.SAVE <- list.files(path = path, pattern = ".Rout.save$", recursive = TRUE)
     ROUT.SAVE <- paste(path, "/", ROUT.SAVE, sep ="")
@@ -86,9 +60,7 @@ if (vignettes == FALSE) {
 
     cat("#########################################################################",
         "# To revert changes simply use:",
-        ifelse(which == "mboostDevel",
-               "#   svn revert --recursive pkg/mboostDevel/tests\n# or use\n#   git checkout -- pkg/mboostDevel/vignettes",
-               "#   svn revert --recursive pkg/mboostPatch/tests\n# or use\n#   git checkout -- pkg/mboostPatch/vignettes"),
+        "#   git checkout -- tests",
         "#########################################################################",
         sep = "\n")
 
@@ -125,9 +97,7 @@ if (vignettes == TRUE) {
 
         cat("#########################################################################",
             "# To revert changes simply use:",
-            ifelse(which == "mboostDevel",
-                   "#   svn revert --recursive pkg/mboostDevel/vignettes\n# or use\n#   git checkout -- pkg/mboostDevel/vignettes",
-                   "#   svn revert --recursive pkg/mboostPatch/vignettes\n# or use\n#   git checkout -- pkg/mboostPatch/vignettes"),
+            "#   git checkout -- vignettes",
             "#########################################################################",
             sep = "\n")
     } else {
