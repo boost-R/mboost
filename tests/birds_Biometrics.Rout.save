@@ -1,7 +1,7 @@
 
-R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
-Copyright (C) 2015 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu (64-bit)
+R version 3.4.0 (2017-04-21) -- "You Stupid Darkness"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -19,7 +19,7 @@ Type 'q()' to quit R.
 > library("mboost")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.6-0. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.8-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > data("birds", package = "TH.data")
@@ -132,6 +132,12 @@ attr(,"offset")
 > fm <- SG4 ~ bols(GST) + bols(DBH) + bols(AOT) + bols(AFS) + bols(DWC) +
 +             bols(LOG) + bspatial(x_gk, y_gk, df=5, differences=1, knots=c(12,12))
 > sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
+Note: method with signature 'matrix#Matrix' chosen for function 'crossprod',
+ target signature 'matrix#dgTMatrix'.
+ "ANY#TsparseMatrix" would also be valid
+Note: method with signature 'ddenseMatrix#dsparseMatrix' chosen for function 'crossprod',
+ target signature 'dtrMatrix#dgTMatrix'.
+ "Matrix#TsparseMatrix" would also be valid
 [   1] ...................................... -- risk: 139.3667 
 [  41] ...................................... -- risk: 131.9988 
 [  81] ...................................... -- risk: 127.5401 
@@ -153,11 +159,11 @@ Final risk: 118.5445
 > coef(sp, which=1:6)
 $`bols(GST)`
  (Intercept)          GST 
- 0.567720995 -0.002227885 
+ 0.567721068 -0.002227885 
 
 $`bols(DBH)`
 (Intercept)         DBH 
- 0.65863665 -0.01423816 
+ 0.65863668 -0.01423816 
 
 $`bols(AOT)`
 (Intercept)         AOT 
@@ -165,11 +171,11 @@ $`bols(AOT)`
 
 $`bols(AFS)`
 (Intercept)         AFS 
--2.03870720  0.01278201 
+-2.03870728  0.01278201 
 
 $`bols(DWC)`
   (Intercept)           DWC 
--9.109177e-05 -1.619384e-03 
+-9.109315e-05 -1.619384e-03 
 
 $`bols(LOG)`
 (Intercept)         LOG 
@@ -203,7 +209,7 @@ Final risk: 126.7845
 > coef(sp, which=1:6)
 $`bols(GST)`
  (Intercept)          GST 
- 0.910987882 -0.003347132 
+ 0.910987885 -0.003347132 
 
 $`bols(DBH)`
 (Intercept)         DBH 
@@ -215,7 +221,7 @@ $`bols(AOT)`
 
 $`bols(AFS)`
 (Intercept)         AFS 
--1.79414567  0.01161085 
+-1.79414565  0.01161085 
 
 $`bols(DWC)`
 (Intercept)         DWC 
@@ -259,18 +265,18 @@ Final risk: 459.1693
 +             bspatial(x_gk, y_gk, df=1, differences=1, knots=c(12,12),
 +               center=TRUE)
 > sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
-[   1] ...................................... -- risk: 506.8286 
-[  41] ...................................... -- risk: 501.1672 
-[  81] ...................................... -- risk: 497.6434 
-[ 121] ...................................... -- risk: 495.2474 
-[ 161] ...................................... -- risk: 493.5607 
-[ 201] ...................................... -- risk: 492.2036 
-[ 241] ...................................... -- risk: 491.0902 
-[ 281] ...................................... -- risk: 490.1867 
+[   1] ...................................... -- risk: 506.8288 
+[  41] ...................................... -- risk: 501.1673 
+[  81] ...................................... -- risk: 497.6435 
+[ 121] ...................................... -- risk: 495.2475 
+[ 161] ...................................... -- risk: 493.5608 
+[ 201] ...................................... -- risk: 492.2037 
+[ 241] ...................................... -- risk: 491.0903 
+[ 281] ...................................... -- risk: 490.1868 
 [ 321] ...................................... -- risk: 489.3907 
-[ 361] ...................................... -- risk: 488.674 
+[ 361] ...................................... -- risk: 488.6741 
 [ 401] ...................................... -- risk: 488.0528 
-[ 441] ...................................... -- risk: 487.4841 
+[ 441] ...................................... -- risk: 487.4842 
 [ 481] ..................
 Final risk: 487.2166 
 > plot(sp)
@@ -315,4 +321,4 @@ Final risk: 497.9626
 > 
 > proc.time()
    user  system elapsed 
- 17.336   0.262  18.193 
+  16.41    0.65   17.06 

@@ -1,7 +1,7 @@
 
-R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
-Copyright (C) 2015 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu (64-bit)
+R version 3.4.0 (2017-04-21) -- "You Stupid Darkness"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -19,21 +19,24 @@ Type 'q()' to quit R.
 > library("mboost")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.6-0. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.8-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > attach(asNamespace("mboost"))
 The following objects are masked from package:mboost:
 
-    %+%, %O%, %X%, AUC, AdaExp, Binomial, CoxPH, ExpectReg, FP, Family,
-    GammaReg, GaussClass, GaussReg, Gaussian, Gehan, Huber, Hurdle,
-    IPCweights, Laplace, Loglog, Lognormal, Multinomial, NBinomial,
-    Poisson, PropOdds, QuantReg, Weibull, bbs, blackboost, bmono, bmrf,
-    bns, bols, boost_control, brad, brandom, bspatial, bss, btree,
-    buser, confint.glmboost, confint.mboost, cv, cvrisk, extract,
-    gamboost, glmboost, mboost, mboost_fit, mboost_intern, mstop,
-    mstop<-, nuisance, risk, selected.mboost, stabsel.mboost,
-    stabsel_parameters.mboost, survFit
+    %+%, %O%, %X%, AUC, AdaExp, Binomial, Cindex, CoxPH, ExpectReg, FP,
+    Family, GammaReg, GaussClass, GaussReg, Gaussian, Gehan, Huber,
+    Hurdle, IPCweights, Laplace, Loglog, Lognormal, Multinomial,
+    NBinomial, Poisson, PropOdds, QuantReg, Weibull,
+    as.data.frame.varimp, bbs, bkernel, blackboost, bmono, bmrf, bns,
+    bols, boost_control, brad, brandom, bspatial, bss, btree, buser,
+    confint.glmboost, confint.mboost, cv, cvrisk, extract,
+    fitted.mboost, gamboost, glmboost, lines.mboost, lines.mboost.ci,
+    mboost, mboost_fit, mboost_intern, mstop, mstop<-, nuisance,
+    plot.cvrisk, plot.glmboost, plot.mboost, plot.mboost.ci,
+    plot.varimp, print.glmboost.ci, risk, selected.mboost,
+    stabsel.mboost, stabsel_parameters.mboost, survFit, varimp
 
 > library("MASS")
 > library("Matrix")
@@ -339,6 +342,12 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 > 
 > ### spatial
 > m1 <- gamboost(y ~ bbs(x1) %X% bbs(x2))
+Note: method with signature 'matrix#Matrix' chosen for function 'crossprod',
+ target signature 'matrix#dgTMatrix'.
+ "ANY#TsparseMatrix" would also be valid
+Note: method with signature 'ddenseMatrix#dsparseMatrix' chosen for function 'crossprod',
+ target signature 'dtrMatrix#dgTMatrix'.
+ "Matrix#TsparseMatrix" would also be valid
 > m2 <- gamboost(y ~ bspatial(x1, x2, df = 16))
 > stopifnot(max(abs(predict(m1) - predict(m2))) < sqrt(.Machine$double.eps))
 > stopifnot(max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < sqrt(.Machine$double.eps))
@@ -360,25 +369,25 @@ In data.frame(..., check.names = FALSE) :
   row names were found from a short variable and have been discarded
 > coef(m1)
 $`"bbs(x1) %X% bols(f, df = 5, contrasts.arg = \\"contr.dummy\\")"`
- [1]  0.2242693758  0.0244549055 -0.0018236656 -0.0649204417 -0.0158616261
- [6] -0.1891022703  0.0633957967 -0.1288712394 -0.3211539316 -0.4271143516
-[11]  0.1304389247 -0.1279015955 -0.2844975667 -0.5354756406  0.1377335871
-[16]  0.0453968886 -0.0338951732 -0.1953318221 -0.0365952954  0.2189850221
-[21]  0.3040001645  0.4485289400 -0.0716853706  0.0631618066  0.3325198072
-[26]  0.3788911610  0.2873215520 -0.1578934092  0.0374947404 -0.1538460700
-[31]  0.0321145668 -0.1042998008 -0.1475466005 -0.3312423509 -0.3729888541
-[36] -0.1410106097 -0.1263566256 -0.0751116331 -0.0884109521 -0.2399923387
-[41] -0.0389393947  0.1848036883  0.1656488243  0.0090057253  0.0241351838
-[46]  0.0880914017  0.1332083246  0.2231047247  0.0008369162 -0.1344615659
-[51]  0.0073865257  0.0724598930  0.0446383409 -0.1022702643  0.0035663694
-[56]  0.0550943778 -0.0316890953  0.2015664246 -0.0822295181 -0.0247739018
-[61] -0.2539099743  0.0695884531  0.0758519443 -0.4923737237 -0.0674229150
-[66]  0.0138897271  0.1275144137 -0.1310550250 -0.0040526037  0.3899574508
-[71]  0.3122233938  0.1306996445 -0.0656754995  0.6050839245  0.3881688503
-[76]  0.2096929714 -0.0502131903  0.2857074658  0.3854780456  0.1159202913
-[81] -0.1884282320 -0.2241611822  0.5098269614 -0.0069895193 -0.1851369840
-[86] -0.6265554226  0.4419209852 -0.0189754388 -0.0917695408 -0.5729191166
-[91]  0.2786709776 -0.0124807032  0.0007989512 -0.2654733304  0.0868918239
+ [1]  0.2242693777  0.0244549056 -0.0018236656 -0.0649204421 -0.0158616258
+ [6] -0.1891022708  0.0633957973 -0.1288712404 -0.3211539336 -0.4271143529
+[11]  0.1304389257 -0.1279015966 -0.2844975686 -0.5354756425  0.1377335881
+[16]  0.0453968886 -0.0338951740 -0.1953318231 -0.0365952959  0.2189850232
+[21]  0.3040001653  0.4485289415 -0.0716853719  0.0631618068  0.3325198081
+[26]  0.3788911620  0.2873215534 -0.1578934100  0.0374947401 -0.1538460706
+[31]  0.0321145673 -0.1042998006 -0.1475466009 -0.3312423514 -0.3729888555
+[36] -0.1410106094 -0.1263566256 -0.0751116330 -0.0884109520 -0.2399923393
+[41] -0.0389393945  0.1848036888  0.1656488247  0.0090057253  0.0241351838
+[46]  0.0880914018  0.1332083245  0.2231047251  0.0008369159 -0.1344615663
+[51]  0.0073865254  0.0724598924  0.0446383411 -0.1022702646  0.0035663697
+[56]  0.0550943779 -0.0316890950  0.2015664255 -0.0822295184 -0.0247739008
+[61] -0.2539099751  0.0695884528  0.0758519445 -0.4923737252 -0.0674229147
+[66]  0.0138897260  0.1275144133 -0.1310550247 -0.0040526034  0.3899574516
+[71]  0.3122233942  0.1306996449 -0.0656754997  0.6050839267  0.3881688509
+[76]  0.2096929717 -0.0502131902  0.2857074667  0.3854780462  0.1159202913
+[81] -0.1884282330 -0.2241611836  0.5098269632 -0.0069895197 -0.1851369852
+[86] -0.6265554259  0.4419209871 -0.0189754390 -0.0917695415 -0.5729191196
+[91]  0.2786709790 -0.0124807033  0.0007989511 -0.2654733318  0.0868918245
 [96] -0.0029929838
 
 attr(,"offset")
@@ -453,14 +462,14 @@ In data.frame(..., check.names = FALSE) :
 > 
 > beta <- coef(mod21)[[1]]
 > sum((D1 %*% beta)[D1 %*% beta <= 0])
-[1] -7.105427e-15
+[1] -2.708944e-13
 > sum((D2 %*% beta)[D2 %*% beta <= 0])
-[1] -0.003959336
+[1] -0.003959359
 > stopifnot(all(D1 %*% beta > - 2e-05))
 > 
 > beta <- coef(mod22)[[1]]
 > sum((D1 %*% beta)[D1 %*% beta <= 0])
-[1] -3.212541e-12
+[1] -4.760636e-13
 > sum((D2 %*% beta)[D2 %*% beta <= 0])
 [1] 0
 > stopifnot(all(D2 %*% beta > - 2e-05))
@@ -601,14 +610,26 @@ In df2lambda(X = diag(rankMatrix(X$X1, method = "qr", warn.t = FALSE) *  :
 > lines(x, fitted(m1))
 > plot(x, y)
 > m2 <- mboost(y ~ bbs(x, constraint = "increasing"))
+Warning message:
+In bbs(x, constraint = "increasing") :
+  Using 'bbs()' with constraint != "none" is discouraged. Preferably use 'bmono()' instead.
+See section 'Details' of ?bbs for more information.
 > lines(x, fitted(m2))
 > plot(x, -y)
 > m3 <- mboost(I(-y) ~ bbs(x, constraint = "decreasing"))
+Warning message:
+In bbs(x, constraint = "decreasing") :
+  Using 'bbs()' with constraint != "none" is discouraged. Preferably use 'bmono()' instead.
+See section 'Details' of ?bbs for more information.
 > lines(x, fitted(m3))
 > 
 > 
 > ### penalty problem -- penalize differences???
 > bl <- bbs(x, constraint = "increasing", lambda = 100)
+Warning message:
+In bbs(x, constraint = "increasing", lambda = 100) :
+  Using 'bbs()' with constraint != "none" is discouraged. Preferably use 'bmono()' instead.
+See section 'Details' of ?bbs for more information.
 > lines(x, bl$dpp(rep(1, length(y)))$fit(y)$fitted(), col = "red")
 > 
 > x1 <- seq(from = -3, to = 3, by = .1)
@@ -625,10 +646,18 @@ In df2lambda(X = diag(rankMatrix(X$X1, method = "qr", warn.t = FALSE) *  :
 > wireframe(p1 ~ x1 + x2, data = x)
 > 
 > m2 <- mboost(y ~ bbs(x1, constraint = "increasing", df = 10) %O% bbs(x2))
+Warning message:
+In bbs(x1, constraint = "increasing", df = 10) :
+  Using 'bbs()' with constraint != "none" is discouraged. Preferably use 'bmono()' instead.
+See section 'Details' of ?bbs for more information.
 > x$p2 <- fitted(m2)
 > wireframe(p2 ~ x1 + x2, data = x)
 > 
 > m3 <- mboost(I(-y) ~ bbs(x1, constraint = "decreasing", df = 10) %O% bbs(x2))
+Warning message:
+In bbs(x1, constraint = "decreasing", df = 10) :
+  Using 'bbs()' with constraint != "none" is discouraged. Preferably use 'bmono()' instead.
+See section 'Details' of ?bbs for more information.
 > x$p3 <- fitted(m3)
 > wireframe(p3 ~ x1 + x2, data = x)
 > 
@@ -1280,7 +1309,29 @@ In bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[
 Error in cbs(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  : 
   some 'x' values are beyond 'boundary.knots'
 > 
+> ## make sure bols works for factors with unobserved levels breaks
+> ## (https://github.com/boost-R/mboost/issues/47)
+> x <- rnorm(100)
+> z <- factor(sample(1:5, 100, replace = TRUE), levels = 1:6)
+> z2 <- factor(sample(1:2, 100, replace = TRUE), levels = 0:5)
+> z3 <- factor(sample(1:2, 100, replace = TRUE))
+> y <- rnorm(100)
+> mod <- mboost(y ~ bols(z3)) # no warning
+> # warnings but it works
+> mod <- mboost(y ~ bols(z))
+Warning message:
+In bols(z) : Dropped unobserved factor levels
+> mod <- mboost(y ~ bols(x, by = z))
+Warning message:
+In bols(x, by = z) : Dropped unobserved factor levels
+> mod <- mboost(y ~ bols(z2, by = z))
+Warning message:
+In bols(z2, by = z) : Dropped unobserved factor levels
+> mod <- mboost(y ~ bols(z2, by = z3))
+Warning message:
+In bols(z2, by = z3) : Dropped unobserved factor levels
+> 
 > 
 > proc.time()
    user  system elapsed 
- 29.898   0.410  30.745 
+  28.95    0.98   30.06 

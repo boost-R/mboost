@@ -8,7 +8,7 @@
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.6-0. See ‘package?mboost’ and ‘news(package  = "mboost")’
+This is mboost 2.8-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 
@@ -21,22 +21,29 @@ Loading required package: mvtnorm
 Loading required package: modeltools
 Loading required package: stats4
 
-Attaching package: ‘modeltools’
+Attaching package: 'modeltools'
 
-The following object is masked from ‘package:stabs’:
+The following object is masked from 'package:stabs':
 
     parameters
 
 Loading required package: strucchange
 Loading required package: zoo
 
-Attaching package: ‘zoo’
+Attaching package: 'zoo'
 
-The following objects are masked from ‘package:base’:
+The following objects are masked from 'package:base':
 
     as.Date, as.Date.numeric
 
 Loading required package: sandwich
+
+Attaching package: 'party'
+
+The following object is masked from 'package:mboost':
+
+    varimp
+
 
 > library("party")
 
@@ -111,7 +118,7 @@ Loss function: tau * (y - f) * ((y - f) >= 0) - (1 - tau) * (y - f) * ((y -
      f) < 0) 
  
 
-Number of boosting iterations: mstop = 460 
+Number of boosting iterations: mstop = 450 
 Step size:  0.1 
 Offset:  29.63 
 Number of baselearners:  19 
@@ -163,5 +170,5 @@ Number of baselearners:  19
 
  *** Run successfully completed ***
 > proc.time()
-   user  system elapsed 
- 67.587   2.399  40.595 
+       User      System verstrichen 
+      83.39        0.21       83.69 

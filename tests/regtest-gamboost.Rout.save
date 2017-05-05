@@ -1,7 +1,7 @@
 
-R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
-Copyright (C) 2015 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu (64-bit)
+R version 3.4.0 (2017-04-21) -- "You Stupid Darkness"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -20,7 +20,7 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.6-0. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.8-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > require("survival")
@@ -58,7 +58,7 @@ Number of baselearners:  1
 > aic
 [1] 6.58661
 Optimal number of boosting iterations: 37 
-Degrees of freedom (for mstop = 37): 4.37119 
+Degrees of freedom (for mstop = 37): 4.371192 
 > 
 > ht <- hatvalues(cars.gb)
 > 
@@ -235,17 +235,17 @@ attr(,"class")
 $surv
                  1            3        12
  [1,] 7.224865e-01 8.759679e-01 0.9975414
- [2,] 4.463454e-01 7.199103e-01 0.9939098
+ [2,] 4.463454e-01 7.199104e-01 0.9939098
  [3,] 2.391600e-01 5.583185e-01 0.9892243
  [4,] 1.035965e-01 3.970621e-01 0.9829766
- [5,] 1.843298e-03 7.691705e-02 0.9534377
- [6,] 3.058580e-05 1.448212e-02 0.9242974
- [7,] 3.256537e-07 2.275840e-03 0.8930422
- [8,] 5.964830e-10 1.745993e-04 0.8514192
- [9,] 3.903423e-13 8.807263e-06 0.8054337
-[10,] 1.121666e-16 3.177056e-07 0.7571977
-[11,] 8.909567e-23 1.039739e-09 0.6807910
-[12,] 6.853145e-30 1.314449e-12 0.6013670
+ [5,] 1.843300e-03 7.691707e-02 0.9534377
+ [6,] 3.058586e-05 1.448213e-02 0.9242974
+ [7,] 3.256545e-07 2.275842e-03 0.8930422
+ [8,] 5.964853e-10 1.745996e-04 0.8514192
+ [9,] 3.903443e-13 8.807278e-06 0.8054337
+[10,] 1.121673e-16 3.177064e-07 0.7571977
+[11,] 8.909651e-23 1.039742e-09 0.6807910
+[12,] 6.853231e-30 1.314454e-12 0.6013670
 
 $time
  [1]  59 115 156 268 329 353 365 431 464 475 563 638
@@ -385,11 +385,6 @@ Number of baselearners:  3
 +                  data = DF, baselearner = "bols", control=boost_control(mstop=5000))
 > logit <- glm(y ~ x1, data=DF, family=binomial)
 > stopifnot(coef(logitBoost)[[1]][2]*2 - coef(logit)[2]  < sqrt(.Machine$double.eps)) # * 2 as we use y = {-1, 1}
-
-NOTE: Coefficients from a Binomial model are half the size of coefficients
- from a model fitted via glm(... , family = 'binomial').
-See Warning section in ?coef.mboost
-
 > 
 > pr <- predict(logitBoost)
 > pr2 <- predict(logit)
@@ -491,6 +486,65 @@ Warning in Xfun(mf, vary, args) :
 +                  control = boost_control(mstop = 1000))
 > stopifnot(max(abs(predict(mod9) - predict(mod10))) < sqrt(.Machine$double.eps))
 > 
+> 
+> ## test that mstop = 0 is possible
+> compare_models <- function (m1, m2) {
++     stopifnot(all.equal(coef(m1), coef(m2)))
++     stopifnot(all.equal(predict(m1), predict(m2)))
++     stopifnot(all.equal(fitted(m1), fitted(m2)))
++     stopifnot(all.equal(as.vector(residuals(m1)), as.vector(residuals(m2))))
++     stopifnot(all.equal(selected(m1), selected(m2)))
++     stopifnot(all.equal(risk(m1), risk(m2)))
++     ## remove obvious differences from objects
++     m1$control <- m2$control <- NULL
++     m1$call <- m2$call <- NULL
++     if (!all.equal(m1, m2))
++         stop("Objects of offset model + 1 step and model with 1 step not identical")
++     invisible(NULL)
++ }
+> # set up models
+> mod <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
++               data = bodyfat, control = boost_control(mstop = 0))
+> mod2 <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
++                data = bodyfat, control = boost_control(mstop = 1))
+> mod3 <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
++                data = bodyfat, control = boost_control(mstop = 1))
+> stopifnot(is.null(coef(mod)))
+> stopifnot(predict(mod) == rep(mod$offset, nrow(bodyfat)))
+> stopifnot(fitted(mod) == rep(mod$offset, nrow(bodyfat)))
+> stopifnot(all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat)))
+> stopifnot(is.null(selected(mod)))
+> stopifnot(all.equal(risk(mod), risk(mod2)[1]))
+> 
+> mstop(mod3) <- 0
+> compare_models(mod, mod3)
+> mstop(mod) <- 1
+> compare_models(mod, mod2)
+> mstop(mod3) <- 1
+> compare_models(mod, mod3)
+> 
+> ## same with glmboost
+> mod <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
++                 data = bodyfat, control = boost_control(mstop = 0))
+> mod2 <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
++                  data = bodyfat, control = boost_control(mstop = 1))
+> mod3 <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
++                  data = bodyfat, control = boost_control(mstop = 1))
+> stopifnot(is.null(coef(mod)))
+> stopifnot(predict(mod) == rep(mod$offset, nrow(bodyfat)))
+> stopifnot(fitted(mod) == rep(mod$offset, nrow(bodyfat)))
+> stopifnot(all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat), check.attributes = FALSE))
+> stopifnot(is.null(selected(mod)))
+> stopifnot(all.equal(risk(mod), risk(mod2)[1]))
+> 
+> mstop(mod3) <- 0
+> compare_models(mod, mod3)
+> mstop(mod) <- 1
+> compare_models(mod, mod2)
+> mstop(mod3) <- 1
+> compare_models(mod, mod3)
+> 
+> 
 > proc.time()
    user  system elapsed 
-  8.102   0.099   8.400 
+   8.00    0.21    8.40 

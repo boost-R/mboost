@@ -1,7 +1,7 @@
 
-R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
-Copyright (C) 2015 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu (64-bit)
+R version 3.4.0 (2017-04-21) -- "You Stupid Darkness"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -20,7 +20,7 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.6-0. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.8-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > require("Matrix")
@@ -71,7 +71,7 @@ See Warning section in ?coef.mboost
 > tmp <- blackboost(DEXfat ~ ., data = bodyfat, control = ctrl,
 +                  weights = bs[,3])
 > 
-> stopifnot(identical(max(abs(tmp$risk()[x] / sum(bs[,3] == 0)  - cv[3,])), 0))
+> stopifnot(identical(max(abs(tmp$risk()[x + 1] / sum(bs[,3] == 0)  - cv[3,])), 0))
 > 
 > ### center = TRUE and cvrisk were broken; same issue with masking original data
 > 
@@ -80,7 +80,7 @@ See Warning section in ?coef.mboost
 > tmp <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE,
 +                 control = boost_control(risk = "oobag"),
 +                 weights = bs[,3])
-> stopifnot(identical(max(tmp$risk()[attr(cv1, "mstop")] / sum(bs[,3] == 0) - cv1[3,]), 0))
+> stopifnot(identical(max(tmp$risk()[attr(cv1, "mstop") + 1] / sum(bs[,3] == 0) - cv1[3,]), 0))
 > 
 > ### same problem, just another check
 > 
@@ -315,6 +315,13 @@ The following objects are masked from 'package:base':
     as.Date, as.Date.numeric
 
 Loading required package: sandwich
+
+Attaching package: 'party'
+
+The following object is masked from 'package:mboost':
+
+    varimp
+
 [   1] ...................................... -- risk: 9246.895 
 [  41] ...................................... -- risk: 9006.37 
 [  81] ..................
@@ -369,6 +376,12 @@ Error in object$newX(newdata) :
 > x2 <- rnorm(100)
 > data <- data.frame(y=y, x1=x1, x2=x2, z=z)
 > model <- gamboost(y ~ bspatial(x1,x2, by=z), data = data)
+Note: method with signature 'matrix#Matrix' chosen for function 'crossprod',
+ target signature 'matrix#dgTMatrix'.
+ "ANY#TsparseMatrix" would also be valid
+Note: method with signature 'ddenseMatrix#dsparseMatrix' chosen for function 'crossprod',
+ target signature 'dtrMatrix#dgTMatrix'.
+ "Matrix#TsparseMatrix" would also be valid
 > stopifnot(!is.na(predict(model,data[1,-1])))
 > 
 > ### bols with intercept = FALSE for categorical covariates was broken
@@ -461,11 +474,6 @@ See Warning section in ?coef.mboost
 
 > cf2 <- as.vector(a) * 2
 > b <- coef(m3); b[[1]][1] <- b[[1]][1] + m3$offset;
-
-NOTE: Coefficients from a Binomial model are half the size of coefficients
- from a model fitted via glm(... , family = 'binomial').
-See Warning section in ?coef.mboost
-
 > cf3 <- b[[1]] * 2
 > 
 > stopifnot(max(abs(cf1 - cf2)) < sqrt(.Machine$double.eps))
@@ -680,6 +688,12 @@ In mboost_fit(bl, response = response, ...) :
 +                   bspatial(x1, x2) + brad(x1, x2, knots = 20) +
 +                   bmono(x1) +  buser(x1, K = 1, lambda = 0) + x2)
 Loading required namespace: fields
+Note: method with signature 'matrix#Matrix' chosen for function 'crossprod',
+ target signature 'matrix#dgTMatrix'.
+ "ANY#TsparseMatrix" would also be valid
+Note: method with signature 'ddenseMatrix#dsparseMatrix' chosen for function 'crossprod',
+ target signature 'dtrMatrix#dgTMatrix'.
+ "Matrix#TsparseMatrix" would also be valid
 Warning messages:
 1: In bols(x1) : base-learner contains missing values;
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
@@ -761,6 +775,114 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 +                 bbs(x2, df = 3, knots = 3),
 +               control = boost_control(nu = 0.25))
 > 
+> 
+> ### IPCweights problem, see github issue #54
+> 
+> if (require("survival")){
++   x1 <- rnorm(100)
++   x2 <- x1 + rnorm(100)
++   X <- cbind(x1, x2)
++   beta <- c(1, 0.5)
++   survtime <- exp(X%*%beta)
++   event <- rep(c(TRUE, FALSE), 50)
++   
++   ipcw1 <- IPCweights(Surv(survtime, event))
++   ipcw2 <- IPCweights(Surv(as.numeric(survtime), event))
++   summary(cbind(ipcw1, ipcw2))
++   
++   stopifnot(identical(ipcw1, ipcw2))
++ }
+Loading required package: survival
+> 
+> ## make sure newdata is not used in fitted() but other arguments are:
+> data("bodyfat", package = "TH.data")
+> mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc),
++               control = boost_control(mstop = 10),
++               data = bodyfat)
+> fitted(mod, newdata = bodyfat)
+          [,1]
+ [1,] 36.08326
+ [2,] 37.47280
+ [3,] 34.02636
+ [4,] 24.54983
+ [5,] 29.57699
+ [6,] 26.94588
+ [7,] 28.99822
+ [8,] 31.32320
+ [9,] 26.28185
+[10,] 24.40541
+[11,] 26.94918
+[12,] 23.49139
+[13,] 25.71373
+[14,] 20.54035
+[15,] 30.41362
+[16,] 34.69222
+[17,] 28.09712
+[18,] 40.63829
+[19,] 36.17812
+[20,] 24.16419
+[21,] 34.58752
+[22,] 25.85393
+[23,] 29.69150
+[24,] 29.15424
+[25,] 25.81085
+[26,] 29.72672
+[27,] 33.60716
+[28,] 26.37671
+[29,] 40.00913
+[30,] 29.53700
+[31,] 39.63391
+[32,] 40.43678
+[33,] 27.75357
+[34,] 33.68082
+[35,] 27.17565
+[36,] 29.52466
+[37,] 30.96223
+[38,] 38.58070
+[39,] 26.75946
+[40,] 33.70566
+[41,] 41.32807
+[42,] 38.09941
+[43,] 37.06375
+[44,] 34.97164
+[45,] 44.49200
+[46,] 42.58832
+[47,] 43.46728
+[48,] 42.71346
+[49,] 33.04163
+[50,] 29.46971
+[51,] 26.31818
+[52,] 34.78724
+[53,] 38.45470
+[54,] 37.13288
+[55,] 26.48901
+[56,] 30.52947
+[57,] 25.42914
+[58,] 40.29794
+[59,] 34.02819
+[60,] 28.80667
+[61,] 22.47965
+[62,] 22.31846
+[63,] 20.31789
+[64,] 23.03664
+[65,] 24.48053
+[66,] 21.72598
+[67,] 21.72598
+[68,] 22.72331
+[69,] 25.00259
+[70,] 28.14446
+[71,] 21.00557
+Warning message:
+In fitted.mboost(mod, newdata = bodyfat) :
+  Argument 'newdata' was  ignored. Please use 'predict()' to make predictions for new data.
+> stopifnot(all.equal(fitted(mod, aggregate = "cumsum")[,10], 
++                     fitted(mod), check.attributes = FALSE))
+> stopifnot(all.equal(fitted(mod, aggregate = "cumsum"), 
++                     fitted(mod, newdata = bodyfat, aggregate = "cumsum")))
+Warning message:
+In fitted.mboost(mod, newdata = bodyfat, aggregate = "cumsum") :
+  Argument 'newdata' was  ignored. Please use 'predict()' to make predictions for new data.
+> 
 > proc.time()
    user  system elapsed 
- 27.332   0.155  27.984 
+  26.50    0.34   27.65 
