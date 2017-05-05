@@ -11,7 +11,7 @@ vignettes/.*\.Rout\.save$
 checks.R
 buildCRAN
 copy_Rout_to_Routsave.R
-svn_release.txt
+SOP_release.txt
 to_do_list.txt
 ^\..*
 .*/auto
