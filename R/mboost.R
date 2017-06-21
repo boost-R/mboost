@@ -22,6 +22,14 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     ngradient <- family@ngradient
     riskfct <- family@risk
 
+    ### weights not specified: unweighted problem
+    if (is.null(weights)) 
+        weights <- rep.int(1, NROW(response))
+    
+    ## oobweights not specified
+    if (is.null(oobweights))
+        oobweights <- as.numeric(weights == 0)
+    
     ### handle missing responses (via zero weights)
     yna <- is.na(response)
     y <- response
@@ -33,17 +41,13 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
                 " and thus these observations are not used for fitting")
     }
     y <- check_y_family(y, family)
-
-    ### unweighted problem
-    if (is.null(weights)) weights <- rep.int(1, NROW(y))
     if (!family@weights(weights))
         stop(sQuote("family"), " is not able to deal with weights")
 
     ### rescale weights (because of the AIC criterion)
     ### <FIXME> is this correct with zero weights??? </FIXME>
     weights <- rescale_weights(weights)
-    if (is.null(oobweights))
-        oobweights <- as.numeric(weights == 0)
+    
     if (control$risk == "oobag") {
         triskfct <- function(y, f) riskfct(y, f, oobweights)
     } else {
