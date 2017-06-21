@@ -1,39 +1,22 @@
-\name{mboost}
-\alias{mboost}
+\name{mboost_fit}
 \alias{mboost_fit}
 \title{ Model-based Gradient Boosting }
 \description{
-  Gradient boosting for optimizing arbitrary loss functions, where component-wise
-  models are utilized as base-learners.
+  Work-horse for gradient boosting for optimizing arbitrary loss functions, 
+  where component-wise models are utilized as base-learners. Usually, this function 
+  is not called directly by the user.
 }
 \usage{
-mboost(formula, data = list(), na.action = na.omit,
-       baselearner = c("bbs", "bols", "btree", "bss", "bns"), ...)
 mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
            family = Gaussian(), control = boost_control(), oobweights =
            as.numeric(weights == 0))
 }
 \arguments{
-  \item{formula}{ a symbolic description of the model to be fit. }
-  \item{data}{ a data frame containing the variables in the model. }
-  \item{na.action}{a function which indicates what should happen when
-    the data contain \code{NA}s.}
-  \item{baselearner}{ a character specifying the component-wise base
-    learner to be used: \code{\link{bbs}} means P-splines with a
-    B-spline basis (see Schmid and Hothorn 2008), \code{\link{bols}}
-    linear models and \code{\link{btree}} boosts stumps.
-    \code{bss} and \code{bns} are deprecated.
-    Component-wise smoothing splines have been considered in Buehlmann
-    and Yu (2003) and Schmid and Hothorn (2008) investigate P-splines
-    with a B-spline basis. Kneib, Hothorn and Tutz (2009) also utilize
-    P-splines with a B-spline basis, supplement them with their
-    bivariate tensor product version to estimate interaction surfaces
-    and spatial effects and also consider random effects base
-    learners.}
-  \item{blg}{ a list of objects of class \code{blg}, as returned by all
-    base-learners.}
+  \item{blg}{ a list of objects of elements of class \code{blg}, as returned by 
+    all base-learners.}
   \item{response}{ the response variable.}
-  \item{weights}{ a numeric vector of weights (optional).}
+  \item{weights}{ (optional) a numeric vector of weights to be used in 
+    the fitting process.}
   \item{offset}{ a numeric vector to be used as offset (optional).}
   \item{family}{a \code{\link{Family}} object.}
   \item{control}{ a list of parameters controlling the algorithm. For
@@ -42,18 +25,23 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
     used for the out-of-bag risk (i.e., if \code{boost_control(risk =
       "oobag")}). This argument is also used internally by
     \code{cvrisk}. }
-  \item{\dots}{  additional arguments passed to \code{\link{mboost_fit}},
-    including \code{weights}, \code{offset}, \code{family} and
-    \code{control}. }
+  \item{\dots}{  additional arguments passed to \code{\link{mboost_fit}}; currently none. }
 }
 \details{
   The function implements component-wise functional gradient boosting in
-  a generic way. Basically, the algorithm is initialized with a function
+  a generic way. This function is the main work horse and used as back-end by
+  all boosting algorithms in a unified way. Usually, this function is not
+  called directly.  Note that the more convenient modelling interfaces 
+  \code{\link{gamboost}}, \code{\link{glmboost}} and \code{\link{blackboost}} 
+  all call \code{mboost_fit}.
+  
+  Basically, the algorithm is initialized with a function
   for computing the negative gradient of the loss function (via its
   \code{family} argument) and one or more base-learners (given as
   \code{blg}). Usually \code{blg} and \code{response} are computed in
   the functions \code{\link{gamboost}}, \code{\link{glmboost}},
-  \code{\link{blackboost}} or \code{mboost}.
+  \code{\link{blackboost}} or \code{\link{mboost}}. See there for details 
+  on the specification of base-learners.
 
   The algorithm minimized the in-sample empirical risk defined as
   the weighted sum (by \code{weights}) of the loss function (corresponding
@@ -65,7 +53,7 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
 
   Base-learners can be specified via a formula interface
   (function \code{mboost}) or as a list of objects of class \code{bl},
-  see \code{\link{bols}}.
+  see, e.g., \code{\link{bols}}.
 
   \code{oobweights} is a vector used internally by \code{cvrisk}. When carrying
   out cross-validation to determine the optimal stopping iteration of a boosting
@@ -73,11 +61,6 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   that the cross-validated risk is computed using the same observation weights
   as those used for fitting the boosting model. It is strongly recommended to
   leave this argument unspecified.
-
-  Note that the more convenient modelling interfaces \code{\link{gamboost}},
-  \code{\link{glmboost}} and \code{\link{blackboost}} all call
-  \code{mboost} directly.
-
 }
 \value{
   An object of class \code{mboost} with \code{\link{print}},
