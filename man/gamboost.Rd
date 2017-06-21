@@ -1,22 +1,43 @@
-\name{gamboost}
+\name{mboost}
+\alias{mboost}
 \alias{gamboost}
-\title{ Gradient Boosting with Smooth Components }
+\title{ Gradient Boosting for Additive Models }
 \description{
   Gradient boosting for optimizing arbitrary loss functions, where component-wise
-  smoothing procedures are utilized as base-learners.
+  arbitrary base-learners, e.g., smoothing procedures,  are utilized as additive
+  base-learners.
 }
 \usage{
-gamboost(formula, data = list(),
-         baselearner = c("bbs", "bols", "btree", "bss", "bns"),
+mboost(formula, data = list(), na.action = na.omit, weights = NULL, 
+       offset = NULL, family = Gaussian(), control = boost_control(),
+       oobweights = NULL, baselearner = c("bbs", "bols", "btree", "bss", "bns"), 
+       ...)
+
+gamboost(formula, data = list(), na.action = na.omit, weights = NULL, 
+         offset = NULL, family = Gaussian(), control = boost_control(),
+         oobweights = NULL, baselearner = c("bbs", "bols", "btree", "bss", "bns"),
          dfbase = 4, ...)
 }
 \arguments{
   \item{formula}{ a symbolic description of the model to be fit. }
+  
   \item{data}{ a data frame containing the variables in the model. }
+  \item{na.action}{a function which indicates what should happen when
+    the data contain \code{NA}s.}
+    \item{weights}{ (optional) a numeric vector of weights to be used in 
+    the fitting process.}
+  \item{offset}{ a numeric vector to be used as offset (optional).}
+  \item{family}{a \code{\link{Family}} object.}
+  \item{control}{ a list of parameters controlling the algorithm. For
+    more details see \code{\link{boost_control}}. }
+  \item{oobweights}{ an additional vector of out-of-bag weights, which is
+    used for the out-of-bag risk (i.e., if \code{boost_control(risk =
+      "oobag")}). This argument is also used internally by
+    \code{cvrisk}. }
   \item{baselearner}{ a character specifying the component-wise base
     learner to be used: \code{\link{bbs}} means P-splines with a
     B-spline basis (see Schmid and Hothorn 2008), \code{\link{bols}}
-    linear models and \code{\link{btree}} boosts stumps.
+    linear models and \code{\link{btree}} boosts stumps. 
     \code{bss} and \code{bns} are deprecated.
     Component-wise smoothing splines have been considered in Buehlmann
     and Yu (2003) and Schmid and Hothorn (2008) investigate P-splines
@@ -25,23 +46,33 @@ gamboost(formula, data = list(),
     bivariate tensor product version to estimate interaction surfaces
     and spatial effects and also consider random effects base
     learners.}
-  \item{dfbase}{ an integer vector giving the degrees of freedom for the smoothing
-    spline, either globally for all variables (when its length is one)
-    or separately for each single covariate. }
-  \item{\dots}{ additional arguments passed to \code{\link{mboost_fit}},
-    including \code{weights}, \code{offset}, \code{family} and
-    \code{control}. For default values see \code{\link{mboost_fit}}.}
+  \item{dfbase}{ a single integer giving the degrees of freedom for P-spline 
+    base-learners (\code{\link{bbs}}) globally. }
+  \item{\dots}{ additional arguments passed to \code{\link{mboost_fit}}; currently none.}
 }
 \details{
 
   A (generalized) additive model is fitted using a boosting algorithm based on
-  component-wise univariate base-learners. The base-learners can either be
-  specified via the \code{formula} object or via the \code{baselearner} argument
-  (see \code{\link{bbs}} for an example). If the base-learners specified in
-  \code{formula} differ from \code{baselearner}, the latter argument will be
-  ignored. Furthermore, two additional base-learners can be specified in
-  \code{formula}: \code{\link{bspatial}} for bivariate tensor product
-  penalized splines and \code{\link{brandom}} for random effects.
+  component-wise base-learners. 
+  
+  The base-learners can either be specified via the \code{formula} object or via 
+  the \code{baselearner} argument. The latter argument is the default base-learner 
+  which is used for all variables in the formula, whithout explicit base-learner 
+  specification (i.e., if the base-learners are explicitly specified in \code{formula}, 
+  the \code{baselearner} argument will be ignored for this variable). 
+  
+  Of note, \code{"bss"} and \code{"bns"} are deprecated and only in the list for 
+  backward compatibility.
+  
+  Note that more base-learners (i.e., in addition to the ones provided
+  via \code{baselearner}) can be specified in \code{formula}. See 
+  \code{\link{baselearners}} for details.
+  
+  The only difference when calling \code{mboost} and \code{gamboost} is that the
+  latter function allows one to specify default degrees of freedom for smooth 
+  effects specified via \code{baselearner = "bbs"}. In all other cases, 
+  degrees of freedom need to be set manually via a specific definition of the 
+  corresponding base-learner.
 }
 \value{
   An object of class \code{mboost} with \code{\link{print}},
@@ -80,13 +111,18 @@ gamboost(formula, data = list(),
 
   Available as vignette via: \code{vignette(package = "mboost", "mboost_tutorial")}
 }
-\seealso{\code{\link{mboost}} for the generic boosting function and
-  \code{\link{glmboost}} for boosted linear models and
-  \code{\link{blackboost}} for boosted trees. See e.g. \code{\link{bbs}}
-  for possible base-learners. See \code{\link{cvrisk}} for
-  cross-validated stopping iteration. Furthermore see
-  \code{\link{boost_control}}, \code{\link{Family}} and
-  \code{\link[mboost]{methods}}.}
+\seealso{
+  See \code{\link{mboost_fit}} for the generic boosting function, 
+  \code{\link{glmboost}} for boosted linear models, and
+  \code{\link{blackboost}} for boosted trees. 
+  
+  See \code{\link{baselearners}} for possible base-learners. 
+  
+  See \code{\link{cvrisk}} for cross-validated stopping iteration. 
+  
+  Furthermore see \code{\link{boost_control}}, \code{\link{Family}} and
+  \code{\link[mboost]{methods}}.
+}
 \examples{
 
     ### a simple two-dimensional example: cars data
