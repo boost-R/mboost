@@ -202,7 +202,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
             control$trace <- trace
         ### use user specified offset only (since it depends on weights otherwise)
         if (!is.null(offsetarg)) offsetarg <- offset
-        mboost_fit(blg = blg, response = response, na.action = na.action, weights = weights,
+        mboost_fit(blg = blg, response = response, weights = weights,
                    offset = offsetarg, family = family, control = control,
                    oobweights = oobweights)
     }
@@ -566,8 +566,8 @@ mboost <- function(formula, data = list(), na.action = na.omit, weights = NULL,
     response <- eval(as.expression(formula[[2]]), envir = data,
                      enclos = environment(formula))
     
-    ret <- mboost_fit(bl, response = response, na.action = na.action, 
-                      weights = weights, offset = offset, family = family, 
+    ret <- mboost_fit(bl, response = response, weights = weights, 
+                      offset = offset, family = family, 
                       control = control, oobweights = oobweights, ...)
     
     if (is.data.frame(data) && nrow(data) == length(response))
@@ -635,8 +635,8 @@ blackboost <- function(formula, data = list(),
     ## drop weights
     mf$"(weights)" <- NULL
     bl <- list(btree(mf, tree_controls = tree_controls))
-    ret <- mboost_fit(bl, response = response, na.action = na.action, 
-                      weights = weights, offset = offset, family = family, 
+    ret <- mboost_fit(bl, response = response,  weights = weights, 
+                      offset = offset, family = family, 
                       control = control, oobweights = oobweights, ...)
     ret$call <- cl
     ret$rownames <- rownames(mf)
@@ -701,8 +701,8 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
     bl <- list(bolscw(X))
     response <- model.response(mf)
     weights <- model.weights(mf)
-    ret <- mboost_fit(bl, response = response, na.action = na.action, 
-                      weights = weights, offset = offset, family = family, 
+    ret <- mboost_fit(bl, response = response, weights = weights, 
+                      offset = offset, family = family, 
                       control = control, oobweights = oobweights, ...)
     ret$newX <- newX
     ret$assign <- assign
@@ -812,8 +812,8 @@ glmboost.matrix <- function(x, y, center = TRUE, weights = NULL,
         return(NULL)
     }
     bl <- list(bolscw(X))
-    ret <- mboost_fit(bl, response = y, na.action = na.action, 
-                      weights = weights, offset = offset, family = family, 
+    ret <- mboost_fit(bl, response = y, weights = weights, 
+                      offset = offset, family = family, 
                       control = control, oobweights = oobweights, ...)
     ret$newX <- newX
     ret$assign <- assign
