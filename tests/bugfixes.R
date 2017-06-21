@@ -545,3 +545,18 @@ stopifnot(all.equal(fitted(mod, aggregate = "cumsum")[,10],
                     fitted(mod), check.attributes = FALSE))
 stopifnot(all.equal(fitted(mod, aggregate = "cumsum"), 
                     fitted(mod, newdata = bodyfat, aggregate = "cumsum")))
+
+
+## make sure weights are subset if missing values are present
+weights <- sample(1:100, 100, replace=FALSE)
+x <- rnorm(100)
+y <- runif(100)
+# create missing value
+x[25] <- NA
+myData <- data.frame(x=x, y=y)
+## was broken:
+gamboost(y ~ bols(x), data = myData, weights = weights, family = Gaussian())
+mboost(y ~ bols(x), data = myData, weights = weights, family = Gaussian())
+## was always working
+glmboost(y ~ x, data = myData, weights = weights, family = Gaussian())
+blackboost(y ~ x, data = myData, weights = weights, family = Gaussian())

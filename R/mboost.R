@@ -487,10 +487,21 @@ mboost <- function(formula, data = list(), na.action = na.omit, weights = NULL,
     }
 
     if (is.data.frame(data)) {
-        if (!all(Complete.cases(data))) {
+        if (!all(cc <- Complete.cases(data))) {
             ## drop cases with missing values in any of the specified variables:
             vars <- all.vars(formula)[all.vars(formula) %in% names(data)]
             data <- na.action(data[, vars])
+            
+            ## check if weights need to be removed as well
+            if (!is.null(weights) && nrow(data) < length(weights)) {
+                if (sum(cc) == nrow(data))
+                    weights <- weights[cc]
+            }
+            ## check if oobweights need to be removed as well
+            if (!is.null(oobweights) && nrow(data) < length(oobweights)) {
+                if (sum(cc) == nrow(data))
+                    oobweights <- oobweights[cc]
+            }
         }
     } else {
         if (any(unlist(lapply(data, function(x) !all(Complete.cases(x))))))
