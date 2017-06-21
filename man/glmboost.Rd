@@ -13,10 +13,10 @@
 \method{glmboost}{formula}(formula, data = list(), weights = NULL,
           offset = NULL, family = Gaussian(),
           na.action = na.pass, contrasts.arg = NULL,
-          center = TRUE, control = boost_control(), ...)
+          center = TRUE, control = boost_control(), oobweights = NULL, ...)
 \method{glmboost}{matrix}(x, y, center = TRUE, weights = NULL,
           offset = NULL, family = Gaussian(),
-          na.action = na.pass, control = boost_control(), ...)
+          na.action = na.pass, control = boost_control(), oobweights = NULL, ...)
 \method{glmboost}{default}(x, ...)
 }
 \arguments{
@@ -35,6 +35,10 @@
   \item{center}{logical indicating of the predictor variables are centered before fitting.}
   \item{control}{ a list of parameters controlling the algorithm. For
     more details see \code{\link{boost_control}}. }
+  \item{oobweights}{ an additional vector of out-of-bag weights, which is
+    used for the out-of-bag risk (i.e., if \code{boost_control(risk =
+      "oobag")}). This argument is also used internally by
+    \code{cvrisk}. }    
   \item{x}{ design matrix. Sparse matrices of class \code{Matrix} can be used as well.}
   \item{y}{ vector of responses. }
   \item{\dots}{ additional arguments passed to \code{\link{mboost_fit}}; currently none.}

@@ -650,7 +650,8 @@ glmboost <- function(x, ...) UseMethod("glmboost", x)
 glmboost.formula <- function(formula, data = list(), weights = NULL,
                              offset = NULL, family = Gaussian(),
                              na.action = na.pass, contrasts.arg = NULL,
-                             center = TRUE, control = boost_control(), ...) {
+                             center = TRUE, control = boost_control(), 
+                             oobweights = NULL, ...) {
 
     ## We need at least variable names to go ahead
     if (length(formula[[3]]) == 1) {
@@ -760,7 +761,8 @@ glmboost.formula <- function(formula, data = list(), weights = NULL,
 
 glmboost.matrix <- function(x, y, center = TRUE, weights = NULL,
                             offset = NULL, family = Gaussian(),
-                            na.action = na.pass, control = boost_control(), ...) {
+                            na.action = na.pass, control = boost_control(), 
+                            oobweights = NULL, ...) {
 
     X <- x
     if (nrow(X) != NROW(y))
