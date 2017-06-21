@@ -1,6 +1,26 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
+\section{Changes in mboost version 2.8-1 (2017-xx-yy)}{
+  \subsection{User-visible changes}{
+    \itemize{
+      \item Added all possible options to the specific boosting functions
+        instead of passing the options via \code{...} to \code{mboost_fit}.
+        Fixes \href{https://github.com/boost-R/mboost/issues/81}{#81}.
+    }
+  }
+  \subsection{Miscellaneous}{
+    \itemize{
+    }
+  }
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Fix handling of missing values in \code{mboost} and \code{gamboost}
+        when weights are specified. Fixes \href{https://github.com/boost-R/mboost/issues/80}{#80}.
+    }
+  }
+}
+  
 \section{Changes in mboost version 2.8-0 (2017-05-04)}{
   \subsection{User-visible changes}{
     \itemize{
