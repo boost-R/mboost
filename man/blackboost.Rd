@@ -8,6 +8,9 @@
 \usage{
 blackboost(formula, data = list(),
            weights = NULL, na.action = na.pass,
+           offset = NULL, family = Gaussian(), 
+           control = boost_control(),
+           oobweights = NULL,
            tree_controls = party::ctree_control(
                teststat = "max",
                testtype = "Teststatistic",
@@ -22,6 +25,14 @@ blackboost(formula, data = list(),
     process. }
   \item{na.action}{a function which indicates what should happen when the data
     contain \code{NA}s. }
+  \item{offset}{ a numeric vector to be used as offset (optional).}
+  \item{family}{a \code{\link{Family}} object.}
+  \item{control}{ a list of parameters controlling the algorithm. For
+    more details see \code{\link{boost_control}}. }
+  \item{oobweights}{ an additional vector of out-of-bag weights, which is
+    used for the out-of-bag risk (i.e., if \code{boost_control(risk =
+      "oobag")}). This argument is also used internally by
+    \code{cvrisk}. }    
   \item{tree_controls}{ an object of class \code{"TreeControl"}, which
     can be obtained using \code{\link[party]{ctree_control}}. Defines
     hyper-parameters for the trees which are used as base-learners. It
@@ -78,12 +89,19 @@ blackboost(formula, data = list(),
   172--181.
 
 }
-\seealso{\code{\link{mboost}} for the generic boosting function and
-  \code{\link{glmboost}} for boosted linear models and
-  \code{\link{gamboost}} for boosted additive models. See
-  \code{\link{cvrisk}} for cross-validated stopping iteration.
-  Furthermore see \code{\link{boost_control}},  \code{\link{Family}} and
-  \code{\link[mboost]{methods}}}
+
+\seealso{
+  See \code{\link{mboost_fit}} for the generic boosting function, 
+  \code{\link{glmboost}} for boosted linear models, and
+  \code{\link{gamboost}} for boosted additive models. 
+  
+  See \code{\link{baselearners}} for possible base-learners. 
+  
+  See \code{\link{cvrisk}} for cross-validated stopping iteration. 
+  
+  Furthermore see \code{\link{boost_control}}, \code{\link{Family}} and
+  \code{\link[mboost]{methods}}.
+}
 \examples{
 
 ### a simple two-dimensional example: cars data
