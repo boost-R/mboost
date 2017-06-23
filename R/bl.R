@@ -25,18 +25,20 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
 
     ### there may be more efficient ways to compute XtX, but we do this
     ### elsewhere (e.g. in %O%)
-    if (is.null(XtX)) XtX <- crossprod(X * weights, X)
+    if (is.null(XtX)) 
+        XtX <- crossprod(X * sqrt(w))
     if (is.null(dmat)) {
         if(is(XtX, "Matrix")) diag <- Diagonal
         dmat <- diag(ncol(XtX))
     }
+    ## avoid that XtX matrix is not (numerically) singular
     A <- XtX + dmat * options("mboost_eps")[[1]]
     ## make sure that A is also numerically positiv semi-definite
     A <- make_psd(as.matrix(A))
     ## make sure that A is also numerically symmetric
     if (is(A, "Matrix"))
         A <- forceSymmetric(A)
-    Rm <- solve(chol(A))
+    Rm <- backsolve(chol(A), x = diag(ncol(XtX)))
     ## singular value decomposition without singular vectors
     d <- try(svd(crossprod(Rm, dmat) %*% Rm, nu=0, nv=0)$d)
     ## if unsucessfull try the same computation but compute singular vectors as well
