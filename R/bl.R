@@ -1,5 +1,5 @@
 ### compute Ridge shrinkage parameter lambda from df
-### or the other way round
+### or the other weightsay round
 df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
                       XtX = NULL) {
 
@@ -26,7 +26,7 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
     ### there may be more efficient ways to compute XtX, but we do this
     ### elsewhere (e.g. in %O%)
     if (is.null(XtX)) 
-        XtX <- crossprod(X * sqrt(w))
+        XtX <- crossprod(X * sqrt(weights))
     if (is.null(dmat)) {
         if(is(XtX, "Matrix")) diag <- Diagonal
         dmat <- diag(ncol(XtX))
