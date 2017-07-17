@@ -159,7 +159,7 @@ bl1 \%O\% bl2
                  (from package \code{fields}) is used. }
   \item{args}{ a named list of arguments to be passed to
                \code{cov.function}. Thus strongly dependent on the
-               specified \code{cov.function}. }
+               specified \code{cov.function}.}
   \item{kernel}{one of \code{"lin"} (linear kernel), \code{"sia"} (size adjusted kernel), 
                 or \code{"net"} (network kernel). For details see 
                 \code{\link[kangar00]{calc_kernel}}}
@@ -378,6 +378,8 @@ bl1 \%O\% bl2
   \code{bkernel} can be used to fit linear (\code{kernel = "lin"}), 
   size-adjusted (\code{kernel = "sia"}) or network (\code{kernel = "net"})
   kernels based on genetic pathways for genome-wide assosiation studies. 
+  For details see Friedrichs et al. (2017) and check the associated package
+  \CRANpkg{kangar00}.
 
   \code{buser(X, K)} specifies a base-learner with user-specified design
   matrix \code{X} and penalty matrix \code{K}, where \code{X} and
