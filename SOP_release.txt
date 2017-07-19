@@ -64,7 +64,8 @@
     To use the script copy it to R RHOME (< enter this in the console) /bin and make it executable.
     Alternatively do the following:
         mv .RbuildignoreCRAN .Rbuildignore
-        R CMD build --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
+        cd ..
+        R CMD build --resave-data --compact-vignettes mboost && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
         git checkout -- .RbuildignoreCRAN .Rbuildignore
 
     Check that reverse dependencies don't break.
