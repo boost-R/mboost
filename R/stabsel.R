@@ -1,5 +1,5 @@
 ## stabsel method for mboost; requires stabs
-stabsel.mboost <- function(x, cutoff, q, PFER,
+stabsel.mboost <- function(x, cutoff, q, PFER, grid = 0:mstop(x),
                     folds = subsample(model.weights(x), B = B),
                     B = ifelse(sampling.type == "MB", 100, 50),
                     assumption = c("unimodal", "r-concave", "none"),
@@ -16,7 +16,15 @@ stabsel.mboost <- function(x, cutoff, q, PFER,
     else
         assumption <- match.arg(assumption)
 
-    B <- ncol(folds)
+    if (!is.null(folds)) {
+        if (!is.null(B)) {
+            if (ncol(folds) != B)
+                warning("B should be equal to number of folds, i.e., ncol(folds). B was set to ncol(folds)")
+        }
+        B <- ncol(folds)
+    } else {
+        folds <- subsample(model.weights(x), B = B)
+    }
 
     pars <- stabsel_parameters(p = p, cutoff = cutoff, q = q,
                                PFER = PFER, B = B,
@@ -40,10 +48,25 @@ stabsel.mboost <- function(x, cutoff, q, PFER,
         ## use complementary pairs
         folds <- cbind(folds, model.weights(x) - folds)
     }
-    ss <- cvrisk(x, fun = fun,
-                 folds = folds,
-                 papply = papply, ...)
-
+    
+    dots <- list(...)
+    if (length(dots) >= 1 && "mstop" %in% names(dots)) {
+        mstop <- dots$mstop
+        if (!missing(grid)) {
+            ## if grid and mstop were specified check if equivalent (and be tolerant), issue an error otherwise
+            if (!isTRUE(all.equal(grid, 0:mstop, check.attributes = FALSE)))
+                stop("Please specify only one of grid (preferred) or mstop")
+        } 
+        grid <- 0:mstop
+        dots$mstop <- NULL
+    } else {                              
+        if (!isTRUE(all.equal(grid, 0:max(grid), check.attributes = FALSE)))
+            stop("grid must be of the form 0:m, i.e., starting at 0 with increments of 1")
+    }
+    
+    ss <- do.call(cvrisk, c(list(object = x, fun = fun, folds = folds, papply = papply,
+                                 grid = grid), dots))
+    
     if (verbose){
         qq <- sapply(ss, function(x) length(unique(x)))
         sum_of_violations <- sum(qq < q)
@@ -56,12 +79,8 @@ stabsel.mboost <- function(x, cutoff, q, PFER,
     }
 
 
-    ## if grid specified in '...'
-    if (length(list(...)) >= 1 && "grid" %in% names(list(...))) {
-        m <- max(list(...)$grid)
-    } else {
-        m <- mstop(x)
-    }
+    ## extract mstop from grid
+    m <- max(grid)
     ret <- matrix(0, nrow = length(ibase), ncol = m)
     for (i in 1:length(ss)) {
         tmp <- sapply(ibase, function(x)
