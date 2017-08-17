@@ -34,8 +34,18 @@ mydf.gb <- glmboost(y ~ ., data = mydf, family = fm,
                     control = boost_control(mstop = 1000, nu = 1))
 aic <- AIC(mydf.gb, method = "corrected")
 ht <- hatvalues(mydf.gb)
-mstop(aic)
+stopifnot(mstop(aic) == 12)
+plot(aic, ylim = c(0,3))
 mydf.lm <- lm(y ~ ., data = mydf)
+
+## use AIC with active set as df
+aic2 <- AIC(mydf.gb, method = "corrected", df = "actset")
+stopifnot(mstop(aic2)== 9)
+stopifnot(attr(aic2, "df")[9] == 9)
+
+## use gMDL
+aic3 <- AIC(mydf.gb, method = "gMDL")
+stopifnot(mstop(aic3) == 4)
 
 ### compare coefficients
 which(abs(coef(mydf.lm, which = "")) < abs(coef(mydf.gb[mstop(aic)], which = "")))
