@@ -251,9 +251,6 @@ update.mboost <- function(object, weights, oobweights = NULL,
 model.frame.mboost <- function(formula, ...)
     formula$model.frame(...)
 
-response.mboost <- function(object, ...)
-    object$response
-
 predict.glmboost <- function(object, newdata = NULL,
     type = c("link", "response", "class"), which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...) {
@@ -530,7 +527,7 @@ extract.mboost <- function(object, what = c("design", "penalty", "lambda", "df",
 }
 
 extract.glmboost <- function(object, what = c("design", "coefficients", "residuals",
-                                     "variable.names", "bnames", "offset",
+                                     "variable.names", "offset",
                                      "nuisance", "weights", "control"),
                              which = NULL, asmatrix = FALSE, ...){
     what <- match.arg(what)
@@ -559,7 +556,6 @@ extract.glmboost <- function(object, what = c("design", "coefficients", "residua
            "coefficients" = return(coef(object, which = which)),
            "residuals" = return(residuals(object)),
            "variable.names" = return(variable.names(object, which)),
-           "bnames" = return(get("bnames", envir = environment(object$update))[which]),
            "offset" = return(object$offset),
            "nuisance" = return(nuisance(object)),
            "weights" = return(model.weights(object)),

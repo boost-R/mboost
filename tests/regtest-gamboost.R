@@ -16,13 +16,33 @@ cars.gb
 aic <- AIC(cars.gb, method = "corrected")
 aic
 
+aic2 <- AIC(cars.gb, method = "corrected", df = "actset")
+stopifnot(all.equal(aic, aic2))
+
 ht <- hatvalues(cars.gb)
+
+## extract residual
+stopifnot(all.equal(resid(cars.gb), cars.gb$resid()))
+par(mfrow = c(1, 2))
+plot(cars$speed, resid(cars.gb[0]))
+cars$resid <- resid(cars.gb)
+lines(cars$speed, predict(loess(resid ~ speed, cars)), col = "red")
+plot(cars$speed, resid(cars.gb[50]))
+cars$resid <- resid(cars.gb)
+lines(cars$speed, predict(loess(resid ~ speed, cars)), col = "red")
+
+## check return = FALSE
+stopifnot(is.null(cars.gb[10, return = FALSE]))
+stopifnot(mstop(cars.gb) == 10)
 
 ### plot fit
 plot(dist ~ speed, data = cars)
 lines(cars$speed, predict(cars.gb[mstop(AIC(cars.gb))]), col = "red")
 lines(cars$speed, predict(smooth.spline(cars$speed, cars$dist), cars$speed)$y,
       col = "green")
+
+## print model summary
+summary(cars.gb)
 
 #### check boosting hat matrix and subsetting / predict
 stopifnot(isTRUE(all.equal(drop(attr(ht, "hatmatrix") %*% cars$dist),

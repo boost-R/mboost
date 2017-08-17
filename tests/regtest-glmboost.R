@@ -71,6 +71,25 @@ cf <- coef(cars.gb)
 attr(cf, "offset") <- NULL
 stopifnot(all.equal(cf, coef(lm(dist ~ speed, data = cars))))
 
+### check aggregate = "none"
+stopifnot(all.equal(cumsum(c(coef(cars.gb, aggregate = "none", off2int = TRUE)$speed)),
+        c(coef(cars.gb, aggregate = "cumsum", off2int = TRUE)$speed)))
+
+### extract model terms
+stopifnot(all.equal(extract(cars.gb, what = "design"),
+                    matrix(c(rep(1, 50), cars$speed)),
+                    check.attributes = FALSE))
+stopifnot(all.equal(extract(cars.gb, what = "design", which = "(Intercept)"), 
+                    rep(1, 50), check.attributes = FALSE))
+stopifnot(all.equal(extract(cars.gb, what = "coefficients"), coef(cars.gb)))
+stopifnot(all.equal(extract(cars.gb, what = "residuals"), resid(cars.gb)))
+stopifnot(all.equal(extract(cars.gb, what = "variable.names"), variable.names(cars.gb)))
+stopifnot(all.equal(extract(cars.gb, what = "offset"), 0))
+stopifnot(all.equal(extract(cars.gb, what = "nuisance"), nuisance(cars.gb)))
+stopifnot(is.na(extract(cars.gb, what = "nuisance")))
+stopifnot(all.equal(extract(cars.gb, what = "weights"), model.weights(cars.gb)))
+stopifnot(all.equal(extract(cars.gb, what = "control"), boost_control(mstop = 1000, nu = 1)))
+
 ### logistic regression
 mydf <- data.frame(x = runif(100), z = rnorm(100),
                    y = factor(c(rep(0, 30), rep(1, 70))))

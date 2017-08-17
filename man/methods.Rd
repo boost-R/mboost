@@ -99,7 +99,7 @@ mstop(x) <- value
                          "nuisance", "weights", "index", "control"),
         which = NULL, ...)
 \method{extract}{glmboost}(object, what = c("design", "coefficients", "residuals",
-                         "variable.names", "bnames", "offset",
+                         "variable.names", "offset",
                          "nuisance", "weights", "control"),
         which = NULL, asmatrix = FALSE, ...)
 \method{extract}{blg}(object, what = c("design", "penalty", "index"),
