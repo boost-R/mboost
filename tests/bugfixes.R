@@ -498,6 +498,18 @@ plot(mod, which = 2, newdata = nd)
 nd <- data.frame(waistcirc = 1, age = 1,
                  hipcirc = seq(min(bf$hipcirc), max(bf$hipcirc), length = 100))
 plot(mod, which = 2, newdata = nd)
+lines(mod, which = 2, rug = TRUE)
+## check user-specified labels
+plot(mod, which = 2, newdata = nd, xlab = "hip circumference", ylab = "partial effect")
+
+## check categorical variables
+bodyfat$hip_cat <- cut(bodyfat$hipcirc, breaks = 2)
+mod <- mboost(DEXfat ~ bols(waistcirc) + bols(hip_cat) + bols(waistcirc, hip_cat),
+              data = bodyfat)
+plot(mod, which = "hip_cat")
+mod <- mboost(DEXfat ~ bols(waistcirc) + bols(hip_cat) + bols(hip_cat, waistcirc),
+              data = bodyfat)
+plot(mod, which = "hip_cat")
 
 
 ## check if model fitting with very few knots works

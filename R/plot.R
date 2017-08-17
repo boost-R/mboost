@@ -116,7 +116,7 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                               type, ...)
                         if (rug){
                             rug(data[[1]], col = rugcol)
-                            warning(sQuote("rug  =TRUE"),
+                            warning(sQuote("rug = TRUE"),
                                     " should be used with care if ",
                                     sQuote("add = TRUE"))
                         }

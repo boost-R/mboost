@@ -6,13 +6,13 @@ test_that("stabsel works", {
     ### low-dimensional example
     mod <- glmboost(DEXfat ~ ., data = bodyfat)
     
-    ## compute cutoff ahead of running stabsel to see if it is a sensible
-    ## parameter choice.
-    ##   p = ncol(bodyfat) - 1 (= Outcome) + 1 ( = Intercept)
+    ## check if parameters are ocrrectly pre-computed
     s1 <- stabsel_parameters(q = 3, PFER = 1, p = ncol(bodyfat) - 1 + 1,
                        sampling.type = "MB")
     s2 <- stabsel(mod, q = 3, PFER = 1, sampling.type = "MB", eval = FALSE)
+    s2b <- stabsel_parameters(mod, q = 3, PFER = 1, sampling.type = "MB")
     expect_equal(s1, s2)
+    expect_equal(s1, s2b)
     
     s3 <- stabsel(mod, q = 3, PFER = 1, folds = NULL, 
                   sampling.type = "SS", eval = FALSE)

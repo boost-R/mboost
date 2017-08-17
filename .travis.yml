@@ -33,7 +33,7 @@ after_failure:
   - ./travis-tool.sh dump_logs
 
 after_success:
-    Rscript -e 'library(covr); coveralls()'
+    Rscript -e 'library(covr); coveralls(line_exclusions = list("R/mboost_intern.R", "R/AAA.R" = 14:28)'
 
 notifications:
   email:

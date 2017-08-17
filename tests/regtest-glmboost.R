@@ -54,6 +54,7 @@ data("cars")
 cars.gb <- glmboost(dist ~ speed, data = cars, family = fm, center = FALSE,
                     control = boost_control(mstop = 1000, nu = 1))
 cars.gb
+plot(cars.gb)
 
 ### coefficients should coincide
 cf <- coef(cars.gb)
