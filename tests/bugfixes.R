@@ -504,9 +504,12 @@ plot(mod, which = 2, newdata = nd, xlab = "hip circumference", ylab = "partial e
 
 ## check categorical variables
 bodyfat$hip_cat <- cut(bodyfat$hipcirc, breaks = 2)
-mod <- mboost(DEXfat ~ bols(waistcirc) + bols(hip_cat) + bols(waistcirc, hip_cat),
-              data = bodyfat)
-plot(mod, which = "hip_cat")
+bodyfat$waist_cat <- cut(bodyfat$waistcirc, breaks = 2)
+mod <- mboost(DEXfat ~ bols(waist_cat) + bols(hip_cat), data = bodyfat)
+plot(mod, which = "hip_cat", ylim = c(-4,9))
+plot(mod, which = "hip_cat", ylim = c(-4,9), xaxt = "n", xlab = "")
+lines(mod, which = "waist_cat", col = "red")
+
 mod <- mboost(DEXfat ~ bols(waistcirc) + bols(hip_cat) + bols(hip_cat, waistcirc),
               data = bodyfat)
 plot(mod, which = "hip_cat")
