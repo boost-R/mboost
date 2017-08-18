@@ -14,6 +14,10 @@ stopifnot(all.equal(coef(refit), coef(glm)))
 glm[200]
 confint.glm <- confint(glm, B = 100, B.mstop = 2)
 confint.glm
+print(confint.glm, which = 2)
+res <- try(print(confint.glm, which = 20), silent = TRUE)
+stopifnot(inherits(res, "try-error"))
+print(confint.glm, level = 0.8, pe = TRUE)
 
 confint.gam <- confint(gam, B = 100, B.mstop = 1)
 plot(confint.gam, which = 1)
