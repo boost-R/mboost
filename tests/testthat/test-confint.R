@@ -7,7 +7,7 @@ bodyfat$ID <- factor(sample(1:5, size = nrow(bodyfat), replace = TRUE))
 ### fit models
 glm <- glmboost(DEXfat ~ ., data = bodyfat)
 gam <- gamboost(DEXfat ~ age + elbowbreadth + kneebreadth + anthro3a +
-                    anthro3b + anthro3c + anthro4 + bbs(hipcirc, waistcirc, df = 6), data = bodyfat)
+                    anthro3b + anthro3c + anthro4 + bbs(hipcirc, waistcirc, df = 6) + brandom(ID), data = bodyfat)
 
 ### check confidence intervals
 test_that("confint.glmboost works", {
@@ -36,17 +36,33 @@ test_that("confint.gamboost works", {
     plot(confint.gam, which = 1)
     lines(confint.gam, which = 1, level = 0.9)
     plot(confint.gam, which = 4)
-    plot(confint.gam, which = 5)
+    
+    ## plot raw data
+    plot(confint.gam, which = 5, raw = TRUE)
+    lines(confint.gam, which = 5)
+    lines(confint.gam, which = 5, raw = TRUE)
     
     ## level plots for interaction effects
     expect_warning(plot(confint.gam, which = 8), "The scale is not the same")
+    ## return plots without printing
+    res <- plot(confint.gam, which = 8, print_levelplot = FALSE)
+    expect_equal(res$mean$main, "Mean surface")
+    expect_equal(res$lowerCI$main, "2.5% CI surface")
+    expect_equal(res$upperCI$main, "97.5% CI surface")
     
+    ## plots for factors
+    plot(confint.gam, which = 9)
+    lines(confint.gam, which = 9, level = 0.8)
+
     ## B.mstop = 0 ad B.mstop = 1 almost identical in this CI
     plot(confint.gam, which = 4)
     lines(confint.gam2, which = 4)
     
     expect_error(plot(confint.gam), 
                  ".*Specify a single base-learner.*")
+    expect_error(lines(confint.gam), 
+                 ".*Specify a single base-learner.*")
+    
 })
 
 
