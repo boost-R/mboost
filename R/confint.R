@@ -233,7 +233,7 @@ plot.mboost.ci <- function(x, which, level = x$level,
     if (ncol(x$data[[which]]) > 1 && length(varying) > 1) {
 
         if (length(varying) > 2)
-            stop("Plots only implemented for more than 2 variables.")
+            stop("Plots are only implemented for up to 2 variables.")
 
         p1 <- plot(x$model, which = which, newdata = x$data[[which]],
                    main = "Mean surface", ...)
