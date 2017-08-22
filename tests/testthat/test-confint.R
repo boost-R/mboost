@@ -29,17 +29,17 @@ test_that("confint.glmboost works", {
 
 test_that("confint.gamboost works", {
     
-    confint.gam <- confint(gam, B = 100, B.mstop = 1)
-    confint.gam2 <- confint(gam, B = 100, B.mstop = 0)
+    expect_warning(confint.gam <- confint(gam, B = 10, B.mstop = 1), "zero weights", all = TRUE)
+    expect_output(confint.gam2 <- confint(gam, B = 10, B.mstop = 0), "Start computing bootstrap confidence intervals")
     
-    ## no effect (but some variability)
-    plot(confint.gam, which = 3)
-    lines(confint.gam, which = 3, level = 0.9)
-    ## effects
+    ## plot some effects
+    plot(confint.gam, which = 1)
+    lines(confint.gam, which = 1, level = 0.9)
     plot(confint.gam, which = 4)
     plot(confint.gam, which = 5)
+    
     ## level plots for interaction effects
-    plot(confint.gam, which = 8)
+    expect_warning(plot(confint.gam, which = 8), "The scale is not the same")
     
     ## B.mstop = 0 ad B.mstop = 1 almost identical in this CI
     plot(confint.gam, which = 4)
