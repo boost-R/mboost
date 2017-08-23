@@ -75,7 +75,7 @@ if (require("survival")) {
     fit <- glmboost(fm, data = ovarian, family = CoxPH())
     
     test_that("corrected crossvalidation works for CoxPH models", {
-        expect_warning(cvrisk(fit, corrected = TRUE), "All values in .grid. must be greater 0 if family = .CoxPH., hence 0 is dropped from grid")
+        expect_warning(cvrisk(fit, corrected = TRUE), "All values in .*grid.* must be greater 0 if family = .*CoxPH.*, hence 0 is dropped from grid")
         
         expect_silent(cvr <- cvrisk(fit, grid = seq(1, 101, by = 2), corrected = TRUE))
         expect_equal(dim(cvr), c(25, 51))
@@ -86,3 +86,5 @@ if (require("survival")) {
         expect_gt(mstop(cvr_uncor), 0)
     })
 }
+
+
