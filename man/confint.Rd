@@ -122,7 +122,7 @@
   \emph{Statistics & Computing}, \bold{26}, 1--14.
 }
 \author{
-  Benjamin Hofner <benjamin.hofner@fau.de>
+  Benjamin Hofner <benjamin.hofner@pei.de>
 }
 \seealso{
   \code{\link{cvrisk}} for crossvalidation approaches and
