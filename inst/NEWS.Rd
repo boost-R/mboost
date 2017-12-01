@@ -1,6 +1,15 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
+\section{Changes in mboost version 2.8-2 (2017-xx-yy)}{
+  \subsection{User-visible changes}{
+    \itemize{
+      \item Removed corrected cross-validation for Cox models (Verweij and van Houwelingen, 1993)
+        as it was not working. Closes \href{https://github.com/boost-R/mboost/issues/85}{#85}.
+    }
+  }
+}
+
 \section{Changes in mboost version 2.8-1 (2017-07-19)}{
   \subsection{User-visible changes}{
     \itemize{

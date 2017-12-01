@@ -74,14 +74,11 @@ if (require("survival")) {
     fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps
     fit <- glmboost(fm, data = ovarian, family = CoxPH())
     
-    test_that("corrected crossvalidation works for CoxPH models", {
-        expect_warning(cvrisk(fit, corrected = TRUE), "All values in .*grid.* must be greater 0 if family = .*CoxPH.*, hence 0 is dropped from grid")
+    test_that("crossvalidation works for CoxPH models", {
+        expect_error(cvrisk(fit, folds = cv(weights = model.weights(fit), type = "kfold", B = nrow(ovarian)),
+                            grid = 0:10), "Leave-one-out cross-validation cannot be used with .*family = CoxPH().*")
         
-        expect_silent(cvr <- cvrisk(fit, grid = seq(1, 101, by = 2), corrected = TRUE))
-        expect_equal(dim(cvr), c(25, 51))
-        ## expect_gt(mstop(cvr), 1) ## currently broken
-        
-        expect_silent(cvr_uncor <- cvrisk(fit, grid = seq(0, 10, by = 2), corrected = FALSE))
+        expect_silent(cvr_uncor <- cvrisk(fit, grid = seq(0, 10, by = 2)))
         expect_equal(dim(cvr_uncor), c(25, 6))
         expect_gt(mstop(cvr_uncor), 0)
     })
