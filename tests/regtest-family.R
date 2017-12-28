@@ -21,19 +21,9 @@ mod[1000]
 coef(mod)
 nuisance(mod)
 
-## the same but with highly skewed data (used to lead to an error as offset was not properly computed)
-x <- rnorm(100)
-y <- rnbinom(length(x), size = 2, mu = exp(x * 5))
-mod <- glmboost(y ~ x, family = NBinomial())
-## check same for Hurdle model
-x <- x[y > 0]
-y <- y[y > 0]
-mod <- glmboost(y ~ x, family = Hurdle())
-
 ### QuantReg and ExpectReg
 gamboost(y ~ x, family = QuantReg())
 gamboost(y ~ x, family = ExpectReg())
-
 
 if (require("MASS")) {
 
@@ -48,6 +38,15 @@ coef(mod)
 
 }
 
+## Count models as before but with highly skewed data 
+## (used to lead to an error as offset was not properly computed)
+x <- rnorm(100)
+y <- rnbinom(length(x), size = 2, mu = exp(x * 5))
+mod <- glmboost(y ~ x, family = NBinomial())
+## check same for Hurdle model
+x <- x[y > 0]
+y <- y[y > 0]
+mod <- glmboost(y ~ x, family = Hurdle())
 
 ### Weibull model
 
