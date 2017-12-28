@@ -448,14 +448,15 @@ NBinomial <- function(nuirange = c(0, 100)) {
         sum(w * plloss(y = y, f = fit, sigma = sigma))
     risk <- function(y, f, w = 1)
        sum(w * plloss(y = y, f = f, sigma = sigma))
-
     ngradient <- function(y, f, w = 1) {
         sigma <<- optimize(riskS, interval = nuirange,
                            y = y, fit = f, w = w)$minimum
         y - (y + sigma)/(exp(f) + sigma) * exp(f)
     }
 
-    Family(ngradient = ngradient, risk = risk,
+    Family(ngradient = ngradient, 
+           risk = risk,
+           offset = function(y, w) log(weighted.mean(y, w)),
            check_y = function(y) {
                stopifnot(all.equal(unique(y - floor(y)), 0))
                y
@@ -978,11 +979,15 @@ Hurdle <- function(nuirange = c(0, 100)){
                     sigma)^{-1 / sigma - 1} / (1 - (1 + exp(f) *
                     sigma)^{-1 / sigma})
                     }
-    Family(ngradient = ngradient, risk = risk, check_y = function(y) {
+    Family(ngradient = ngradient, risk = risk, 
+           offset = function(y, w) log(weighted.mean(y, w)),
+           check_y = function(y) {
                stopifnot(all.equal(unique(y - floor(y)), 0))
-               y}, nuisance = function() return(sigma),
-               name = "Hurdle model, negative binomial non-zero part",
-               response = function(f) exp(f))
+               y
+           }, 
+           nuisance = function() return(sigma),
+           name = "Hurdle model, negative binomial non-zero part",
+           response = function(f) exp(f))
 }
 
 ### multinomial logit model
