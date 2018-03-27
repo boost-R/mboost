@@ -77,11 +77,7 @@ X_user <- function(mf, vary, args) {
             colnames(ret) <- paste(colnames(ret), colnames(by)[i], sep = ":")
             ret
         })
-        if (is(X, "Matrix")) {
-            X <- do.call("cBind", DM)
-        } else {
-            X <- do.call("cbind", DM)
-        }
+        X <- do.call("cbind", DM)
         if (ncol(by) > 1)
             suppressMessages(K <- kronecker(diag(ncol(by)), K))
     }

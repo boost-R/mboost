@@ -136,7 +136,6 @@ X_ols <- function(mf, vary, args) {
         MATRIX <- MATRIX && options("mboost_useMatrix")$mboost_useMatrix
         if (MATRIX) {
             diag <- Diagonal
-            cbind <- cBind
             if (!is(X, "Matrix"))
                 X <- Matrix(X)
         }
@@ -148,11 +147,7 @@ X_ols <- function(mf, vary, args) {
                 colnames(ret) <- paste(colnames(ret), colnames(by)[i], sep = ":")
                 ret
             })
-            if (is(X, "Matrix")) {
-                X <- do.call("cBind", DM)
-            } else {
-                X <- do.call("cbind", DM)
-            }
+            X <- do.call("cbind", DM)
         }
     }
     ### <FIXME> penalize intercepts???
@@ -242,7 +237,6 @@ X_bbs <- function(mf, vary, args) {
     MATRIX <- MATRIX && options("mboost_useMatrix")$mboost_useMatrix
     if (MATRIX) {
         diag <- Diagonal
-        cbind <- cBind
         for (i in 1:length(mm)){
             tmp <- attributes(mm[[i]])[c("degree", "knots", "Boundary.knots")]
             mm[[i]] <- Matrix(mm[[i]])
@@ -259,11 +253,7 @@ X_bbs <- function(mf, vary, args) {
                 colnames(ret) <- paste(colnames(ret), colnames(by)[i], sep = ":")
                 ret
             })
-            if (is(X, "Matrix")) {
-                X <- do.call("cBind", DM)
-            } else {
-                X <- do.call("cbind", DM)
-            }
+            X <- do.call("cbind", DM)
         }
         if (args$differences > 0){
             if (!args$cyclic) {
