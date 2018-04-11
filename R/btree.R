@@ -1,13 +1,10 @@
 
 ### the classical tree-based baselearner; stumps by default
 ### (also fits an additive model)
-btree <- function(...,
-    tree_controls = party::ctree_control(stump = TRUE,
-                                  mincriterion = 0,
-                                  savesplitstats = FALSE, remove_weights = TRUE)) {
-
-    if (!requireNamespace("party"))
-        stop("cannot load ", sQuote("party"))
+btree <- function(..., mtry = Inf,
+    tree_controls = partykit::ctree_control(stump = TRUE,
+                                            mincriterion = 0,
+                                            saveinfo = FALSE)) {
 
     cll <- match.call()
     cll[[1]] <- as.name("btree")
@@ -51,26 +48,38 @@ btree <- function(...,
         fm <- as.formula(paste(rname, " ~ ", paste(colnames(mf), collapse = "+")))
         df <- mf
         df[[rname]] <- y
-        object <- party_intern(fm, data = df, fun = "ctreedpp")
-        storage.mode(weights) <- "double"
+        d <- extree_data(fm, data = df, yx = "none")
+        ytrafo <- function(subset, weights, info, estfun, object, ...) 
+            list(estfun = Y, unweighted = TRUE) 
+        mymf <- model.frame(d)
+        tree_controls$update <- FALSE
+        subset <- which(weights > 0)
 
         fitfun <- function(y) {
-            tmp <- data.frame(y = y)
-            names(tmp) <- rname
-            object@responses <- party_intern(tmp[rname], response = TRUE, fun = "initVariableFrame") 
-            ### party_intern(y, object@responses, fun = "R_modify_response")
-            tree <- party_intern(object, weights, ctrl, fun = "R_TreeGrow")
-            where <- tree[[1]]
-            tree <- tree[[2]]
-            ### party_intern(tree, TRUE, fun = "R_remove_weights")
+            if (!is.matrix(y)) y <- matrix(y, ncol = 1)
+ 
+            assign("Y", y, envir = environment(ytrafo))
+            tree <- extree_fit(data = d, trafo = ytrafo, converged = TRUE, 
+                               partyvars = d$variables$z, subset = subset, 
+                               weights = weights, ctrl = tree_controls, 
+                               doFit = TRUE)$node
+            where <- factor(fitted_node(tree, mymf))
+            coef <- do.call("rbind", tapply(1:NROW(y), where, function(i)
+                colSums(y[i,,drop = FALSE] * weights[i]) / sum(weights[i]), 
+                simplify = FALSE))
 
-            fitted <- function() {
-                wh <- party_intern(tree, object@inputs, 0.0,
-                                   fun = "R_get_nodeID")
-                return(unlist(party_intern(tree, wh, fun = "R_getpredictions")))
+            fitted <- function()
+                return(coef[unclass(where),,drop = FALSE])
+
+            predict <- function(newdata = NULL) {
+                if (is.null(newdata)) newdata <- mymf
+                vmatch <- match(names(mymf), names(newdata))
+                wh <- factor(fitted_node(tree, newdata, vmatch = vmatch), 
+                             levels = levels(where), labels = levels(where))
+                return(coef[unclass(wh),,drop = FALSE])
             }
 
-            ret <- list(model = tree, fitted = fitted)
+            ret <- list(model = tree, fitted = fitted, predict = predict)
             class(ret) <- c("bm_tree", "bm")
             ret
         }
@@ -78,18 +87,14 @@ btree <- function(...,
         predict <- function(bm, newdata = NULL, aggregate = c("sum", "cumsum", "none")) {
             aggregate <- match.arg(aggregate)
 
-            if (is.null(newdata)) {
-                newinp <- object@inputs
-            } else {
-                newinp <- party_intern(object, newdata, fun = "newinputs")
-            }
+            if (is.null(newdata)) 
+                newdata <- mymf 
+            if (!is.data.frame(newdata))
+                newdata <- as.data.frame(newdata)
 
             pr <- 0
             for (i in 1:length(bm)) {
-                wh <- party_intern(bm[[i]]$model, newinp, 0.0,
-                                   fun = "R_get_nodeID")
-                pri <- unlist(party_intern(bm[[i]]$model, wh,
-                                           fun = "R_getpredictions"))
+                pri <- bm[[i]]$predict(newdata)
                 if (aggregate == "sum") {
                     pr <- pr + pri
                 } else {

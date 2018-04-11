@@ -13,7 +13,7 @@ importFrom(quadprog, solve.QP)
 importFrom(utils, packageDescription)
 importFrom("graphics", "abline", "axis", "box", "lines", "matlines", "matplot", "plot", "points", "polygon")
 importFrom("grDevices", "hcl", "rgb")
-importFrom("party", "party_intern")
+importFrom("partykit", "ctree_control", "extree_data", "extree_fit", "fitted_node")
 
 export(glmboost,
        gamboost,

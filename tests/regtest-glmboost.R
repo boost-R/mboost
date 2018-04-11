@@ -250,7 +250,7 @@ stopifnot(all.equal(pred[[1]][[1]], pred[[4]][[1]]$x1 + pred[[4]][[1]]$x2, check
 # type = "sum"
 predictions <- as.matrix(DF[, c("x1", "x2")]) %*% matrix(coef(amod), ncol = 1) +
     attr(coef(amod), "offset")
-stopifnot(all.equal(pred[[1]][[2]], predictions))
+stopifnot(all.equal(pred[[1]][[2]], predictions, check.attributes = FALSE))
 stopifnot(all.equal(c(pred[[1]][[2]]),
                     rowSums(pred[[4]][[2]]) + attr(coef(amod), "offset"),
                     check.attributes = FALSE))
@@ -345,8 +345,8 @@ stopifnot(all.equal(predb[[1]][[1]], predb[[4]][[1]]$x1 + predb[[4]][[1]]$x2, ch
 predictionsA <- as.matrix(newdata[, c("x1", "x2")]) %*% matrix(coef(amod), ncol = 1) +
     attr(coef(amod), "offset")
 predictionsB <- as.matrix(newdata[, c("x1", "x2")]) %*% matrix(coef(bmod), ncol = 1)
-stopifnot(all.equal(preda[[1]][[2]], predictionsA))
-stopifnot(all.equal(predb[[1]][[2]], predictionsB))
+stopifnot(all.equal(preda[[1]][[2]], predictionsA, check.attributes = FALSE))
+stopifnot(all.equal(predb[[1]][[2]], predictionsB, check.attributes = FALSE))
 stopifnot(all.equal(c(preda[[1]][[2]]), rowSums(preda[[4]][[2]]) + attr(coef(amod), "offset"),
                     check.attributes = FALSE))
 stopifnot(all.equal(c(predb[[1]][[2]]), rowSums(predb[[4]][[2]]),
