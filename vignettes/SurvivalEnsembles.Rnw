@@ -106,8 +106,8 @@ if (!require("rpart"))
     stop("cannot attach package ", sQuote("rpart"))
 if (!require("survival"))
     stop("cannot attach package ", sQuote("survival"))
-if (!require("party"))
-    stop("cannot attach package ", sQuote("party"))
+if (!require("partykit"))
+    stop("cannot attach package ", sQuote("partykit"))
 
 set.seed(290875)
 CEX <- 0.85
