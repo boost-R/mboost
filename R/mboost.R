@@ -298,15 +298,18 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
         }
 
         pr <- switch(aggregate, "sum" = {
-            pr <- do.call("cbind", lapply(which, pfun, agg = "sum"))
+            pr <- lapply(which, pfun, agg = "sum")
             if (!nw){
-                colnames(pr) <- bnames[which]
-                attr(pr, "offset") <- offset
+                if (NCOL(pr[[1]]) == 1) {
+                    pr <- do.call("cbind", pr)
+                    colnames(pr) <- bnames[which]
+                    attr(pr, "offset") <- offset
+                }
                 return(pr)
             } else {
                 ## only if no selection of baselearners
                 ## was made via the `which' argument
-                ret <- matrix(rowSums(pr), ncol = 1)
+                ret <- Reduce("+", pr)
                 if (length(offset) != 1 && !is.null(newdata)) {
                     warning("User-specified offset is not a scalar, ",
                             "thus it cannot be used for predictions when ",
@@ -617,11 +620,11 @@ blackboost <- function(formula, data = list(),
                        offset = NULL, family = Gaussian(), 
                        control = boost_control(),
                        oobweights = NULL,
-                       tree_controls = party::ctree_control(
-                           teststat = "max",
+                       tree_controls = partykit::ctree_control(
+                           teststat = "quad",
                            testtype = "Teststatistic",
                            mincriterion = 0,
-                           maxdepth = 2, savesplitstats = FALSE),
+                           maxdepth = 2, saveinfo = FALSE),
                        ...) {
 
     ### get the model frame first

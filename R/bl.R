@@ -815,14 +815,27 @@ bl_lin <- function(blg, Xfun, args) {
                 }
                 X <- newX(newdata, prediction = TRUE)$X
             }
+            ### when coef is actually a matrix
+            ### coming from multidimensional gradients
+            P <- 1L
+            if (ncol(X) != nrow(cf)) {
+                P <- nrow(cf) / ncol(X)
+                X <- do.call("bdiag", list(X = X)[rep(1, P)])
+            }
             aggregate <- match.arg(aggregate)
-            pr <- switch(aggregate, "sum" =
-                as(X %*% rowSums(cf), "matrix"),
+            pr <- switch(aggregate, "sum" = {
+                ret <- as(X %*% rowSums(cf), "matrix")
+                matrix(ret, ncol = P)
+            },
             "cumsum" = {
+                stopifnot(P == 1L)
                 as(X %*% .Call("R_mcumsum", as(cf, "matrix"),
                                PACKAGE = "mboost"), "matrix")
             },
-            "none" = as(X %*% cf, "matrix"))
+            "none" = {
+                stopifnot(P == 1L)
+                as(X %*% cf, "matrix")
+            })
             if (is.null(index))
                 return(pr[ , , drop = FALSE])
             return(pr[index, ,drop = FALSE])
