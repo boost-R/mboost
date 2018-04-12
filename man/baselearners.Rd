@@ -50,11 +50,9 @@ brandom(..., by = NULL, index = NULL, df = 4, lambda = NULL,
         contrasts.arg = "contr.dummy")
 
 ## tree based base-learner
-btree(..., tree_controls = party::ctree_control(stump = TRUE,
-                                                mincriterion = 0,
-                                                savesplitstats = FALSE,
-                                                remove_weights = TRUE))
-
+btree(..., nmax = Inf, tree_controls = partykit::ctree_control(stump = TRUE,
+                                            mincriterion = 0,
+                                            saveinfo = FALSE))
 ## constrained effects base-learner
 bmono(...,
       constraint = c("increasing", "decreasing", "convex", "concave",
@@ -176,6 +174,8 @@ bl1 \%O\% bl2
     dummy coding as returned by \code{model.matrix(~ x - 1)} were the
     intercept is implicitly included but each factor level gets a
     seperate effect estimate (see example below).}
+  \item{nmax}{integer, maximal number of
+          bins in the predictor variables. Use \code{Inf} to switch-off binning.}
   \item{tree_controls}{ an object of class \code{"TreeControl"}, which can be
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners,

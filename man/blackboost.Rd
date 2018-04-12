@@ -11,11 +11,11 @@ blackboost(formula, data = list(),
            offset = NULL, family = Gaussian(), 
            control = boost_control(),
            oobweights = NULL,
-           tree_controls = party::ctree_control(
-               teststat = "max",
+           tree_controls = partykit::ctree_control(
+               teststat = "quad",
                testtype = "Teststatistic",
                mincriterion = 0,
-               maxdepth = 2, savesplitstats = FALSE),
+               maxdepth = 2, saveinfo = FALSE),
            ...)
 }
 \arguments{
@@ -34,7 +34,7 @@ blackboost(formula, data = list(),
       "oobag")}). This argument is also used internally by
     \code{cvrisk}. }    
   \item{tree_controls}{ an object of class \code{"TreeControl"}, which
-    can be obtained using \code{\link[party]{ctree_control}}. Defines
+    can be obtained using \code{\link[partykit]{ctree_control}}. Defines
     hyper-parameters for the trees which are used as base-learners. It
     is wise to make sure to understand the consequences of altering any
     of its arguments.}
@@ -52,7 +52,7 @@ blackboost(formula, data = list(),
   can be specified via the \code{family} argument to \code{blackboost} whereas
   \code{\link[gbm]{gbm}} uses hard-coded loss functions.
   Moreover, the base-learners (conditional
-  inference trees, see \code{\link[party]{ctree}}) are a little bit more flexible.
+  inference trees, see \code{\link[partykit]{ctree}}) are a little bit more flexible.
 
   The regression fit is a black box prediction machine and thus
   hardly interpretable.
@@ -119,7 +119,7 @@ lines(cars$speed, predict(cars.gb), col = "red")
 ## some time (~ 5-10 seconds depending on the system)
 
 ### set up and plot additive tree model
-if (require("party")) {
+if (require("partykit")) {
     ctrl <- ctree_control(maxdepth = 3)
     viris <- subset(iris, Species != "setosa")
     viris$Species <- viris$Species[, drop = TRUE]
