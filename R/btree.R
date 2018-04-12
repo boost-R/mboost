@@ -1,7 +1,7 @@
 
 ### the classical tree-based baselearner; stumps by default
 ### (also fits an additive model)
-btree <- function(..., mtry = Inf,
+btree <- function(..., nmax = Inf,
     tree_controls = partykit::ctree_control(stump = TRUE,
                                             mincriterion = 0,
                                             saveinfo = FALSE)) {
@@ -48,7 +48,9 @@ btree <- function(..., mtry = Inf,
         fm <- as.formula(paste(rname, " ~ ", paste(colnames(mf), collapse = "+")))
         df <- mf
         df[[rname]] <- y
-        d <- extree_data(fm, data = df, yx = "none")
+        d <- extree_data(fm, data = df, yx = "none", 
+                         nmax = c(yx = Inf, z = nmax))
+        Y <- NULL
         ytrafo <- function(subset, weights, info, estfun, object, ...) 
             list(estfun = Y, unweighted = TRUE) 
         mymf <- model.frame(d)
