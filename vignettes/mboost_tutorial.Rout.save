@@ -16,7 +16,7 @@
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-0. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 
@@ -176,7 +176,7 @@ Final risk: 460.343
 	 Model-based Boosting
 
 Call:
-gamboost(formula = DEXfat ~ ., data = bodyfat, baselearner = "bbs",     control = boost_control(trace = TRUE))
+gamboost(formula = DEXfat ~ ., data = bodyfat, control = boost_control(trace = TRUE),     baselearner = "bbs")
 
 
 	 Squared Error (Regression) 
@@ -563,12 +563,6 @@ Warnung in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = arg
 
 > modspa <- gamboost(y ~ bspatial(x1, x2, knots = list(x1 = 12, 
 +     x2 = 12)))
-Note: method with signature 'matrix#Matrix' chosen for function 'crossprod',
- target signature 'matrix#dgTMatrix'.
- "ANY#TsparseMatrix" would also be valid
-Note: method with signature 'ddenseMatrix#dsparseMatrix' chosen for function 'crossprod',
- target signature 'dtrMatrix#dgTMatrix'.
- "Matrix#TsparseMatrix" would also be valid
 
 > library(lattice)
 
@@ -714,4 +708,4 @@ pdf
  *** Run successfully completed ***
 > proc.time()
        User      System verstrichen 
-      10.15        0.35       10.67 
+      10.49        0.39       11.17 

@@ -2,7 +2,7 @@
 > source("setup.R")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-0. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 
@@ -345,4 +345,4 @@ The following object is masked from 'package:mboost':
  *** Run successfully completed ***
 > proc.time()
        User      System verstrichen 
-       5.38        0.28        5.89 
+       5.30        0.40        6.17 

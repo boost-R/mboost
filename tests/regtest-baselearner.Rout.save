@@ -1,5 +1,5 @@
 
-R version 3.4.0 (2017-04-21) -- "You Stupid Darkness"
+R version 3.4.3 (2017-11-30) -- "Kite-Eating Tree"
 Copyright (C) 2017 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
@@ -19,7 +19,7 @@ Type 'q()' to quit R.
 > library("mboost")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-0. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > attach(asNamespace("mboost"))
@@ -342,12 +342,6 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 > 
 > ### spatial
 > m1 <- gamboost(y ~ bbs(x1) %X% bbs(x2))
-Note: method with signature 'matrix#Matrix' chosen for function 'crossprod',
- target signature 'matrix#dgTMatrix'.
- "ANY#TsparseMatrix" would also be valid
-Note: method with signature 'ddenseMatrix#dsparseMatrix' chosen for function 'crossprod',
- target signature 'dtrMatrix#dgTMatrix'.
- "Matrix#TsparseMatrix" would also be valid
 > m2 <- gamboost(y ~ bspatial(x1, x2, df = 16))
 > stopifnot(max(abs(predict(m1) - predict(m2))) < sqrt(.Machine$double.eps))
 > stopifnot(max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < sqrt(.Machine$double.eps))
@@ -1334,4 +1328,4 @@ In bols(z2, by = z3) : Dropped unobserved factor levels
 > 
 > proc.time()
    user  system elapsed 
-  28.95    0.98   30.06 
+  25.74    1.48   27.81 

@@ -1,5 +1,5 @@
 
-R version 3.4.0 (2017-04-21) -- "You Stupid Darkness"
+R version 3.4.3 (2017-11-30) -- "Kite-Eating Tree"
 Copyright (C) 2017 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
@@ -20,7 +20,7 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-0. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > require("Matrix")
@@ -376,12 +376,6 @@ Error in object$newX(newdata) :
 > x2 <- rnorm(100)
 > data <- data.frame(y=y, x1=x1, x2=x2, z=z)
 > model <- gamboost(y ~ bspatial(x1,x2, by=z), data = data)
-Note: method with signature 'matrix#Matrix' chosen for function 'crossprod',
- target signature 'matrix#dgTMatrix'.
- "ANY#TsparseMatrix" would also be valid
-Note: method with signature 'ddenseMatrix#dsparseMatrix' chosen for function 'crossprod',
- target signature 'dtrMatrix#dgTMatrix'.
- "Matrix#TsparseMatrix" would also be valid
 > stopifnot(!is.na(predict(model,data[1,-1])))
 > 
 > ### bols with intercept = FALSE for categorical covariates was broken
@@ -656,7 +650,7 @@ $`bbs(x1)`
 attr(,"offset")
 [1] 0.008050138
 Warning message:
-In mboost_fit(bl, response = response, ...) :
+In mboost_fit(bl, response = response, weights = weights, offset = offset,  :
   response contains missing values;
  weights of corresponding observations are set to zero and thus these observations are not used for fitting
 > 
@@ -678,7 +672,7 @@ $`bbs(x1)`
 attr(,"offset")
 [1] 0.01532354
 Warning message:
-In mboost_fit(bl, response = response, ...) :
+In mboost_fit(bl, response = response, weights = weights, offset = offset,  :
   response contains missing values;
  weights of corresponding observations are set to zero and thus these observations are not used for fitting
 > 
@@ -688,12 +682,6 @@ In mboost_fit(bl, response = response, ...) :
 +                   bspatial(x1, x2) + brad(x1, x2, knots = 20) +
 +                   bmono(x1) +  buser(x1, K = 1, lambda = 0) + x2)
 Loading required namespace: fields
-Note: method with signature 'matrix#Matrix' chosen for function 'crossprod',
- target signature 'matrix#dgTMatrix'.
- "ANY#TsparseMatrix" would also be valid
-Note: method with signature 'ddenseMatrix#dsparseMatrix' chosen for function 'crossprod',
- target signature 'dtrMatrix#dgTMatrix'.
- "Matrix#TsparseMatrix" would also be valid
 Warning messages:
 1: In bols(x1) : base-learner contains missing values;
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
@@ -883,6 +871,94 @@ Warning message:
 In fitted.mboost(mod, newdata = bodyfat, aggregate = "cumsum") :
   Argument 'newdata' was  ignored. Please use 'predict()' to make predictions for new data.
 > 
+> 
+> ## make sure weights are subset if missing values are present
+> weights <- sample(1:100, 100, replace=FALSE)
+> x <- rnorm(100)
+> y <- runif(100)
+> # create missing value
+> x[25] <- NA
+> myData <- data.frame(x=x, y=y)
+> ## was broken:
+> gamboost(y ~ bols(x), data = myData, weights = weights, family = Gaussian())
+
+	 Model-based Boosting
+
+Call:
+gamboost(formula = y ~ bols(x), data = myData, weights = weights,     family = Gaussian())
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 100 
+Step size:  0.1 
+Offset:  0.5015757 
+Number of baselearners:  1 
+
+> mboost(y ~ bols(x), data = myData, weights = weights, family = Gaussian())
+
+	 Model-based Boosting
+
+Call:
+mboost(formula = y ~ bols(x), data = myData, weights = weights,     family = Gaussian())
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 100 
+Step size:  0.1 
+Offset:  0.5015757 
+Number of baselearners:  1 
+
+> ## was always working
+> glmboost(y ~ x, data = myData, weights = weights, family = Gaussian())
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ x, data = myData, weights = weights,     family = Gaussian())
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 100 
+Step size:  0.1 
+Offset:  0.5015757 
+
+Coefficients: 
+ (Intercept)            x 
+-0.004206408 -0.041582582 
+attr(,"offset")
+[1] 0.5015757
+
+> blackboost(y ~ x, data = myData, weights = weights, family = Gaussian())
+
+	 Model-based Boosting
+
+Call:
+blackboost(formula = y ~ x, data = myData, weights = weights,     family = Gaussian())
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 100 
+Step size:  0.1 
+Offset:  0.5015757 
+Number of baselearners:  1 
+
+> 
 > proc.time()
    user  system elapsed 
-  26.50    0.34   27.65 
+  25.69    0.53   27.53 

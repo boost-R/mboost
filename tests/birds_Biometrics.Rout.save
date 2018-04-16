@@ -1,5 +1,5 @@
 
-R version 3.4.0 (2017-04-21) -- "You Stupid Darkness"
+R version 3.4.3 (2017-11-30) -- "Kite-Eating Tree"
 Copyright (C) 2017 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
@@ -19,7 +19,7 @@ Type 'q()' to quit R.
 > library("mboost")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-0. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > data("birds", package = "TH.data")
@@ -132,12 +132,6 @@ attr(,"offset")
 > fm <- SG4 ~ bols(GST) + bols(DBH) + bols(AOT) + bols(AFS) + bols(DWC) +
 +             bols(LOG) + bspatial(x_gk, y_gk, df=5, differences=1, knots=c(12,12))
 > sp <- gamboost(fm, data = birds, family = Poisson(), control = bcr)
-Note: method with signature 'matrix#Matrix' chosen for function 'crossprod',
- target signature 'matrix#dgTMatrix'.
- "ANY#TsparseMatrix" would also be valid
-Note: method with signature 'ddenseMatrix#dsparseMatrix' chosen for function 'crossprod',
- target signature 'dtrMatrix#dgTMatrix'.
- "Matrix#TsparseMatrix" would also be valid
 [   1] ...................................... -- risk: 139.3667 
 [  41] ...................................... -- risk: 131.9988 
 [  81] ...................................... -- risk: 127.5401 
@@ -321,4 +315,4 @@ Final risk: 497.9626
 > 
 > proc.time()
    user  system elapsed 
-  16.41    0.65   17.06 
+  14.80    0.81   15.74 

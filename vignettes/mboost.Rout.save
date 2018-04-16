@@ -3,12 +3,14 @@
 
 > set.seed(290875)
 
+> options(mboost_dftraceS = TRUE)
+
 > if (!require("mboost")) install.packages("mboost", 
 +     dependencies = TRUE)
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-0. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 
@@ -171,4 +173,4 @@ Number of baselearners:  19
  *** Run successfully completed ***
 > proc.time()
        User      System verstrichen 
-      83.39        0.21       83.69 
+      82.69        0.34       83.32 

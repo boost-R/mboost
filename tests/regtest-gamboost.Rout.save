@@ -1,5 +1,5 @@
 
-R version 3.4.0 (2017-04-21) -- "You Stupid Darkness"
+R version 3.4.3 (2017-11-30) -- "Kite-Eating Tree"
 Copyright (C) 2017 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
@@ -20,7 +20,7 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-0. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > require("survival")
@@ -41,7 +41,7 @@ Loading required package: survival
 	 Model-based Boosting
 
 Call:
-gamboost(formula = dist ~ speed, data = cars, dfbase = 4, family = fm,     control = boost_control(mstop = 50))
+gamboost(formula = dist ~ speed, data = cars, family = fm, control = boost_control(mstop = 50),     dfbase = 4)
 
 
 	 Squared Error (Regression) 
@@ -547,4 +547,4 @@ Warning in Xfun(mf, vary, args) :
 > 
 > proc.time()
    user  system elapsed 
-   8.00    0.21    8.40 
+   7.76    0.26    8.61 

@@ -1,5 +1,5 @@
 
-R version 3.4.0 (2017-04-21) -- "You Stupid Darkness"
+R version 3.4.3 (2017-11-30) -- "Kite-Eating Tree"
 Copyright (C) 2017 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
@@ -19,7 +19,7 @@ Type 'q()' to quit R.
 > library("mboost")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-0. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > 
@@ -87,7 +87,7 @@ attr(,"offset")
 	 Generalized Linear Models Fitted via Gradient Boosting
 
 Call:
-glmboost.formula(formula = y ~ x, center = FALSE, family = NBinomial())
+glmboost.formula(formula = y ~ x, family = NBinomial(), center = FALSE)
 
 
 	 Negative Negative-Binomial Likelihood 
@@ -334,9 +334,9 @@ Loading required package: survival
 + round(coef(modWeighted, which = "") - coef(modSubset, which = ""), 3)
 + }
 intercept        x1        x2        x3        x4        x5        x6        x7 
-   -0.196    -0.024     0.044     0.096     0.017    -0.148     0.035    -0.132 
+   -0.169     0.002     0.000     0.000    -0.002     0.001     0.000    -0.004 
        x8 
-   -0.019 
+   -0.005 
 attr(,"offset")
 [1] 5.867733
 > 
@@ -577,7 +577,7 @@ attr(,"offset")
 	 Generalized Linear Models Fitted via Gradient Boosting
 
 Call:
-glmboost.formula(formula = y ~ x1 + x2, control = boost_control(nu = 0.2),     family = Binomial(type = "glm"))
+glmboost.formula(formula = y ~ x1 + x2, family = Binomial(type = "glm"),     control = boost_control(nu = 0.2))
 
 
 	 Binomial Distribution (similar to glm) 
@@ -858,4 +858,4 @@ See Warning section in ?coef.mboost
 > 
 > proc.time()
    user  system elapsed 
-  14.05    0.17   14.43 
+  13.63    0.14   14.08 

@@ -1,5 +1,5 @@
 
-R version 3.4.0 (2017-04-21) -- "You Stupid Darkness"
+R version 3.4.3 (2017-11-30) -- "Kite-Eating Tree"
 Copyright (C) 2017 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
@@ -24,7 +24,7 @@ Type 'q()' to quit R.
 > library('mboost')
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-0. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > 
@@ -483,12 +483,6 @@ attr(,"offset")
 > ## they take some time
 > 
 >   mod1 <- gamboost(form1)
-Note: method with signature 'matrix#Matrix' chosen for function 'crossprod',
- target signature 'matrix#dgTMatrix'.
- "ANY#TsparseMatrix" would also be valid
-Note: method with signature 'ddenseMatrix#dsparseMatrix' chosen for function 'crossprod',
- target signature 'dtrMatrix#dgTMatrix'.
- "Matrix#TsparseMatrix" would also be valid
 >   plot(mod1)
 > 
 >   mod2 <- gamboost(form2)
@@ -876,12 +870,6 @@ Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = arg
 >   mod <- mboost(vol ~ bbs(x1, df = 3, knots = 10)%O%
 +                       bbs(x2, df = 3, knots = 10),
 +                       control = boost_control(nu = 0.25))
-Note: method with signature 'matrix#Matrix' chosen for function 'crossprod',
- target signature 'matrix#dgTMatrix'.
- "ANY#TsparseMatrix" would also be valid
-Note: method with signature 'ddenseMatrix#dsparseMatrix' chosen for function 'crossprod',
- target signature 'dtrMatrix#dgTMatrix'.
- "Matrix#TsparseMatrix" would also be valid
 >   mod[250]
 
 	 Model-based Boosting
@@ -1499,9 +1487,9 @@ Degrees of freedom (for mstop = 45): 1.917234
 > 
 > flush(stderr()); flush(stdout())
 > 
-> ### Name: gamboost
-> ### Title: Gradient Boosting with Smooth Components
-> ### Aliases: gamboost
+> ### Name: mboost
+> ### Title: Gradient Boosting for Additive Models
+> ### Aliases: mboost gamboost
 > ### Keywords: models nonlinear
 > 
 > ### ** Examples
@@ -1515,7 +1503,7 @@ Degrees of freedom (for mstop = 45): 1.917234
 	 Model-based Boosting
 
 Call:
-gamboost(formula = dist ~ speed, data = cars, dfbase = 4, control = boost_control(mstop = 50))
+gamboost(formula = dist ~ speed, data = cars, control = boost_control(mstop = 50),     dfbase = 4)
 
 
 	 Squared Error (Regression) 
@@ -1631,7 +1619,7 @@ attr(,"offset")
 	 Generalized Linear Models Fitted via Gradient Boosting
 
 Call:
-glmboost.formula(formula = dist ~ speed, data = cars, control = boost_control(mstop = 1000),     family = Laplace())
+glmboost.formula(formula = dist ~ speed, data = cars, family = Laplace(),     control = boost_control(mstop = 1000))
 
 
 	 Absolute Error 
@@ -1699,14 +1687,14 @@ attr(,"offset")
 
 detaching 'package:Matrix'
 
-> nameEx("mboost")
-> ### * mboost
+> nameEx("mboost_fit")
+> ### * mboost_fit
 > 
 > flush(stderr()); flush(stdout())
 > 
-> ### Name: mboost
+> ### Name: mboost_fit
 > ### Title: Model-based Gradient Boosting
-> ### Aliases: mboost mboost_fit
+> ### Aliases: mboost_fit
 > ### Keywords: models nonlinear
 > 
 > ### ** Examples
@@ -3708,7 +3696,7 @@ Levels: Petal.Length < Sepal.Length, setosa < Petal.Width
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  64.37 1.72 66.57 NA NA 
+Time elapsed:  62.62 2.51 65.86 NA NA 
 > grDevices::dev.off()
 null device 
           1 
