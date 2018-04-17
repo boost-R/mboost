@@ -169,7 +169,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
 
 ### cvrisk in parallel modes:
 
-\dontrun{automatically
+\dontrun{
 
 ## parallel::mclapply() which is used here for parallelization only runs 
 ## on unix systems (here we use 2 cores)
