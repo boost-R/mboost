@@ -772,8 +772,14 @@ bl_lin <- function(blg, Xfun, args) {
 
         fit <- function(y) {
             if (!is.null(index)) {
-                y <- .Call("R_ysum", as.double(weights * y), as.integer(index),
-                           PACKAGE = "mboost")
+                if (is.matrix(y)) {
+                    y <- apply(y, 2, function(u) 
+                        .Call("R_ysum", as.double(weights * u), as.integer(index),
+                              PACKAGE = "mboost"))
+                } else {
+                    y <- .Call("R_ysum", as.double(weights * y), as.integer(index),
+                               PACKAGE = "mboost")
+                }
             } else {
                 y <- y * weights
             }
