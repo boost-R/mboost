@@ -6,6 +6,12 @@
     \itemize{
       \item Removed corrected cross-validation for Cox models (Verweij and van Houwelingen, 1993)
         as it was not working. Closes \href{https://github.com/boost-R/mboost/issues/85}{#85}.
+      \item Use \code{partykit::ctree} instead of \code{party::ctree} in
+            \code{btree} and \code{blackboost}. This is slower but
+            more flexible (if you need speed, you know where to find it, right?).
+      \item Allow multivariate negative gradients. Note that all
+            elements are updated simultaneously, which in most cases
+            is NOT what you want (but in rare cases it is the right thing to do).
     }
   }
 }
