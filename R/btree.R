@@ -2,9 +2,14 @@
 ### the classical tree-based baselearner; stumps by default
 ### (also fits an additive model)
 btree <- function(..., nmax = Inf,
-    tree_controls = partykit::ctree_control(stump = TRUE,
-                                            mincriterion = 0,
-                                            saveinfo = FALSE)) {
+    tree_controls = partykit::ctree_control(
+        teststat = "quad",
+        testtype = "Teststatistic",
+        splittest = TRUE,
+        mincriterion = 0,
+        maxdepth = 1, 
+        saveinfo = FALSE))
+{
 
     cll <- match.call()
     cll[[1]] <- as.name("btree")

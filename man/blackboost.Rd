@@ -14,8 +14,10 @@ blackboost(formula, data = list(),
            tree_controls = partykit::ctree_control(
                teststat = "quad",
                testtype = "Teststatistic",
+               splittest = TRUE,
                mincriterion = 0,
-               maxdepth = 2, saveinfo = FALSE),
+               maxdepth = 2, 
+               saveinfo = FALSE),
            ...)
 }
 \arguments{
@@ -37,7 +39,8 @@ blackboost(formula, data = list(),
     can be obtained using \code{\link[partykit]{ctree_control}}. Defines
     hyper-parameters for the trees which are used as base-learners. It
     is wise to make sure to understand the consequences of altering any
-    of its arguments.}
+    of its arguments. By default, two-way interactions (but not deeper
+    trees) are fitted.}
   \item{\dots}{  additional arguments passed to \code{\link{mboost_fit}},
     including \code{weights}, \code{offset}, \code{family} and
     \code{control}. For default values see \code{\link{mboost_fit}}. }

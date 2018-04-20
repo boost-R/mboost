@@ -623,6 +623,7 @@ blackboost <- function(formula, data = list(),
                        tree_controls = partykit::ctree_control(
                            teststat = "quad",
                            testtype = "Teststatistic",
+                           splittest = TRUE,
                            mincriterion = 0,
                            maxdepth = 2, saveinfo = FALSE),
                        ...) {

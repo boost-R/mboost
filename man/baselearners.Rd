@@ -50,9 +50,10 @@ brandom(..., by = NULL, index = NULL, df = 4, lambda = NULL,
         contrasts.arg = "contr.dummy")
 
 ## tree based base-learner
-btree(..., nmax = Inf, tree_controls = partykit::ctree_control(stump = TRUE,
-                                            mincriterion = 0,
-                                            saveinfo = FALSE))
+btree(..., nmax = Inf, tree_controls = partykit::ctree_control(
+    teststat = "quad", testtype = "Teststatistic", splittest = TRUE,
+    mincriterion = 0, maxdepth = 1, saveinfo = FALSE))
+
 ## constrained effects base-learner
 bmono(...,
       constraint = c("increasing", "decreasing", "convex", "concave",
@@ -179,7 +180,8 @@ bl1 \%O\% bl2
   \item{tree_controls}{ an object of class \code{"TreeControl"}, which can be
                   obtained using \code{\link[party]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners,
-                  stumps are fitted by default.}
+                  stumps are fitted by default. By default, stumps and thus
+                  additive models are fitted.}
   \item{constraint}{type of constraint to be used. For \code{bmono}, 
     the constraint can be either monotonic \code{"increasing"} (default), 
     \code{"decreasing"}, or \code{"convex"} or \code{"concave"}. 
