@@ -5,8 +5,10 @@ btree <- function(..., nmax = Inf,
     tree_controls = partykit::ctree_control(
         teststat = "quad",
         testtype = "Teststatistic",
-        splittest = TRUE,
+#        splittest = TRUE,
         mincriterion = 0,
+        minsplit = 10,
+        minbucket = 4,
         maxdepth = 1, 
         saveinfo = FALSE))
 {

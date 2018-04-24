@@ -71,8 +71,7 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
                 " folds only.\n",
                 "Original error message(s):\n",
                 sapply(oobrisk[idx], function(x) x))
-        oobrisk[idx] <- NULL
-        OOBweights <- OOBweights[, !idx]
+        oobrisk[idx] <- NA
     }
     if (!is.null(fun))
         return(oobrisk)
@@ -92,7 +91,7 @@ cvrisk.mboost <- function (object, folds = cv(model.weights(object)),
 print.cvrisk <- function(x, ...) {
     cat("\n\t Cross-validated", attr(x, "risk"), "\n\t",
         attr(x, "call"), "\n\n")
-    print(colMeans(x))
+    print(colMeans(x, na.rm = TRUE))
     cat("\n\t Optimal number of boosting iterations:", mstop(x), "\n")
     return(invisible(x))
 }
@@ -101,6 +100,7 @@ plot.cvrisk <- function(x, xlab = "Number of boosting iterations",
                         ylab = attr(x, "risk"),
                         ylim = range(x), main = attr(x, "type"), ...) {
 
+    x <- x[, apply(x, 2, function(y) all(!is.na(y))), drop = FALSE]
     cm <- colMeans(x)
     plot(1:ncol(x), cm, ylab = ylab, ylim = ylim,
          type = "n", lwd = 2, xlab = xlab,
@@ -117,7 +117,7 @@ plot.cvrisk <- function(x, xlab = "Number of boosting iterations",
 }
 
 mstop.cvrisk <- function(object, ...)
-    attr(object, "mstop")[which.min(colSums(object))]
+    attr(object, "mstop")[which.min(colSums(object, na.rm = TRUE))]
 
 cv <- function(weights, type = c("bootstrap", "kfold", "subsampling"),
                B = ifelse(type == "kfold", 10, 25),
