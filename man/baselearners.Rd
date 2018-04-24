@@ -51,8 +51,9 @@ brandom(..., by = NULL, index = NULL, df = 4, lambda = NULL,
 
 ## tree based base-learner
 btree(..., nmax = Inf, tree_controls = partykit::ctree_control(
-    teststat = "quad", testtype = "Teststatistic", splittest = TRUE,
-    mincriterion = 0, maxdepth = 1, saveinfo = FALSE))
+    teststat = "quad", testtype = "Teststatistic", 
+    mincriterion = 0, minsplit = 10, minbucket = 4,
+    maxdepth = 1, saveinfo = FALSE))
 
 ## constrained effects base-learner
 bmono(...,

@@ -14,8 +14,9 @@ blackboost(formula, data = list(),
            tree_controls = partykit::ctree_control(
                teststat = "quad",
                testtype = "Teststatistic",
-               splittest = TRUE,
                mincriterion = 0,
+               minsplit = 10, 
+               minbucket = 4,
                maxdepth = 2, 
                saveinfo = FALSE),
            ...)
