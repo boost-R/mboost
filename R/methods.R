@@ -641,3 +641,25 @@ risk <- function(object, ...)
 risk.mboost <- function(object, ...) {
     object$risk()
 }
+
+downstream.test <- function(object, ...) {
+    if (object$family@name != "Ratio of Correlated Gammas (RCG)")
+        stop("downstream tests currently only implemented for RCG family")
+    if (!inherits(object, "glmboost"))
+        stop("downstream tests currently only implemented for linear models, i.e., glmboost")
+    
+    # calculate Fisher information matrix
+    alpha <- nuisance(object)[1]
+    rho <- nuisance(object)[2]
+    coefs <- coef(object, which = "")
+    y <- object$response
+    ## do we need the original design matrix (X1) or the centered design (X) matrix?
+    X <- as.data.frame(extract(object, what = "design"))
+    X1 <- data.frame(model.matrix(~ x1 + x2))
+    
+    Fisher <- environment(object$family@ngradient)[["Fisher"]](y, alpha, rho, X1, coefs)
+    
+    # downstream hypothesis tests
+    p_value <- sapply(1:length(coefs), function(i) (1 - pnorm(abs(coefs[i]) / sqrt(solve(Fisher)[i, i]))) * 2)
+    return(p_value)
+}

@@ -1140,3 +1140,90 @@ Cindex <- function (sigma = 0.1, ipcw = 1) {
 }
 
 
+# RCG model for bounded response variables, log link
+RCG <- function (nuirange = c(0, 1), offrange = c(-5, 5)) {
+    sigma <- c(1, 0.2)
+    plloss <- function(sigma, y, f, w = 1) {
+        alpha <- sigma[1]
+        rho <- sigma[2]
+        if (length(f) == 1)
+            f <- rep(f, length(y))
+        my <- 1 + (exp(f) - 1) * y
+        dmy <- my ^ 2 - 4 * rho * exp(f) * y * (1 - y)
+        fy <- lgamma(2 * alpha) - 2 * lgamma(alpha) + alpha * f + 
+            alpha * log(1 - rho) + log(my) + (alpha - 1) * log(y * (1 - y)) - 
+            (alpha + 0.5) * log(dmy)
+        return(-fy)
+    }
+    riskS <- function(sigma, y, fit, w = 1)
+        sum(w * plloss(y = y, f = fit, sigma = sigma))
+    risk <- function(y, f, w = 1)
+        sum(w * plloss(y = y, f = f, sigma = sigma))
+    ngradient <- function(y, f, w = 1) {
+        sigma <<- optim(par = sigma, fn = riskS, y = y, fit = f,
+            lower = c(0.001, 0.001), upper = c(100, 0.99),
+            w = w, method = "L-BFGS-B")$par
+        if (length(f) == 1)
+            f <- rep(f, length(y))
+        alpha <- sigma[1]
+        rho <- sigma[2]
+        my <- 1 + (exp(f) - 1) * y
+        dmy <- my ^ 2 - 4 * rho * exp(f) * y * (1 - y)
+        return(alpha + (y * exp(f)) / my - (2 * alpha + 1) * exp(f) *
+                   y * (my - 2 * rho * (1 - y)) / dmy)
+    }
+    offset <- function(y, w = 1)
+        0
+    dRCG <- function(f, sigma) {
+        alpha <- sigma[1]
+        rho <- sigma[2]
+        densw <- function(w, alpha, rho, f)
+            w * gamma(2 * alpha) / (gamma(alpha)) ^ 2 * (1 - rho) ^ alpha *
+            (exp(f))^alpha * ((exp(f) - 1) * w + 1) * (w * (1 - w))^(alpha - 1) /
+            ((((exp(f) - 1) * w + 1) ^ 2 - 4 * rho * exp(f) * w * (1 - w)) ^ (alpha + 0.5))
+        res <- rep(0, length(f))
+        for (k in 1:length(f))
+            res[k] <- integrate(densw, lower = 0, upper = 1, alpha, rho, f[k])$value
+        return(res)
+    }
+    response <- function(f, sigma)
+        dRCG(f, sigma)
+    Fisher <- function(y, alpha, rho, X, coefs) {
+        X <- data.frame(X)
+        f.i <- matrix(0, ncol = length(coefs), nrow = length(coefs))
+        for (i in 1:length(y)) {
+            wobs <- as.numeric(y[i])
+            x <- as.matrix(X[i,])
+            xt <- t(x)
+            xtx <- xt %*% x
+            exb <- as.numeric(exp(x %*% coefs))
+            D1 <- (exb - 1) * wobs + 1
+            D2 <- D1 ^ 2 - 4 * rho * exb * wobs * (1 - wobs)
+            f.i <- f.i + (D1 * wobs * exb - (wobs * exb) ^ 2) * xtx / (D1 ^ 2) -
+                (alpha + 0.5) / (D2 ^ 2) * 
+                (2 * wobs * exb * xtx * (2 * wobs * exb - wobs + 1 - 2 * rho * (1 - wobs)) 
+                 * D2 - xtx * (2 * wobs * exb * (D1 - 2 * rho * (1 - wobs)))^2)
+        }
+        Fisher.information <- -f.i
+        return(Fisher.information)
+    }
+    
+    Family(
+        ngradient = ngradient,
+        risk = risk,
+        offset = offset,
+        # Fisher = Fisher,
+        check_y = function(y) {
+            if(!all(y < 1 & y > 0))
+                stop("y must be < 1 and > 0")
+            y
+        },
+        nuisance = function()
+            return(sigma),
+        response = function(f)
+            response(f, sigma = sigma),
+        rclass = function(f)
+            f,
+        name = "Ratio of Correlated Gammas (RCG)"
+    )
+}
