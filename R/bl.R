@@ -142,6 +142,9 @@ X_ols <- function(mf, vary, args) {
         if (vary != "") {
             by <- model.matrix(as.formula(paste("~", vary, collapse = "")),
                                data = mf)[ , -1, drop = FALSE] # drop intercept
+            if (nrow(X) != nrow(by)) 
+                warning("The design matrix and the by argument imply a different number of rows: ", 
+                        nrow(X), ", ", nrow(by))
             DM <- lapply(1:ncol(by), function(i) {
                 ret <- X * by[, i]
                 colnames(ret) <- paste(colnames(ret), colnames(by)[i], sep = ":")
@@ -400,6 +403,15 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
     cll[[1]] <- as.name("bols")
     
     mf <- list(...)
+    if (is.null(by)) {
+        tmp <- mf
+    } else {
+        tmp <- c(mf, list(by))
+    }
+    if (length(unique(sapply(tmp, length))) > 1)
+        warning("The elements in ... or by imply different number of rows: ", 
+                paste(unique(sapply(tmp, length)), collapse = ", "))
+    rm("tmp")
     
     ## check that center = TRUE/FALSE is not specified in ...
     if ("center" %in% names(mf) && 
@@ -511,6 +523,16 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
                 "See section ", sQuote("Details"), " of ?bbs for more information.")
 
     mf <- list(...)
+    if (is.null(by)) {
+        tmp <- mf
+    } else {
+        tmp <- c(mf, list(by))
+    }
+    if (length(unique(sapply(tmp, length))) > 1)
+        warning("The elements in ... or by imply different number of rows: ", 
+                paste(unique(sapply(tmp, length)), collapse = ", "))
+    rm("tmp")
+    
     if (length(mf) == 1 && ((is.matrix(mf[[1]]) || is.data.frame(mf[[1]])) &&
                             ncol(mf[[1]]) > 1 )) {
         mf <- as.data.frame(mf[[1]])
@@ -944,6 +966,9 @@ fit.bl <- function(object, y)
     stopifnot(inherits(bl1, "blg"))
     stopifnot(inherits(bl2, "blg"))
 
+    if (nrow(model.frame(bl1)) != nrow(model.frame(bl2))) 
+        warning("The design matrices of the two base-learners imply a different number of rows: ", 
+                nrow(model.frame(bl1)), ", ", nrow(model.frame(bl2)))
     mf <- cbind(model.frame(bl1), model.frame(bl2))
     index1 <- bl1$get_index()
     index2 <- bl2$get_index()
@@ -1051,6 +1076,9 @@ fit.bl <- function(object, y)
 
     stopifnot(!any(colnames(model.frame(bl1)) %in%
                    colnames(model.frame(bl2))))
+    if (nrow(model.frame(bl1)) != nrow(model.frame(bl2))) 
+        warning("The design matrices of the two marginal base-learners imply a different number of rows: ", 
+                nrow(model.frame(bl1)), ", ", nrow(model.frame(bl2)))
     mf <- cbind(model.frame(bl1), model.frame(bl2))
     index1 <- bl1$get_index()
     index2 <- bl2$get_index()

@@ -64,3 +64,21 @@ test_that("center = TRUE/FALSE throws an error in bols", {
     expect_length(coef(mboost(DEXfat ~ bols(waistcirc, center), data = bodyfat))[[1]], 3)
     expect_equal(names(coef(mod)[[1]])[3], "centerTRUE")
 })
+
+test_that("warning is issued if vector is recycled", {
+    mydat <- list(x_10 = 1:10, x_20 = 1:20, y = rnorm(20))
+    expect_silent(mboost(y ~ bols(x_20), data = mydat))
+    expect_silent(mboost(y ~ bbs(x_20), data = mydat))
+    expect_warning(mboost(y ~ bols(x_10) %X% bols(x_20), data = mydat), 
+                   "The design matrices of the two marginal base-learners imply a different number of rows: 10, 20")
+    expect_warning(mboost(y ~ bols(x_10) %+% bols(x_20, intercept = FALSE), data = mydat),
+                   "The design matrices of the two base-learners imply a different number of rows: 10, 20")
+    expect_warning(mboost(y ~ bols(x_10, x_20), data = mydat),
+                   "The elements in ... or by imply different number of rows: 10, 20")
+    expect_warning(mboost(y ~ bols(x_20, by = x_10), data = mydat),
+                   "The elements in ... or by imply different number of rows: 20, 10")
+    expect_warning(mboost(y ~ bbs(x_10, x_20), data = mydat),
+                   "The elements in ... or by imply different number of rows: 10, 20")
+    expect_warning(mboost(y ~ bbs(x_20, by = x_10), data = mydat),
+                   "The elements in ... or by imply different number of rows: 20, 10")
+})
