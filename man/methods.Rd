@@ -51,6 +51,8 @@
 \alias{nuisance}
 \alias{nuisance.mboost}
 
+\alias{downstream.test}
+
 \title{ Methods for Gradient Boosting Objects }
 \description{
   Methods for models fitted by boosting algorithms.
