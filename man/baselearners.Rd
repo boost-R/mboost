@@ -179,7 +179,7 @@ bl1 \%O\% bl2
   \item{nmax}{integer, maximal number of
           bins in the predictor variables. Use \code{Inf} to switch-off binning.}
   \item{tree_controls}{ an object of class \code{"TreeControl"}, which can be
-                  obtained using \code{\link[party]{ctree_control}}.
+                  obtained using \code{\link[partykit]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners,
                   stumps are fitted by default. By default, stumps and thus
                   additive models are fitted.}
