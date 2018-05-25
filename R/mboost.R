@@ -266,7 +266,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
         if (mstop == 0) {
             if (length(offset) == 1) {
                 if (!is.null(newdata))
-                    return(rep(offset, NCOL(newdata)))
+                    return(rep(offset, NROW(newdata)))
                 return(rep(offset, NROW(y)))
             } 
             if (!is.null(newdata)) {

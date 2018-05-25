@@ -575,3 +575,17 @@ mboost(y ~ bols(x), data = myData, weights = weights, family = Gaussian())
 ## was always working
 glmboost(y ~ x, data = myData, weights = weights, family = Gaussian())
 blackboost(y ~ x, data = myData, weights = weights, family = Gaussian())
+
+
+# predict with mstop = 0
+set.seed(1907)
+x1 <- rnorm(100)
+x2 <- rnorm(100)
+x3 <- rnorm(100)
+y <- rnorm(100, mean = 3 * x1, sd = 2)
+DF <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
+predict(glmboost(y ~ ., data = DF, control = boost_control(mstop = 0)), newdata = DF)
+predict(glmboost(y ~ ., data = DF, control = boost_control(mstop = 0)))
+
+
+
