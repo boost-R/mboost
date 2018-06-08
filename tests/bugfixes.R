@@ -575,3 +575,6 @@ mboost(y ~ bols(x), data = myData, weights = weights, family = Gaussian())
 ## was always working
 glmboost(y ~ x, data = myData, weights = weights, family = Gaussian())
 blackboost(y ~ x, data = myData, weights = weights, family = Gaussian())
+
+
+
