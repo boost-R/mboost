@@ -1,17 +1,40 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.8-2 (2017-xx-yy)}{
+\section{Changes in mboost version 2.9-0 (2018-05-yy)}{
   \subsection{User-visible changes}{
     \itemize{
+      \item Added family \code{RCG} for ratio of correlated gammas and downstream test, 
+        see Weinhold et al. (2016).
+        Closes \href{https://github.com/boost-R/mboost/issues/86}{#86}.
       \item Removed corrected cross-validation for Cox models (Verweij and van Houwelingen, 1993)
         as it was not working. Closes \href{https://github.com/boost-R/mboost/issues/85}{#85}.
       \item Use \code{partykit::ctree} instead of \code{party::ctree} in
-            \code{btree} and \code{blackboost}. This is slower but
-            more flexible (if you need speed, you know where to find it, right?).
+        \code{btree} and \code{blackboost}. This is slower but more flexible.
       \item Allow multivariate negative gradients. Note that all
-            elements are updated simultaneously, which in most cases
-            is NOT what you want (but in rare cases it is the right thing to do).
+        elements are updated simultaneously, which in most cases
+        is NOT what you want (but in rare cases it is the right thing to do).
+      \item Allow the specification of either \code{mstop} or \code{grid} in \code{stabsel}.
+      \item Allow leave-one-out crossvalidation (via \code{type = "kfold"}).
+    }
+  }
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Throw error when data is not compatibel (instead of silently recycling the vector). 
+        Fixes \href{https://github.com/boost-R/mboost/issues/79}{#79}.
+      \item Fixed handling of \code{offset} for families \code{NBinomial} and \code{Hurdle}.
+        Closes \href{https://github.com/boost-R/mboost/issues/88}{#88}.
+      \item Replace \code{cBind} (now deprecated) with \code{cbind}. 
+        Fixes \href{https://github.com/boost-R/mboost/issues/90}{#90}.
+      \item Fixed labels in plot function for categorical base-learners.
+    }
+  }
+  \subsection{Miscellaneous}{
+   \itemize{
+      \item Added further tests / checks.
+      \item Removed unused functions (\code{response}) and arguments 
+        (\code{bnames} from \code{extract.glmboost}).
+      \item Update email address and added ORCIDs.
     }
   }
 }
