@@ -24,7 +24,7 @@ Type 'q()' to quit R.
 > library('mboost')
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.9-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > 
@@ -131,7 +131,7 @@ FP(elbowbreadth, scaling = FALSE)log(elbowbreadth)elbowbreadth^-2
 > ### Title: Gradient Boosting Families
 > ### Aliases: Family AdaExp Binomial GaussClass GaussReg Gaussian Huber
 > ###   Laplace Poisson GammaReg CoxPH QuantReg ExpectReg NBinomial PropOdds
-> ###   Weibull Loglog Lognormal AUC Gehan Hurdle Multinomial Cindex
+> ###   Weibull Loglog Lognormal AUC Gehan Hurdle Multinomial Cindex RCG
 > ### Keywords: models
 > 
 > ### ** Examples
@@ -242,6 +242,98 @@ Warning in object$predict(newdata = newdata, which = which, aggregate = aggregat
 > pred2
         setosa versicolor virginica
 [1,] 0.6090049  0.2319469 0.1590482
+> 
+> ### Example for RCG model
+> ## generate covariate values
+> set.seed(12345)
+> x1 <- rnorm(500)
+> x2 <- rnorm(500)
+> ## generate linear predictors
+> zetaM <- 0.1 + 0.3 * x1 - 0.5 * x2 
+> zetaU <- 0.1 - 0.1 * x1 + 0.2 * x2
+> ## generate beta values
+> M <- rgamma(500, shape = 2, rate = exp(zetaM))
+> U <- rgamma(500, shape = 2, rate = exp(zetaU))
+> y <- M / (M + U)
+> 
+> ## fit RCG model
+> data <- data.frame(y, x1, x2)
+> RCGmodel <- glmboost(y ~ x1 + x2, data = data, family = RCG(),
++                      control = boost_control(mstop = 2000,
++                      trace = TRUE, nu = 0.01))
+[    1] ...................................... -- risk: -40.03106 
+[   41] ...................................... -- risk: -60.61721 
+[   81] ...................................... -- risk: -75.54391 
+[  121] ...................................... -- risk: -87.75013 
+[  161] ...................................... -- risk: -97.96363 
+[  201] ...................................... -- risk: -106.2965 
+[  241] ...................................... -- risk: -112.9433 
+[  281] ...................................... -- risk: -118.1435 
+[  321] ...................................... -- risk: -122.1471 
+[  361] ...................................... -- risk: -125.19 
+[  401] ...................................... -- risk: -127.4793 
+[  441] ...................................... -- risk: -129.1882 
+[  481] ...................................... -- risk: -130.4562 
+[  521] ...................................... -- risk: -131.393 
+[  561] ...................................... -- risk: -132.0827 
+[  601] ...................................... -- risk: -132.5892 
+[  641] ...................................... -- risk: -132.9604 
+[  681] ...................................... -- risk: -133.2322 
+[  721] ...................................... -- risk: -133.431 
+[  761] ...................................... -- risk: -133.5796 
+[  801] ...................................... -- risk: -133.6997 
+[  841] ...................................... -- risk: -133.7974 
+[  881] ...................................... -- risk: -133.8767 
+[  921] ...................................... -- risk: -133.9411 
+[  961] ...................................... -- risk: -133.9934 
+[1'001] ...................................... -- risk: -134.0359 
+[1'041] ...................................... -- risk: -134.0704 
+[1'081] ...................................... -- risk: -134.0985 
+[1'121] ...................................... -- risk: -134.1212 
+[1'161] ...................................... -- risk: -134.1397 
+[1'201] ...................................... -- risk: -134.1547 
+[1'241] ...................................... -- risk: -134.1669 
+[1'281] ...................................... -- risk: -134.1768 
+[1'321] ...................................... -- risk: -134.1848 
+[1'361] ...................................... -- risk: -134.1913 
+[1'401] ...................................... -- risk: -134.1966 
+[1'441] ...................................... -- risk: -134.2009 
+[1'481] ...................................... -- risk: -134.2044 
+[1'521] ...................................... -- risk: -134.2072 
+[1'561] ...................................... -- risk: -134.2095 
+[1'601] ...................................... -- risk: -134.2114 
+[1'641] ...................................... -- risk: -134.2129 
+[1'681] ...................................... -- risk: -134.2142 
+[1'721] ...................................... -- risk: -134.2152 
+[1'761] ...................................... -- risk: -134.216 
+[1'801] ...................................... -- risk: -134.2166 
+[1'841] ...................................... -- risk: -134.2172 
+[1'881] ...................................... -- risk: -134.2176 
+[1'921] ...................................... -- risk: -134.218 
+[1'961] ......................................
+Final risk: -134.2182 
+> ## true coefficients: gamma = (0.0, 0.4, -0.7),
+> ##                    alpha (= shape) = 2,
+> ##                    rho = 0
+> ## compare to coefficient estimates
+> coef(RCGmodel)
+ (Intercept)           x1           x2 
+ 0.006515134  0.431981395 -0.765034373 
+attr(,"offset")
+[1] 0
+> nuisance(RCGmodel)
+[1] 1.955096 0.001000
+> 
+> ## compute downstream tests 
+> ## (only suitable without early stopping, i.e., if likelihood based model converged)
+> downstream.test(RCGmodel)
+(Intercept)          x1          x2 
+  0.8986986   0.0000000   0.0000000 
+> 
+> ## compute conditional expectations
+> predictions <- predict(RCGmodel, type = "response")
+> plot(predictions, y)
+> abline(0,1)
 > 
 > ## No test: 
 > ############################################################
@@ -1087,7 +1179,7 @@ Number of baselearners:  1
 > ## some time (~ 5-10 seconds depending on the system)
 > 
 > ### set up and plot additive tree model
-> if (require("party")) {
+> if (require("partykit")) {
 +     ctrl <- ctree_control(maxdepth = 3)
 +     viris <- subset(iris, Species != "setosa")
 +     viris$Species <- viris$Species[, drop = TRUE]
@@ -1099,30 +1191,14 @@ Number of baselearners:  1
 +     layout(matrix(1:4, ncol = 2))
 +     plot(imod)
 + }
-Loading required package: party
+Loading required package: partykit
+Warning: package 'partykit' was built under R version 3.4.4
 Loading required package: grid
+Loading required package: libcoin
+Warning: package 'libcoin' was built under R version 3.4.4
 Loading required package: mvtnorm
-Loading required package: modeltools
-Loading required package: stats4
 
-Attaching package: 'modeltools'
-
-The following object is masked from 'package:stabs':
-
-    parameters
-
-Loading required package: strucchange
-Loading required package: zoo
-
-Attaching package: 'zoo'
-
-The following objects are masked from 'package:base':
-
-    as.Date, as.Date.numeric
-
-Loading required package: sandwich
-
-Attaching package: 'party'
+Attaching package: 'partykit'
 
 The following object is masked from 'package:mboost':
 
@@ -1135,9 +1211,8 @@ The following object is masked from 'package:mboost':
 > 
 > cleanEx()
 
-detaching 'package:party', 'package:strucchange', 'package:sandwich',
-  'package:zoo', 'package:modeltools', 'package:stats4',
-  'package:mvtnorm', 'package:grid'
+detaching 'package:partykit', 'package:mvtnorm', 'package:libcoin',
+  'package:grid'
 
 > nameEx("boost_family-class")
 > ### * boost_family-class
@@ -1455,7 +1530,7 @@ Degrees of freedom (for mstop = 45): 1.917234
 > ### cvrisk in parallel modes:
 > 
 > ## Not run: 
-> ##D automatically
+> ##D ## at least not automatically
 > ##D 
 > ##D ## parallel::mclapply() which is used here for parallelization only runs 
 > ##D ## on unix systems (here we use 2 cores)
@@ -1753,7 +1828,7 @@ detaching 'package:Matrix'
 >   model[mstop(cvm), return = FALSE]
 NULL
 >   mstop(model)
-[1] 98
+[1] 100
 > 
 >   ### plot age and kneebreadth
 >   layout(matrix(1:2, nc = 2))
@@ -1795,7 +1870,7 @@ NULL
 > ###   risk.mboost extract extract.mboost extract.gamboost extract.glmboost
 > ###   extract.blackboost extract.blg extract.bl_lin extract.bl_tree
 > ###   logLik.mboost hatvalues.gamboost hatvalues.glmboost selected
-> ###   selected.mboost nuisance nuisance.mboost
+> ###   selected.mboost nuisance nuisance.mboost downstream.test
 > ### Keywords: methods
 > 
 > ### ** Examples
@@ -3696,7 +3771,7 @@ Levels: Petal.Length < Sepal.Length, setosa < Petal.Width
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  62.62 2.51 65.86 NA NA 
+Time elapsed:  83 2.77 86.67 NA NA 
 > grDevices::dev.off()
 null device 
           1 

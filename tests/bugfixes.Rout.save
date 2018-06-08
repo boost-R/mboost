@@ -20,7 +20,7 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.9-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > require("Matrix")
@@ -282,41 +282,23 @@ In gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl,  :
 +     stopifnot(max(abs(predict(x[i]) - predict(x[max(s)], agg = "cumsum")[,i])) < eps)
 > 
 > ### make sure environment(formula) is used for evaluation
-> if (require("party")) {
+> if (require("partykit")) {
 +     data("cars")
 +     ctl  <- boost_control(mstop = 100, trace = TRUE)
 +     tctl <- ctree_control(teststat = "max", testtype = "Teststat",
-+                           mincrit = 0, maxdepth = 5, savesplitstat = FALSE)
++                           mincrit = 0, maxdepth = 5, saveinfo = FALSE)
 +     myfun <- function(cars, xx, zz){
 +         mboost(dist ~ btree(speed, tree_controls = zz),
 +                data = cars, control = xx)
 +     }
 +     try(mod <- myfun(cars, xx = ctl, zz = tctl))
 + }
-Loading required package: party
+Loading required package: partykit
 Loading required package: grid
+Loading required package: libcoin
 Loading required package: mvtnorm
-Loading required package: modeltools
-Loading required package: stats4
 
-Attaching package: 'modeltools'
-
-The following object is masked from 'package:stabs':
-
-    parameters
-
-Loading required package: strucchange
-Loading required package: zoo
-
-Attaching package: 'zoo'
-
-The following objects are masked from 'package:base':
-
-    as.Date, as.Date.numeric
-
-Loading required package: sandwich
-
-Attaching package: 'party'
+Attaching package: 'partykit'
 
 The following object is masked from 'package:mboost':
 
@@ -326,6 +308,9 @@ The following object is masked from 'package:mboost':
 [  41] ...................................... -- risk: 9006.37 
 [  81] ..................
 Final risk: 8976.954 
+Warning messages:
+1: package 'partykit' was built under R version 3.4.4 
+2: package 'libcoin' was built under R version 3.4.4 
 > 
 > ### bbs with weights and expanded data
 > x <- runif(100)
@@ -744,6 +729,24 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 > nd <- data.frame(waistcirc = 1, age = 1,
 +                  hipcirc = seq(min(bf$hipcirc), max(bf$hipcirc), length = 100))
 > plot(mod, which = 2, newdata = nd)
+> lines(mod, which = 2, rug = TRUE)
+Warning message:
+In plot_helper(xl, yl) :
+  'rug = TRUE' should be used with care if 'add = TRUE'
+> ## check user-specified labels
+> plot(mod, which = 2, newdata = nd, xlab = "hip circumference", ylab = "partial effect")
+> 
+> ## check categorical variables
+> bodyfat$hip_cat <- cut(bodyfat$hipcirc, breaks = 2)
+> bodyfat$waist_cat <- cut(bodyfat$waistcirc, breaks = 2)
+> mod <- mboost(DEXfat ~ bols(waist_cat) + bols(hip_cat), data = bodyfat)
+> plot(mod, which = "hip_cat", ylim = c(-4,9))
+> plot(mod, which = "hip_cat", ylim = c(-4,9), xaxt = "n", xlab = "")
+> lines(mod, which = "waist_cat", col = "red")
+> 
+> mod <- mboost(DEXfat ~ bols(waistcirc) + bols(hip_cat) + bols(hip_cat, waistcirc),
++               data = bodyfat)
+> plot(mod, which = "hip_cat")
 > 
 > 
 > ## check if model fitting with very few knots works
@@ -959,6 +962,9 @@ Offset:  0.5015757
 Number of baselearners:  1 
 
 > 
+> 
+> 
+> 
 > proc.time()
    user  system elapsed 
-  25.69    0.53   27.53 
+  43.53    0.54   45.42 

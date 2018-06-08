@@ -19,7 +19,7 @@ Type 'q()' to quit R.
 > library("mboost")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.9-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > attach(asNamespace("mboost"))
@@ -28,15 +28,16 @@ The following objects are masked from package:mboost:
     %+%, %O%, %X%, AUC, AdaExp, Binomial, Cindex, CoxPH, ExpectReg, FP,
     Family, GammaReg, GaussClass, GaussReg, Gaussian, Gehan, Huber,
     Hurdle, IPCweights, Laplace, Loglog, Lognormal, Multinomial,
-    NBinomial, Poisson, PropOdds, QuantReg, Weibull,
+    NBinomial, Poisson, PropOdds, QuantReg, RCG, Weibull,
     as.data.frame.varimp, bbs, bkernel, blackboost, bmono, bmrf, bns,
     bols, boost_control, brad, brandom, bspatial, bss, btree, buser,
-    confint.glmboost, confint.mboost, cv, cvrisk, extract,
-    fitted.mboost, gamboost, glmboost, lines.mboost, lines.mboost.ci,
-    mboost, mboost_fit, mboost_intern, mstop, mstop<-, nuisance,
-    plot.cvrisk, plot.glmboost, plot.mboost, plot.mboost.ci,
-    plot.varimp, print.glmboost.ci, risk, selected.mboost,
-    stabsel.mboost, stabsel_parameters.mboost, survFit, varimp
+    confint.glmboost, confint.mboost, cv, cvrisk, downstream.test,
+    extract, fitted.mboost, gamboost, glmboost, lines.mboost,
+    lines.mboost.ci, mboost, mboost_fit, mboost_intern, mstop, mstop<-,
+    nuisance, plot.cvrisk, plot.glmboost, plot.mboost, plot.mboost.ci,
+    plot.varimp, predict.glmboost, predict.mboost, print.glmboost.ci,
+    risk, selected.mboost, stabsel.mboost, stabsel_parameters.mboost,
+    survFit, varimp
 
 > library("MASS")
 > library("Matrix")
@@ -358,8 +359,10 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 > 
 > ### varying factor
 > m1 <- gamboost(y ~ bbs(x1) %X% bols(f, df = 5, contrasts.arg = "contr.dummy"))
-Warning message:
-In data.frame(..., check.names = FALSE) :
+Warning messages:
+1: In bbs(x1) %X% bols(f, df = 5, contrasts.arg = "contr.dummy") :
+  The design matrices of the two marginal base-learners imply a different number of rows: 1000, 100
+2: In data.frame(..., check.names = FALSE) :
   row names were found from a short variable and have been discarded
 > coef(m1)
 $`"bbs(x1) %X% bols(f, df = 5, contrasts.arg = \\"contr.dummy\\")"`
@@ -410,8 +413,10 @@ attr(,"offset")
 > m1 <- gamboost(y ~ (bols(x1, intercept = FALSE, df = 1) %+%
 +                     bols(x2, intercept = FALSE, df = 1)) %X% bols(f, df = 4) +
 +                     bbs(x1) + bspatial(x1, x2))
-Warning message:
-In data.frame(..., check.names = FALSE) :
+Warning messages:
+1: In (bols(x1, intercept = FALSE, df = 1) %+% bols(x2, intercept = FALSE,  :
+  The design matrices of the two marginal base-learners imply a different number of rows: 1000, 100
+2: In data.frame(..., check.names = FALSE) :
   row names were found from a short variable and have been discarded
 > 
 > 
@@ -1328,4 +1333,4 @@ In bols(z2, by = z3) : Dropped unobserved factor levels
 > 
 > proc.time()
    user  system elapsed 
-  25.74    1.48   27.81 
+  24.75    1.48   26.59 

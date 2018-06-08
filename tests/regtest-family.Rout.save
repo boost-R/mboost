@@ -19,7 +19,7 @@ Type 'q()' to quit R.
 > library("mboost")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.9-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > 
@@ -96,19 +96,19 @@ Loss function:
 
 Number of boosting iterations: mstop = 1000 
 Step size:  0.1 
-Offset:  1.63316 
+Offset:  1.633154 
 
 Coefficients: 
 (Intercept)           x 
-  -1.481156    1.912433 
+  -1.481151    1.912433 
 attr(,"offset")
-[1] 1.63316
+[1] 1.633154
 
 > coef(mod)
 (Intercept)           x 
-  -1.481156    1.912433 
+  -1.481151    1.912433 
 attr(,"offset")
-[1] 1.63316
+[1] 1.633154
 > nuisance(mod)
 [1] 1.331289
 > 
@@ -152,7 +152,6 @@ Offset:  5.12
 Number of baselearners:  1 
 
 > 
-> 
 > if (require("MASS")) {
 + 
 + summary(glm.nb(y ~ x))
@@ -171,6 +170,15 @@ Loading required package: MASS
 attr(,"offset")
 [1] -0.06195115
 > 
+> ## Count models as before but with highly skewed data 
+> ## (used to lead to an error as offset was not properly computed)
+> x <- rnorm(100)
+> y <- rnbinom(length(x), size = 2, mu = exp(x * 5))
+> mod <- glmboost(y ~ x, family = NBinomial())
+> ## check same for Hurdle model
+> x <- x[y > 0]
+> y <- y[y > 0]
+> mod <- glmboost(y ~ x, family = Hurdle())
 > 
 > ### Weibull model
 > 
@@ -205,7 +213,7 @@ attr(,"offset")
 + 
 + }
 Loading required package: survival
-[1] 0.4493619
+[1] 0.4392436
 > 
 > 
 > ### Log logistic model
@@ -237,7 +245,7 @@ Loading required package: survival
 + model2$scale
 + 
 + }
-[1] 0.3857498
+[1] 0.5179667
 > 
 > 
 > ### Log normal model
@@ -269,7 +277,7 @@ Loading required package: survival
 + model2$scale
 + 
 + }
-[1] 0.6015273
+[1] 0.4021169
 > 
 > 
 > ### AUC
@@ -858,4 +866,4 @@ See Warning section in ?coef.mboost
 > 
 > proc.time()
    user  system elapsed 
-  13.63    0.14   14.08 
+  13.72    0.15   14.41 

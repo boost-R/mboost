@@ -20,7 +20,7 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.9-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > require("survival")
@@ -60,13 +60,57 @@ Number of baselearners:  1
 Optimal number of boosting iterations: 37 
 Degrees of freedom (for mstop = 37): 4.371192 
 > 
+> aic2 <- AIC(cars.gb, method = "corrected", df = "actset")
+Warning message:
+In AIC.mboost(cars.gb, method = "corrected", df = "actset") :
+  df = "actset" can only be used with 'glmboost' models. df = "trace" is used instead.
+> stopifnot(all.equal(aic, aic2))
+> 
 > ht <- hatvalues(cars.gb)
+> 
+> ## extract residual
+> stopifnot(all.equal(resid(cars.gb), cars.gb$resid()))
+> par(mfrow = c(1, 2))
+> plot(cars$speed, resid(cars.gb[0]))
+> cars$resid <- resid(cars.gb)
+> lines(cars$speed, predict(loess(resid ~ speed, cars)), col = "red")
+> plot(cars$speed, resid(cars.gb[50]))
+> cars$resid <- resid(cars.gb)
+> lines(cars$speed, predict(loess(resid ~ speed, cars)), col = "red")
+> 
+> ## check return = FALSE
+> stopifnot(is.null(cars.gb[10, return = FALSE]))
+> stopifnot(mstop(cars.gb) == 10)
 > 
 > ### plot fit
 > plot(dist ~ speed, data = cars)
 > lines(cars$speed, predict(cars.gb[mstop(AIC(cars.gb))]), col = "red")
 > lines(cars$speed, predict(smooth.spline(cars$speed, cars$dist), cars$speed)$y,
 +       col = "green")
+> 
+> ## print model summary
+> summary(cars.gb)
+
+	 Model-based Boosting
+
+Call:
+gamboost(formula = dist ~ speed, data = cars, family = fm, control = boost_control(mstop = 50),     dfbase = 4)
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 10 
+Step size:  0.1 
+Offset:  0 
+Number of baselearners:  1 
+
+Selection frequencies:
+bbs(speed, df = dfbase) 
+                      1 
+
 > 
 > #### check boosting hat matrix and subsetting / predict
 > stopifnot(isTRUE(all.equal(drop(attr(ht, "hatmatrix") %*% cars$dist),
@@ -547,4 +591,4 @@ Warning in Xfun(mf, vary, args) :
 > 
 > proc.time()
    user  system elapsed 
-   7.76    0.26    8.61 
+   8.28    0.10    8.78 

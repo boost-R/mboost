@@ -19,7 +19,7 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
+This is mboost 2.9-0. See 'package?mboost' and 'news(package  = "mboost")'
 for a complete list of changes.
 
 > require("lattice")
@@ -142,4 +142,4 @@ In plot.varimp(varimp(gam), maxchar = 3) :
 > 
 > proc.time()
    user  system elapsed 
-   5.11    0.28    5.74 
+   4.86    0.20    5.10 
