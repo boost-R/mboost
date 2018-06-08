@@ -1,7 +1,7 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.9-0 (2018-05-yy)}{
+\section{Changes in mboost version 2.9-0 (2018-06-08)}{
   \subsection{User-visible changes}{
     \itemize{
       \item Added family \code{RCG} for ratio of correlated gammas and downstream test, 
@@ -26,6 +26,8 @@
         Closes \href{https://github.com/boost-R/mboost/issues/88}{#88}.
       \item Replace \code{cBind} (now deprecated) with \code{cbind}. 
         Fixes \href{https://github.com/boost-R/mboost/issues/90}{#90}.
+      \item Fix \code{predict} with zero iterations (names were not correctly assigned).
+        Fixes \href{https://github.com/boost-R/mboost/issues/87}{#87}.
       \item Fixed labels in plot function for categorical base-learners.
     }
   }
