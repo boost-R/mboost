@@ -17,8 +17,8 @@
 \details{
 \tabular{ll}{
 Package: \tab mboost\cr
-Version: \tab 2.8-1\cr
-Date: \tab 2017-07-19\cr
+Version: \tab 2.9-0\cr
+Date: \tab 2018-06-08\cr
 License: \tab GPL-2\cr
 }
 
@@ -58,6 +58,17 @@ License: \tab GPL-2\cr
   paper is a good starting point when you plan to analyze your data using
   \code{mboost}.
 
+}
+
+\section{NEWS in 2.9-series}{
+
+  Series 2.9 provides a new family (\code{RCG}), uses \code{partykit::ctree} 
+  instead of \code{party::ctree} to be more flexible, allows for multivariate 
+  negative gradients, and leave-one-out crossvalidation. Further minor changes were 
+  introduces and quite some bugs were fixed. 
+
+  \bold{For more details and other changes see}\cr\code{news(Version >= "2.9-0", package  = "mboost")}
+  
 }
 
 \section{NEWS in 2.8-series}{
