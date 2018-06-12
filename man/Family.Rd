@@ -388,6 +388,25 @@ pred2 <- predict(mlm, type = "response", newdata = newdata)
 pred[1, ]
 pred2
 
+\donttest{############################################################
+## Do not run and check these examples automatically as
+## they take some time
+
+## Compare results with nnet::multinom
+if (require("nnet")) {
+    mlmn <- multinom(Species ~ Sepal.Length, data = iris)
+    max(abs(fitted(mlm[1000], type = "response") -
+            fitted(mlmn, type = "prob")))
+}
+
+## End(Not run and test)
+}
+
+
+\donttest{############################################################
+## Do not run and check these examples automatically as
+## they take some time
+
 ### Example for RCG model
 ## generate covariate values
 set.seed(12345)
@@ -422,20 +441,10 @@ predictions <- predict(RCGmodel, type = "response")
 plot(predictions, y)
 abline(0,1)
 
-\donttest{############################################################
-## Do not run and check these examples automatically as
-## they take some time
-
-## Compare results with nnet::multinom
-if (require("nnet")) {
-    mlmn <- multinom(Species ~ Sepal.Length, data = iris)
-    max(abs(fitted(mlm[1000], type = "response") -
-            fitted(mlmn, type = "prob")))
-
-}
-
 ## End(Not run and test)
 }
+
+
 
 }
 \keyword{models}
