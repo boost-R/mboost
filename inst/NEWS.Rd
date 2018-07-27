@@ -563,71 +563,69 @@
   }
 }
 \section{Changes in mboost version 2.1-0 (2011-11-15)}{
-  \itemize{
     \subsection{Base-learners}{
-      \itemize{
-	\item added base-learners for smooth monotonic (or convex/concave)
-	functions of one or two variables (bmono())
-	\item added base-learners for radial basis functions (brad())
-	\item added base-learners for Markov random fields (bmrf())
-	\item bbs(x, cyclic = TRUE) for cyclic covariates ensures that
-	predictions at the boundaries coincide and that the resulting
-	function estimate is smoothly joined
-	\item bols(x, intercept = FALSE) only reasonable if x is centered.
-	A warning is now issued if x is not centered.
-	\item changed default for degrees of freedom in bspatial()
-	to df = 6
-	\item added checks in bbs (and brandom) to ensure that the specified
-	degrees of freedom are greater than the range of the (unpenalized)
-	null space
-	\item bolscw can be mixed with other base-learners (although
-	not yet exported and not via the formula interface)
-	\item new experimental base-learner \%O\% for smoothing
-	matrix-values responses
-      }
+        \itemize{
+    	\item added base-learners for smooth monotonic (or convex/concave)
+    	functions of one or two variables (bmono())
+    	\item added base-learners for radial basis functions (brad())
+    	\item added base-learners for Markov random fields (bmrf())
+    	\item bbs(x, cyclic = TRUE) for cyclic covariates ensures that
+    	predictions at the boundaries coincide and that the resulting
+    	function estimate is smoothly joined
+    	\item bols(x, intercept = FALSE) only reasonable if x is centered.
+    	A warning is now issued if x is not centered.
+    	\item changed default for degrees of freedom in bspatial()
+    	to df = 6
+    	\item added checks in bbs (and brandom) to ensure that the specified
+    	degrees of freedom are greater than the range of the (unpenalized)
+    	null space
+    	\item bolscw can be mixed with other base-learners (although
+    	not yet exported and not via the formula interface)
+    	\item new experimental base-learner \%O\% for smoothing
+    	matrix-values responses
+        }
     }
     \subsection{Families}{
-      \itemize{
-	\item add Binomial(link = "probit") and general cdf's as link
-	functions (experimental)
-	\item added new families:
-	\itemize{
-	  \item AUC() for AUC loss function
-	  \item GammaReg() for gamma regression models
-	}
-      }
+        \itemize{
+	    \item add Binomial(link = "probit") and general cdf's as link
+    	functions (experimental)
+    	\item added new families:
+    	\itemize{
+    	    \item AUC() for AUC loss function
+    	    \item GammaReg() for gamma regression models
+    	}
+        }
     }
     \subsection{Methods}{
-      \itemize{
-	\item added extract() methods for base-learners and fitted models
-	\item added residuals() function to extract residuals from the
-        model
-	\item improved predict.mboost(): added names where missing and the
-        offset as attribute where applicable.
-	\item fixed bug in predict() with glmboost.matrix(..., center = TRUE)
-	\item coef now also works with tree base-learners
-        (returns NULL in this case)
-	\item changed coef.gamboost to coef.mboost
-	\item various improvements in plot.mboost function
-      }
+        \itemize{
+    	\item added extract() methods for base-learners and fitted models
+    	\item added residuals() function to extract residuals from the
+            model
+    	\item improved predict.mboost(): added names where missing and the
+            offset as attribute where applicable.
+    	\item fixed bug in predict() with glmboost.matrix(..., center = TRUE)
+    	\item coef now also works with tree base-learners
+            (returns NULL in this case)
+    	\item changed coef.gamboost to coef.mboost
+    	\item various improvements in plot.mboost function
+        }
     }
 
     \subsection{Miscellaneous}{
-      \itemize{
-	\item changed default in glmboost() to center = TRUE
-	\item speed up glmboost() a little bit
-	\item changed behavior of cvrisk() if weights are used:
-        out-of-bag-risk now weighted according to "weights" as
-        specified in call to mboost
-	\item added warning if df2lambda is likely to become numerically
-        unstable (i.e. in the case of large entries in the design matrix)
-	\item improved storage, speed and stability using Matrix technology for
-	bols() for factors with many levels and brandom();
-	further improvements in base-learners that are combined via \%+\%.
-	\item various improvements and fixes in manuals
-      }
+        \itemize{
+    	\item changed default in glmboost() to center = TRUE
+    	\item speed up glmboost() a little bit
+    	\item changed behavior of cvrisk() if weights are used:
+            out-of-bag-risk now weighted according to "weights" as
+            specified in call to mboost
+    	\item added warning if df2lambda is likely to become numerically
+            unstable (i.e. in the case of large entries in the design matrix)
+    	\item improved storage, speed and stability using Matrix technology for
+    	bols() for factors with many levels and brandom();
+    	further improvements in base-learners that are combined via \%+\%.
+    	\item various improvements and fixes in manuals
+        }
     }
-  }
 }
 \section{Changes in mboost version 2.0-12 (2011-08-22)}{
   \itemize{
