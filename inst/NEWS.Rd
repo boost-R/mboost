@@ -1,6 +1,16 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
+\section{Changes in mboost version 2.9-1 (2018-08-21)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Dropped \code{\\itemize} in \file{ins/NEWS.Rd}. 
+        Fixes \href{https://github.com/boost-R/mboost/issues/94}{#94}.
+    }
+  }
+}
+
+
 \section{Changes in mboost version 2.9-0 (2018-06-08)}{
   \subsection{User-visible changes}{
     \itemize{

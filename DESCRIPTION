@@ -1,7 +1,7 @@
 Package: mboost
 Title: Model-Based Boosting
 Version: 2.9-1
-Date: 2018-xx-yy
+Date: 2018-08-21
 Authors@R: c(person("Torsten", "Hothorn", role = "aut", 
                 comment = c(ORCID = "0000-0001-8301-0471")),
              person("Peter", "Buehlmann", role = "aut"),
