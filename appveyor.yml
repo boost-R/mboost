@@ -26,6 +26,10 @@ on_failure:
   - travis-tool.sh dump_logs
   ## push complete mboost.Rcheck folder as artifact
   - appveyor PushArtifact mboost.Rcheck
+  
+environment: 
+  global:
+    R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
 
 artifacts:
   - path: '*.Rcheck\**\*.log'
