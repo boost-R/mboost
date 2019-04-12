@@ -99,8 +99,11 @@ print.cvrisk <- function(x, ...) {
 plot.cvrisk <- function(x, xlab = "Number of boosting iterations",
                         ylab = attr(x, "risk"),
                         ylim = range(x), main = attr(x, "type"), ...) {
-
-    force(ylab); force(main)
+    
+    ## force evaluation of attributes (to not evaluate them in the wrong situation)
+    force(ylab)
+    force(main)
+    
     x <- x[, apply(x, 2, function(y) all(!is.na(y))), drop = FALSE]
     cm <- colMeans(x)
     plot(1:ncol(x), cm, ylab = ylab, ylim = ylim,
