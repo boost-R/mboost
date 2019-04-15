@@ -14,10 +14,10 @@ before_build:
   - bash -c "echo '^travis-tool\.sh\.cmd$' >> .Rbuildignore"
 
 build_script:
+  - travis-tool.sh install_bioc KEGGgraph biomaRt
   - travis-tool.sh install_deps
   - travis-tool.sh install_github hofnerb/stabs
   - travis-tool.sh install_github boost-R/gamboostLSS
-  - travis-tool.sh install_bioc KEGGgraph biomaRt
 
 test_script:
   - travis-tool.sh run_tests
