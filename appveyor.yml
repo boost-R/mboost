@@ -10,6 +10,20 @@ install:
   - ps: Bootstrap
 
 # Adapt as necessary starting from here
+environment:
+  global:
+    GCC_PATH: mingw_64
+    # PKGTYPE: win.binary
+    R_ARCH: x64
+    USE_RTOOLS: true
+  matrix:
+    - configuration: release
+      R_VERSION: release
+      BIOC_USE_DEVEL: "FALSE"
+    - configuration: devel
+      R_VERSION: devel
+      BIOC_USE_DEVEL: "TRUE"
+
 before_build:
   - bash -c "echo '^travis-tool\.sh\.cmd$' >> .Rbuildignore"
 
