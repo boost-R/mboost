@@ -127,7 +127,7 @@ risk is to be minimized under some algorithmic constraints (i.e., limited
 number of boosting iterations). The model is then fitted using
 $$
 (\hat{f}_1, \dots, \hat{f}_p) = \argmin_{(f_1, \dots, f_p)}
-    \sum_{i = 1}^n w_i \rho\left(y_i, \sum_{j = 1}^p f_j(x)\right).
+    \sum_{i = 1}^n w_i \rho\left(y_i, \sum_{j = 1}^p f_j(x_i)\right).
 $$
 Here $(y_i, x_i), i = 1, \dots, n$, are $n$ training samples with responses $y_i$ and
 potentially high-dimensional feature vectors $x_i$, and $w_i$ are some weights.
