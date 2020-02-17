@@ -1,6 +1,26 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
+\section{Changes in mboost version 2.9-2 (2020-02-17)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Fixed minor bug in \code{plot.cvrisk}. 
+        Fixes \href{https://github.com/boost-R/mboost/issues/96}{#96}.
+      \item Really check for leave-one-out crossvalidation if \code{CoxPH} was
+        used.
+      \item Fixed minor bug in documentation: \code{...} was described in 
+        documentation but was not used in function.
+        Fixes \href{https://github.com/boost-R/mboost/issues/105}{#105}.
+      \item Fixed a minor issue with special contrast \code{"contr.dummy"}.
+    }
+  }
+   \subsection{Miscellaneous}{
+   \itemize{
+      \item Fixed typo in vignette.
+    }
+  }
+}
+
 \section{Changes in mboost version 2.9-1 (2018-08-21)}{
   \subsection{Bug-fixes}{
     \itemize{
