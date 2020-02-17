@@ -25,7 +25,6 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
     used for the out-of-bag risk (i.e., if \code{boost_control(risk =
       "oobag")}). This argument is also used internally by
     \code{cvrisk}. }
-  \item{\dots}{  additional arguments passed to \code{\link{mboost_fit}}; currently none. }
 }
 \details{
   The function implements component-wise functional gradient boosting in
