@@ -99,21 +99,22 @@ X_ols <- function(mf, vary, args) {
         fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary],
                     collapse = "+"), sep = "")
         fac <- sapply(mf[colnames(mf) != vary], is.factor)
+        DUMMY <- FALSE
         if (any(fac)){
             if (!is.list(args$contrasts.arg)){
                 ## first part needed to prevent warnings from calls such as
                 ## contrasts.arg = contr.treatment(4, base = 1):
-                if (is.character(args$contrasts.arg) &&
-                    args$contrasts.arg == "contr.dummy"){
+                if (DUMMY <- (is.character(args$contrasts.arg) &&
+                    args$contrasts.arg == "contr.dummy")){ ## store on DUMMY for later use
                     if (!args$intercept)
                         stop('"contr.dummy" can only be used with ',
                              sQuote("intercept = TRUE"))
                     fm <- paste(fm, "-1")
-                } else {
-                    txt <- paste("list(", paste(colnames(mf)[colnames(mf) != vary][fac],
-                                                "= args$contrasts.arg", collapse = ", "),")")
-                    args$contrasts.arg <- eval(parse(text=txt))
-                }
+                    args$contrasts.arg <- "contr.treatment"
+                } 
+                txt <- paste("list(", paste(colnames(mf)[colnames(mf) != vary][fac],
+                                            "= args$contrasts.arg", collapse = ", "),")")
+                args$contrasts.arg <- eval(parse(text=txt))
             } else {
                 ## if contrasts are given as list check if "contr.dummy" is specified
                 if (any(args$contrasts.arg == "contr.dummy"))
@@ -126,7 +127,7 @@ X_ols <- function(mf, vary, args) {
             args$contrasts.arg <- NULL
         }
         X <- model.matrix(as.formula(fm), data = mf, contrasts.arg = args$contrasts.arg)
-        if (!is.null(args$contrasts.arg) && args$contrasts.arg == "contr.dummy")
+        if (DUMMY)
             attr(X, "contrasts") <- lapply(attr(X, "contrasts"),
                                            function(x) x <- "contr.dummy")
         contr <- attr(X, "contrasts")
