@@ -17,8 +17,8 @@
 \details{
 \tabular{ll}{
 Package: \tab mboost\cr
-Version: \tab 2.9-2\cr
-Date: \tab 2020-02-17\cr
+Version: \tab 2.9-3\cr
+Date: \tab 2020-07-29\cr
 License: \tab GPL-2\cr
 }
 

@@ -1,6 +1,15 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
+\section{Changes in mboost version 2.9-3 (2020-07-29)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Removed deprecated argument \code{LINPACK} from all calls to \code{solve}. 
+        Fixes \href{https://github.com/boost-R/mboost/issues/109}{#109}.
+    }
+  }
+}
+
 \section{Changes in mboost version 2.9-2 (2020-02-17)}{
   \subsection{Bug-fixes}{
     \itemize{
