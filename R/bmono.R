@@ -378,15 +378,14 @@ define_solver <- function(lambda2, lambda3, X) {
              ## add if lambda3 != 0
              ifelse(lambda3 != 0, l3txt,""),
              "                                   ))",
-             "    solve(XtXC, crossprod(X, y), LINPACK = FALSE)",
+             "    solve(XtXC, crossprod(X, y))",
              "}"
              )
 
     if (!is(X, "Matrix")) {
         ## some lines must be replaced in order to solve directly
         fct[2] <- '    solve(XtX +'
-        fct[6] <- "          , crossprod(X, y),"
-        fct[7] <- '          LINPACK = FALSE)'
+        fct[6] <- "          , crossprod(X, y)"
     }
     fct
 }

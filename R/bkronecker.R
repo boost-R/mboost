@@ -97,8 +97,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
                 if (constr)
                     return(nnls2D(X, as(XtX, "matrix"), Y))
                 XWY <- crossprod(X$X1, Y) %*% X$X2
-                solve(XtX, matrix(as(XWY, "matrix"), ncol = 1),
-                      LINPACK = FALSE)
+                solve(XtX, matrix(as(XWY, "matrix"), ncol = 1))
             }
         }
 

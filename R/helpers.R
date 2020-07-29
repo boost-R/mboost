@@ -230,7 +230,7 @@ differences <- function(constraint, ncol = NULL) {
 ## least squares with equalities and inequalities
 solveLSEI <- function(XtX, Xty, D = NULL) {
     if (is.null(D) || all(sapply(D, is.null)))
-        return(solve(XtX, Xty, LINPACK = FALSE))
+        return(solve(XtX, Xty))
 
     if (!isMATRIX(D)) ## i.e. D is a list with 2 entries
         D <- rbind(D[[1]], D[[2]])

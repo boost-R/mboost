@@ -786,7 +786,7 @@ bl_lin <- function(blg, Xfun, args) {
             }
             mysolve <- function(y) {
                 if (is.null(attr(X, "Ts_constraint")))
-                    return(solve(XtX, crossprod(X, y), LINPACK = FALSE))
+                    return(solve(XtX, crossprod(X, y)))
                 ### non-negative LS only at the moment
                 return(nnls1D(XtX, X, y))
             }
