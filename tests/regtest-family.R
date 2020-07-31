@@ -199,11 +199,11 @@ x2 <- rnorm(100)
 
 mod <- glmboost(y ~ x1 + x2, family = Binomial())
 mod[500]
-coef(mod)
+2 * coef(mod, off2int = TRUE)
 
 glmMod <- glm(y ~ x1 + x2, family = 'binomial')
 coef(glmMod)
-stopifnot(all((coef(glmMod) - coef(mod, off2int = TRUE) * 2) < .Machine$double.eps))
+stopifnot(all(abs((coef(glmMod) - coef(mod, off2int = TRUE) * 2)) < sqrt(.Machine$double.eps)))
 
 ## C-index boosting
 if (require("survival")) {
