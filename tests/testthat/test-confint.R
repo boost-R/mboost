@@ -19,12 +19,12 @@ test_that("confint.glmboost works", {
     confint.glm <- confint(glm, B = 100, B.mstop = 2)
 
     expect_output(print(confint.glm), 
-                  ".*Bootstrap Confidence Intervals.*2.5%.*97.5%.*age.*-0.0100.*0.0478.*ID5.*")
+                  ".*Bootstrap Confidence Intervals.*2.5%.*97.5%.*age.*-0.002.*0.05.*ID5.*")
     expect_output(print(confint.glm, which = 2), 
-                  ".*Bootstrap Confidence Interval\n.*2.5%.*97.5%.*age.*-0.0100.*0.0478.*")
+                  ".*Bootstrap Confidence Interval\n.*2.5%.*97.5%.*age.*-0.002.*0.05.*")
     expect_error(print(confint.glm, which = 20), "is wrongly specified")
     expect_output(print(confint.glm, level = 0.8, pe = TRUE), 
-                  ".*Bootstrap Confidence Intervals.*beta.*10%.*90%.*age.*0.0077.*0.0000.*0.0354.*ID5.*")
+                  ".*Bootstrap Confidence Intervals.*beta.*10%.*90%.*age.*0.009.*0.0000.*0.035.*ID5.*")
 })
 
 test_that("confint.gamboost works", {
