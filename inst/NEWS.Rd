@@ -1,14 +1,189 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.8-0 (2017-xx-yy)}{
+\section{Changes in mboost version 2.9-4 (2020-11-25)}{
+  \subsection{User-visible changes}
+    \itemize{
+      \item Added \code{by} argument to \code{btree}; only binary factors
+            are allowed.
+    }
+  }
+}
+ 
+
+\section{Changes in mboost version 2.9-3 (2020-07-29)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Removed deprecated argument \code{LINPACK} from all calls to \code{solve}. 
+        Fixes \href{https://github.com/boost-R/mboost/issues/109}{#109}.
+    }
+  }
+}
+
+\section{Changes in mboost version 2.9-2 (2020-02-17)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Fixed minor bug in \code{plot.cvrisk}. 
+        Fixes \href{https://github.com/boost-R/mboost/issues/96}{#96}.
+      \item Really check for leave-one-out crossvalidation if \code{CoxPH} was
+        used.
+      \item Fixed minor bug in documentation: \code{...} was described in 
+        documentation but was not used in function.
+        Fixes \href{https://github.com/boost-R/mboost/issues/105}{#105}.
+      \item Fixed a minor issue with special contrast \code{"contr.dummy"}.
+    }
+  }
+   \subsection{Miscellaneous}{
+   \itemize{
+      \item Fixed typo in vignette.
+    }
+  }
+}
+
+\section{Changes in mboost version 2.9-1 (2018-08-21)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Dropped \code{\\itemize} in \file{ins/NEWS.Rd}. 
+        Fixes \href{https://github.com/boost-R/mboost/issues/94}{#94}.
+    }
+  }
+}
+
+
+\section{Changes in mboost version 2.9-0 (2018-06-08)}{
   \subsection{User-visible changes}{
     \itemize{
-      \item Strong speed-up of \code{stabsel.mboost}: We now only compute
-      the model on each subsample until \code{q} variables were selected
-      (or \code{mstop} is reached)
-      \item Added new \code{Binomial_glm} family as an alternative to \code{Binomial()}. 
+      \item Added family \code{RCG} for ratio of correlated gammas and downstream test, 
+        see Weinhold et al. (2016).
+        Closes \href{https://github.com/boost-R/mboost/issues/86}{#86}.
+      \item Removed corrected cross-validation for Cox models (Verweij and van Houwelingen, 1993)
+        as it was not working. Closes \href{https://github.com/boost-R/mboost/issues/85}{#85}.
+      \item Use \code{partykit::ctree} instead of \code{party::ctree} in
+        \code{btree} and \code{blackboost}. This is slower but more flexible.
+      \item Allow multivariate negative gradients. Note that all
+        elements are updated simultaneously, which in most cases
+        is NOT what you want (but in rare cases it is the right thing to do).
+      \item Allow the specification of either \code{mstop} or \code{grid} in \code{stabsel}.
+      \item Allow leave-one-out crossvalidation (via \code{type = "kfold"}).
     }
+  }
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Throw error when data is not compatibel (instead of silently recycling the vector). 
+        Fixes \href{https://github.com/boost-R/mboost/issues/79}{#79}.
+      \item Fixed handling of \code{offset} for families \code{NBinomial} and \code{Hurdle}.
+        Closes \href{https://github.com/boost-R/mboost/issues/88}{#88}.
+      \item Replace \code{cBind} (now deprecated) with \code{cbind}. 
+        Fixes \href{https://github.com/boost-R/mboost/issues/90}{#90}.
+      \item Fix \code{predict} with zero iterations (names were not correctly assigned).
+        Fixes \href{https://github.com/boost-R/mboost/issues/87}{#87}.
+      \item Fixed labels in plot function for categorical base-learners.
+    }
+  }
+  \subsection{Miscellaneous}{
+   \itemize{
+      \item Added further tests / checks.
+      \item Removed unused functions (\code{response}) and arguments 
+        (\code{bnames} from \code{extract.glmboost}).
+      \item Update email address and added ORCIDs.
+    }
+  }
+}
+
+\section{Changes in mboost version 2.8-1 (2017-07-19)}{
+  \subsection{User-visible changes}{
+    \itemize{
+      \item Added all possible options to the specific boosting functions
+        instead of passing the options via \code{...} to \code{mboost_fit}.
+        Closes \href{https://github.com/boost-R/mboost/issues/81}{#81}.
+    }
+  }
+  \subsection{Miscellaneous}{
+    \itemize{
+      \item Minor speed ups in \code{df2lambda} (i.e., when computing penalty parameter 
+        for the defined degrees of freedom). Changes proposed by Benjamin 
+        Christoffersen.
+      \item Updated kernel boosting reference. 
+        Closes \href{https://github.com/boost-R/mboost/issues/84}{#84}.  
+      \item Rebuilt package with LF instead of CRLF to fix \file{cleanup} script
+        as requested by CRAN. Fixes \href{https://github.com/boost-R/mboost/issues/81}{#82}
+      \item Use "old" definition of degrees of freedom in 
+        \code{vignette("mboost", package = "mboost")} to make results reproducible.
+    }
+  }
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Fix handling of missing values in \code{mboost} and \code{gamboost}
+        when weights are specified. Fixes \href{https://github.com/boost-R/mboost/issues/80}{#80}.
+    }
+  }
+}
+  
+\section{Changes in mboost version 2.8-0 (2017-05-04)}{
+  \subsection{User-visible changes}{
+    \itemize{
+      \item Models with zero steps (i.e., models containing only the offset) can
+        now be fitted. Furthermore, cross-validation can now also select a model
+        without base-learners.
+        Fixes \href{https://github.com/boost-R/mboost/issues/64}{#64}, 
+        \href{https://github.com/boost-R/mboost/issues/66}{#66}, and 
+        \href{https://github.com/boost-R/mboost/issues/69}{#69}.        
+      \item \code{Binomial} now uses link functions by making use of \code{make.link}. 
+        Furthermore, an alternative implementation of \code{Binomial} models 
+        along the lines of the \code{glm} implementation can be used via 
+        \code{Binomial(type = "glm")}. Additionally, it works not only with a 
+        two-level factor but also with a two-column matrix containing the number 
+        of successes and number of failures. 
+        Fixes \href{https://github.com/boost-R/mboost/issues/34}{#34}, 
+        \href{https://github.com/boost-R/mboost/issues/63}{#63} and
+        \href{https://github.com/boost-R/mboost/issues/65}{#65}.
+      \item Added new base-learner \code{bkernel} for kernel boosting as described in
+      
+        S. Friedrichs, J. Manitz, P. Burger, C.I. Amos, A. Risch, J.C. Chang-Claude, 
+        H.E. Wichmann, T. Kneib, H. Bickeboeller, and B. Hofner (2017), 
+        Pathway-Based Kernel Boosting for the Analysis of Genome-Wide Association Studies.
+        \emph{Computational and Mathematical Methods in Medicine}. 2017(6742763), 1-17. 
+        \doi{10.1155/2017/6742763}.
+        
+      \item Removed check if \code{df2lambda} is stable. Hence,  
+        \code{options(mboost_check_df2lambda)} (introduced in mboost 2.5-0) 
+        is no longer used. 
+        Closes \href{https://github.com/boost-R/mboost/issues/26}{#26}.
+    }
+  }
+  \subsection{Miscellaneous}{
+    \itemize{
+      \item Added Andreas Mayr as contributor.
+      \item Updated references and added reference to \code{citation("mboost")}.
+      \item Fixed code of India example, which can be used to reproduce the data analysis 
+        presented in
+        
+        N. Fenske, T. Kneib, and T. Hothorn (2011), 
+        Identifying risk factors for severe childhood malnutrition by boosting 
+        additive quantile regression.
+        \emph{Journal of the American Statistical Association}, \bold{106}:494-510.
+	      
+	    (see \code{system.file("India_quantiles.R", package = "mboost")})
+	  \item Fixed package citation.
+	  \item Register C routines to make CRAN happy (again).
+        Fixes \href{https://github.com/boost-R/mboost/issues/77}{#77}. 
+    }
+  }
+  \subsection{Bug-fixes}{
+     \itemize{
+       \item Make sure that \code{family = Multinomial} is only used with Kronecker 
+         product base-learners. Fixes \href{https://github.com/boost-R/mboost/issues/46}{#46}.
+      \item Use argument \code{PACKAGE} in \code{.Call}. 
+         Fixes \href{https://github.com/boost-R/mboost/issues/72}{#72}.
+      \item If \code{center} is specified as boolean value in \code{bols}, we now throw an error. 
+         Fixes \href{https://github.com/boost-R/mboost/issues/70}{#70}.
+      \item  Fixed \code{AUC} family which expected fit to be equal to a constant in the 
+        first iteration.
+      \item Check for new data, e.g., in \code{predict}, was broken.
+        Fixes \href{https://github.com/boost-R/mboost/issues/68}{#68}. 
+     \item Make sure that \code{newdata} is discarded in \code{fitted}. 
+        Fixes \href{https://github.com/boost-R/mboost/issues/76}{#76}.
+     }
   }
 }
 
@@ -437,71 +612,69 @@
   }
 }
 \section{Changes in mboost version 2.1-0 (2011-11-15)}{
-  \itemize{
     \subsection{Base-learners}{
-      \itemize{
-	\item added base-learners for smooth monotonic (or convex/concave)
-	functions of one or two variables (bmono())
-	\item added base-learners for radial basis functions (brad())
-	\item added base-learners for Markov random fields (bmrf())
-	\item bbs(x, cyclic = TRUE) for cyclic covariates ensures that
-	predictions at the boundaries coincide and that the resulting
-	function estimate is smoothly joined
-	\item bols(x, intercept = FALSE) only reasonable if x is centered.
-	A warning is now issued if x is not centered.
-	\item changed default for degrees of freedom in bspatial()
-	to df = 6
-	\item added checks in bbs (and brandom) to ensure that the specified
-	degrees of freedom are greater than the range of the (unpenalized)
-	null space
-	\item bolscw can be mixed with other base-learners (although
-	not yet exported and not via the formula interface)
-	\item new experimental base-learner \%O\% for smoothing
-	matrix-values responses
-      }
+        \itemize{
+    	\item added base-learners for smooth monotonic (or convex/concave)
+    	functions of one or two variables (bmono())
+    	\item added base-learners for radial basis functions (brad())
+    	\item added base-learners for Markov random fields (bmrf())
+    	\item bbs(x, cyclic = TRUE) for cyclic covariates ensures that
+    	predictions at the boundaries coincide and that the resulting
+    	function estimate is smoothly joined
+    	\item bols(x, intercept = FALSE) only reasonable if x is centered.
+    	A warning is now issued if x is not centered.
+    	\item changed default for degrees of freedom in bspatial()
+    	to df = 6
+    	\item added checks in bbs (and brandom) to ensure that the specified
+    	degrees of freedom are greater than the range of the (unpenalized)
+    	null space
+    	\item bolscw can be mixed with other base-learners (although
+    	not yet exported and not via the formula interface)
+    	\item new experimental base-learner \%O\% for smoothing
+    	matrix-values responses
+        }
     }
     \subsection{Families}{
-      \itemize{
-	\item add Binomial(link = "probit") and general cdf's as link
-	functions (experimental)
-	\item added new families:
-	\itemize{
-	  \item AUC() for AUC loss function
-	  \item GammaReg() for gamma regression models
-	}
-      }
+        \itemize{
+	    \item add Binomial(link = "probit") and general cdf's as link
+    	functions (experimental)
+    	\item added new families:
+    	\itemize{
+    	    \item AUC() for AUC loss function
+    	    \item GammaReg() for gamma regression models
+    	}
+        }
     }
     \subsection{Methods}{
-      \itemize{
-	\item added extract() methods for base-learners and fitted models
-	\item added residuals() function to extract residuals from the
-        model
-	\item improved predict.mboost(): added names where missing and the
-        offset as attribute where applicable.
-	\item fixed bug in predict() with glmboost.matrix(..., center = TRUE)
-	\item coef now also works with tree base-learners
-        (returns NULL in this case)
-	\item changed coef.gamboost to coef.mboost
-	\item various improvements in plot.mboost function
-      }
+        \itemize{
+    	\item added extract() methods for base-learners and fitted models
+    	\item added residuals() function to extract residuals from the
+            model
+    	\item improved predict.mboost(): added names where missing and the
+            offset as attribute where applicable.
+    	\item fixed bug in predict() with glmboost.matrix(..., center = TRUE)
+    	\item coef now also works with tree base-learners
+            (returns NULL in this case)
+    	\item changed coef.gamboost to coef.mboost
+    	\item various improvements in plot.mboost function
+        }
     }
 
     \subsection{Miscellaneous}{
-      \itemize{
-	\item changed default in glmboost() to center = TRUE
-	\item speed up glmboost() a little bit
-	\item changed behavior of cvrisk() if weights are used:
-        out-of-bag-risk now weighted according to "weights" as
-        specified in call to mboost
-	\item added warning if df2lambda is likely to become numerically
-        unstable (i.e. in the case of large entries in the design matrix)
-	\item improved storage, speed and stability using Matrix technology for
-	bols() for factors with many levels and brandom();
-	further improvements in base-learners that are combined via \%+\%.
-	\item various improvements and fixes in manuals
-      }
+        \itemize{
+    	\item changed default in glmboost() to center = TRUE
+    	\item speed up glmboost() a little bit
+    	\item changed behavior of cvrisk() if weights are used:
+            out-of-bag-risk now weighted according to "weights" as
+            specified in call to mboost
+    	\item added warning if df2lambda is likely to become numerically
+            unstable (i.e. in the case of large entries in the design matrix)
+    	\item improved storage, speed and stability using Matrix technology for
+    	bols() for factors with many levels and brandom();
+    	further improvements in base-learners that are combined via \%+\%.
+    	\item various improvements and fixes in manuals
+        }
     }
-  }
 }
 \section{Changes in mboost version 2.0-12 (2011-08-22)}{
   \itemize{
