@@ -6,6 +6,7 @@
 \alias{bbs}
 \alias{bspatial}
 \alias{brad}
+\alias{bkernel}
 \alias{brandom}
 \alias{btree}
 \alias{bmono}
@@ -39,16 +40,20 @@ bspatial(..., df = 6)
 brad(..., by = NULL, index = NULL, knots = 100, df = 4, lambda = NULL,
      covFun = fields::stationary.cov,
      args = list(Covariance="Matern", smoothness = 1.5, theta=NULL))
+     
+## (genetic) pathway-based kernel base-learner
+bkernel(..., df = 4, lambda = NULL, kernel = c("lin", "sia", "net"),
+        pathway = NULL, knots = NULL, args = list())
 
 ## random effects base-learner
 brandom(..., by = NULL, index = NULL, df = 4, lambda = NULL,
         contrasts.arg = "contr.dummy")
 
 ## tree based base-learner
-btree(..., tree_controls = party::ctree_control(stump = TRUE,
-                                                mincriterion = 0,
-                                                savesplitstats = FALSE,
-                                                remove_weights = TRUE))
+btree(..., by = NULL, nmax = Inf, tree_controls = partykit::ctree_control(
+    teststat = "quad", testtype = "Teststatistic", 
+    mincriterion = 0, minsplit = 10, minbucket = 4,
+    maxdepth = 1, saveinfo = FALSE))
 
 ## constrained effects base-learner
 bmono(...,
@@ -93,7 +98,8 @@ bl1 \%O\% bl2
 	     the global \code{options("contrasts")} or as specified
 	     "locally" for the factor (see \code{\link{contrasts}}). Per
 	     default treatment coding is used. Note that the main
-	     effect needs to be specified in a separate base-learner.}
+	     effect needs to be specified in a separate base-learner.
+             \code{btree} currently only allows binary factors.}
 
   \item{index}{ a vector of integers for expanding the variables in
     \code{...}. For example, \code{bols(x, index = index)} is equal to
@@ -146,15 +152,19 @@ bl1 \%O\% bl2
                  The latter option is the default (and currently only option) for \code{bbs}
                  with multiple covariates or \code{bmrf}.}
   \item{cyclic}{ if \code{cyclic = TRUE} the fitted values coincide at the boundaries
-                 (useful for cyclic covariates such as day time etc.). For details see
-		 Hofner et al. (2014).}
+                 (useful for cyclic covariates such as day time etc.). 
+                 For details see Hofner et al. (2016).}
   \item{covFun}{ the covariance function (i.e. radial basis)
                  needed to compute the basis functions. Per
                  default \code{\link[fields]{stationary.cov}} function
                  (from package \code{fields}) is used. }
   \item{args}{ a named list of arguments to be passed to
                \code{cov.function}. Thus strongly dependent on the
-               specified \code{cov.function}. }
+               specified \code{cov.function}.}
+  \item{kernel}{one of \code{"lin"} (linear kernel), \code{"sia"} (size adjusted kernel), 
+                or \code{"net"} (network kernel). For details see 
+                \code{\link[kangar00]{calc_kernel}}}
+  \item{pathway}{name of pathway; Pathway needs to be contained in the GWAS data set.}
   \item{contrasts.arg}{ a named list of characters suitable for input to
     the \code{\link{contrasts}} replacement function, or the contrast
     matrix itself, see \code{\link{model.matrix}}, or a single character
@@ -167,10 +177,13 @@ bl1 \%O\% bl2
     dummy coding as returned by \code{model.matrix(~ x - 1)} were the
     intercept is implicitly included but each factor level gets a
     seperate effect estimate (see example below).}
+  \item{nmax}{integer, maximal number of
+          bins in the predictor variables. Use \code{Inf} to switch-off binning.}
   \item{tree_controls}{ an object of class \code{"TreeControl"}, which can be
-                  obtained using \code{\link[party]{ctree_control}}.
+                  obtained using \code{\link[partykit]{ctree_control}}.
                   Defines hyper-parameters for the trees which are used as base-learners,
-                  stumps are fitted by default.}
+                  stumps are fitted by default. By default, stumps and thus
+                  additive models are fitted.}
   \item{constraint}{type of constraint to be used. For \code{bmono}, 
     the constraint can be either monotonic \code{"increasing"} (default), 
     \code{"decreasing"}, or \code{"convex"} or \code{"concave"}. 
@@ -187,7 +200,7 @@ bl1 \%O\% bl2
     \code{type = "iterative"}, the iterative procedure described in
     Hofner et al. (2011b) is used. The quadratic programming approach is
     usually much faster than the iterative approach. For details see
-    Hofner et al. (2014).
+    Hofner et al. (2016).
   }
   \item{lambda2}{ penalty parameter for the (monotonicity) constraint. }
   \item{niter}{ maximum number of iterations used to compute constraint
@@ -267,7 +280,7 @@ bl1 \%O\% bl2
   \code{boundary.knots = c(0, 2 * pi)} for angles as in a sine function
   or \code{boundary.knots = c(0, 24)} for hours during the day). For
   details on cylcic splines in the context of boosting see Hofner et
-  al. (2014). 
+  al. (2016). 
 
   \code{bspatial} implements bivariate tensor product P-splines for the
   estimation of either spatial effects or interaction surfaces. Note
@@ -365,6 +378,12 @@ bl1 \%O\% bl2
   matrix has to be -1, else 0. With a boundary object at hand, the
   fitted or predicted values can be directly plotted into the map using
   \code{\link[BayesX]{drawmap}}.
+  
+  \code{bkernel} can be used to fit linear (\code{kernel = "lin"}), 
+  size-adjusted (\code{kernel = "sia"}) or network (\code{kernel = "net"})
+  kernels based on genetic pathways for genome-wide assosiation studies. 
+  For details see Friedrichs et al. (2017) and check the associated package
+  \CRANpkg{kangar00}.
 
   \code{buser(X, K)} specifies a base-learner with user-specified design
   matrix \code{X} and penalty matrix \code{K}, where \code{X} and
@@ -395,7 +414,7 @@ bl1 \%O\% bl2
   convexity/concavity (see and Eilers, 2005). For more details in the
   boosting context and monotonic effects of ordinal factors see Hofner,
   Mueller and Hothorn (2011b). The quadratic-programming based algorithm
-  is described in Hofner et al. (2014). Alternative monotonicity
+  is described in Hofner et al. (2016). Alternative monotonicity
   constraints are implemented via T-splines in \code{bbs()} (Beliakov,
   2000). In general it is advisable to use \code{bmono} to fit monotonic splines 
   as T-splines show undesirable behaviour if the observed data deviates 
@@ -490,20 +509,25 @@ bl1 \%O\% bl2
   D. Goldfarb and A. Idnani (1983),  A numerically stable dual
   method for solving strictly convex quadratic programs.
   \emph{Mathematical Programming}, \bold{27}, 1--33.
+  
+  S. Friedrichs, J. Manitz, P. Burger, C.I. Amos, A. Risch, J.C. Chang-Claude, 
+  H.E. Wichmann, T. Kneib, H. Bickeboeller, and B. Hofner (2017), 
+  Pathway-Based Kernel Boosting for the Analysis of Genome-Wide Association Studies.
+  \emph{Computational and Mathematical Methods in Medicine}. 2017(6742763), 1-17. 
+  \doi{10.1155/2017/6742763}.
 
   Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011a),
   A framework for unbiased model selection based on boosting.
   \emph{Journal of Computational and Graphical Statistics}, \bold{20}, 956--971.
 
   Benjamin Hofner, Joerg Mueller, and Torsten Hothorn (2011b),
-  Monotonicity-Constrained Species Distribution Models,
+  Monotonicity-Constrained Species Distribution Models.
   \emph{Ecology}, \bold{92}, 1895--1901.
 
-  Benjamin Hofner, Thomas Kneib and Torsten Hothorn (2014), A Unified
-  Framework of Constrained Regression. \emph{Statistics & Computing}.
-  Online first. DOI:10.1007/s11222-014-9520-y.\cr
-  Preliminary version: \url{http://arxiv.org/abs/1403.7118}
-
+  Benjamin Hofner, Thomas Kneib and Torsten Hothorn (2016), 
+  A Unified Framework of Constrained Regression. 
+  \emph{Statistics & Computing}, \bold{26}, 1--14.
+  
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable
   selection and model choice in geoadditive regression models,
   \emph{Biometrics}, \bold{65}(2), 626--634.
