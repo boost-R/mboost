@@ -302,6 +302,7 @@ Binomial_glm <- function(link = c("logit", "probit", "cloglog", "cauchit", "log"
     
     Family(ngradient = ngradient, risk = risk, loss = loss, check_y = y_check, 
            response = function(f) link$linkinv(f), offset = offset,
+           rclass = function(f) (f > 0) + 1 ,
            name = "Binomial Distribution (similar to glm)")
 }
 
