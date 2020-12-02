@@ -1,6 +1,6 @@
 
 require("mboost")
-if (require("party")) {
+if (require("partykit")) {
 
 set.seed(290875)
 

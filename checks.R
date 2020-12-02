@@ -29,15 +29,25 @@ make_check <- function(srcpkg, dir = "./") {
    check_packages_in_dir(cdir, reverse = list(), Ncpus = 4)
    check_packages_in_dir(ddir, reverse = list(), Ncpus = 4)
 
+   cat("\n\nReverse tests with CRAN package:\n")
    summarize_check_packages_in_dir_results(cdir, all = TRUE)
    summarize_check_packages_in_dir_timings(cdir, all = TRUE)
 
+   cat("\n\nReverse tests with NEW package:\n")
    summarize_check_packages_in_dir_results(ddir, all = TRUE)
    summarize_check_packages_in_dir_timings(ddir, all = TRUE)
 
+   cat("\n\nComparison of results:\n")
    check_packages_in_dir_changes(ddir, cdir, outputs = TRUE, sources = TRUE)
    # setwd(odir)
 }
 
+<<<<<<< HEAD
 package_dependencies("mboost", available.packages(), reverse = TRUE)
 make_check("mboost")
+=======
+# package_dependencies("mboost", available.packages(), reverse = TRUE)
+owd <- setwd("../")
+make_check(srcpkg = "mboost_2.8-0.tar.gz")
+setwd(owd)
+>>>>>>> master

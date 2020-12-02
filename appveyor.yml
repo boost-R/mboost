@@ -10,10 +10,28 @@ install:
   - ps: Bootstrap
 
 # Adapt as necessary starting from here
+<<<<<<< HEAD
+=======
+environment:
+  global:
+    GCC_PATH: mingw_64
+    R_ARCH: x64
+    USE_RTOOLS: true
+    R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+  matrix:
+    - configuration: release
+      R_VERSION: release
+      BIOC_USE_DEVEL: "FALSE"
+    - configuration: devel
+      R_VERSION: devel
+      BIOC_USE_DEVEL: "TRUE"
+
+>>>>>>> master
 before_build:
   - bash -c "echo '^travis-tool\.sh\.cmd$' >> .Rbuildignore"
 
 build_script:
+  - travis-tool.sh install_bioc KEGGgraph biomaRt
   - travis-tool.sh install_deps
   - travis-tool.sh install_github hofnerb/stabs
   - travis-tool.sh install_github boost-R/gamboostLSS
@@ -24,7 +42,11 @@ test_script:
 on_failure:
   - travis-tool.sh dump_logs
   ## push complete mboost.Rcheck folder as artifact
+<<<<<<< HEAD
   - appveyor PushArtifact mboost.Rcheck
+=======
+  - appveyor PushArtifact mboost.Rcheck   
+>>>>>>> master
 
 artifacts:
   - path: '*.Rcheck\**\*.log'

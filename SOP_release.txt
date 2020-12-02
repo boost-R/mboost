@@ -1,0 +1,194 @@
+
+  ############################################################
+  #  Standard operating procedures for `mboost' development  #
+  ############################################################
+
+
+  Structure of the repository (branches)
+  --------------------------------------
+
+    master branch: current version on CRAN
+    
+            > add bug fixes only
+
+    devel branch: current development version
+    
+            > add bug fixes and new functionality
+
+    other branches: next generation development version / experimental stuff
+    
+            > add experimental material or start new generation package
+
+
+  Making a patch release
+  ----------------------
+  
+    Change to master branch: 
+      git checkout master
+
+    A bug was fixed in "master"
+
+    Increase patch level in DESCRIPTION
+    Update Date: field in DESCRIPTION
+    Update inst/NEWS.Rd (see also "How to preview NEWS.Rd files")
+    Update Date and Version in /man/mboost_package.Rd
+
+    R CMD build --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
+
+    If differences to .Rout.save occure:
+    
+         - Copy new .Rout files to .Rout.save [1,2]:
+     	    Rscript copy_Rout_to_Routsave.R "vignettes=FALSE"
+
+         - Update vignette .Rout.save files if necessary [1,2]:
+            Rscript copy_Rout_to_Routsave.R "vignettes=TRUE"
+            
+         - Now check for differences, e.g. using "git diff" or "meld"
+
+         [1] For details see
+             http://r.789695.n4.nabble.com/Generate-Rout-save-files-for-vignettes-td4652752.html
+         [2] NOTE: Reference output should be produced without having the --timings option set.
+
+    Run check with R-devel
+    (see section "Checking the package with latest development version of R")
+
+    Run checks on WinBuilder (temporarily change maintainer's email address!):
+       upload package to http://win-builder.r-project.org/
+
+    Gives no warnings / errors.
+
+    Commit changes to "master"
+
+    Now build package without test folder to be submitted to CRAN
+       R CMD buildCRAN --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
+    To use the script copy it to R RHOME (< enter this in the console) /bin and make it executable.
+    Alternatively do the following:
+        mv .RbuildignoreCRAN .Rbuildignore
+        cd ..
+        R CMD build --resave-data --compact-vignettes mboost && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
+        git checkout -- .RbuildignoreCRAN .Rbuildignore
+
+    Check that reverse dependencies don't break.
+
+    Use web form at http://xmpalantir.wu.ac.at/cransubmit/.
+
+    Merge changes to R code or documentation to "devel"
+    Make sure not to modify version numbers etc. in "devel" and 
+    to add recents NEWS to inst/NEWS.Rd in "devel"
+
+    Update webpage. See www_src.
+
+  Making a minor release
+  ----------------------
+  
+    Change to development branch: 
+      git checkout devel
+
+    Several new tools have been added to "devel".
+
+    Increase minor level in DESCRIPTION (patch level 0)
+    Update Date: field in DESCRIPTION
+    Update inst/NEWS.Rd (see also "How to preview NEWS.Rd files")
+    Update Date and Version in /man/mboost_package.Rd
+    Add a new section "NEWS in X.Y-series" to /man/mboost_package.Rd
+      and explain the most important changes there.
+
+    R CMD build --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
+
+    If differences to .Rout.save occure:
+       
+       - Copy new .Rout files to .Rout.save [3,4]:
+
+       	    Rscript copy_Rout_to_Routsave.R "vignettes=FALSE"
+
+       - Update vignette .Rout.save files if necessary [3,4]:
+
+            Rscript copy_Rout_to_Routsave.R "vignettes=TRUE"
+            
+       - Now check for differences, e.g. using "git diff" or "meld"     
+
+         [3] For details see
+             http://r.789695.n4.nabble.com/Generate-Rout-save-files-for-vignettes-td4652752.html
+         [4] NOTE: Reference output should be produced without having the --timings option set.
+
+    Run check with R-devel
+    (see section "Checking the package with latest development version of R")
+
+    Run checks on WinBuilder (temporarily change maintainer's email address!):
+       upload package to http://win-builder.r-project.org/
+
+    Gives no warnings / errors.
+
+    Commit changes to "devel"
+
+    Now build package without test folder to be submitted to CRAN
+       R CMD buildCRAN --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
+    To use the script copy it to R RHOME (< enter this in the console) /bin and make it executable.
+    Alternatively do the following:
+        mv .RbuildignoreCRAN .Rbuildignore
+        R CMD build --resave-data --compact-vignettes . && R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
+        git checkout -- .RbuildignoreCRAN .Rbuildignore
+
+    Check that reverse dependencies don't break.
+
+    Use web form at http://xmpalantir.wu.ac.at/cransubmit/.
+
+    Merge changes to "master"
+
+    After a minor release, "devel" and "master" are identical
+    (with the exeption of the package names -- mboost vs. mboostDevel).
+
+   Update webpage. See www_src.
+
+
+  Starting a new experimental version
+  -----------------------------------
+
+    git checkout master
+    git checkout -b <NEW_BRANCH_NAME>
+
+
+  Checking the package with latest development verstion of R
+  ----------------------------------------------------------
+
+  Get source from
+    ftp://ftp.stat.math.ethz.ch/Software/R/
+
+  UnTar and install according to guide in INSTALL (source directory).
+
+  Go to mboost directory and call
+    ../relative/path/to/R-devel/bin/R
+
+  Run
+    source("https://bioconductor.org/biocLite.R")
+    biocLite("biomaRt", suppressUpdates = FALSE)
+    biocLite("KEGGgraph", suppressUpdates = FALSE)
+    install.packages(c("partykit", "TH.data", "fields", "BayesX", "gbm",
+                       "mlbench", "RColorBrewer", "randomForest", "nnet",
+                       "nnls", "quadprog", "stabs", "testthat", "kangar00"))
+
+  Quit R and run
+   ../relative/path/to/R-devel/bin/R CMD check --as-cran --run-donttest mboost_XXX.tar.gz
+
+
+  How to preview NEWS.Rd files
+  ----------------------------
+
+  For HTML preview:
+      R CMD Rdconv -t 'html' -o 'NEWS.html' NEWS.Rd && firefox NEWS.html
+
+  and for PDF preview:
+      R CMD Rd2pdf NEWS.Rd
+
+
+  Checking reverse dependencies
+  -----------------------------
+
+  Use either
+
+      source("checks.R")
+      
+  or ecexute in the correct subfolder
+
+      devtools::revdep_check(pkg="mboost")
+

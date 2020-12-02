@@ -42,7 +42,7 @@ ctrl$risk <- "oobag"
 tmp <- blackboost(DEXfat ~ ., data = bodyfat, control = ctrl,
                  weights = bs[,3])
 
-stopifnot(identical(max(abs(tmp$risk()[x] / sum(bs[,3] == 0)  - cv[3,])), 0))
+stopifnot(identical(max(abs(tmp$risk()[x + 1] / sum(bs[,3] == 0)  - cv[3,])), 0))
 
 ### center = TRUE and cvrisk were broken; same issue with masking original data
 
@@ -51,7 +51,7 @@ cv1 <- cvrisk(gb, folds = bs, papply = lapply)
 tmp <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE,
                 control = boost_control(risk = "oobag"),
                 weights = bs[,3])
-stopifnot(identical(max(tmp$risk()[attr(cv1, "mstop")] / sum(bs[,3] == 0) - cv1[3,]), 0))
+stopifnot(identical(max(tmp$risk()[attr(cv1, "mstop") + 1] / sum(bs[,3] == 0) - cv1[3,]), 0))
 
 ### same problem, just another check
 
@@ -215,11 +215,11 @@ for (i in s)
     stopifnot(max(abs(predict(x[i]) - predict(x[max(s)], agg = "cumsum")[,i])) < eps)
 
 ### make sure environment(formula) is used for evaluation
-if (require("party")) {
+if (require("partykit")) {
     data("cars")
     ctl  <- boost_control(mstop = 100, trace = TRUE)
     tctl <- ctree_control(teststat = "max", testtype = "Teststat",
-                          mincrit = 0, maxdepth = 5, savesplitstat = FALSE)
+                          mincrit = 0, maxdepth = 5, saveinfo = FALSE)
     myfun <- function(cars, xx, zz){
         mboost(dist ~ btree(speed, tree_controls = zz),
                data = cars, control = xx)
@@ -427,7 +427,7 @@ if (require("BayesX")) {
     germany <- read.bnd(system.file("examples/germany.bnd", package="BayesX"))
     districts <- attr(germany, "regions")
     set.seed(1907)
-    regions <- sample(districts, 400, replace = TRUE)
+    regions <- factor(sample(districts, 400, replace = TRUE))
     B <- bmrf(regions, bnd = germany)
     X <- extract(B)
     K <- extract(B, what = "pen")
@@ -498,6 +498,21 @@ plot(mod, which = 2, newdata = nd)
 nd <- data.frame(waistcirc = 1, age = 1,
                  hipcirc = seq(min(bf$hipcirc), max(bf$hipcirc), length = 100))
 plot(mod, which = 2, newdata = nd)
+lines(mod, which = 2, rug = TRUE)
+## check user-specified labels
+plot(mod, which = 2, newdata = nd, xlab = "hip circumference", ylab = "partial effect")
+
+## check categorical variables
+bodyfat$hip_cat <- cut(bodyfat$hipcirc, breaks = 2)
+bodyfat$waist_cat <- cut(bodyfat$waistcirc, breaks = 2)
+mod <- mboost(DEXfat ~ bols(waist_cat) + bols(hip_cat), data = bodyfat)
+plot(mod, which = "hip_cat", ylim = c(-4,9))
+plot(mod, which = "hip_cat", ylim = c(-4,9), xaxt = "n", xlab = "")
+lines(mod, which = "waist_cat", col = "red")
+
+mod <- mboost(DEXfat ~ bols(waistcirc) + bols(hip_cat) + bols(hip_cat, waistcirc),
+              data = bodyfat)
+plot(mod, which = "hip_cat")
 
 
 ## check if model fitting with very few knots works
@@ -533,4 +548,37 @@ if (require("survival")){
   summary(cbind(ipcw1, ipcw2))
   
   stopifnot(identical(ipcw1, ipcw2))
+<<<<<<< HEAD:tests/bugfixes.R
 }
+=======
+}
+
+## make sure newdata is not used in fitted() but other arguments are:
+data("bodyfat", package = "TH.data")
+mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc),
+              control = boost_control(mstop = 10),
+              data = bodyfat)
+fitted(mod, newdata = bodyfat)
+stopifnot(all.equal(fitted(mod, aggregate = "cumsum")[,10], 
+                    fitted(mod), check.attributes = FALSE))
+stopifnot(all.equal(fitted(mod, aggregate = "cumsum"), 
+                    fitted(mod, newdata = bodyfat, aggregate = "cumsum")))
+
+
+## make sure weights are subset if missing values are present
+weights <- sample(1:100, 100, replace=FALSE)
+x <- rnorm(100)
+y <- runif(100)
+# create missing value
+x[25] <- NA
+myData <- data.frame(x=x, y=y)
+## was broken:
+gamboost(y ~ bols(x), data = myData, weights = weights, family = Gaussian())
+mboost(y ~ bols(x), data = myData, weights = weights, family = Gaussian())
+## was always working
+glmboost(y ~ x, data = myData, weights = weights, family = Gaussian())
+blackboost(y ~ x, data = myData, weights = weights, family = Gaussian())
+
+
+
+>>>>>>> master:tests/bugfixes.R

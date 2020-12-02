@@ -1,10 +1,17 @@
 mboost
 ======
 
+<<<<<<< HEAD
 [![Build Status (Linux)](https://travis-ci.org/boost-R/mboost.svg?branch=devel)](https://travis-ci.org/boost-R/mboost)
 [![Build status (Windows)](https://ci.appveyor.com/api/projects/status/5mkvicgin1j6pfc6/branch/devel?svg=true)](https://ci.appveyor.com/project/hofnerb/mboost-h73a1/branch/devel)
 [![CRAN Status Badge](http://www.r-pkg.org/badges/version/mboost)](https://CRAN.R-project.org/package=mboost)
 [![Coverage Status](https://coveralls.io/repos/github/boost-R/mboost/badge.svg?branch=devel)](https://coveralls.io/github/boost-R/mboost?branch=devel)
+=======
+[![Build Status (Linux)](https://travis-ci.org/boost-R/mboost.svg?branch=master)](https://travis-ci.org/boost-R/mboost)
+[![Build status (Windows)](https://ci.appveyor.com/api/projects/status/5mkvicgin1j6pfc6/branch/master?svg=true)](https://ci.appveyor.com/project/hofnerb/mboost-h73a1/branch/master)
+[![CRAN Status Badge](http://www.r-pkg.org/badges/version/mboost)](https://CRAN.R-project.org/package=mboost)
+[![Coverage Status](https://coveralls.io/repos/github/boost-R/mboost/badge.svg?branch=master)](https://coveralls.io/github/boost-R/mboost?branch=master)
+>>>>>>> master
 [![](http://cranlogs.r-pkg.org/badges/mboost)](https://CRAN.R-project.org/package=mboost)
 
 `mboost` implements boosting algorithms for fitting generalized linear, additive and interaction models

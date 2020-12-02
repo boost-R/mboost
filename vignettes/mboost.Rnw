@@ -6,7 +6,7 @@
 \newcommand{\argmin}{\operatorname{argmin}\displaylimits}
 
 %%\VignetteIndexEntry{mboost}
-%%\VignetteDepends{mboost, party, TH.data}
+%%\VignetteDepends{mboost, partykit, TH.data}
 
 %% software markup
 \let\proglang=\textsf
@@ -25,6 +25,8 @@
 <<options, echo=FALSE>>=
 options(prompt = "R> ", continue = "+  ", digits = 4)
 set.seed(290875)
+## use old degrees of freedom for reproducibility
+options(mboost_dftraceS = TRUE)
 @
 
 %% header declarations
@@ -125,7 +127,7 @@ risk is to be minimized under some algorithmic constraints (i.e., limited
 number of boosting iterations). The model is then fitted using
 $$
 (\hat{f}_1, \dots, \hat{f}_p) = \argmin_{(f_1, \dots, f_p)}
-    \sum_{i = 1}^n w_i \rho\left(y_i, \sum_{j = 1}^p f_j(x)\right).
+    \sum_{i = 1}^n w_i \rho\left(y_i, \sum_{j = 1}^p f_j(x_i)\right).
 $$
 Here $(y_i, x_i), i = 1, \dots, n$, are $n$ training samples with responses $y_i$ and
 potentially high-dimensional feature vectors $x_i$, and $w_i$ are some weights.
@@ -214,10 +216,10 @@ are then passed to function \code{mboost()} for model fitting:
 if (!require("mboost"))
     install.packages("mboost", dependencies = TRUE)
 library("mboost")
-### package party is necessary for fitting trees
-if (!require("party"))
-    install.packages("party", dependencies = TRUE)
-library("party")
+### package partykit is necessary for fitting trees
+if (!require("partykit"))
+    install.packages("partykit", dependencies = TRUE)
+library("partykit")
 ### speed up things a little bit: if the model is already
 ### available load it into R
 if (file.exists("model.Rda")) {

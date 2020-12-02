@@ -1,6 +1,6 @@
 
-R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
-Copyright (C) 2015 The R Foundation for Statistical Computing
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -20,9 +20,6 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.6-0. See 'package?mboost' and 'news(package  = "mboost")'
-for a complete list of changes.
-
 > 
 > set.seed(290875)
 > 
@@ -57,9 +54,18 @@ for a complete list of changes.
 +                     control = boost_control(mstop = 1000, nu = 1))
 > aic <- AIC(mydf.gb, method = "corrected")
 > ht <- hatvalues(mydf.gb)
-> mstop(aic)
-[1] 12
+> stopifnot(mstop(aic) == 12)
+> plot(aic, ylim = c(0,3))
 > mydf.lm <- lm(y ~ ., data = mydf)
+> 
+> ## use AIC with active set as df
+> aic2 <- AIC(mydf.gb, method = "corrected", df = "actset")
+> stopifnot(mstop(aic2)== 9)
+> stopifnot(attr(aic2, "df")[9] == 9)
+> 
+> ## use gMDL
+> aic3 <- AIC(mydf.gb, method = "gMDL")
+> stopifnot(mstop(aic3) == 4)
 > 
 > ### compare coefficients
 > which(abs(coef(mydf.lm, which = "")) < abs(coef(mydf.gb[mstop(aic)], which = "")))
@@ -84,7 +90,7 @@ for a complete list of changes.
 	 Generalized Linear Models Fitted via Gradient Boosting
 
 Call:
-glmboost.formula(formula = dist ~ speed, data = cars, center = FALSE,     control = boost_control(mstop = 1000, nu = 1), family = fm)
+glmboost.formula(formula = dist ~ speed, data = cars, family = fm,     center = FALSE, control = boost_control(mstop = 1000, nu = 1))
 
 
 	 Squared Error (Regression) 
@@ -102,11 +108,34 @@ Coefficients:
 attr(,"offset")
 [1] 0
 
+> plot(cars.gb)
 > 
 > ### coefficients should coincide
 > cf <- coef(cars.gb)
 > attr(cf, "offset") <- NULL
 > stopifnot(all.equal(cf, coef(lm(dist ~ speed, data = cars))))
+> 
+> ### check aggregate = "none"
+> stopifnot(all.equal(cumsum(c(coef(cars.gb, aggregate = "none", off2int = TRUE)$speed)),
++         c(coef(cars.gb, aggregate = "cumsum", off2int = TRUE)$speed)))
+Warning message:
+In coef.glmboost(cars.gb, aggregate = "none", off2int = TRUE) :
+  'off2int = TRUE' ignored for 'aggregate = "none"'
+> 
+> ### extract model terms
+> stopifnot(all.equal(extract(cars.gb, what = "design"),
++                     matrix(c(rep(1, 50), cars$speed)),
++                     check.attributes = FALSE))
+> stopifnot(all.equal(extract(cars.gb, what = "design", which = "(Intercept)"), 
++                     rep(1, 50), check.attributes = FALSE))
+> stopifnot(all.equal(extract(cars.gb, what = "coefficients"), coef(cars.gb)))
+> stopifnot(all.equal(extract(cars.gb, what = "residuals"), resid(cars.gb)))
+> stopifnot(all.equal(extract(cars.gb, what = "variable.names"), variable.names(cars.gb)))
+> stopifnot(all.equal(extract(cars.gb, what = "offset"), 0))
+> stopifnot(all.equal(extract(cars.gb, what = "nuisance"), nuisance(cars.gb)))
+> stopifnot(is.na(extract(cars.gb, what = "nuisance")))
+> stopifnot(all.equal(extract(cars.gb, what = "weights"), model.weights(cars.gb)))
+> stopifnot(all.equal(extract(cars.gb, what = "control"), boost_control(mstop = 1000, nu = 1)))
 > 
 > ### logistic regression
 > mydf <- data.frame(x = runif(100), z = rnorm(100),
@@ -283,7 +312,7 @@ Warning message:
 > # type = "sum"
 > predictions <- as.matrix(DF[, c("x1", "x2")]) %*% matrix(coef(amod), ncol = 1) +
 +     attr(coef(amod), "offset")
-> stopifnot(all.equal(pred[[1]][[2]], predictions))
+> stopifnot(all.equal(pred[[1]][[2]], predictions, check.attributes = FALSE))
 > stopifnot(all.equal(c(pred[[1]][[2]]),
 +                     rowSums(pred[[4]][[2]]) + attr(coef(amod), "offset"),
 +                     check.attributes = FALSE))
@@ -419,7 +448,7 @@ attr(,"offset")
 + }
 Warning messages:
 1: In object$predict(newdata = newdata, which = which, aggregate = aggregate) :
-  'length(offset) > 1': User-specified offset is not a scalar, thus offset not used for prediction when 'newdata' is specified
+  User-specified offset is not a scalar, thus it cannot be used for predictions when 'newdata' is specified.
 2: In object$predict(newdata = newdata, which = which, aggregate = aggregate) :
   'length(offset) > 1': User-specified offset is not a scalar, thus offset not used for prediction when 'newdata' is specified
 3: 'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
@@ -433,8 +462,8 @@ Warning messages:
 > predictionsA <- as.matrix(newdata[, c("x1", "x2")]) %*% matrix(coef(amod), ncol = 1) +
 +     attr(coef(amod), "offset")
 > predictionsB <- as.matrix(newdata[, c("x1", "x2")]) %*% matrix(coef(bmod), ncol = 1)
-> stopifnot(all.equal(preda[[1]][[2]], predictionsA))
-> stopifnot(all.equal(predb[[1]][[2]], predictionsB))
+> stopifnot(all.equal(preda[[1]][[2]], predictionsA, check.attributes = FALSE))
+> stopifnot(all.equal(predb[[1]][[2]], predictionsB, check.attributes = FALSE))
 > stopifnot(all.equal(c(preda[[1]][[2]]), rowSums(preda[[4]][[2]]) + attr(coef(amod), "offset"),
 +                     check.attributes = FALSE))
 > stopifnot(all.equal(c(predb[[1]][[2]]), rowSums(predb[[4]][[2]]),
@@ -597,4 +626,4 @@ See Warning section in ?coef.mboost
 > 
 > proc.time()
    user  system elapsed 
- 13.029   0.138  13.324 
+  7.741   0.088   7.822 

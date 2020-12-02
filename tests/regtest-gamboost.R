@@ -16,13 +16,33 @@ cars.gb
 aic <- AIC(cars.gb, method = "corrected")
 aic
 
+aic2 <- AIC(cars.gb, method = "corrected", df = "actset")
+stopifnot(all.equal(aic, aic2))
+
 ht <- hatvalues(cars.gb)
+
+## extract residual
+stopifnot(all.equal(resid(cars.gb), cars.gb$resid()))
+par(mfrow = c(1, 2))
+plot(cars$speed, resid(cars.gb[0]))
+cars$resid <- resid(cars.gb)
+lines(cars$speed, predict(loess(resid ~ speed, cars)), col = "red")
+plot(cars$speed, resid(cars.gb[50]))
+cars$resid <- resid(cars.gb)
+lines(cars$speed, predict(loess(resid ~ speed, cars)), col = "red")
+
+## check return = FALSE
+stopifnot(is.null(cars.gb[10, return = FALSE]))
+stopifnot(mstop(cars.gb) == 10)
 
 ### plot fit
 plot(dist ~ speed, data = cars)
 lines(cars$speed, predict(cars.gb[mstop(AIC(cars.gb))]), col = "red")
 lines(cars$speed, predict(smooth.spline(cars$speed, cars$dist), cars$speed)$y,
       col = "green")
+
+## print model summary
+summary(cars.gb)
 
 #### check boosting hat matrix and subsetting / predict
 stopifnot(isTRUE(all.equal(drop(attr(ht, "hatmatrix") %*% cars$dist),
@@ -314,3 +334,62 @@ K <- extract(bbs(x), "penalty")
 mod10 <- gamboost(y ~  buser(X, K) + buser(X, K, by = z),
                  control = boost_control(mstop = 1000))
 stopifnot(max(abs(predict(mod9) - predict(mod10))) < sqrt(.Machine$double.eps))
+
+
+## test that mstop = 0 is possible
+compare_models <- function (m1, m2) {
+    stopifnot(all.equal(coef(m1), coef(m2)))
+    stopifnot(all.equal(predict(m1), predict(m2)))
+    stopifnot(all.equal(fitted(m1), fitted(m2)))
+    stopifnot(all.equal(as.vector(residuals(m1)), as.vector(residuals(m2))))
+    stopifnot(all.equal(selected(m1), selected(m2)))
+    stopifnot(all.equal(risk(m1), risk(m2)))
+    ## remove obvious differences from objects
+    m1$control <- m2$control <- NULL
+    m1$call <- m2$call <- NULL
+    if (!all.equal(m1, m2))
+        stop("Objects of offset model + 1 step and model with 1 step not identical")
+    invisible(NULL)
+}
+# set up models
+mod <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
+              data = bodyfat, control = boost_control(mstop = 0))
+mod2 <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
+               data = bodyfat, control = boost_control(mstop = 1))
+mod3 <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
+               data = bodyfat, control = boost_control(mstop = 1))
+stopifnot(is.null(coef(mod)))
+stopifnot(predict(mod) == rep(mod$offset, nrow(bodyfat)))
+stopifnot(fitted(mod) == rep(mod$offset, nrow(bodyfat)))
+stopifnot(all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat)))
+stopifnot(is.null(selected(mod)))
+stopifnot(all.equal(risk(mod), risk(mod2)[1]))
+
+mstop(mod3) <- 0
+compare_models(mod, mod3)
+mstop(mod) <- 1
+compare_models(mod, mod2)
+mstop(mod3) <- 1
+compare_models(mod, mod3)
+
+## same with glmboost
+mod <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
+                data = bodyfat, control = boost_control(mstop = 0))
+mod2 <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
+                 data = bodyfat, control = boost_control(mstop = 1))
+mod3 <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
+                 data = bodyfat, control = boost_control(mstop = 1))
+stopifnot(is.null(coef(mod)))
+stopifnot(predict(mod) == rep(mod$offset, nrow(bodyfat)))
+stopifnot(fitted(mod) == rep(mod$offset, nrow(bodyfat)))
+stopifnot(all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat), check.attributes = FALSE))
+stopifnot(is.null(selected(mod)))
+stopifnot(all.equal(risk(mod), risk(mod2)[1]))
+
+mstop(mod3) <- 0
+compare_models(mod, mod3)
+mstop(mod) <- 1
+compare_models(mod, mod2)
+mstop(mod3) <- 1
+compare_models(mod, mod3)
+

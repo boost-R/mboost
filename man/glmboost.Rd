@@ -11,10 +11,12 @@
 }
 \usage{
 \method{glmboost}{formula}(formula, data = list(), weights = NULL,
+          offset = NULL, family = Gaussian(),
           na.action = na.pass, contrasts.arg = NULL,
-          center = TRUE, control = boost_control(), ...)
+          center = TRUE, control = boost_control(), oobweights = NULL, ...)
 \method{glmboost}{matrix}(x, y, center = TRUE, weights = NULL,
-          na.action = na.pass, control = boost_control(), ...)
+          offset = NULL, family = Gaussian(),
+          na.action = na.pass, control = boost_control(), oobweights = NULL, ...)
 \method{glmboost}{default}(x, ...)
 }
 \arguments{
@@ -22,19 +24,29 @@
   \item{data}{ a data frame containing the variables in the model. }
   \item{weights}{ an optional vector of weights to be used in the fitting
     process. }
+  \item{offset}{ a numeric vector to be used as offset (optional).}
+  \item{family}{a \code{\link{Family}} object.}
   \item{na.action}{a function which indicates what should happen when the data
     contain \code{NA}s.}
   \item{contrasts.arg}{a list, whose entries are contrasts suitable for input
     to the \code{contrasts} replacement function and whose names are
     the names of columns of \code{data} containing factors.
     See \code{\link{model.matrix.default}}.}
+<<<<<<< HEAD:man/glmboost.Rd
   \item{center}{logical indicating if the predictor variables are centered before fitting.}
   \item{control}{ a list of parameters controlling the algorithm.}
+=======
+  \item{center}{logical indicating of the predictor variables are centered before fitting.}
+  \item{control}{ a list of parameters controlling the algorithm. For
+    more details see \code{\link{boost_control}}. }
+  \item{oobweights}{ an additional vector of out-of-bag weights, which is
+    used for the out-of-bag risk (i.e., if \code{boost_control(risk =
+      "oobag")}). This argument is also used internally by
+    \code{cvrisk}. }    
+>>>>>>> master:man/glmboost.Rd
   \item{x}{ design matrix. Sparse matrices of class \code{Matrix} can be used as well.}
   \item{y}{ vector of responses. }
-  \item{\dots}{ additional arguments passed to \code{\link{mboost_fit}},
-    including \code{weights}, \code{offset}, \code{family} and
-    \code{control}. For default values see \code{\link{mboost_fit}}.}
+  \item{\dots}{ additional arguments passed to \code{\link{mboost_fit}}; currently none.}
 }
 \details{
 
@@ -42,6 +54,7 @@
   univariate linear models. The fit, i.e., the regression coefficients, can be
   interpreted in the usual way. The methodology is described in
   Buehlmann and Yu (2003), Buehlmann (2006), and Buehlmann and Hothorn (2007).
+  Examples and further details are given in Hofner et al (2014).
 
 }
 \value{
@@ -76,11 +89,18 @@
 
   Available as vignette via: \code{vignette(package = "mboost", "mboost_tutorial")}
 }
-\seealso{\code{\link{mboost}} for the generic boosting function and
-  \code{\link{gamboost}} for boosted additive models and
-  \code{\link{blackboost}} for boosted trees. See \code{\link{cvrisk}} for
-  cross-validated stopping iteration. Furthermore see
-  \code{\link{boost_control}}, \code{\link{Family}} and  \code{\link[mboost]{methods}}}
+\seealso{
+  See \code{\link{mboost_fit}} for the generic boosting function, 
+  \code{\link{gamboost}} for boosted additive models, and
+  \code{\link{blackboost}} for boosted trees. 
+  
+  See \code{\link{baselearners}} for possible base-learners. 
+  
+  See \code{\link{cvrisk}} for cross-validated stopping iteration. 
+  
+  Furthermore see \code{\link{boost_control}}, \code{\link{Family}} and
+  \code{\link[mboost]{methods}}.
+}
 \examples{
 
     ### a simple two-dimensional example: cars data

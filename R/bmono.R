@@ -46,12 +46,7 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
     stopifnot(is.data.frame(mf))
     if (!(all(sapply(mf, is.numeric))) && !all(sapply(mf, is.ordered))) {
         stop("cannot compute ", sQuote("bmono"),
-             ": variables must be numeric or ordered")
-    }
-    ### use bols when appropriate
-    if (!is.null(df)) {
-        if (df <= (ncol(mf) + 1))
-            return(bols(as.data.frame(...), by = by, index = index))
+             ": all variables must be numeric or ordered")
     }
     vary <- ""
     if (!is.null(by)){
@@ -383,15 +378,14 @@ define_solver <- function(lambda2, lambda3, X) {
              ## add if lambda3 != 0
              ifelse(lambda3 != 0, l3txt,""),
              "                                   ))",
-             "    solve(XtXC, crossprod(X, y), LINPACK = FALSE)",
+             "    solve(XtXC, crossprod(X, y))",
              "}"
              )
 
     if (!is(X, "Matrix")) {
         ## some lines must be replaced in order to solve directly
         fct[2] <- '    solve(XtX +'
-        fct[6] <- "          , crossprod(X, y),"
-        fct[7] <- '          LINPACK = FALSE)'
+        fct[6] <- "          , crossprod(X, y)"
     }
     fct
 }

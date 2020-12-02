@@ -1,4 +1,3 @@
-### compute predictions
 ### <FIXME>:
 ###          add link argument (family needs to be touched)
 ### </FIXME>
@@ -23,7 +22,6 @@
     return(ret)
 }
 
-
 predict.mboost <- function(object, newdata = NULL,
     type = c("link", "response", "class"), which = NULL,
     aggregate = c("sum", "cumsum", "none"), ...) {
@@ -35,7 +33,10 @@ predict.mboost <- function(object, newdata = NULL,
     pr <- object$predict(newdata = newdata,
                          which = which, aggregate = aggregate)
     nm <- rownames(newdata)
-    if (is.null(newdata)) nm <- object$rownames
+    if (is.null(newdata)) 
+        nm <- object$rownames
+    if (length(pr) == 1 && length(nm) != length(pr))
+        nm <- NULL
     if (is.list(pr)){
         RET <- lapply(pr, .predictmboost, y = object$response,
                       type = type, nm = nm, family = object$family)
@@ -55,11 +56,13 @@ coef.mboost <- function(object, which = NULL,
     args <- list(...)
     if (length(args) > 0)
         warning("Arguments ", paste(names(args), sep = ", "), " unknown")
-    if (grepl("Negative Binomial Likelihood", object$family@name))
+    if (grepl("Negative Binomial Likelihood (logit link)", object$family@name))
         message("\nNOTE: Coefficients from a Binomial model are half the size of ",
                 "coefficients\n from a model fitted via ",
                 "glm(... , family = 'binomial').\n",
                 "See Warning section in ?coef.mboost\n")
+    ### NOTE: This is only the case for type = "adaboost" and link = "logit" ! 
+    ###       see github #63 and #65
     object$coef(which = which, aggregate = aggregate)
 }
 
@@ -141,15 +144,15 @@ AICboost <- function(object, method = c("corrected", "classical", "gMDL"), df, k
 
     sumw <- sum(model.weights(object)[!is.na(fitted(object))])
     if (method == "corrected")
-        AIC <- log(object$risk() / sumw) +
+        AIC <- log(object$risk()[-1] / sumw) +
                (1 + df/sumw) / (1 - (df + 2)/sumw)
 
     ### loss-function is to be MINIMIZED, take -2 * logLik == 2 * risk
     if (method == "classical")
-        AIC <- 2 * object$risk() + k * df
+        AIC <- 2 * object$risk()[-1] + k * df
     if (method == "gMDL"){
-        s <- object$risk()/(sumw - df)
-        AIC <- log(s) + df/sumw * log((sum(object$response^2) - object$risk())
+        s <- object$risk()[-1]/(sumw - df)
+        AIC <- log(s) + df/sumw * log((sum(object$response^2) - object$risk()[-1])
                       /(df * s))
         }
     mstop <- which.min(AIC)
@@ -202,11 +205,16 @@ fitted.mboost <- function(object, ...) {
     args <- list(...)
     if (length(args) == 0) {
         ret <- object$fitted()
-        names(ret) <- object$rownames
+        if (length(ret) == length(object$rownames))
+            names(ret) <- object$rownames
     } else {
-        ret <- predict(object, newdata=NULL, ...)
-        #if (NROW(ret) == length(ret))
-        #    rownames(ret) <- object$rownames
+        if ("newdata" %in% names(args)) {
+            args$newdata <- NULL
+            warning("Argument ", sQuote("newdata"), " was  ignored. Please use ", 
+                    sQuote("predict()"), " to make predictions for new data.")
+        }
+        args$object <- object
+        ret <- do.call(predict, args)
     }
     ret
 }
@@ -222,7 +230,8 @@ logLik.mboost <- function(object, ...)
 ### boosting iterations.
 ### ATTENTION: x gets CHANGED!
 "[.mboost" <- function(x, i, return = TRUE, ...) {
-    stopifnot(length(i) == 1 && i > 0)
+    if (!(length(i) == 1 && i >= 0))
+        stop("Please provide a single non-negative number")
     x$subset(i)
     if (return) return(x)
     invisible(NULL)
@@ -241,9 +250,6 @@ update.mboost <- function(object, weights, oobweights = NULL,
 
 model.frame.mboost <- function(formula, ...)
     formula$model.frame(...)
-
-response.mboost <- function(object, ...)
-    object$response
 
 predict.glmboost <- function(object, newdata = NULL,
     type = c("link", "response", "class"), which = NULL,
@@ -268,7 +274,10 @@ predict.glmboost <- function(object, newdata = NULL,
                          aggregate = aggregate)
     type <- match.arg(type)
     nm <- rownames(newdata)
-    if (is.null(newdata)) nm <- object$rownames
+    if (is.null(newdata)) 
+        nm <- object$rownames
+    if (length(pr) == 1 && length(nm) != length(pr))
+        nm <- NULL
     if (is.list(pr))
         return(lapply(pr, .predictmboost, y = object$response,
                       type = type, nm = nm, family = object$family))
@@ -291,7 +300,10 @@ coef.glmboost <- function(object, which = NULL,
 
     aggregate <- match.arg(aggregate)
     cf <- object$coef(which = which, aggregate = aggregate)
-    offset <- attr(cf, "offset")
+    offset <- object$offset
+    
+    if (is.null(cf))
+        return(cf)
 
     ### intercept = hat(beta[1]) - bar(x) %*% hat(beta[-1])
     assign <- object$assign
@@ -459,19 +471,23 @@ summary.mboost <- function(object, ...) {
     ret <- list(object = object, selprob = NULL)
     xs <- selected(object)
     nm <- variable.names(object)
-    selprob <- tabulate(xs, nbins = length(nm)) / length(xs)
-    names(selprob) <- names(nm)
-    selprob <- sort(selprob, decreasing = TRUE)
-    ret$selprob <- selprob[selprob > 0]
+    if (length(xs) > 0) {
+        selprob <- tabulate(xs, nbins = length(nm)) / length(xs)
+        names(selprob) <- names(nm)
+        selprob <- sort(selprob, decreasing = TRUE)
+        ret$selprob <- selprob[selprob > 0]
+    }
     class(ret) <- "summary.mboost"
     return(ret)
 }
 
 print.summary.mboost <- function(x, ...) {
     print(x$object)
-    cat("Selection frequencies:\n")
-    print(x$selprob)
-    cat("\n")
+    if (!is.null(x$selprob)) {
+        cat("Selection frequencies:\n")
+        print(x$selprob)
+        cat("\n")
+    } 
 }
 
 nuisance <- function(object)
@@ -511,7 +527,7 @@ extract.mboost <- function(object, what = c("design", "penalty", "lambda", "df",
 }
 
 extract.glmboost <- function(object, what = c("design", "coefficients", "residuals",
-                                     "variable.names", "bnames", "offset",
+                                     "variable.names", "offset",
                                      "nuisance", "weights", "control"),
                              which = NULL, asmatrix = FALSE, ...){
     what <- match.arg(what)
@@ -540,7 +556,6 @@ extract.glmboost <- function(object, what = c("design", "coefficients", "residua
            "coefficients" = return(coef(object, which = which)),
            "residuals" = return(residuals(object)),
            "variable.names" = return(variable.names(object, which)),
-           "bnames" = return(get("bnames", envir = environment(object$update))[which]),
            "offset" = return(object$offset),
            "nuisance" = return(nuisance(object)),
            "weights" = return(model.weights(object)),
@@ -625,4 +640,26 @@ risk <- function(object, ...)
 
 risk.mboost <- function(object, ...) {
     object$risk()
+}
+
+downstream.test <- function(object, ...) {
+    if (object$family@name != "Ratio of Correlated Gammas (RCG)")
+        stop("downstream tests currently only implemented for RCG family")
+    if (!inherits(object, "glmboost"))
+        stop("downstream tests currently only implemented for linear models, i.e., glmboost")
+    
+    # calculate Fisher information matrix
+    alpha <- nuisance(object)[1]
+    rho <- nuisance(object)[2]
+    coefs <- coef(object, which = "")
+    y <- object$response
+    ## do we need the original design matrix (X1) or the centered design (X) matrix?
+    X <- as.data.frame(extract(object, what = "design"))
+    X1 <- data.frame(model.matrix(~ x1 + x2))
+    
+    Fisher <- environment(object$family@ngradient)[["Fisher"]](y, alpha, rho, X1, coefs)
+    
+    # downstream hypothesis tests
+    p_value <- sapply(1:length(coefs), function(i) (1 - pnorm(abs(coefs[i]) / sqrt(solve(Fisher)[i, i]))) * 2)
+    return(p_value)
 }

@@ -22,7 +22,12 @@
 \alias{Hurdle}
 \alias{Multinomial}
 \alias{Cindex}
+<<<<<<< HEAD:man/Family.Rd
 \alias{Binomial_glm}
+=======
+\alias{RCG}
+
+>>>>>>> master:man/Family.Rd
 \title{ Gradient Boosting Families }
 \description{
     \code{boost_family} objects provide a convenient way to specify loss functions
@@ -42,7 +47,8 @@ Family(ngradient, loss = NULL, risk = NULL,
        rclass = function(f) NA)
 AdaExp()
 AUC()
-Binomial(link = c("logit", "probit"), ...)
+Binomial(type = c("adaboost", "glm"),
+         link = c("logit", "probit", "cloglog", "cauchit", "log"), ...)
 GaussClass()
 GaussReg()
 Gaussian()
@@ -62,7 +68,12 @@ Gehan()
 Hurdle(nuirange = c(0, 100))
 Multinomial()
 Cindex(sigma = 0.1, ipcw = 1)
+<<<<<<< HEAD:man/Family.Rd
 Binomial_glm(link = "logit")
+=======
+RCG(nuirange = c(0, 1), offrange = c(-5, 5))
+
+>>>>>>> master:man/Family.Rd
 }
 \arguments{
   \item{ngradient}{ a function with arguments \code{y}, \code{f} and \code{w} implementing the
@@ -88,10 +99,8 @@ Binomial_glm(link = "logit")
     (non-negative) interger weights \code{"case"}, or no weights are
     allowed \code{"none"}.}
   \item{name}{ a character giving the name of the loss function for pretty printing. }
-  \item{link}{ link function for binomial family. Alternatively,
-               one may supply the name of a distribution (for example
-               \code{link = "norm"}), parameters of which may
-               be specified via the \dots argument.}
+  \item{type}{ which parameterization of \code{Binomial} shoule be used?} b
+  \item{link}{ link function. For possible values see Usage section.}
   \item{d}{ delta parameter for Huber loss function. If omitted, it is chosen adaptively.}
   \item{tau}{ the quantile or expectile to be estimated, a number strictly between 0 and 1.}
   \item{qoffset}{ quantile of response distribution to be used as offset, i.e., 
@@ -101,11 +110,16 @@ Binomial_glm(link = "logit")
           searched for the minimum risk w.r.t. the nuisance parameter.
 	  In case of \code{PropOdds}, the starting values for
 	  the nuisance parameters. }
+<<<<<<< HEAD:man/Family.Rd
   \item{offrange}{ interval to search for offset in.}
+=======
+  \item{offrange}{ interval to search in for offset.}
+>>>>>>> master:man/Family.Rd
   \item{sigma}{smoothness parameter for sigmoid functions inside \code{Cindex}.}
   \item{ipcw}{vector containing inverse probability of censoring weights for all observations. If omitted, it is estimated inside \code{Cindex} family.}
   \item{\dots}{ additional arguments to link functions.}
 }
+
 \details{
   The boosting algorithm implemented in \code{\link{mboost}} minimizes the
   (weighted) empirical risk function \code{risk(y, f, w)} with respect to \code{f}.
@@ -139,22 +153,25 @@ of Freund and Schapire (1996). \code{Binomial()} implements the
 negative binomial log-likelihood of a logistic regression model
 as loss function. Thus, using \code{Binomial} family closely corresponds
 to fitting a logistic model. Alternative link functions
-can be specified via the name of the corresponding distribution, for
-example \code{link = "cauchy"} lead to \code{\link{pcauchy}}
-used as link function. This feature is still experimental and
-not well tested.
+can be specified.
 
 However, the coefficients resulting from boosting with family
 \code{Binomial(link = "logit")} are \eqn{1/2} of the coefficients of a logit model
-obtained via \code{\link{glm}}. This is due to the internal recoding
-of the response to \eqn{-1} and \eqn{+1} (see below).
-  However, Buehlmann and Hothorn (2007) argue that the
+obtained via \code{\link{glm}}.  Buehlmann and Hothorn (2007) argue that the
 family \code{Binomial} is the preferred choice for binary
 classification. For binary classification problems the response
 \code{y} has to be a \code{factor}. Internally \code{y} is re-coded
 to \eqn{-1} and \eqn{+1} (Buehlmann and Hothorn 2007). 
 
+<<<<<<< HEAD:man/Family.Rd
 \code{Binomial_glm()} is an alternative to \code{Binomial()} leading to coefficients of the same size as coefficients from a classical logit model via \code{\link{glm}}. Additionally, it works not only with a two-level factor but also with a two-column matrix containing number of successes and number of failures (again, similar to \code{\link{glm}}). 
+=======
+\code{Binomial(type = "glm")} is an alternative to \code{Binomial()} leading to 
+coefficients of the same size as coefficients from a classical logit 
+model via \code{\link{glm}}. Additionally, it works not only with a 
+two-level factor but also with a two-column matrix containing the number 
+of successes and number of failures (again, similar to \code{\link{glm}}). 
+>>>>>>> master:man/Family.Rd
 
 \code{AUC()} uses \eqn{1-AUC(y, f)} as the loss function.
 The area under the ROC curve (AUC) is defined as
@@ -215,7 +232,21 @@ distribution approximation used in Ma and Huang (2005).
   (see \code{\link{Surv}} for details). For details on \code{Gehan()} see
   Johnson and Long (2011).
 
+<<<<<<< HEAD:man/Family.Rd
   \code{Cindex()} optimizes the concordance-index for survival data (often denoted     as Harrell's C or C-index). The concordance index evaluates the rank-based           concordance probability between the model and the outcome. The C-index measures      whether large values of the model are associated with short survival times  and      vice versa. The interpretation is similar to the AUC: A C-index of 1 represents a    perfect discrimination while a C-index of 0.5 will be achieved by a completely       non-informative marker. The \code{Cindex()} family is based on an estimator by       Uno et al. (2011), which incorporates inverse probability of censoring weighting     \code{ipcw}. To make the estimator differentiable, sigmoid functions are applied;    the corresponding smoothness can be controlled via \code{sigma}. For details on      \code{Cindex()} see Mayr and Schmid (2014).
+=======
+  \code{Cindex()} optimizes the concordance-index for survival data (often denoted
+  as Harrell's C or C-index). The concordance index evaluates the rank-based
+  concordance probability between the model and the outcome. The C-index measures
+  whether large values of the model are associated with short survival times  and
+  vice versa. The interpretation is similar to the AUC: A C-index of 1 represents a
+  perfect discrimination while a C-index of 0.5 will be achieved by a completely
+  non-informative marker. The \code{Cindex()} family is based on an estimator by
+  Uno et al. (2011), which incorporates inverse probability of censoring weighting
+  \code{ipcw}. To make the estimator differentiable, sigmoid functions are applied;
+  the corresponding smoothness can be controlled via \code{sigma}. For details on
+  \code{Cindex()} see Mayr and Schmid (2014).
+>>>>>>> master:man/Family.Rd
     
   
   Hurdle models for zero-inflated count data can be fitted by using a combination
@@ -233,13 +264,18 @@ distribution approximation used in Ma and Huang (2005).
   moment. The class corresponding to the last level of the factor coding
   of the response is used as reference class.
   
+<<<<<<< HEAD:man/Family.Rd
   
+=======
+  \code{RCG()} implements the ratio of correlated gammas (RCG) model proposed
+  by Weinhold et al. (2016).
+
+>>>>>>> master:man/Family.Rd
 }
 \section{Warning}{
   The coefficients resulting from boosting with family
-  \code{Binomial} are \eqn{1/2} of the coefficients of a logit model
-  obtained via \code{\link{glm}}. This is due to the internal recoding
-  of the response to \eqn{-1} and \eqn{+1} (see above).
+  \code{Binomial(link = "logit")} are \eqn{1/2} of the coefficients of a logit model
+  obtained via \code{\link{glm}} (see above). 
 
   For \code{AUC()}, variables should be centered and scaled and observations with weight > 0 must not contain missing values.
   The estimated coefficients for \code{AUC()} have no probabilistic interpretation.
@@ -266,7 +302,14 @@ distribution approximation used in Ma and Huang (2005).
     disease classification and biomarker selection with microarray
     data. \emph{Bioinformatics}, \bold{21}(24), 4356--4362.
     
+<<<<<<< HEAD:man/Family.Rd
     Andreas Mayr and Matthias Schmid (2014). Boosting the concordance index for          survival data -- a unified framework to derive and evaluate biomarker combination.     \emph{PloS ONE}, \bold{9}(1):84483.
+=======
+    Andreas Mayr and Matthias Schmid (2014). 
+    Boosting the concordance index for survival data -- a unified 
+    framework to derive and evaluate biomarker combination.     
+    \emph{PloS ONE}, \bold{9}(1):84483.
+>>>>>>> master:man/Family.Rd
 
     Whitney K. Newey and James L. Powell (1987),
     Asymmetric least squares estimation and testing.
@@ -286,7 +329,14 @@ distribution approximation used in Ma and Huang (2005).
     condition. \emph{Environmental and Ecological Statistics},
     \bold{18}(4), 709--733.
 
+<<<<<<< HEAD:man/Family.Rd
     Uno H, Cai T, Pencina MJ, D Agostino RB and Wei LJ (2011). On the C-statistics       for evaluating overall adequacy of risk prediction procedures with censored          survival data. \emph{Stat Med}, \bold{30}(10), 1105--17.
+=======
+    Uno H, Cai T, Pencina MJ, D Agostino RB and Wei LJ (2011). 
+    On the C-statistics for evaluating overall adequacy of risk prediction 
+    procedures with censored survival data. 
+    \emph{Statistics in Medicine}, \bold{30}(10), 1105--17.
+>>>>>>> master:man/Family.Rd
 
     Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
     (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
@@ -300,7 +350,10 @@ distribution approximation used in Ma and Huang (2005).
     \emph{Annals of Applied Statistics}, \bold{5}, 1081--1101.
     
 
-  }
+    Weinhold, L., S. Pechlivanis, S. Wahl, P. Hoffmann and M. Schmid (2016) A Statistical Model for the
+    Analysis of Bounded Response Variables in DNA Methylation Studies.
+    \emph{BMC Bioinformatics}. 2016; 17: 480. \url{http://dx.doi.org/10.1186/s12859-016-1347-4}
+}
 \seealso{\code{\link{mboost}} for the usage of \code{Family}s. See
     \code{\link{boost_family-class}} for objects resulting from a call to \code{Family}. }
 \author{
@@ -376,11 +429,54 @@ if (require("nnet")) {
     mlmn <- multinom(Species ~ Sepal.Length, data = iris)
     max(abs(fitted(mlm[1000], type = "response") -
             fitted(mlmn, type = "prob")))
-
 }
 
 ## End(Not run and test)
 }
+
+
+\donttest{############################################################
+## Do not run and check these examples automatically as
+## they take some time
+
+### Example for RCG model
+## generate covariate values
+set.seed(12345)
+x1 <- rnorm(500)
+x2 <- rnorm(500)
+## generate linear predictors
+zetaM <- 0.1 + 0.3 * x1 - 0.5 * x2 
+zetaU <- 0.1 - 0.1 * x1 + 0.2 * x2
+## generate beta values
+M <- rgamma(500, shape = 2, rate = exp(zetaM))
+U <- rgamma(500, shape = 2, rate = exp(zetaU))
+y <- M / (M + U)
+
+## fit RCG model
+data <- data.frame(y, x1, x2)
+RCGmodel <- glmboost(y ~ x1 + x2, data = data, family = RCG(),
+                     control = boost_control(mstop = 2000,
+                     trace = TRUE, nu = 0.01))
+## true coefficients: gamma = (0.0, 0.4, -0.7),
+##                    alpha (= shape) = 2,
+##                    rho = 0
+## compare to coefficient estimates
+coef(RCGmodel)
+nuisance(RCGmodel)
+
+## compute downstream tests 
+## (only suitable without early stopping, i.e., if likelihood based model converged)
+downstream.test(RCGmodel)
+
+## compute conditional expectations
+predictions <- predict(RCGmodel, type = "response")
+plot(predictions, y)
+abline(0,1)
+
+## End(Not run and test)
+}
+
+
 
 }
 \keyword{models}

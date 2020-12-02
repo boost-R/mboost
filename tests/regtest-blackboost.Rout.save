@@ -1,6 +1,6 @@
 
-R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
-Copyright (C) 2015 The R Foundation for Statistical Computing
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -20,10 +20,7 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.6-0. See 'package?mboost' and 'news(package  = "mboost")'
-for a complete list of changes.
-
-> if (require("party")) {
+> if (require("partykit")) {
 + 
 + set.seed(290875)
 + 
@@ -130,49 +127,35 @@ for a complete list of changes.
 + # <FIXME> How do we check "correctness" of results?</FIXME>
 + 
 + }
-Loading required package: party
+Loading required package: partykit
 Loading required package: grid
+Loading required package: libcoin
 Loading required package: mvtnorm
-Loading required package: modeltools
-Loading required package: stats4
 
-Attaching package: 'modeltools'
+Attaching package: 'partykit'
 
-The following object is masked from 'package:stabs':
+The following object is masked from 'package:mboost':
 
-    parameters
+    varimp
 
-Loading required package: strucchange
-Loading required package: zoo
-
-Attaching package: 'zoo'
-
-The following objects are masked from 'package:base':
-
-    as.Date, as.Date.numeric
-
-Loading required package: sandwich
 [1] 2.367443
 Loading required package: gbm
-Loading required package: survival
-Loading required package: lattice
-Loading required package: splines
-Loaded gbm 2.1.1
+Loaded gbm 2.1.8
 [1] 2.753747
 $surv
            [,1]
- [1,] 0.9841918
- [2,] 0.9666614
- [3,] 0.9469438
- [4,] 0.9242761
- [5,] 0.8975049
- [6,] 0.8712777
- [7,] 0.8409125
- [8,] 0.8006312
- [9,] 0.7546636
-[10,] 0.7068952
-[11,] 0.5857876
-[12,] 0.4577911
+ [1,] 0.9998525
+ [2,] 0.9995783
+ [3,] 0.9976226
+ [4,] 0.9940370
+ [5,] 0.9721303
+ [6,] 0.9478526
+ [7,] 0.9136972
+ [8,] 0.8638501
+ [9,] 0.7750319
+[10,] 0.6674639
+[11,] 0.4586412
+[12,] 0.2230826
 
 $time
   1   2   3  22  23  24  25   5   7   8  10  11 
@@ -184,19 +167,19 @@ $n.event
 attr(,"class")
 [1] "survFit"
 $surv
-                1           3        12
- [1,] 0.892791971 0.890891580 0.9963054
- [2,] 0.785599489 0.782045428 0.9921547
- [3,] 0.678429845 0.673501949 0.9874165
- [4,] 0.570977653 0.564996671 0.9818748
- [5,] 0.463206357 0.456556240 0.9751939
- [6,] 0.375067125 0.368219124 0.9684987
- [7,] 0.291386559 0.284712599 0.9605510
- [8,] 0.205471922 0.199452200 0.9496607
- [9,] 0.134896401 0.129913035 0.9367064
-[10,] 0.084702500 0.080863210 0.9225860
-[11,] 0.022236317 0.020701582 0.8831788
-[12,] 0.003846373 0.003464763 0.8340207
+                  1             3        12
+ [1,]  6.298003e-01  9.662441e-01 0.9999996
+ [2,]  2.665197e-01  9.064610e-01 0.9999989
+ [3,]  5.740156e-04  5.744951e-01 0.9999940
+ [4,]  7.181237e-09  2.484063e-01 0.9999849
+ [5,]  3.256063e-39  1.385352e-03 0.9999288
+ [6,]  1.190722e-73  3.836580e-06 0.9998651
+ [7,] 1.270618e-123  7.456847e-10 0.9997726
+ [8,] 5.201668e-200  1.582169e-15 0.9996313
+ [9,]  0.000000e+00  1.687796e-26 0.9993580
+[10,]  0.000000e+00  1.308696e-41 0.9989818
+[11,]  0.000000e+00  1.485013e-79 0.9980378
+[12,]  0.000000e+00 1.931359e-152 0.9962269
 
 $time
   1   2   3  22  23  24  25   5   7   8  10  11 
@@ -212,4 +195,4 @@ Warning message:
 > 
 > proc.time()
    user  system elapsed 
- 10.319   0.114  10.793 
+ 29.139   0.071  29.209 

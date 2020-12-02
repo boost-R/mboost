@@ -88,7 +88,16 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                              type = "n", xaxt = "n",
                              xlim = range(as.numeric(xVals)) + c(-0.5, 0.5),
                              xlab = xl, ylab = yl, ylim = ylim)
-                        axis(1, at = xValsN, labels = levels(xVals))
+                        ## make sure that xaxt / axes is respected
+                        print.xaxis <- TRUE
+                        if (length(list(...)) >= 1 && any(xaxis <- c("xaxt", "axes") %in% names(list(...)))) {
+                            if (xaxis[1] && list(...)$xaxt == "n")
+                                print.xaxis <- FALSE
+                            if (xaxis[2] && list(...)$axes == FALSE)
+                                print.xaxis <- FALSE
+                        }
+                        if (print.xaxis)
+                            axis(1, at = xValsN, labels = levels(xVals))
                         for (i in 1:length(xVals)) {
                             lines(x = rep(xValsN[i], 2) + c(-0.35, 0.35),
                                   y = rep(yVals[i], 2), ...)
@@ -106,7 +115,6 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                         if (length(pr) == 1 && pr == 0) {
                             yVals <- rep(0, length(xVals))
                         }
-                        axis(1, at = xValsN, labels = levels(xVals))
                         for (i in 1:length(xVals)) {
                             lines(x = rep(xValsN[i], 2) + c(-0.35, 0.35),
                                   y = rep(yVals[i], 2), ...)
@@ -116,7 +124,7 @@ plot.mboost <- function(x, which = NULL, newdata = NULL,
                               type, ...)
                         if (rug){
                             rug(data[[1]], col = rugcol)
-                            warning(sQuote("rug  =TRUE"),
+                            warning(sQuote("rug = TRUE"),
                                     " should be used with care if ",
                                     sQuote("add = TRUE"))
                         }

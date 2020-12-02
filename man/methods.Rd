@@ -51,7 +51,7 @@
 \alias{nuisance}
 \alias{nuisance.mboost}
 
-
+\alias{downstream.test}
 
 \title{ Methods for Gradient Boosting Objects }
 \description{
@@ -99,7 +99,7 @@ mstop(x) <- value
                          "nuisance", "weights", "index", "control"),
         which = NULL, ...)
 \method{extract}{glmboost}(object, what = c("design", "coefficients", "residuals",
-                         "variable.names", "bnames", "offset",
+                         "variable.names", "offset",
                          "nuisance", "weights", "control"),
         which = NULL, asmatrix = FALSE, ...)
 \method{extract}{blg}(object, what = c("design", "penalty", "index"),
@@ -114,6 +114,8 @@ mstop(x) <- value
 \method{risk}{mboost}(object, ...)
 
 \method{nuisance}{mboost}(object)
+
+downstream.test(object, ...)
 }
 \arguments{
   \item{object}{ objects of class \code{glmboost}, \code{gamboost},
@@ -153,11 +155,11 @@ mstop(x) <- value
                      added to the intercept (if there is any)
                      or if the offset is returned as attribute of
                      the coefficient (default).}
-  \item{i}{ integer. Index specifying the model to extract. If \code{i}
-            is smaller than the initial \code{mstop}, a subset is used.
-            If \code{i} is larger than the initial \code{mstop},
-            additional boosting steps are performed until step \code{i}
-            is reached. See details for more information. }
+  \item{i}{ integer. Index specifying the model to extract. If \code{i = 0}, 
+            the offset model is returned. If \code{i} is smaller than the initial 
+            \code{mstop}, a subset is used. If \code{i} is larger than the 
+            initial \code{mstop}, additional boosting steps are performed until 
+            step \code{i} is reached. See details for more information. }
   \item{value}{ integer. See \code{i}.}
   \item{return}{ a logical indicating whether the changed object is
                  returned. }
@@ -302,6 +304,12 @@ mstop(x) <- value
   Note that \code{logLik} and \code{AIC} only make sense when the
   corresponding \code{\link{Family}} implements the appropriate loss
   function.
+  
+  \code{downstream.test} computes tests for linear models fitted via \code{\link{glmboost}}
+  with a likelihood based loss function and only suitable without early stopping, i.e., 
+  if likelihood based model converged. In order to work, the Fisher matrix must
+  be implemented in the \code{\link{Family}}; currently this is only the case for 
+  family \code{\link{RCG}}.
 
 }
 \note{
@@ -310,10 +318,7 @@ mstop(x) <- value
 }
 \section{Warning}{
   The coefficients resulting from boosting with family
-  \code{\link{Binomial}} are \eqn{1/2} of the coefficients of a logit
-  model obtained via \code{\link{glm}}. This is due to the internal
-  recoding of the response to \eqn{-1} and \eqn{+1} (see
-  \code{\link{Binomial}}).
+  \code{Binomial(link = "logit")} are \eqn{1/2} of the coefficients of a logit  model obtained via \code{\link{glm}} (see \code{\link{Binomial}}).
 }
 \references{
 

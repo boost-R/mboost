@@ -1,6 +1,6 @@
 
-R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
-Copyright (C) 2015 The R Foundation for Statistical Computing
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -20,9 +20,6 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.6-0. See 'package?mboost' and 'news(package  = "mboost")'
-for a complete list of changes.
-
 > require("Matrix")
 Loading required package: Matrix
 > 
@@ -71,7 +68,7 @@ See Warning section in ?coef.mboost
 > tmp <- blackboost(DEXfat ~ ., data = bodyfat, control = ctrl,
 +                  weights = bs[,3])
 > 
-> stopifnot(identical(max(abs(tmp$risk()[x] / sum(bs[,3] == 0)  - cv[3,])), 0))
+> stopifnot(identical(max(abs(tmp$risk()[x + 1] / sum(bs[,3] == 0)  - cv[3,])), 0))
 > 
 > ### center = TRUE and cvrisk were broken; same issue with masking original data
 > 
@@ -80,7 +77,7 @@ See Warning section in ?coef.mboost
 > tmp <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE,
 +                 control = boost_control(risk = "oobag"),
 +                 weights = bs[,3])
-> stopifnot(identical(max(tmp$risk()[attr(cv1, "mstop")] / sum(bs[,3] == 0) - cv1[3,]), 0))
+> stopifnot(identical(max(tmp$risk()[attr(cv1, "mstop") + 1] / sum(bs[,3] == 0) - cv1[3,]), 0))
 > 
 > ### same problem, just another check
 > 
@@ -282,39 +279,28 @@ In gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl,  :
 +     stopifnot(max(abs(predict(x[i]) - predict(x[max(s)], agg = "cumsum")[,i])) < eps)
 > 
 > ### make sure environment(formula) is used for evaluation
-> if (require("party")) {
+> if (require("partykit")) {
 +     data("cars")
 +     ctl  <- boost_control(mstop = 100, trace = TRUE)
 +     tctl <- ctree_control(teststat = "max", testtype = "Teststat",
-+                           mincrit = 0, maxdepth = 5, savesplitstat = FALSE)
++                           mincrit = 0, maxdepth = 5, saveinfo = FALSE)
 +     myfun <- function(cars, xx, zz){
 +         mboost(dist ~ btree(speed, tree_controls = zz),
 +                data = cars, control = xx)
 +     }
 +     try(mod <- myfun(cars, xx = ctl, zz = tctl))
 + }
-Loading required package: party
+Loading required package: partykit
 Loading required package: grid
+Loading required package: libcoin
 Loading required package: mvtnorm
-Loading required package: modeltools
-Loading required package: stats4
 
-Attaching package: 'modeltools'
+Attaching package: 'partykit'
 
-The following object is masked from 'package:stabs':
+The following object is masked from 'package:mboost':
 
-    parameters
+    varimp
 
-Loading required package: strucchange
-Loading required package: zoo
-
-Attaching package: 'zoo'
-
-The following objects are masked from 'package:base':
-
-    as.Date, as.Date.numeric
-
-Loading required package: sandwich
 [   1] ...................................... -- risk: 9246.895 
 [  41] ...................................... -- risk: 9006.37 
 [  81] ..................
@@ -461,11 +447,6 @@ See Warning section in ?coef.mboost
 
 > cf2 <- as.vector(a) * 2
 > b <- coef(m3); b[[1]][1] <- b[[1]][1] + m3$offset;
-
-NOTE: Coefficients from a Binomial model are half the size of coefficients
- from a model fitted via glm(... , family = 'binomial').
-See Warning section in ?coef.mboost
-
 > cf3 <- b[[1]] * 2
 > 
 > stopifnot(max(abs(cf1 - cf2)) < sqrt(.Machine$double.eps))
@@ -501,15 +482,15 @@ Loss function: (y - f)^2
 
 Number of boosting iterations: mstop = 100 
 Step size:  0.1 
-Offset:  0.1193473 
+Offset:  -0.0242289 
 
 Coefficients: 
          V1          V2          V3          V4          V5          V6 
- 0.18362225  0.03578881  0.09666174  0.24628972 -0.33203993 -0.19418405 
-         V7          V8          V9         V10 
- 0.12960368  0.07842620 -0.47174880  0.31573885 
+-0.24334317 -0.07871951  0.30932011 -0.15467711 -0.41412629 -0.06111917 
+         V7          V8          V9 
+-0.25969935 -0.74624730  0.63695153 
 attr(,"offset")
-[1] 0.1193473
+[1] -0.0242289
 
 Warning message:
 In glmboost.matrix(x = X, y = y) :
@@ -527,7 +508,7 @@ Loss function: (y - f)^2
 
 Number of boosting iterations: mstop = 100 
 Step size:  0.1 
-Offset:  0.1193473 
+Offset:  -0.0242289 
 Number of baselearners:  1 
 
 > z <- rnorm(100)
@@ -544,7 +525,7 @@ Loss function: (y - f)^2
 
 Number of boosting iterations: mstop = 100 
 Step size:  0.1 
-Offset:  0.1193473 
+Offset:  -0.0242289 
 Number of baselearners:  2 
 
 > mod <- mboost_fit(blg = b, response = y)
@@ -589,7 +570,7 @@ Number of baselearners:  2
 +     germany <- read.bnd(system.file("examples/germany.bnd", package="BayesX"))
 +     districts <- attr(germany, "regions")
 +     set.seed(1907)
-+     regions <- sample(districts, 400, replace = TRUE)
++     regions <- factor(sample(districts, 400, replace = TRUE))
 +     B <- bmrf(regions, bnd = germany)
 +     X <- extract(B)
 +     K <- extract(B, what = "pen")
@@ -636,19 +617,19 @@ Neighbor search finished.
 > yNa[1] <- NA
 > coef(mboost(yNa ~ x1))
 $`bbs(x1)`
-           1            2            3            4            5            6 
--0.230113983 -0.172258391 -0.117668716 -0.083624615 -0.072904255 -0.059526870 
-           7            8            9           10           11           12 
--0.033772432  0.001564625  0.050460124  0.106084982  0.132873065  0.113765084 
-          13           14           15           16           17           18 
- 0.062946611  0.007352297 -0.068081904 -0.131700975 -0.128121979 -0.064535864 
-          19           20           21           22           23           24 
- 0.005477525  0.056227079  0.084447033  0.103094284  0.120396145  0.136351480 
+          1           2           3           4           5           6 
+-0.33197510 -0.25298850 -0.16817965 -0.05730190  0.05832769  0.14481709 
+          7           8           9          10          11          12 
+ 0.16183534  0.07660952 -0.08626287 -0.23590473 -0.30311988 -0.27857505 
+         13          14          15          16          17          18 
+-0.17877435 -0.05530480  0.05934436  0.17091734  0.29801644  0.39812443 
+         19          20          21          22          23          24 
+ 0.42160083  0.38434479  0.32961845  0.28109617  0.23551846  0.19005868 
 
 attr(,"offset")
-[1] 0.008050138
+[1] 0.08601823
 Warning message:
-In mboost_fit(bl, response = response, ...) :
+In mboost_fit(bl, response = response, weights = weights, offset = offset,  :
   response contains missing values;
  weights of corresponding observations are set to zero and thus these observations are not used for fitting
 > 
@@ -656,21 +637,19 @@ In mboost_fit(bl, response = response, ...) :
 > yNa[2] <- NaN
 > coef(mboost(yNa ~ x1))
 $`bbs(x1)`
-            1             2             3             4             5 
--0.2554349205 -0.1877191210 -0.1232980232 -0.0796433393 -0.0599759532 
-            6             7             8             9            10 
--0.0392197657 -0.0097237619  0.0237191155  0.0678876074  0.1183781849 
-           11            12            13            14            15 
- 0.1395017383  0.1138665310  0.0579257966 -0.0005033062 -0.0771862311 
-           16            17            18            19            20 
--0.1409736196 -0.1365961662 -0.0717699854 -0.0008314934  0.0502840777 
-           21            22            23            24 
- 0.0783848369  0.0966821175  0.1135769774  0.1291051191 
+          1           2           3           4           5           6 
+-0.32019366 -0.24112200 -0.15625864 -0.04556045  0.06932580  0.15409482 
+          7           8           9          10          11          12 
+ 0.16798950  0.07789351 -0.09103151 -0.24529173 -0.31477258 -0.29192203 
+         13          14          15          16          17          18 
+-0.19034634 -0.06093028  0.06056793  0.17780605  0.30853182  0.41044092 
+         19          20          21          22          23          24 
+ 0.43446176  0.39688534  0.34124100  0.29144449  0.24446315  0.19758697 
 
 attr(,"offset")
-[1] 0.01532354
+[1] 0.07615664
 Warning message:
-In mboost_fit(bl, response = response, ...) :
+In mboost_fit(bl, response = response, weights = weights, offset = offset,  :
   response contains missing values;
  weights of corresponding observations are set to zero and thus these observations are not used for fitting
 > 
@@ -742,6 +721,24 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 > nd <- data.frame(waistcirc = 1, age = 1,
 +                  hipcirc = seq(min(bf$hipcirc), max(bf$hipcirc), length = 100))
 > plot(mod, which = 2, newdata = nd)
+> lines(mod, which = 2, rug = TRUE)
+Warning message:
+In plot_helper(xl, yl) :
+  'rug = TRUE' should be used with care if 'add = TRUE'
+> ## check user-specified labels
+> plot(mod, which = 2, newdata = nd, xlab = "hip circumference", ylab = "partial effect")
+> 
+> ## check categorical variables
+> bodyfat$hip_cat <- cut(bodyfat$hipcirc, breaks = 2)
+> bodyfat$waist_cat <- cut(bodyfat$waistcirc, breaks = 2)
+> mod <- mboost(DEXfat ~ bols(waist_cat) + bols(hip_cat), data = bodyfat)
+> plot(mod, which = "hip_cat", ylim = c(-4,9))
+> plot(mod, which = "hip_cat", ylim = c(-4,9), xaxt = "n", xlab = "")
+> lines(mod, which = "waist_cat", col = "red")
+> 
+> mod <- mboost(DEXfat ~ bols(waistcirc) + bols(hip_cat) + bols(hip_cat, waistcirc),
++               data = bodyfat)
+> plot(mod, which = "hip_cat")
 > 
 > 
 > ## check if model fitting with very few knots works
@@ -761,6 +758,205 @@ missing values are excluded per base-learner, i.e., base-learners may depend on 
 +                 bbs(x2, df = 3, knots = 3),
 +               control = boost_control(nu = 0.25))
 > 
+> 
+> ### IPCweights problem, see github issue #54
+> 
+> if (require("survival")){
++   x1 <- rnorm(100)
++   x2 <- x1 + rnorm(100)
++   X <- cbind(x1, x2)
++   beta <- c(1, 0.5)
++   survtime <- exp(X%*%beta)
++   event <- rep(c(TRUE, FALSE), 50)
++   
++   ipcw1 <- IPCweights(Surv(survtime, event))
++   ipcw2 <- IPCweights(Surv(as.numeric(survtime), event))
++   summary(cbind(ipcw1, ipcw2))
++   
++   stopifnot(identical(ipcw1, ipcw2))
++ }
+Loading required package: survival
+> 
+> ## make sure newdata is not used in fitted() but other arguments are:
+> data("bodyfat", package = "TH.data")
+> mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc),
++               control = boost_control(mstop = 10),
++               data = bodyfat)
+> fitted(mod, newdata = bodyfat)
+          [,1]
+ [1,] 36.08326
+ [2,] 37.47280
+ [3,] 34.02636
+ [4,] 24.54983
+ [5,] 29.57699
+ [6,] 26.94588
+ [7,] 28.99822
+ [8,] 31.32320
+ [9,] 26.28185
+[10,] 24.40541
+[11,] 26.94918
+[12,] 23.49139
+[13,] 25.71373
+[14,] 20.54035
+[15,] 30.41362
+[16,] 34.69222
+[17,] 28.09712
+[18,] 40.63829
+[19,] 36.17812
+[20,] 24.16419
+[21,] 34.58752
+[22,] 25.85393
+[23,] 29.69150
+[24,] 29.15424
+[25,] 25.81085
+[26,] 29.72672
+[27,] 33.60716
+[28,] 26.37671
+[29,] 40.00913
+[30,] 29.53700
+[31,] 39.63391
+[32,] 40.43678
+[33,] 27.75357
+[34,] 33.68082
+[35,] 27.17565
+[36,] 29.52466
+[37,] 30.96223
+[38,] 38.58070
+[39,] 26.75946
+[40,] 33.70566
+[41,] 41.32807
+[42,] 38.09941
+[43,] 37.06375
+[44,] 34.97164
+[45,] 44.49200
+[46,] 42.58832
+[47,] 43.46728
+[48,] 42.71346
+[49,] 33.04163
+[50,] 29.46971
+[51,] 26.31818
+[52,] 34.78724
+[53,] 38.45470
+[54,] 37.13288
+[55,] 26.48901
+[56,] 30.52947
+[57,] 25.42914
+[58,] 40.29794
+[59,] 34.02819
+[60,] 28.80667
+[61,] 22.47965
+[62,] 22.31846
+[63,] 20.31789
+[64,] 23.03664
+[65,] 24.48053
+[66,] 21.72598
+[67,] 21.72598
+[68,] 22.72331
+[69,] 25.00259
+[70,] 28.14446
+[71,] 21.00557
+Warning message:
+In fitted.mboost(mod, newdata = bodyfat) :
+  Argument 'newdata' was  ignored. Please use 'predict()' to make predictions for new data.
+> stopifnot(all.equal(fitted(mod, aggregate = "cumsum")[,10], 
++                     fitted(mod), check.attributes = FALSE))
+> stopifnot(all.equal(fitted(mod, aggregate = "cumsum"), 
++                     fitted(mod, newdata = bodyfat, aggregate = "cumsum")))
+Warning message:
+In fitted.mboost(mod, newdata = bodyfat, aggregate = "cumsum") :
+  Argument 'newdata' was  ignored. Please use 'predict()' to make predictions for new data.
+> 
+> 
+> ## make sure weights are subset if missing values are present
+> weights <- sample(1:100, 100, replace=FALSE)
+> x <- rnorm(100)
+> y <- runif(100)
+> # create missing value
+> x[25] <- NA
+> myData <- data.frame(x=x, y=y)
+> ## was broken:
+> gamboost(y ~ bols(x), data = myData, weights = weights, family = Gaussian())
+
+	 Model-based Boosting
+
+Call:
+gamboost(formula = y ~ bols(x), data = myData, weights = weights,     family = Gaussian())
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 100 
+Step size:  0.1 
+Offset:  0.4482105 
+Number of baselearners:  1 
+
+> mboost(y ~ bols(x), data = myData, weights = weights, family = Gaussian())
+
+	 Model-based Boosting
+
+Call:
+mboost(formula = y ~ bols(x), data = myData, weights = weights,     family = Gaussian())
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 100 
+Step size:  0.1 
+Offset:  0.4482105 
+Number of baselearners:  1 
+
+> ## was always working
+> glmboost(y ~ x, data = myData, weights = weights, family = Gaussian())
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ x, data = myData, weights = weights,     family = Gaussian())
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 100 
+Step size:  0.1 
+Offset:  0.4482105 
+
+Coefficients: 
+ (Intercept)            x 
+ 0.002944126 -0.061260913 
+attr(,"offset")
+[1] 0.4482105
+
+> blackboost(y ~ x, data = myData, weights = weights, family = Gaussian())
+
+	 Model-based Boosting
+
+Call:
+blackboost(formula = y ~ x, data = myData, weights = weights,     family = Gaussian())
+
+
+	 Squared Error (Regression) 
+
+Loss function: (y - f)^2 
+ 
+
+Number of boosting iterations: mstop = 100 
+Step size:  0.1 
+Offset:  0.4482105 
+Number of baselearners:  1 
+
+> 
+> 
+> 
+> 
 > proc.time()
    user  system elapsed 
- 27.332   0.155  27.984 
+ 34.908   0.168  35.070 

@@ -13,13 +13,13 @@ get_index <- function(x) {
         if (length(x) == 1) {
             x <- x[[1]]
             nd <- which(!duplicated(x))
-            nd <- nd[complete.cases(x[nd])]
+            nd <- nd[Complete.cases(x[nd])]
             index <- match(x, x[nd])
         ### go for data.frames with >= 2 variables
         } else {
             tmp <- do.call("paste", x)
             nd <- which(!duplicated(tmp))
-            nd <- nd[complete.cases(x[nd,])]
+            nd <- nd[Complete.cases(x[nd,])]
             index <- match(tmp, tmp[nd])
         }
     }
@@ -50,6 +50,10 @@ isMATRIX <- function(x)
 Complete.cases <- function(x) {
     if (isMATRIX(x))
         return(rowSums(is.na(x)) == 0)
+    if (inherits(x, "GWASdata")) { 
+        # object should not contain missing values anyway
+        return(rep(TRUE, nrow(x@geno)))
+    }
     complete.cases(x)
 }
 
@@ -102,11 +106,11 @@ do_trace <- function(m, mstop, risk, step = options("width")$width / 2,
             if ((m %/% step != m / step)) {
                 cat(".")
             } else {
-                cat(" -- risk:", risk[m+mstop], "\n")
+                cat(" -- risk:", risk[m+mstop+1], "\n")
             }
         }
     } else {
-        cat("\nFinal risk:", risk[m+mstop], "\n")
+        cat("\nFinal risk:", risk[m+mstop+1], "\n")
     }
 }
 
@@ -226,7 +230,7 @@ differences <- function(constraint, ncol = NULL) {
 ## least squares with equalities and inequalities
 solveLSEI <- function(XtX, Xty, D = NULL) {
     if (is.null(D) || all(sapply(D, is.null)))
-        return(solve(XtX, Xty, LINPACK = FALSE))
+        return(solve(XtX, Xty))
 
     if (!isMATRIX(D)) ## i.e. D is a list with 2 entries
         D <- rbind(D[[1]], D[[2]])
@@ -242,12 +246,19 @@ check_newdata <- function(newdata, blg, mf, to.data.frame = TRUE) {
         stop(sQuote("newdata"),
              " must contain all predictor variables,",
              " which were used to specify the model.")
-    if (!class(newdata) %in% c("list", "data.frame"))
+    if (!any(class(newdata) %in% c("list", "data.frame")))
         stop(sQuote("newdata"), " must be either a data.frame or a list")
     if (any(duplicated(nm)))  ## removes duplicates
         nm <- unique(nm)
+
     cl1 <- sapply(newdata[nm], class)
-    cl2 <- sapply(mf, class)
+    if (is.list(mf) || is.data.frame(mf)) {
+        cl2 <- sapply(mf, class)
+    } else {
+        ## currently this is only needed for GWASdata
+        cl2 <- class(mf)
+        to.data.frame <- FALSE
+    }
 
     if (!isTRUE(all.equal(cl1, cl2))) {
         # idx <- which(cl1 != cl2)
@@ -260,9 +271,27 @@ check_newdata <- function(newdata, blg, mf, to.data.frame = TRUE) {
                     " do not have the same class as in the original data set",
                     call. = FALSE)
     }
+
     ## subset data
     mf <- newdata[nm]
     if (is.list(mf) && to.data.frame)
         mf <- as.data.frame(mf)
+    if (is.list(mf) && length(mf) == 1 && inherits(mf[[1]], "GWASdata"))
+        mf <- mf[[1]]
     return(mf)
+}
+
+## make positive (semi-) definite matrix
+make_psd <- function(x, eps = sqrt(.Machine$double.eps)) {
+    lambda <- min(eigen(x, only.values = TRUE, symmetric = TRUE)$values)
+    ## use some additional tolerance to ensure semipositive definite matrices
+    lambda <- lambda - sqrt(.Machine$double.eps)
+    # smallest eigenvalue negative = not semipositive definite
+    if (lambda < -1e-10) {
+        rho <- 1/(1-lambda)
+        x <- rho * x + (1-rho) * diag(dim(x)[1])
+        ## now check if it is really positive definite by recursively calling
+        x <- make_psd(x)
+    }
+    return(x)
 }

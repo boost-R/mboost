@@ -34,8 +34,18 @@ mydf.gb <- glmboost(y ~ ., data = mydf, family = fm,
                     control = boost_control(mstop = 1000, nu = 1))
 aic <- AIC(mydf.gb, method = "corrected")
 ht <- hatvalues(mydf.gb)
-mstop(aic)
+stopifnot(mstop(aic) == 12)
+plot(aic, ylim = c(0,3))
 mydf.lm <- lm(y ~ ., data = mydf)
+
+## use AIC with active set as df
+aic2 <- AIC(mydf.gb, method = "corrected", df = "actset")
+stopifnot(mstop(aic2)== 9)
+stopifnot(attr(aic2, "df")[9] == 9)
+
+## use gMDL
+aic3 <- AIC(mydf.gb, method = "gMDL")
+stopifnot(mstop(aic3) == 4)
 
 ### compare coefficients
 which(abs(coef(mydf.lm, which = "")) < abs(coef(mydf.gb[mstop(aic)], which = "")))
@@ -54,11 +64,31 @@ data("cars")
 cars.gb <- glmboost(dist ~ speed, data = cars, family = fm, center = FALSE,
                     control = boost_control(mstop = 1000, nu = 1))
 cars.gb
+plot(cars.gb)
 
 ### coefficients should coincide
 cf <- coef(cars.gb)
 attr(cf, "offset") <- NULL
 stopifnot(all.equal(cf, coef(lm(dist ~ speed, data = cars))))
+
+### check aggregate = "none"
+stopifnot(all.equal(cumsum(c(coef(cars.gb, aggregate = "none", off2int = TRUE)$speed)),
+        c(coef(cars.gb, aggregate = "cumsum", off2int = TRUE)$speed)))
+
+### extract model terms
+stopifnot(all.equal(extract(cars.gb, what = "design"),
+                    matrix(c(rep(1, 50), cars$speed)),
+                    check.attributes = FALSE))
+stopifnot(all.equal(extract(cars.gb, what = "design", which = "(Intercept)"), 
+                    rep(1, 50), check.attributes = FALSE))
+stopifnot(all.equal(extract(cars.gb, what = "coefficients"), coef(cars.gb)))
+stopifnot(all.equal(extract(cars.gb, what = "residuals"), resid(cars.gb)))
+stopifnot(all.equal(extract(cars.gb, what = "variable.names"), variable.names(cars.gb)))
+stopifnot(all.equal(extract(cars.gb, what = "offset"), 0))
+stopifnot(all.equal(extract(cars.gb, what = "nuisance"), nuisance(cars.gb)))
+stopifnot(is.na(extract(cars.gb, what = "nuisance")))
+stopifnot(all.equal(extract(cars.gb, what = "weights"), model.weights(cars.gb)))
+stopifnot(all.equal(extract(cars.gb, what = "control"), boost_control(mstop = 1000, nu = 1)))
 
 ### logistic regression
 mydf <- data.frame(x = runif(100), z = rnorm(100),
@@ -220,7 +250,7 @@ stopifnot(all.equal(pred[[1]][[1]], pred[[4]][[1]]$x1 + pred[[4]][[1]]$x2, check
 # type = "sum"
 predictions <- as.matrix(DF[, c("x1", "x2")]) %*% matrix(coef(amod), ncol = 1) +
     attr(coef(amod), "offset")
-stopifnot(all.equal(pred[[1]][[2]], predictions))
+stopifnot(all.equal(pred[[1]][[2]], predictions, check.attributes = FALSE))
 stopifnot(all.equal(c(pred[[1]][[2]]),
                     rowSums(pred[[4]][[2]]) + attr(coef(amod), "offset"),
                     check.attributes = FALSE))
@@ -315,8 +345,8 @@ stopifnot(all.equal(predb[[1]][[1]], predb[[4]][[1]]$x1 + predb[[4]][[1]]$x2, ch
 predictionsA <- as.matrix(newdata[, c("x1", "x2")]) %*% matrix(coef(amod), ncol = 1) +
     attr(coef(amod), "offset")
 predictionsB <- as.matrix(newdata[, c("x1", "x2")]) %*% matrix(coef(bmod), ncol = 1)
-stopifnot(all.equal(preda[[1]][[2]], predictionsA))
-stopifnot(all.equal(predb[[1]][[2]], predictionsB))
+stopifnot(all.equal(preda[[1]][[2]], predictionsA, check.attributes = FALSE))
+stopifnot(all.equal(predb[[1]][[2]], predictionsB, check.attributes = FALSE))
 stopifnot(all.equal(c(preda[[1]][[2]]), rowSums(preda[[4]][[2]]) + attr(coef(amod), "offset"),
                     check.attributes = FALSE))
 stopifnot(all.equal(c(predb[[1]][[2]]), rowSums(predb[[4]][[2]]),

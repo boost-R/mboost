@@ -1,5 +1,5 @@
 ### compute Ridge shrinkage parameter lambda from df
-### or the other way round
+### or the other weightsay round
 df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
                       XtX = NULL) {
 
@@ -20,31 +20,25 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
         if (lambda == 0)
             return(c(df = rankMatrix(X), lambda = 0))
 
-    ## check for possible instability
-    if (options("mboost_check_df2lambda")[[1]] && max(abs(X)) > 10)
-        warning("Some absolute values in design matrix are greater 10. Hence, ",
-                sQuote("df2lambda"), " might be numerically instable.\n  ",
-                "See documentation of argument ", sQuote("by"),
-                " in ?bbs for further information.",
-                immediate. = TRUE)
-    ## instable df2lambda might for example occure if one uses bbs(x, by = z)
-    ## with large values of z
-
     # Demmler-Reinsch Orthogonalization (cf. Ruppert et al., 2003,
     # Semiparametric Regression, Appendix B.1.1).
 
     ### there may be more efficient ways to compute XtX, but we do this
     ### elsewhere (e.g. in %O%)
-    if (is.null(XtX)) XtX <- crossprod(X * weights, X)
+    if (is.null(XtX)) 
+        XtX <- crossprod(X * sqrt(weights))
     if (is.null(dmat)) {
         if(is(XtX, "Matrix")) diag <- Diagonal
         dmat <- diag(ncol(XtX))
     }
+    ## avoid that XtX matrix is not (numerically) singular
     A <- XtX + dmat * options("mboost_eps")[[1]]
+    ## make sure that A is also numerically positiv semi-definite
+    A <- make_psd(as.matrix(A))
     ## make sure that A is also numerically symmetric
     if (is(A, "Matrix"))
         A <- forceSymmetric(A)
-    Rm <- solve(chol(A))
+    Rm <- backsolve(chol(A), x = diag(ncol(XtX)))
     ## singular value decomposition without singular vectors
     d <- try(svd(crossprod(Rm, dmat) %*% Rm, nu=0, nv=0)$d)
     ## if unsucessfull try the same computation but compute singular vectors as well
@@ -105,21 +99,22 @@ X_ols <- function(mf, vary, args) {
         fm <- paste("~ ", paste(colnames(mf)[colnames(mf) != vary],
                     collapse = "+"), sep = "")
         fac <- sapply(mf[colnames(mf) != vary], is.factor)
+        DUMMY <- FALSE
         if (any(fac)){
             if (!is.list(args$contrasts.arg)){
                 ## first part needed to prevent warnings from calls such as
                 ## contrasts.arg = contr.treatment(4, base = 1):
-                if (is.character(args$contrasts.arg) &&
-                    args$contrasts.arg == "contr.dummy"){
+                if (DUMMY <- (is.character(args$contrasts.arg) &&
+                    args$contrasts.arg == "contr.dummy")){ ## store on DUMMY for later use
                     if (!args$intercept)
                         stop('"contr.dummy" can only be used with ',
                              sQuote("intercept = TRUE"))
                     fm <- paste(fm, "-1")
-                } else {
-                    txt <- paste("list(", paste(colnames(mf)[colnames(mf) != vary][fac],
-                                                "= args$contrasts.arg", collapse = ", "),")")
-                    args$contrasts.arg <- eval(parse(text=txt))
-                }
+                    args$contrasts.arg <- "contr.treatment"
+                } 
+                txt <- paste("list(", paste(colnames(mf)[colnames(mf) != vary][fac],
+                                            "= args$contrasts.arg", collapse = ", "),")")
+                args$contrasts.arg <- eval(parse(text=txt))
             } else {
                 ## if contrasts are given as list check if "contr.dummy" is specified
                 if (any(args$contrasts.arg == "contr.dummy"))
@@ -132,7 +127,7 @@ X_ols <- function(mf, vary, args) {
             args$contrasts.arg <- NULL
         }
         X <- model.matrix(as.formula(fm), data = mf, contrasts.arg = args$contrasts.arg)
-        if (!is.null(args$contrasts.arg) && args$contrasts.arg == "contr.dummy")
+        if (DUMMY)
             attr(X, "contrasts") <- lapply(attr(X, "contrasts"),
                                            function(x) x <- "contr.dummy")
         contr <- attr(X, "contrasts")
@@ -142,23 +137,21 @@ X_ols <- function(mf, vary, args) {
         MATRIX <- MATRIX && options("mboost_useMatrix")$mboost_useMatrix
         if (MATRIX) {
             diag <- Diagonal
-            cbind <- cBind
             if (!is(X, "Matrix"))
                 X <- Matrix(X)
         }
         if (vary != "") {
             by <- model.matrix(as.formula(paste("~", vary, collapse = "")),
                                data = mf)[ , -1, drop = FALSE] # drop intercept
+            if (nrow(X) != nrow(by)) 
+                warning("The design matrix and the by argument imply a different number of rows: ", 
+                        nrow(X), ", ", nrow(by))
             DM <- lapply(1:ncol(by), function(i) {
                 ret <- X * by[, i]
                 colnames(ret) <- paste(colnames(ret), colnames(by)[i], sep = ":")
                 ret
             })
-            if (is(X, "Matrix")) {
-                X <- do.call("cBind", DM)
-            } else {
-                X <- do.call("cbind", DM)
-            }
+            X <- do.call("cbind", DM)
         }
     }
     ### <FIXME> penalize intercepts???
@@ -248,7 +241,6 @@ X_bbs <- function(mf, vary, args) {
     MATRIX <- MATRIX && options("mboost_useMatrix")$mboost_useMatrix
     if (MATRIX) {
         diag <- Diagonal
-        cbind <- cBind
         for (i in 1:length(mm)){
             tmp <- attributes(mm[[i]])[c("degree", "knots", "Boundary.knots")]
             mm[[i]] <- Matrix(mm[[i]])
@@ -265,11 +257,7 @@ X_bbs <- function(mf, vary, args) {
                 colnames(ret) <- paste(colnames(ret), colnames(by)[i], sep = ":")
                 ret
             })
-            if (is(X, "Matrix")) {
-                X <- do.call("cBind", DM)
-            } else {
-                X <- do.call("cbind", DM)
-            }
+            X <- do.call("cbind", DM)
         }
         if (args$differences > 0){
             if (!args$cyclic) {
@@ -414,8 +402,24 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
 
     cll <- match.call()
     cll[[1]] <- as.name("bols")
-
+    
     mf <- list(...)
+    if (is.null(by)) {
+        tmp <- mf
+    } else {
+        tmp <- c(mf, list(by))
+    }
+    if (length(unique(sapply(tmp, length))) > 1)
+        warning("The elements in ... or by imply different number of rows: ", 
+                paste(unique(sapply(tmp, length)), collapse = ", "))
+    rm("tmp")
+    
+    ## check that center = TRUE/FALSE is not specified in ...
+    if ("center" %in% names(mf) && 
+        (length(mf[["center"]]) == 1 && is.logical(mf[["center"]])))
+        stop(sQuote("bols(, center = TRUE/FALSE)"), " is deprecated. Please use ",
+             sQuote("bols(, intercept = TRUE/FALSE)"), " instead.")
+    
     if (length(mf) == 1 && ((isMATRIX(mf[[1]]) || is.data.frame(mf[[1]])) &&
                             ncol(mf[[1]]) > 1 )) {
         mf <- mf[[1]]
@@ -520,6 +524,16 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
                 "See section ", sQuote("Details"), " of ?bbs for more information.")
 
     mf <- list(...)
+    if (is.null(by)) {
+        tmp <- mf
+    } else {
+        tmp <- c(mf, list(by))
+    }
+    if (length(unique(sapply(tmp, length))) > 1)
+        warning("The elements in ... or by imply different number of rows: ", 
+                paste(unique(sapply(tmp, length)), collapse = ", "))
+    rm("tmp")
+    
     if (length(mf) == 1 && ((is.matrix(mf[[1]]) || is.data.frame(mf[[1]])) &&
                             ncol(mf[[1]]) > 1 )) {
         mf <- as.data.frame(mf[[1]])
@@ -773,7 +787,7 @@ bl_lin <- function(blg, Xfun, args) {
             }
             mysolve <- function(y) {
                 if (is.null(attr(X, "Ts_constraint")))
-                    return(solve(XtX, crossprod(X, y), LINPACK = FALSE))
+                    return(solve(XtX, crossprod(X, y)))
                 ### non-negative LS only at the moment
                 return(nnls1D(XtX, X, y))
             }
@@ -781,8 +795,14 @@ bl_lin <- function(blg, Xfun, args) {
 
         fit <- function(y) {
             if (!is.null(index)) {
-                y <- .Call("R_ysum", as.double(weights * y), as.integer(index),
-                           PACKAGE = "mboost")
+                if (is.matrix(y)) {
+                    y <- apply(y, 2, function(u) 
+                        .Call("R_ysum", as.double(weights * u), as.integer(index),
+                              PACKAGE = "mboost"))
+                } else {
+                    y <- .Call("R_ysum", as.double(weights * y), as.integer(index),
+                               PACKAGE = "mboost")
+                }
             } else {
                 y <- y * weights
             }
@@ -824,14 +844,27 @@ bl_lin <- function(blg, Xfun, args) {
                 }
                 X <- newX(newdata, prediction = TRUE)$X
             }
+            ### when coef is actually a matrix
+            ### coming from multidimensional gradients
+            P <- 1L
+            if (ncol(X) != nrow(cf)) {
+                P <- nrow(cf) / ncol(X)
+                X <- do.call("bdiag", list(X = X)[rep(1, P)])
+            }
             aggregate <- match.arg(aggregate)
-            pr <- switch(aggregate, "sum" =
-                as(X %*% rowSums(cf), "matrix"),
+            pr <- switch(aggregate, "sum" = {
+                ret <- as(X %*% rowSums(cf), "matrix")
+                matrix(ret, ncol = P)
+            },
             "cumsum" = {
+                stopifnot(P == 1L)
                 as(X %*% .Call("R_mcumsum", as(cf, "matrix"),
                                PACKAGE = "mboost"), "matrix")
             },
-            "none" = as(X %*% cf, "matrix"))
+            "none" = {
+                stopifnot(P == 1L)
+                as(X %*% cf, "matrix")
+            })
             if (is.null(index))
                 return(pr[ , , drop = FALSE])
             return(pr[index, ,drop = FALSE])
@@ -934,6 +967,9 @@ fit.bl <- function(object, y)
     stopifnot(inherits(bl1, "blg"))
     stopifnot(inherits(bl2, "blg"))
 
+    if (nrow(model.frame(bl1)) != nrow(model.frame(bl2))) 
+        warning("The design matrices of the two base-learners imply a different number of rows: ", 
+                nrow(model.frame(bl1)), ", ", nrow(model.frame(bl2)))
     mf <- cbind(model.frame(bl1), model.frame(bl2))
     index1 <- bl1$get_index()
     index2 <- bl2$get_index()
@@ -1041,6 +1077,9 @@ fit.bl <- function(object, y)
 
     stopifnot(!any(colnames(model.frame(bl1)) %in%
                    colnames(model.frame(bl2))))
+    if (nrow(model.frame(bl1)) != nrow(model.frame(bl2))) 
+        warning("The design matrices of the two marginal base-learners imply a different number of rows: ", 
+                nrow(model.frame(bl1)), ", ", nrow(model.frame(bl2)))
     mf <- cbind(model.frame(bl1), model.frame(bl2))
     index1 <- bl1$get_index()
     index2 <- bl2$get_index()

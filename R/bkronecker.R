@@ -97,8 +97,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
                 if (constr)
                     return(nnls2D(X, as(XtX, "matrix"), Y))
                 XWY <- crossprod(X$X1, Y) %*% X$X2
-                solve(XtX, matrix(as(XWY, "matrix"), ncol = 1),
-                      LINPACK = FALSE)
+                solve(XtX, matrix(as(XWY, "matrix"), ncol = 1))
             }
         }
 
@@ -169,7 +168,7 @@ bl_lin_matrix <- function(blg, Xfun, args) {
         ret <- list(fit = fit, hatvalues = hatvalues,
                     predict = predict, df = df,
                     Xnames = as.vector(Xnames))
-        class(ret) <- c("bl_lin", "bl")
+        class(ret) <- c("bl_kronecker", "bl_lin", "bl")
         return(ret)
 
     }

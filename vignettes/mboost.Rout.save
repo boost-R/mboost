@@ -3,42 +3,31 @@
 
 > set.seed(290875)
 
+> options(mboost_dftraceS = TRUE)
+
 > if (!require("mboost")) install.packages("mboost", 
 +     dependencies = TRUE)
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.6-0. See ‘package?mboost’ and ‘news(package  = "mboost")’
-for a complete list of changes.
-
 
 > library("mboost")
 
-> if (!require("party")) install.packages("party", dependencies = TRUE)
-Loading required package: party
+> if (!require("partykit")) install.packages("partykit", 
++     dependencies = TRUE)
+Loading required package: partykit
 Loading required package: grid
+Loading required package: libcoin
 Loading required package: mvtnorm
-Loading required package: modeltools
-Loading required package: stats4
 
-Attaching package: ‘modeltools’
+Attaching package: ‘partykit’
 
-The following object is masked from ‘package:stabs’:
+The following object is masked from ‘package:mboost’:
 
-    parameters
+    varimp
 
-Loading required package: strucchange
-Loading required package: zoo
 
-Attaching package: ‘zoo’
-
-The following objects are masked from ‘package:base’:
-
-    as.Date, as.Date.numeric
-
-Loading required package: sandwich
-
-> library("party")
+> library("partykit")
 
 > if (file.exists("model.Rda")) {
 +     load("model.Rda")
@@ -111,7 +100,7 @@ Loss function: tau * (y - f) * ((y - f) >= 0) - (1 - tau) * (y - f) * ((y -
      f) < 0) 
  
 
-Number of boosting iterations: mstop = 460 
+Number of boosting iterations: mstop = 770 
 Step size:  0.1 
 Offset:  29.63 
 Number of baselearners:  19 
@@ -164,4 +153,4 @@ Number of baselearners:  19
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
- 67.587   2.399  40.595 
+108.818   1.867  60.131 

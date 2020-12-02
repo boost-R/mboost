@@ -8,11 +8,17 @@
 \usage{
 blackboost(formula, data = list(),
            weights = NULL, na.action = na.pass,
-           tree_controls = party::ctree_control(
-               teststat = "max",
+           offset = NULL, family = Gaussian(), 
+           control = boost_control(),
+           oobweights = NULL,
+           tree_controls = partykit::ctree_control(
+               teststat = "quad",
                testtype = "Teststatistic",
                mincriterion = 0,
-               maxdepth = 2, savesplitstats = FALSE),
+               minsplit = 10, 
+               minbucket = 4,
+               maxdepth = 2, 
+               saveinfo = FALSE),
            ...)
 }
 \arguments{
@@ -22,11 +28,20 @@ blackboost(formula, data = list(),
     process. }
   \item{na.action}{a function which indicates what should happen when the data
     contain \code{NA}s. }
+  \item{offset}{ a numeric vector to be used as offset (optional).}
+  \item{family}{a \code{\link{Family}} object.}
+  \item{control}{ a list of parameters controlling the algorithm. For
+    more details see \code{\link{boost_control}}. }
+  \item{oobweights}{ an additional vector of out-of-bag weights, which is
+    used for the out-of-bag risk (i.e., if \code{boost_control(risk =
+      "oobag")}). This argument is also used internally by
+    \code{cvrisk}. }    
   \item{tree_controls}{ an object of class \code{"TreeControl"}, which
-    can be obtained using \code{\link[party]{ctree_control}}. Defines
+    can be obtained using \code{\link[partykit]{ctree_control}}. Defines
     hyper-parameters for the trees which are used as base-learners. It
     is wise to make sure to understand the consequences of altering any
-    of its arguments.}
+    of its arguments. By default, two-way interactions (but not deeper
+    trees) are fitted.}
   \item{\dots}{  additional arguments passed to \code{\link{mboost_fit}},
     including \code{weights}, \code{offset}, \code{family} and
     \code{control}. For default values see \code{\link{mboost_fit}}. }
@@ -41,7 +56,7 @@ blackboost(formula, data = list(),
   can be specified via the \code{family} argument to \code{blackboost} whereas
   \code{\link[gbm]{gbm}} uses hard-coded loss functions.
   Moreover, the base-learners (conditional
-  inference trees, see \code{\link[party]{ctree}}) are a little bit more flexible.
+  inference trees, see \code{\link[partykit]{ctree}}) are a little bit more flexible.
 
   The regression fit is a black box prediction machine and thus
   hardly interpretable.
@@ -78,12 +93,19 @@ blackboost(formula, data = list(),
   172--181.
 
 }
-\seealso{\code{\link{mboost}} for the generic boosting function and
-  \code{\link{glmboost}} for boosted linear models and
-  \code{\link{gamboost}} for boosted additive models. See
-  \code{\link{cvrisk}} for cross-validated stopping iteration.
-  Furthermore see \code{\link{boost_control}},  \code{\link{Family}} and
-  \code{\link[mboost]{methods}}}
+
+\seealso{
+  See \code{\link{mboost_fit}} for the generic boosting function, 
+  \code{\link{glmboost}} for boosted linear models, and
+  \code{\link{gamboost}} for boosted additive models. 
+  
+  See \code{\link{baselearners}} for possible base-learners. 
+  
+  See \code{\link{cvrisk}} for cross-validated stopping iteration. 
+  
+  Furthermore see \code{\link{boost_control}}, \code{\link{Family}} and
+  \code{\link[mboost]{methods}}.
+}
 \examples{
 
 ### a simple two-dimensional example: cars data
@@ -95,8 +117,13 @@ cars.gb
 plot(dist ~ speed, data = cars)
 lines(cars$speed, predict(cars.gb), col = "red")
 
+\donttest{
+############################################################
+## Do not run this example automatically as it takes
+## some time (~ 5-10 seconds depending on the system)
+
 ### set up and plot additive tree model
-if (require("party")) {
+if (require("partykit")) {
     ctrl <- ctree_control(maxdepth = 3)
     viris <- subset(iris, Species != "setosa")
     viris$Species <- viris$Species[, drop = TRUE]
@@ -107,6 +134,7 @@ if (require("party")) {
                    data = viris, family = Binomial())[500]
     layout(matrix(1:4, ncol = 2))
     plot(imod)
+}
 }
 
 }
