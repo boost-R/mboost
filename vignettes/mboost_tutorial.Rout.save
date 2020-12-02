@@ -16,9 +16,6 @@
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.8-1. See 'package?mboost' and 'news(package  = "mboost")'
-for a complete list of changes.
-
 
 > set.seed(190781)
 
@@ -526,13 +523,13 @@ Number of baselearners:  1
 
 > lines(newX, predict(mod, data.frame(x = newX)), col = "black", 
 +     lwd = 2)
-Warnung in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots, 
-  Some 'x' values are beyond 'boundary.knots'; Linear extrapolation used.
+Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
 
 > lines(newX + 2 * pi, predict(mod, data.frame(x = newX)), 
 +     col = "black", lwd = 2)
-Warnung in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots, 
-  Some 'x' values are beyond 'boundary.knots'; Linear extrapolation used.
+Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
 
 > legend("bottomleft", c("cyclic = FALSE"), lty = c(1), 
 +     col = c("black"), lwd = 2, bty = "n")
@@ -577,10 +574,10 @@ Warnung in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = arg
 +     x2 = seq(-pi, pi, length = 100))
 
 > preds <- predict(modspa, newdata = nd)
-Warnung in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots, 
-  Some 'x' values are beyond 'boundary.knots'; Linear extrapolation used.
-Warnung in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots, 
-  Some 'x' values are beyond 'boundary.knots'; Linear extrapolation used.
+Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
+Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
 
 > breaks <- seq(min(preds), max(preds), length = nCols + 
 +     1)
@@ -594,10 +591,10 @@ Warnung in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = arg
 > nd <- expand.grid(x1 = x1, x2 = x2)
 
 > preds <- predict(modspa, newdata = nd)
-Warnung in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots, 
-  Some 'x' values are beyond 'boundary.knots'; Linear extrapolation used.
-Warnung in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots, 
-  Some 'x' values are beyond 'boundary.knots'; Linear extrapolation used.
+Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
+Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
 
 > z <- matrix(preds, ncol = length(x1))
 
@@ -707,5 +704,5 @@ pdf
 
  *** Run successfully completed ***
 > proc.time()
-       User      System verstrichen 
-      10.49        0.39       11.17 
+   user  system elapsed 
+  5.675   0.834   5.238 

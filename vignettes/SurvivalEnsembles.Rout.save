@@ -2,9 +2,6 @@
 > source("setup.R")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.9-0. See 'package?mboost' and 'news(package  = "mboost")'
-for a complete list of changes.
-
 
 
 	%%%% DON'T EDIT THIS FILE
@@ -16,9 +13,9 @@ Loading required package: TH.data
 Loading required package: survival
 Loading required package: MASS
 
-Attaching package: 'TH.data'
+Attaching package: ‘TH.data’
 
-The following object is masked from 'package:MASS':
+The following object is masked from ‘package:MASS’:
 
     geyser
 
@@ -33,15 +30,13 @@ Loading required package: rpart
 > if (!require("partykit")) stop("cannot attach package ", 
 +     sQuote("partykit"))
 Loading required package: partykit
-Warnung: package 'partykit' was built under R version 3.4.4
 Loading required package: grid
 Loading required package: libcoin
-Warnung: package 'libcoin' was built under R version 3.4.4
 Loading required package: mvtnorm
 
-Attaching package: 'partykit'
+Attaching package: ‘partykit’
 
-The following object is masked from 'package:mboost':
+The following object is masked from ‘package:mboost’:
 
     varimp
 
@@ -330,5 +325,5 @@ The following object is masked from 'package:mboost':
 
  *** Run successfully completed ***
 > proc.time()
-       User      System verstrichen 
-      23.86        0.40       24.55 
+   user  system elapsed 
+ 16.209   0.095  16.307 
