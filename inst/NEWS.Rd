@@ -2,7 +2,7 @@
 \title{News for Package 'mboost'}
 
 \section{Changes in mboost version 2.9-4 (2020-12-02)}{
-  \subsection{User-visible changes}
+  \subsection{User-visible changes}{
     \itemize{
       \item Added \code{by} argument to \code{btree}; only binary factors
             are allowed.
@@ -13,6 +13,9 @@
       \item Add missing \code{rclass} function to derive class predictions 
             from conditional class
             probabilities to \code{Binomial()} family.
+      \item Plot correct x-axis in \code(plot(cvrisk(...))}
+            (closes \href{https://github.com/boost-R/mboost/issues/102}{#102}).
+
     }
   }
 }
