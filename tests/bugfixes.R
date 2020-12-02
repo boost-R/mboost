@@ -427,7 +427,7 @@ if (require("BayesX")) {
     germany <- read.bnd(system.file("examples/germany.bnd", package="BayesX"))
     districts <- attr(germany, "regions")
     set.seed(1907)
-    regions <- sample(districts, 400, replace = TRUE)
+    regions <- factor(sample(districts, 400, replace = TRUE))
     B <- bmrf(regions, bnd = germany)
     X <- extract(B)
     K <- extract(B, what = "pen")
