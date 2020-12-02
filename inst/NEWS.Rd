@@ -1,7 +1,6 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-<<<<<<< HEAD:inst/NEWS.Rd
 \section{Changes in mboost version 3.0-0 (2020-12-02)}{
   \subsection{User-visible changes}
     \itemize{
@@ -12,20 +11,11 @@
 
 \section{Changes in mboost version 2.9-4 (2020-12-02)}{
   \subsection{User-visible changes}
-=======
-\section{Changes in mboost version 2.9-4 (2020-12-02)}{
-  \subsection{User-visible changes}{
->>>>>>> master:inst/NEWS.Rd
     \itemize{
       \item Added \code{by} argument to \code{btree}; only binary factors
             are allowed.
     }
   }
-<<<<<<< HEAD:inst/NEWS.Rd
-}
- 
-\section{Changes in mboost version 2.9-3 (2020-07-29)}{
-=======
   \subsection{Bug-fixes}{
     \itemize{
       \item Add missing \code{rclass} function to derive class predictions 
@@ -39,7 +29,6 @@
 }
 
 \section{Changes in mboost version 2.9-3 (2020-08-06)}{
->>>>>>> master:inst/NEWS.Rd
   \subsection{Bug-fixes}{
     \itemize{
       \item Removed deprecated argument \code{LINPACK} from all calls to \code{solve}. 
