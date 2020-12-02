@@ -50,7 +50,7 @@ brandom(..., by = NULL, index = NULL, df = 4, lambda = NULL,
         contrasts.arg = "contr.dummy")
 
 ## tree based base-learner
-btree(..., nmax = Inf, tree_controls = partykit::ctree_control(
+btree(..., by = NULL, nmax = Inf, tree_controls = partykit::ctree_control(
     teststat = "quad", testtype = "Teststatistic", 
     mincriterion = 0, minsplit = 10, minbucket = 4,
     maxdepth = 1, saveinfo = FALSE))
@@ -98,7 +98,8 @@ bl1 \%O\% bl2
 	     the global \code{options("contrasts")} or as specified
 	     "locally" for the factor (see \code{\link{contrasts}}). Per
 	     default treatment coding is used. Note that the main
-	     effect needs to be specified in a separate base-learner.}
+	     effect needs to be specified in a separate base-learner.
+             \code{btree} currently only allows binary factors.}
 
   \item{index}{ a vector of integers for expanding the variables in
     \code{...}. For example, \code{bols(x, index = index)} is equal to

@@ -1,7 +1,7 @@
 
 ### the classical tree-based baselearner; stumps by default
 ### (also fits an additive model)
-btree <- function(..., nmax = Inf,
+btree <- function(..., by = NULL, nmax = Inf,
     tree_controls = partykit::ctree_control(
         teststat = "quad",
         testtype = "Teststatistic",
@@ -26,7 +26,27 @@ btree <- function(..., nmax = Inf,
         colnames(mf) <- sapply(cl, function(x) as.character(x))
     }
 
-    ret <- list(model.frame = function() return(mf),
+    vary <- ""
+    if (!is.null(by)){
+        vary <- deparse(substitute(by))
+        stopifnot(is.factor(by) || all(by %in% 0:1))
+        if (is.factor(by)) {
+            stopifnot(nlevels(by) == 2L)
+            xlev <- levels(by)
+            iby <- (0:1)[by]
+        } else {
+            iby <- by
+        }
+    } else {
+        iby <- rep(1, NROW(mf))
+    }
+
+    ret <- list(model.frame = function() {
+                    if (vary == "") return(mf)
+                    ret <- cbind(mf, by)
+                    colnames(ret)[ncol(ret)] <- vary
+                    ret
+                },
                 get_call = function(){
                     cll <- deparse(cll, width.cutoff=500L)
                     if (length(cll) > 1)
@@ -34,6 +54,7 @@ btree <- function(..., nmax = Inf,
                     cll
                 },
                 get_names = function() colnames(mf),
+                get_vary = function() vary,
                 set_names = function(value) {
                     if(length(value) != length(colnames(mf)))
                         stop(sQuote("value"), " must have same length as ",
@@ -62,7 +83,8 @@ btree <- function(..., nmax = Inf,
             list(estfun = Y, unweighted = TRUE) 
         mymf <- model.frame(d)
         tree_controls$update <- FALSE
-        subset <- which(weights > 0)
+        subset <- which(weights > 0 & iby == 1)
+        weights <- weights * iby
 
         fitfun <- function(y) {
             if (!is.matrix(y)) y <- matrix(y, ncol = 1)
@@ -78,14 +100,24 @@ btree <- function(..., nmax = Inf,
                 simplify = FALSE))
 
             fitted <- function()
-                return(coef[unclass(where),,drop = FALSE])
+                return(coef[unclass(where),,drop = FALSE] * iby)
 
             predict <- function(newdata = NULL) {
                 if (is.null(newdata)) newdata <- mymf
                 vmatch <- match(names(mymf), names(newdata))
                 wh <- factor(fitted_node(tree, newdata, vmatch = vmatch), 
                              levels = levels(where), labels = levels(where))
-                return(coef[unclass(wh),,drop = FALSE])
+                ret <- coef[unclass(wh),,drop = FALSE]
+                if (vary != "") {
+                    by <- newdata[, vary]
+                    stopifnot(is.factor(by) || all(by %in% 0:1))
+                    if (is.factor(by)) {
+                        stopifnot(isTRUE(all.equal(levels(by), xlev)))
+                        by <- (0:1)[by]
+                    }
+                    ret <- ret * by
+                }
+                return(ret)
             }
 
             ret <- list(model = tree, fitted = fitted, predict = predict)
