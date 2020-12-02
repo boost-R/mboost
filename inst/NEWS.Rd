@@ -1,8 +1,20 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.9-3 (2020-08-06)}{
-
+\section{Changes in mboost version 2.9-4 (2020-12-02)}{
+  \subsection{User-visible changes}
+    \itemize{
+      \item Added \code{by} argument to \code{btree}; only binary factors
+            are allowed.
+    }
+  }
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Add missing \code{rclass} function to derive class predictions 
+            from conditional class
+            probabilities to \code{Binomial()} family.
+    }
+  }
 }
 
 \section{Changes in mboost version 2.9-3 (2020-08-06)}{
