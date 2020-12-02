@@ -1,7 +1,7 @@
 
-R version 3.4.3 (2017-11-30) -- "Kite-Eating Tree"
-Copyright (C) 2017 The R Foundation for Statistical Computing
-Platform: x86_64-w64-mingw32/x64 (64-bit)
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -20,21 +20,31 @@ Type 'q()' to quit R.
 > pkgname <- "mboost"
 > source(file.path(R.home("share"), "R", "examples-header.R"))
 > options(warn = 1)
-> options(pager = "console")
+> base::assign(".ExTimings", "mboost-Ex.timings", pos = 'CheckExEnv')
+> base::cat("name\tuser\tsystem\telapsed\n", file=base::get(".ExTimings", pos = 'CheckExEnv'))
+> base::assign(".format_ptime",
++ function(x) {
++   if(!is.na(x[4L])) x[1L] <- x[1L] + x[4L]
++   if(!is.na(x[5L])) x[2L] <- x[2L] + x[5L]
++   options(OutDec = '.')
++   format(x[1L:3L], digits = 7L)
++ },
++ pos = 'CheckExEnv')
+> 
+> ### * </HEADER>
 > library('mboost')
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.9-0. See 'package?mboost' and 'news(package  = "mboost")'
-for a complete list of changes.
-
 > 
 > base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
 > cleanEx()
 > nameEx("FP")
 > ### * FP
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: FP
 > ### Title: Fractional Polynomials
 > ### Aliases: FP
@@ -121,12 +131,15 @@ FP(elbowbreadth, scaling = FALSE)log(elbowbreadth)elbowbreadth^-2
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("FP", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("Family")
 > ### * Family
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: Family
 > ### Title: Gradient Boosting Families
 > ### Aliases: Family AdaExp Binomial GaussClass GaussReg Gaussian Huber
@@ -234,7 +247,7 @@ attr(,"offset")
 > newdata$class <- factor(levels(iris$Species)[-nlevels(iris$Species)])
 > pred2 <- predict(mlm, type = "response", newdata = newdata)
 Warning in object$predict(newdata = newdata, which = which, aggregate = aggregate) :
-  User-specified offset is not a scalar, thus it cannot be used for predictions when 'newdata' is specified.
+  User-specified offset is not a scalar, thus it cannot be used for predictions when ‘newdata’ is specified.
 > ## check results
 > pred[1, ]
     setosa versicolor  virginica 
@@ -242,6 +255,35 @@ Warning in object$predict(newdata = newdata, which = which, aggregate = aggregat
 > pred2
         setosa versicolor virginica
 [1,] 0.6090049  0.2319469 0.1590482
+> 
+> ## No test: 
+> ############################################################
+> ## Do not run and check these examples automatically as
+> ## they take some time
+> 
+> ## Compare results with nnet::multinom
+> if (require("nnet")) {
++     mlmn <- multinom(Species ~ Sepal.Length, data = iris)
++     max(abs(fitted(mlm[1000], type = "response") -
++             fitted(mlmn, type = "prob")))
++ }
+Loading required package: nnet
+# weights:  9 (4 variable)
+initial  value 164.791843 
+iter  10 value 91.337114
+iter  20 value 91.035008
+final  value 91.033971 
+converged
+[1] 0.07486978
+> 
+> ## End(Not run and test)
+> ## End(No test)
+> 
+> 
+> ## No test: 
+> ############################################################
+> ## Do not run and check these examples automatically as
+> ## they take some time
 > 
 > ### Example for RCG model
 > ## generate covariate values
@@ -335,42 +377,26 @@ attr(,"offset")
 > plot(predictions, y)
 > abline(0,1)
 > 
-> ## No test: 
-> ############################################################
-> ## Do not run and check these examples automatically as
-> ## they take some time
-> 
-> ## Compare results with nnet::multinom
-> if (require("nnet")) {
-+     mlmn <- multinom(Species ~ Sepal.Length, data = iris)
-+     max(abs(fitted(mlm[1000], type = "response") -
-+             fitted(mlmn, type = "prob")))
-+ 
-+ }
-Loading required package: nnet
-# weights:  9 (4 variable)
-initial  value 164.791843 
-iter  10 value 91.337114
-iter  20 value 91.035008
-final  value 91.033971 
-converged
-[1] 0.07486978
-> 
 > ## End(Not run and test)
 > ## End(No test)
 > 
 > 
 > 
 > 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("Family", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching 'package:nnet', 'package:MASS'
+detaching ‘package:nnet’, ‘package:MASS’
 
 > nameEx("baselearners")
 > ### * baselearners
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: baselearners
 > ### Title: Base-learners for Gradient Boosting
 > ### Aliases: baselearners baselearner base-learner bols bbs bspatial brad
@@ -471,8 +497,8 @@ detaching 'package:nnet', 'package:MASS'
 >   ols3 <- bols(x3)
 >   extract(ols3)
   (Intercept) x31
-1           1   0
-3           1   1
+1           1   1
+3           1   0
 attr(,"assign")
 [1] 0 1
 attr(,"contrasts")
@@ -484,10 +510,10 @@ attr(,"contrasts")$x3
 >   ### compute base-models
 >   drop(ols3$dpp(weights)$fit(y)$model) ## same as:
 (Intercept)         x31 
-   1.094457    1.008338 
+  1.3842061   0.2083405 
 >   coef(lm(y ~ x3, weights = weights))
 (Intercept)         x31 
-   1.094457    1.008338 
+  1.3842061   0.2083405 
 > 
 >   drop(ols4$dpp(weights)$fit(y)$model) ## same as:
 (Intercept)         x42         x43         x44 
@@ -827,7 +853,7 @@ attr(,"offset")
 +                   data = tmpdata,
 +                   control = boost_control(mstop = 1000))
 Warning in bols(x, intercept = FALSE) :
-  covariates should be (mean-) centered if 'intercept = FALSE'
+  covariates should be (mean-) centered if ‘intercept = FALSE’
 >   cf <- unlist(coef(mod))
 >   ## add offset
 >   cf[1] <- cf[1] + mod$offset
@@ -912,11 +938,11 @@ bols(x_center, intercept = FALSE).x_center
 >   lines(newX, predict(mod, data.frame(x = newX)),
 +         col="red", lwd = 1.5)
 Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
-  Some 'x' values are beyond 'boundary.knots'; Linear extrapolation used.
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
 >   lines(newX + 2 * pi, predict(mod, data.frame(x = newX)),
 +         col="blue", lwd=1.5)
 Warning in bsplines(mf[[i]], knots = args$knots[[i]]$knots, boundary.knots = args$knots[[i]]$boundary.knots,  :
-  Some 'x' values are beyond 'boundary.knots'; Linear extrapolation used.
+  Some ‘x’ values are beyond ‘boundary.knots’; Linear extrapolation used.
 >   plot(x,y, main="bbs (cyclic)", cex=0.5)
 >   lines(newX, sin(newX), lty="dotted")
 >   lines(newX + 2 * pi, sin(newX), lty="dashed")
@@ -1031,10 +1057,10 @@ Number of baselearners:  1
 >   ## extract model matrices to check if it works
 >   extract(BL1)
   (Intercept) x2 x3 x4
-1           1  0  1  0
-2           1  0  0  1
-3           1  1  0  0
-5           1  0  0  0
+1           1  0  0  1
+2           1  1  0  0
+3           1  0  0  0
+6           1  0  1  0
 attr(,"assign")
 [1] 0 1 1 1
 attr(,"contrasts")
@@ -1047,10 +1073,10 @@ attr(,"contrasts")$x
 
 >   extract(BL2)
   (Intercept) x1 x3 x4
-1           1  0  1  0
-2           1  0  0  1
-3           1  0  0  0
-5           1  1  0  0
+1           1  0  0  1
+2           1  0  0  0
+3           1  1  0  0
+6           1  0  1  0
 attr(,"assign")
 [1] 0 1 1 1
 attr(,"contrasts")
@@ -1063,10 +1089,10 @@ attr(,"contrasts")$x
 
 >   extract(BL3)
   (Intercept) x1 x2 x3
-1           1  0  0  1
-2           1 -1 -1 -1
-3           1  0  1  0
-5           1  1  0  0
+1           1 -1 -1 -1
+2           1  0  1  0
+3           1  1  0  0
+6           1  0  0  1
 attr(,"assign")
 [1] 0 1 1 1
 attr(,"contrasts")
@@ -1082,22 +1108,22 @@ attr(,"contrasts")$x
 +                                    x2 = "contr.helmert"))
 >   extract(BL4)
    (Intercept) x1 x3 x4 x21 x22 x23
-1            1  0  1  0   0   0   3
-2            1  0  0  1  -1  -1  -1
-3            1  0  0  0   0   2  -1
-4            1  0  0  1   0   0   3
-5            1  1  0  0   1  -1  -1
-10           1  0  0  0   0   0   3
-11           1  0  1  0   1  -1  -1
-13           1  0  0  0  -1  -1  -1
+1            1  0  0  1   1  -1  -1
+2            1  0  0  0   0   2  -1
+3            1  1  0  0   1  -1  -1
+4            1  0  0  0   0   0   3
+5            1  1  0  0   0   0   3
+6            1  0  1  0   0   0   3
+7            1  0  0  1   0   0   3
+8            1  0  0  1   0   2  -1
+11           1  0  0  0   1  -1  -1
+12           1  0  1  0  -1  -1  -1
 14           1  1  0  0  -1  -1  -1
-15           1  0  0  1   1  -1  -1
-16           1  0  1  0   0   2  -1
-20           1  0  0  0   1  -1  -1
-22           1  0  0  1   0   2  -1
-26           1  1  0  0   0   2  -1
-30           1  0  1  0  -1  -1  -1
-53           1  1  0  0   0   0   3
+21           1  0  0  0  -1  -1  -1
+22           1  0  0  1  -1  -1  -1
+25           1  0  1  0   0   2  -1
+48           1  0  1  0   1  -1  -1
+70           1  1  0  0   0   2  -1
 attr(,"assign")
 [1] 0 1 1 1 2 2 2
 attr(,"contrasts")
@@ -1116,10 +1142,10 @@ attr(,"contrasts")$x2
 >   BL5 <- bols(x, contrasts.arg = "contr.dummy")
 >   extract(BL5)
   x1 x2 x3 x4
-1  0  0  1  0
-2  0  0  0  1
-3  0  1  0  0
-5  1  0  0  0
+1  0  0  0  1
+2  0  1  0  0
+3  1  0  0  0
+6  0  0  1  0
 attr(,"assign")
 [1] 1 1 1 1
 attr(,"contrasts")
@@ -1129,16 +1155,19 @@ attr(,"contrasts")$x
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("baselearners", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 
-detaching 'package:lattice'
+detaching ‘package:lattice’
 
 > nameEx("blackboost")
 > ### * blackboost
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: blackboost
 > ### Title: Gradient Boosting with Regression Trees
 > ### Aliases: blackboost
@@ -1192,15 +1221,13 @@ Number of baselearners:  1
 +     plot(imod)
 + }
 Loading required package: partykit
-Warning: package 'partykit' was built under R version 3.4.4
 Loading required package: grid
 Loading required package: libcoin
-Warning: package 'libcoin' was built under R version 3.4.4
 Loading required package: mvtnorm
 
-Attaching package: 'partykit'
+Attaching package: ‘partykit’
 
-The following object is masked from 'package:mboost':
+The following object is masked from ‘package:mboost’:
 
     varimp
 
@@ -1209,16 +1236,19 @@ The following object is masked from 'package:mboost':
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("blackboost", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching 'package:partykit', 'package:mvtnorm', 'package:libcoin',
-  'package:grid'
+detaching ‘package:partykit’, ‘package:mvtnorm’, ‘package:libcoin’,
+  ‘package:grid’
 
 > nameEx("boost_family-class")
 > ### * boost_family-class
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: boost_family-class
 > ### Title: Class "boost\_family": Gradient Boosting Family
 > ### Aliases: boost_family-class show,boost_family-method
@@ -1237,12 +1267,15 @@ Loss function: abs(y - f)
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("boost_family-class", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("confint")
 > ### * confint
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: confint.mboost
 > ### Title: Pointwise Bootstrap Confidence Intervals
 > ### Aliases: confint.mboost confint.glmboost plot.mboost.ci lines.mboost.ci
@@ -1290,29 +1323,29 @@ Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
   zero weights
 > CI
 	Bootstrap Confidence Intervals
-                     5%         95%
-(Intercept) -0.01975195  0.02598639
-x1           0.98986917  1.01853830
-x2          -1.00530226 -0.98158388
-z2          -1.04350674 -0.99290512
-z3           0.98234788  1.06652604
+                     5%        95%
+(Intercept) -0.03568058  0.0506726
+x1           0.98140709  1.0017749
+x2          -1.02655918 -0.9974541
+z2          -0.99526892 -0.9080530
+z3           0.98039752  1.0597156
 > 
 > ## to compute a confidence interval for another level simply change the
 > ## level in the print function:
 > print(CI, level = 0.8)
 	Bootstrap Confidence Intervals
                     10%         90%
-(Intercept) -0.01105303  0.01607163
-x1           0.99577904  1.01340240
-x2          -1.00234059 -0.98355672
-z2          -1.03767821 -0.99552711
-z3           0.98851355  1.04334685
+(Intercept) -0.03114532  0.03218757
+x1           0.98233507  1.00064471
+x2          -1.02602355 -1.00020406
+z2          -0.98698611 -0.91337440
+z3           0.99518001  1.05128435
 > ## or print a subset (with point estimates):
 > print(CI, level = 0.8, pe = TRUE, which = "z")
 	Bootstrap Confidence Intervals
-        beta        10%        90%
-z2 -1.016220 -1.0376782 -0.9955271
-z3  1.024731  0.9885135  1.0433468
+         beta        10%        90%
+z2 -0.9609916 -0.9869861 -0.9133744
+z3  1.0131871  0.9951800  1.0512843
 > 
 > ### a simple smooth example
 > set.seed(1907)
@@ -1357,6 +1390,8 @@ Start computing bootstrap confidence intervals...
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("confint", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("cvrisk")
@@ -1364,6 +1399,7 @@ Start computing bootstrap confidence intervals...
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: cvrisk
 > ### Title: Cross-Validation
 > ### Aliases: cvrisk cvrisk.mboost print.cvrisk plot.cvrisk cv
@@ -1398,35 +1434,35 @@ Degrees of freedom (for mstop = 45): 1.917234
 	 glmboost.formula(formula = DEXfat ~ ., data = bodyfat, center = TRUE) 
 
         0         1         2         3         4         5         6         7 
-124.03156 106.09407  89.65218  77.76142  66.44206  58.79889  50.85267  45.24696 
+122.46608 105.03622  88.99880  76.85217  66.41506  57.84947  50.34222  44.94656 
         8         9        10        11        12        13        14        15 
- 40.33881  35.83575  32.39307  29.21831  26.92367  24.65539  23.06132  21.62550 
+ 39.72878  35.85299  32.10655  29.47703  26.57337  24.86325  23.19575  21.85821 
        16        17        18        19        20        21        22        23 
- 20.33962  19.29472  18.31148  17.50721  16.78393  16.12721  15.53686  15.19314 
+ 20.72008  19.54487  18.69494  17.88828  17.02671  16.60833  15.99098  15.60729 
        24        25        26        27        28        29        30        31 
- 14.68391  14.45576  14.05642  13.87892  13.69867  13.49198  13.35222  13.15253 
+ 15.22230  14.91368  14.56344  14.35137  14.15202  13.94173  13.84162  13.63594 
        32        33        34        35        36        37        38        39 
- 13.02641  12.93247  12.91432  12.84801  12.85658  12.78858  12.78068  12.75823 
+ 13.64298  13.55880  13.46299  13.45736  13.35541  13.34976  13.33443  13.28996 
        40        41        42        43        44        45        46        47 
- 12.75765  12.80392  12.74348  12.81272  12.77529  12.81033  12.82648  12.79806 
+ 13.27691  13.22244  13.21571  13.19228  13.19034  13.17059  13.14095  13.12828 
        48        49        50        51        52        53        54        55 
- 12.82263  12.83457  12.82588  12.85162  12.85110  12.86438  12.88938  12.90756 
+ 13.14699  13.10079  13.08419  13.09063  13.09239  13.07702  13.07242  13.04259 
        56        57        58        59        60        61        62        63 
- 12.90551  12.91887  12.95178  12.93294  12.94497  12.94909  12.96711  12.96341 
+ 13.05331  13.04115  13.02705  13.00412  13.01188  12.99501  12.97566  12.99615 
        64        65        66        67        68        69        70        71 
- 12.99822  12.99994  13.01329  13.02456  13.02144  13.04731  13.04683  13.06926 
+ 12.97389  12.98235  13.00256  12.98803  12.98992  13.00017  12.98719  12.99764 
        72        73        74        75        76        77        78        79 
- 13.07668  13.09080  13.09076  13.09871  13.10342  13.12724  13.13206  13.14481 
+ 12.99830  12.98604  12.98615  13.00892  12.99054  12.98241  13.00178  12.99838 
        80        81        82        83        84        85        86        87 
- 13.13770  13.15344  13.16777  13.17354  13.17985  13.18657  13.20034  13.20075 
+ 12.98371  12.98289  12.99143  12.97828  12.99719  12.98056  12.98013  12.98157 
        88        89        90        91        92        93        94        95 
- 13.21323  13.22397  13.23466  13.24306  13.25114  13.25779  13.26471  13.29180 
+ 12.96969  12.97409  12.98814  12.97331  12.99419  12.99373  12.99547  12.98926 
        96        97        98        99       100 
- 13.29794  13.30514  13.31288  13.31205  13.32428 
+ 13.00050  12.98733  13.00267  12.99270  12.99187 
 
-	 Optimal number of boosting iterations: 42 
+	 Optimal number of boosting iterations: 88 
 >   mstop(cvm)
-[1] 42
+[1] 88
 >   plot(cvm)
 > 
 >   ### 25 bootstrap iterations (manually)
@@ -1555,6 +1591,8 @@ Degrees of freedom (for mstop = 45): 1.917234
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("cvrisk", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("gamboost")
@@ -1562,6 +1600,7 @@ Degrees of freedom (for mstop = 45): 1.917234
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: mboost
 > ### Title: Gradient Boosting for Additive Models
 > ### Aliases: mboost gamboost
@@ -1617,12 +1656,15 @@ Degrees of freedom (for mstop = 26): 3.905133
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("gamboost", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("glmboost")
 > ### * glmboost
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: glmboost
 > ### Title: Gradient Boosting with Component-wise Linear Models
 > ### Aliases: glmboost glmboost.formula glmboost.matrix glmboost.default
@@ -1747,26 +1789,29 @@ attr(,"offset")
 Warning in glmboost.matrix(x = x, ...) :
   model with centered covariates does not contain intercept
 >     coef(mod, which = which(beta > 0))
-   V3129    V3353    V5522    V6808    V7006    V7017    V7467    V8722 
-4.658353 0.000000 6.079353 4.964764 4.028804 0.000000 1.992971 3.424468 
-   V8874    V8922 
-7.171451 0.000000 
+     V995     V2787     V2892     V4122     V4944     V4997     V5815     V7420 
+8.4117601 4.6314764 6.2149872 0.0000000 0.0000000 4.2435284 0.2813605 7.7175212 
+    V8660     V8996 
+3.1950775 0.0000000 
 attr(,"offset")
-[1] 2.531391
+[1] 2.584982
 > 
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("glmboost", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 
-detaching 'package:Matrix'
+detaching ‘package:Matrix’
 
 > nameEx("mboost_fit")
 > ### * mboost_fit
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: mboost_fit
 > ### Title: Model-based Gradient Boosting
 > ### Aliases: mboost_fit
@@ -1792,12 +1837,15 @@ detaching 'package:Matrix'
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("mboost_fit", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("mboost_package")
 > ### * mboost_package
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: mboost-package
 > ### Title: mboost: Model-Based Boosting
 > ### Aliases: mboost-package mboost_package package_mboost package-mboost
@@ -1854,12 +1902,15 @@ NULL
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("mboost_package", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("methods")
 > ### * methods
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: methods
 > ### Title: Methods for Gradient Boosting Objects
 > ### Aliases: mboost_methods print.glmboost print.mboost summary.mboost
@@ -3437,12 +3488,15 @@ attr(,"boundary.knots")$upper
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("methods", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("plot")
 > ### * plot
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: plot
 > ### Title: Plot effect estimates of boosting models
 > ### Aliases: plot plot.glmboost plot.mboost lines.mboost
@@ -3535,6 +3589,8 @@ attr(,"boundary.knots")$upper
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("plot", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("stabsel")
@@ -3542,6 +3598,7 @@ attr(,"boundary.knots")$upper
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: stabsel
 > ### Title: Stability Selection
 > ### Aliases: stabsel stabsel.mboost stabsel_parameters.mboost
@@ -3585,14 +3642,14 @@ PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
 	Stability Selection without further assumptions
 
 Selected variables:
-hipcirc 
-      4 
+waistcirc   hipcirc 
+        3         4 
 
 Selection probabilities:
- (Intercept)          age elbowbreadth  kneebreadth     anthro3b      anthro4 
-        0.00         0.00         0.00         0.01         0.11         0.17 
-    anthro3c     anthro3a    waistcirc      hipcirc 
-        0.18         0.60         0.93         1.00 
+ (Intercept)          age elbowbreadth  kneebreadth     anthro3b     anthro3c 
+        0.00         0.00         0.00         0.02         0.10         0.17 
+     anthro4     anthro3a    waistcirc      hipcirc 
+        0.18         0.56         0.98         0.99 
 
 ---
 Cutoff: 0.95; q: 3; PFER:  1 
@@ -3609,6 +3666,8 @@ PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("stabsel", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("survFit")
@@ -3616,6 +3675,7 @@ PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: survFit
 > ### Title: Survival Curves for a Cox Proportional Hazards Model
 > ### Aliases: survFit survFit.mboost plot.survFit
@@ -3688,15 +3748,18 @@ attr(,"class")
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("survFit", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 
-detaching 'package:survival'
+detaching ‘package:survival’
 
 > nameEx("varimp")
 > ### * varimp
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: varimp
 > ### Title: Variable Importance
 > ### Aliases: varimp varimp.mboost plot.varimp as.data.frame.varimp
@@ -3767,11 +3830,14 @@ Levels: Petal.Length < Sepal.Length, setosa < Petal.Width
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("varimp", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > ### * <FOOTER>
 > ###
+> cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  83 2.77 86.67 NA NA 
+Time elapsed:  50.639 5.915 65.929 16.764 11.593 
 > grDevices::dev.off()
 null device 
           1 
