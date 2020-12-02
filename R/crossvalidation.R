@@ -104,6 +104,8 @@ plot.cvrisk <- function(x, xlab = "Number of boosting iterations",
     force(ylab)
     force(main)
     
+    mstops <- attr(x, "mstop")
+
     x <- x[, apply(x, 2, function(y) all(!is.na(y))), drop = FALSE]
     cm <- colMeans(x)
     plot(1:ncol(x), cm, ylab = ylab, ylim = ylim,
@@ -115,7 +117,7 @@ plot.cvrisk <- function(x, xlab = "Number of boosting iterations",
     lines(c(ms, ms), c(min(c(0, ylim[1] * ifelse(ylim[1] < 0, 2, 0.5))), cm[ms]),
           lty = 2)
     lines(1:ncol(x), cm, type = "l")
-    axis(1, at = 1:ncol(x), labels = attr(x, "mstop"))
+    axis(1, at = 1:ncol(x), labels = mstops)
     axis(2)
     box()
 }
