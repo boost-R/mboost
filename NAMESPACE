@@ -22,16 +22,6 @@ export(glmboost,
        boost_control, mstop, Family,
        GaussReg, Gaussian, GaussClass, Laplace, Binomial, Poisson, GammaReg, QuantReg,
        ExpectReg, NBinomial, PropOdds, Weibull, Loglog, Lognormal, AUC, mboost_fit,
-<<<<<<< HEAD:NAMESPACE
-       Huber, AdaExp, Gehan, Binomial_glm, Cindex, CoxPH, Hurdle, Multinomial, FP, IPCweights,
-       cvrisk, cv, 
-       bbs, bols, bspatial, brandom, btree, bss, bns, brad, bmono, bmrf, buser,
-       survFit, selected, selected.mboost,
-       nuisance, "%+%", "%X%", "%O%", extract, risk, "mstop<-",
-       plot.glmboost, plot.mboost, lines.mboost, plot.cvrisk,
-       stabsel.mboost, stabsel_parameters.mboost,
-       confint.mboost, confint.glmboost, plot.mboost.ci, lines.mboost.ci, print.glmboost.ci,
-=======
        Huber, AdaExp, Gehan, Cindex, CoxPH, Hurdle, Multinomial, RCG, FP, IPCweights,
        cvrisk, cv, 
        bbs, bols, bspatial, brandom, btree, bss, bns, brad, bkernel, bmono, bmrf, buser,
@@ -42,7 +32,6 @@ export(glmboost,
        stabsel.mboost, stabsel_parameters.mboost,
        confint.mboost, confint.glmboost, plot.mboost.ci, lines.mboost.ci, print.glmboost.ci,
        downstream.test,
->>>>>>> master:NAMESPACE
        varimp, plot.varimp, as.data.frame.varimp,
        mboost_intern)
        ###, basesel, fitsel)
