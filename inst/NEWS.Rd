@@ -1,7 +1,11 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.9-3 (2020-07-29)}{
+\section{Changes in mboost version 2.9-3 (2020-08-06)}{
+
+}
+
+\section{Changes in mboost version 2.9-3 (2020-08-06)}{
   \subsection{Bug-fixes}{
     \itemize{
       \item Removed deprecated argument \code{LINPACK} from all calls to \code{solve}. 
