@@ -13,7 +13,7 @@
       \item Add missing \code{rclass} function to derive class predictions 
             from conditional class
             probabilities to \code{Binomial()} family.
-      \item Plot correct x-axis in \code(plot(cvrisk(...))}
+      \item Plot correct x-axis in \code{plot(cvrisk(...))}
             (closes \href{https://github.com/boost-R/mboost/issues/102}{#102}).
 
     }
