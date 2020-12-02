@@ -2,7 +2,7 @@
 \title{News for Package 'mboost'}
 
 \section{Changes in mboost version 3.0-0 (2020-12-02)}{
-  \subsection{User-visible changes}
+  \subsection{User-visible changes}{
     \itemize{
       \item Tag devel version as 3.0-0.
     }
@@ -10,7 +10,7 @@
 }
 
 \section{Changes in mboost version 2.9-4 (2020-12-02)}{
-  \subsection{User-visible changes}
+  \subsection{User-visible changes}{
     \itemize{
       \item Added \code{by} argument to \code{btree}; only binary factors
             are allowed.
