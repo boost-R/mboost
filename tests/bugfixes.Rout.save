@@ -1,7 +1,7 @@
 
-R version 3.4.3 (2017-11-30) -- "Kite-Eating Tree"
-Copyright (C) 2017 The R Foundation for Statistical Computing
-Platform: x86_64-w64-mingw32/x64 (64-bit)
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -20,9 +20,6 @@ Type 'q()' to quit R.
 Loading required package: mboost
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.9-0. See 'package?mboost' and 'news(package  = "mboost")'
-for a complete list of changes.
-
 > require("Matrix")
 Loading required package: Matrix
 > 
@@ -308,9 +305,6 @@ The following object is masked from 'package:mboost':
 [  41] ...................................... -- risk: 9006.37 
 [  81] ..................
 Final risk: 8976.954 
-Warning messages:
-1: package 'partykit' was built under R version 3.4.4 
-2: package 'libcoin' was built under R version 3.4.4 
 > 
 > ### bbs with weights and expanded data
 > x <- runif(100)
@@ -488,15 +482,15 @@ Loss function: (y - f)^2
 
 Number of boosting iterations: mstop = 100 
 Step size:  0.1 
-Offset:  0.1193473 
+Offset:  -0.0242289 
 
 Coefficients: 
          V1          V2          V3          V4          V5          V6 
- 0.18362225  0.03578881  0.09666174  0.24628972 -0.33203993 -0.19418405 
-         V7          V8          V9         V10 
- 0.12960368  0.07842620 -0.47174880  0.31573885 
+-0.24334317 -0.07871951  0.30932011 -0.15467711 -0.41412629 -0.06111917 
+         V7          V8          V9 
+-0.25969935 -0.74624730  0.63695153 
 attr(,"offset")
-[1] 0.1193473
+[1] -0.0242289
 
 Warning message:
 In glmboost.matrix(x = X, y = y) :
@@ -514,7 +508,7 @@ Loss function: (y - f)^2
 
 Number of boosting iterations: mstop = 100 
 Step size:  0.1 
-Offset:  0.1193473 
+Offset:  -0.0242289 
 Number of baselearners:  1 
 
 > z <- rnorm(100)
@@ -531,7 +525,7 @@ Loss function: (y - f)^2
 
 Number of boosting iterations: mstop = 100 
 Step size:  0.1 
-Offset:  0.1193473 
+Offset:  -0.0242289 
 Number of baselearners:  2 
 
 > mod <- mboost_fit(blg = b, response = y)
@@ -576,7 +570,7 @@ Number of baselearners:  2
 +     germany <- read.bnd(system.file("examples/germany.bnd", package="BayesX"))
 +     districts <- attr(germany, "regions")
 +     set.seed(1907)
-+     regions <- sample(districts, 400, replace = TRUE)
++     regions <- factor(sample(districts, 400, replace = TRUE))
 +     B <- bmrf(regions, bnd = germany)
 +     X <- extract(B)
 +     K <- extract(B, what = "pen")
@@ -623,17 +617,17 @@ Neighbor search finished.
 > yNa[1] <- NA
 > coef(mboost(yNa ~ x1))
 $`bbs(x1)`
-           1            2            3            4            5            6 
--0.230113983 -0.172258391 -0.117668716 -0.083624615 -0.072904255 -0.059526870 
-           7            8            9           10           11           12 
--0.033772432  0.001564625  0.050460124  0.106084982  0.132873065  0.113765084 
-          13           14           15           16           17           18 
- 0.062946611  0.007352297 -0.068081904 -0.131700975 -0.128121979 -0.064535864 
-          19           20           21           22           23           24 
- 0.005477525  0.056227079  0.084447033  0.103094284  0.120396145  0.136351480 
+          1           2           3           4           5           6 
+-0.33197510 -0.25298850 -0.16817965 -0.05730190  0.05832769  0.14481709 
+          7           8           9          10          11          12 
+ 0.16183534  0.07660952 -0.08626287 -0.23590473 -0.30311988 -0.27857505 
+         13          14          15          16          17          18 
+-0.17877435 -0.05530480  0.05934436  0.17091734  0.29801644  0.39812443 
+         19          20          21          22          23          24 
+ 0.42160083  0.38434479  0.32961845  0.28109617  0.23551846  0.19005868 
 
 attr(,"offset")
-[1] 0.008050138
+[1] 0.08601823
 Warning message:
 In mboost_fit(bl, response = response, weights = weights, offset = offset,  :
   response contains missing values;
@@ -643,19 +637,17 @@ In mboost_fit(bl, response = response, weights = weights, offset = offset,  :
 > yNa[2] <- NaN
 > coef(mboost(yNa ~ x1))
 $`bbs(x1)`
-            1             2             3             4             5 
--0.2554349205 -0.1877191210 -0.1232980232 -0.0796433393 -0.0599759532 
-            6             7             8             9            10 
--0.0392197657 -0.0097237619  0.0237191155  0.0678876074  0.1183781849 
-           11            12            13            14            15 
- 0.1395017383  0.1138665310  0.0579257966 -0.0005033062 -0.0771862311 
-           16            17            18            19            20 
--0.1409736196 -0.1365961662 -0.0717699854 -0.0008314934  0.0502840777 
-           21            22            23            24 
- 0.0783848369  0.0966821175  0.1135769774  0.1291051191 
+          1           2           3           4           5           6 
+-0.32019366 -0.24112200 -0.15625864 -0.04556045  0.06932580  0.15409482 
+          7           8           9          10          11          12 
+ 0.16798950  0.07789351 -0.09103151 -0.24529173 -0.31477258 -0.29192203 
+         13          14          15          16          17          18 
+-0.19034634 -0.06093028  0.06056793  0.17780605  0.30853182  0.41044092 
+         19          20          21          22          23          24 
+ 0.43446176  0.39688534  0.34124100  0.29144449  0.24446315  0.19758697 
 
 attr(,"offset")
-[1] 0.01532354
+[1] 0.07615664
 Warning message:
 In mboost_fit(bl, response = response, weights = weights, offset = offset,  :
   response contains missing values;
@@ -898,7 +890,7 @@ Loss function: (y - f)^2
 
 Number of boosting iterations: mstop = 100 
 Step size:  0.1 
-Offset:  0.5015757 
+Offset:  0.4482105 
 Number of baselearners:  1 
 
 > mboost(y ~ bols(x), data = myData, weights = weights, family = Gaussian())
@@ -916,7 +908,7 @@ Loss function: (y - f)^2
 
 Number of boosting iterations: mstop = 100 
 Step size:  0.1 
-Offset:  0.5015757 
+Offset:  0.4482105 
 Number of baselearners:  1 
 
 > ## was always working
@@ -935,13 +927,13 @@ Loss function: (y - f)^2
 
 Number of boosting iterations: mstop = 100 
 Step size:  0.1 
-Offset:  0.5015757 
+Offset:  0.4482105 
 
 Coefficients: 
  (Intercept)            x 
--0.004206408 -0.041582582 
+ 0.002944126 -0.061260913 
 attr(,"offset")
-[1] 0.5015757
+[1] 0.4482105
 
 > blackboost(y ~ x, data = myData, weights = weights, family = Gaussian())
 
@@ -958,7 +950,7 @@ Loss function: (y - f)^2
 
 Number of boosting iterations: mstop = 100 
 Step size:  0.1 
-Offset:  0.5015757 
+Offset:  0.4482105 
 Number of baselearners:  1 
 
 > 
@@ -967,4 +959,4 @@ Number of baselearners:  1
 > 
 > proc.time()
    user  system elapsed 
-  43.53    0.54   45.42 
+ 34.908   0.168  35.070 
