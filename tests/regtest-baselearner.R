@@ -22,7 +22,7 @@ y[is.na(y)] <- rnorm(sum(is.na(y)))
 
 testfun <- function(m1, m2) {
     ret <- c(max(abs(coef(m1) - coef(m2))),
-      max(abs(fitted(m1) - fitted(m2)), na.rm = TRUE))
+      max(abs(fitted(m1) - fitted(m2)()), na.rm = TRUE))
     if (any(ret > sqrt(.Machine$double.eps)))
         return(ret)
 }
