@@ -1,15 +1,15 @@
-.onAttach <- function(libname, pkgname) {
-
-    ## get package version
-    vers <- packageDescription("mboost")[["Version"]]
-
-    packageStartupMessage("This is mboost ", vers, ". ", "See ",
-                          sQuote("package?mboost"), " and ",
-                          sQuote('news(package  = "mboost")'), "\n",
-                          "for a complete list of changes.\n",
-                          appendLF = TRUE)
-    return(TRUE)
-}
+#.onAttach <- function(libname, pkgname) {
+#
+#    ## get package version
+#    vers <- packageDescription("mboost")[["Version"]]
+#
+#    packageStartupMessage("This is mboost ", vers, ". ", "See ",
+#                          sQuote("package?mboost"), " and ",
+#                          sQuote('news(package  = "mboost")'), "\n",
+#                          "for a complete list of changes.\n",
+#                          appendLF = TRUE)
+#    return(TRUE)
+#}
 
 .onLoad <- function(libname, pkgname) {
     if (options("expressions")[[1]] <= 5000)
