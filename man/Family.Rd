@@ -26,7 +26,7 @@
 \alias{as.Family}
 \alias{as.Family.lm}
 \alias{as.Family.glm}
-\alias{as.Family.copxh}
+\alias{as.Family.coxph}
 \alias{as.Family.merMod}
 \title{ Gradient Boosting Families }
 \description{
@@ -69,10 +69,10 @@ Hurdle(nuirange = c(0, 100))
 Multinomial()
 Cindex(sigma = 0.1, ipcw = 1)
 RCG(nuirange = c(0, 1), offrange = c(-5, 5))
-\method{as.Family}{lm}(object)
-\method{as.Family}{glm}(object)
-\method{as.Family}{copxh}(object)
-\method{as.Family}{merMod}(object)
+\method{as.Family}{lm}(object, \dots)
+\method{as.Family}{glm}(object, \dots)
+\method{as.Family}{coxph}(object, \dots)
+\method{as.Family}{merMod}(object, \dots)
 }
 \arguments{
   \item{ngradient}{ a function with arguments \code{y}, \code{f} and \code{w} implementing the
@@ -112,6 +112,7 @@ RCG(nuirange = c(0, 1), offrange = c(-5, 5))
   \item{offrange}{ interval to search in for offset.}
   \item{sigma}{smoothness parameter for sigmoid functions inside \code{Cindex}.}
   \item{ipcw}{vector containing inverse probability of censoring weights for all observations. If omitted, it is estimated inside \code{Cindex} family.}
+  \item{object}{a fitted model object.}
   \item{\dots}{ additional arguments to link functions.}
 }
 
@@ -252,6 +253,9 @@ distribution approximation used in Ma and Huang (2005).
   
   \code{RCG()} implements the ratio of correlated gammas (RCG) model proposed
   by Weinhold et al. (2016).
+
+  \code{as.Family(object)} extracts the log-likelihood and score function
+  from a fitted model \code{object} in a highly experimental way.
 
 }
 \section{Warning}{

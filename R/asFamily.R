@@ -14,8 +14,9 @@ as.Family <- function(object, ...)
     ret
 }
 
-as.Family.lm <- function(object) {
+as.Family.lm <- function(object, ...) {
 
+    model <- object
     cf <- coef(object)
     X <- model.matrix(object)
     Y <- model.response(model.frame(object))
@@ -25,7 +26,7 @@ as.Family.lm <- function(object) {
         if (length(f) == 1) f <- rep(f, N)
         if (length(w) == 1) w <- rep(w, N)
 
-        sum(lm.wfit(x = X, y = Y, w = w, offset = c(f))$residuals^2)
+        sum(lm.wfit(x = X, y = Y, weights = w, offset = c(f))$residuals^2)
     }
 
     ngradient <- function(y, f, w = 1) {
@@ -37,7 +38,7 @@ as.Family.lm <- function(object) {
         ### up!!!
         stopifnot(NROW(f) == N)
 
-        model <<- lm.wfit(x = X, y = Y, w = w, offset = c(f))
+        model <<- lm.wfit(x = X, y = Y, weights = w, offset = c(f))
         cf <<- coef(model)
 
         ### residual wrt a constant for _all_ observations
@@ -52,10 +53,7 @@ as.Family.lm <- function(object) {
            response = function(f) f)
 }
 
-as.Family.glm <- function(object) {
-
-    if (!require("sandwich"))
-        stop("Package sandwich is required for this family")
+as.Family.glm <- function(object, ...) {
 
     model <- object
     cf <- coef(object)
@@ -73,7 +71,8 @@ as.Family.glm <- function(object) {
         if (length(f) == 1) f <- rep(f, N)
         if (length(w) == 1) w <- rep(w, N)
 
-        tmp <- glm.fit(x = X, y = Y, w = w, offset = c(f), family = object$family)
+        tmp <- glm.fit(x = X, y = Y, weights = w, offset = c(f), 
+                       family = object$family)
         return(-(p - tmp$aic / 2))
     }
 
@@ -86,7 +85,8 @@ as.Family.glm <- function(object) {
         ### up!!!
         stopifnot(NROW(f) == N)
 
-        tmp <- glm.fit(x = X, y = Y, w = w, offset = c(f), family = object$family)
+        tmp <- glm.fit(x = X, y = Y, weights = w, offset = c(f), 
+                       family = object$family)
         if ((p - tmp$aic / 2) < logLik(model))
             warning("risk increase; decrease stepsize nu")
 
@@ -106,18 +106,14 @@ as.Family.glm <- function(object) {
 }
 
 model.matrix.merFamily <- function(object, ...)
-    matrix(1, nrow = N, ncol = 1)
+    matrix(1, nrow = object$N, ncol = 1)
 
-as.Family.merMod <- function(object) {
-
-    if (!require("lme4"))
-        stop("package lme4 is required for this family")
-    if (!require("sandwich"))
-        stop("Package sandwich is required for this family")
+as.Family.merMod <- function(object, ...) {
 
     model <- object
     rf <- lme4::ranef(model)
     ff <- lme4::fixef(model)
+    theta <- lme4::getME(model, "theta")
     cl <- object@call
     ffm <- formula(object)
     env <- .copy_variables(cl, environment(ffm))
@@ -135,9 +131,11 @@ as.Family.merMod <- function(object) {
     environment(cl$formula) <- env
     m0 <- eval(cl, envir = env)
 
+    offset_. <- weights_. <- start_. <- lp_. <- NA
+
     risk <- function(y, f, w = 1) {
-        if (length(f) == 1) f <- rep(f, nrow(model.frame(model)))
-        if (length(w) == 1) w <- rep(w, nrow(model.frame(model)))
+        if (length(f) == 1) f <- rep(f, N)
+        if (length(w) == 1) w <- rep(w, N)
 
         assign("offset_.", f, env)
         assign("weights_.", w, env)
@@ -160,11 +158,12 @@ as.Family.merMod <- function(object) {
 
         assign("offset_.", f, env)
         assign("weights_.", w, env)
-        assign("start_.", getME(model, c("theta", "fixef")), env)
+        assign("start_.", lme4::getME(model, c("theta", "fixef")), env)
 
         model <<- eval(update(model, offset = offset_., weights = weights_., start = start_.), env)
         rf <<- lme4::ranef(model)
         ff <<- lme4::fixef(model)
+        theta <<- lme4::getME(model, "theta")
         lp <- predict(model)
 
         assign("lp_.", lp, env)
@@ -180,6 +179,7 @@ as.Family.merMod <- function(object) {
 
         ### for glms fake an intercept = 0 model
         class(tmp) <- c("merFamily", class(tmp))
+        tmp$N <- N
         tmp$coefficients <- 0
 
         ### residual wrt a constant for _all_ observations
@@ -189,12 +189,12 @@ as.Family.merMod <- function(object) {
     Family(ngradient = ngradient, risk = risk,
            check_y = function(y) rep(TRUE, N),
            offset = function(y, w) 0,
-           nuisance = function() return(list(ff = ff, rf = rf)),
+           nuisance = function() return(list(ff = ff, rf = rf, theta = theta)),
            name = "glmer",
            response = function(f) object@resp$family$linkinv(f))
 }
 
-as.Family.coxph <- function(object) {
+as.Family.coxph <- function(object, ...) {
 
     model <- object
     cf <- coef(model)
@@ -207,6 +207,8 @@ as.Family.coxph <- function(object) {
     fm <- . ~ . + offset(offset_.)
     m0 <- update(model, formula = fm, weights = weights_., evaluate = FALSE)
     environment(m0$formula) <- env
+
+    offset_. <- weights_. <- NA
 
     risk <- function(y, f, w = 1) {
         if (length(f) == 1) f <- rep(f, nrow(model.frame(model)))
@@ -231,7 +233,7 @@ as.Family.coxph <- function(object) {
         assign("offset_.", f, env)
         assign("weights_.", w, env)
 
-        tmp <<- eval(m0, env)
+        tmp <- eval(m0, env)
         if (logLik(tmp) < logLik(model))
             warning("risk increase; decrease stepsize nu")
         model <<- tmp
