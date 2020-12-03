@@ -5,6 +5,8 @@
   \subsection{User-visible changes}{
     \itemize{
       \item Tag devel version as 3.0-0.
+      \item Add experimental \code{as.Family} generic, with methods
+            for objects of class \code{lm}, \code{glm}, \code{coxph}, and \code{merMod}.
     }
   }
 }

@@ -23,7 +23,7 @@ Imports: Matrix, survival, splines, lattice, nnls, quadprog, utils,
 	graphics, grDevices, partykit (>= 1.2-1)
 Suggests: TH.data, MASS, fields, BayesX, gbm, mlbench,
     RColorBrewer, rpart (>= 4.0-3), randomForest, nnet,
-	testthat (>= 0.10.0), kangar00
+	testthat (>= 0.10.0), kangar00, sandwich, lme4
 LazyData: yes
 License: GPL-2
 BugReports: https://github.com/boost-R/mboost/issues

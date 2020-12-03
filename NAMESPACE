@@ -33,7 +33,8 @@ export(glmboost,
        confint.mboost, confint.glmboost, plot.mboost.ci, lines.mboost.ci, print.glmboost.ci,
        downstream.test,
        varimp, plot.varimp, as.data.frame.varimp,
-       mboost_intern)
+       mboost_intern,
+       as.Family)
        ###, basesel, fitsel)
 exportClasses("boost_family")
 exportMethods("show")
@@ -101,5 +102,10 @@ S3method(stabsel_parameters, mboost)
 S3method(varimp, mboost)
 S3method(plot, varimp)
 S3method(as.data.frame, varimp)
+S3method(as.Family, lm)
+S3method(as.Family, glm)
+S3method(as.Family, merMod)
+S3method(model.matrix, merFamily)
+S3method(as.Family, coxph)
 
 useDynLib(mboost)

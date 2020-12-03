@@ -97,14 +97,7 @@ Laplace <- function()
            name = "Absolute Error",
            response = function(f) f)
 
-link2dist <- function(link, choices = c("logit", "probit"), ...) {
-    i <- pmatch(link, choices, nomatch = 0L, duplicates.ok = TRUE)
-    if (i[1] == 1) return("logit")
-    if (i[1] == 2) {
-        ret <- list(p = pnorm, d = dnorm, q = qnorm)
-        attr(ret, "link") <- link
-        return(ret)
-    }
+link2dist <- function(link,  ...) {
     p <- get(paste("p", link, sep = ""))
     d <- get(paste("d", link, sep = ""))
     q <- get(paste("q", link, sep = ""))
@@ -115,76 +108,202 @@ link2dist <- function(link, choices = c("logit", "probit"), ...) {
     ret
 }
 
+Binomial <- function(type = c("adaboost", "glm"),
+                     link = c("logit", "probit", "cloglog", "cauchit", "log"), ...) {
+    
+    type <- match.arg(type)
+    if (type == "adaboost") {
+        return(Binomial_adaboost(link = link, ...))
+    } else {
+        return(Binomial_glm(link = link))
+    }
+}
+
 ### Binomial
 # lfinv <- binomial()$linkinv
-Binomial <- function(link = c("logit", "probit"), ...) {
-    link <- link2dist(link, ...)
+Binomial_adaboost <- function(link = c("logit", "probit", "cloglog", "cauchit", "log"), ...) {
+    
+    tmp <- try(match.arg(link), silent = TRUE)
+    if (inherits(tmp, "try-error") ) {
+        ## use old interface if link is not one of the above (i.e. if link is a distribution)
+        link <- link2dist(link, ...)    
+    } else {
+        ## use new interface otherwise
+        link <- make.link(tmp)   
+    }
+    
     biny <- function(y) {
         if (!is.factor(y))
             stop("response is not a factor but ",
-                  sQuote("family = Binomial()"))
-            if (nlevels(y) != 2)
-                stop("response is not a factor at two levels but ",
-                      sQuote("family = Binomial()"))
+                 sQuote("family = Binomial()"))
+        if (nlevels(y) != 2)
+            stop("response is not a factor at two levels but ",
+                 sQuote("family = Binomial()"))
         return(c(-1, 1)[as.integer(y)])
     }
-    if (isTRUE(all.equal(link, "logit")))
-    return(Family(ngradient = function(y, f, w = 1) {
-               exp2yf <- exp(-2 * y * f)
-               -(-2 * y * exp2yf) / (log(2) * (1 + exp2yf))
-           },
-           loss = function(y, f) {
-               f <- pmin(abs(f), 36) * sign(f)
-               p <- exp(f) / (exp(f) + exp(-f))
-               y <- (y + 1) / 2
-               -y * log(p) - (1 - y) * log(1 - p)
-           },
-           offset = function(y, w) {
-               p <- weighted.mean(y > 0, w)
-               1/2 * log(p / (1 - p))
-           },
-           fW = function(f) {
-               f <- pmin(abs(f), 36) * sign(f)
-               p <- exp(f) / (exp(f) + exp(-f))
-               4 * p * (1 - p)
-           },
-           response = function(f) {
-               f <- pmin(abs(f), 36) * sign(f)
-               p <- exp(f) / (exp(f) + exp(-f))
-               return(p)
-           },
-           rclass = function(f) (f > 0) + 1 ,
-           check_y = biny,
-           name = "Negative Binomial Likelihood"))
-
-    trf <- function(f) {
-        thresh <- -link$q(.Machine$double.eps)
-        pmin(pmax(f, -thresh), thresh)
+    
+    if (inherits(link, "link-glm") && isTRUE(all.equal(link$name, "logit"))) {
+        return(  
+          # This is the classic logit family
+          # ngradient refers to loss
+          # log_2(1 + exp(-2yf))
+          # with f = log(p/(1-p))/2 and y in (-1,1)
+          # leading to coefs half the size as usually 
+            Family(ngradient = function(y, f, w = 1) {
+                exp2yf <- exp(-2 * y * f)
+                -(-2 * y * exp2yf) / (log(2) * (1 + exp2yf))
+            },
+            loss = function(y, f) {
+                f <- pmin(abs(f), 36) * sign(f)
+                p <- exp(f) / (exp(f) + exp(-f))
+                y <- (y + 1) / 2
+                -y * log(p) - (1 - y) * log(1 - p)
+            },
+            offset = function(y, w) {
+                p <- weighted.mean(y > 0, w)
+                1/2 * log(p / (1 - p))
+            },
+            fW = function(f) {
+                f <- pmin(abs(f), 36) * sign(f)
+                p <- exp(f) / (exp(f) + exp(-f))
+                4 * p * (1 - p)
+            },
+            response = function(f) {
+                f <- pmin(abs(f), 36) * sign(f)
+                p <- exp(f) / (exp(f) + exp(-f))
+                return(p)
+            },
+            rclass = function(f) (f > 0) + 1 ,
+            check_y = biny,
+            name = "Negative Binomial Likelihood (logit link)")
+        )
     }
-
+    
+    if (inherits(link, "link-glm")) {
+      # now for glm type links that are not logit
+      # loss is now 
+      # -y * log(p) - (1 - y) * log(1 - p)
+      # coefficients hace the usual size! 
+      return(Family(ngradient = function(y, f, w = 1) {
+        y <- (y + 1) / 2
+        p <- link$linkinv(f)
+        link$mu.eta(f) * (y / p - (1 - y) / (1 - p))
+      },
+      loss = function(y, f) {
+        p <- link$linkinv(f)
+        y <- (y + 1) / 2
+        -y * log(p) - (1 - y) * log(1 - p)
+      },
+      offset = function(y, w) {
+        p <- weighted.mean(y > 0, w)
+        link$linkfun(p)
+      },
+      response = function(f) {
+        p <- link$linkinv(f)
+        return(p)
+      },
+      rclass = function(f) (f > 0) + 1 ,
+      check_y = biny,
+      name = paste("Negative Binomial Likelihood --",
+                   link$name, "link")))
+      
+      
+    }
+    
+    trf <- function(f) {
+      thresh <- -link$q(.Machine$double.eps)
+      pmin(pmax(f, -thresh), thresh)
+    }
+    
+    # now with link2dist (distributions)
     return(Family(ngradient = function(y, f, w = 1) {
-               y <- (y + 1) / 2
-               p <- link$p(trf(f))
-               d <- link$d(trf(f))
-               d * (y / p - (1 - y) / (1 - p))
-           },
-           loss = function(y, f) {
-               p <- link$p(trf(f))
-               y <- (y + 1) / 2
-               -y * log(p) - (1 - y) * log(1 - p)
-           },
-           offset = function(y, w) {
-               p <- weighted.mean(y > 0, w)
-               link$q(p)
-           },
-           response = function(f) {
-               p <- link$p(trf(f))
-               return(p)
-           },
+        y <- (y + 1) / 2
+        p <- link$p(trf(f))
+        d <- link$d(trf(f))
+        d * (y / p - (1 - y) / (1 - p))
+    },
+    loss = function(y, f) {
+        p <- link$p(trf(f))
+        y <- (y + 1) / 2
+        -y * log(p) - (1 - y) * log(1 - p)
+    },
+    offset = function(y, w) {
+        p <- weighted.mean(y > 0, w)
+        link$q(p)
+    },
+    response = function(f) {
+        p <- link$p(trf(f))
+        return(p)
+    },
+    rclass = function(f) (f > 0) + 1 ,
+    check_y = biny,
+    name = paste("Negative Binomial Likelihood --",
+                 attr(link, "link"), "Link")))
+}
+
+### Additional Binomial family 
+### Works not only with two-level factors but also 
+### with a two-column matrix of number of successes and
+### number of failures (see github issue #34 by fabian-s). 
+### In case of factors or binary vectors it uses the standard
+### 0 and 1 coding; the coefficients hence have the same level
+### as the ones resulting from glm() with family = "binomial".
+Binomial_glm <- function(link = c("logit", "probit", "cloglog", "cauchit", "log")) {
+    
+    link <- match.arg(link)
+    link <- make.link(link)
+    
+    y_check <- function(y) {
+        if ((is.matrix(y) && NCOL(y)!=2)){
+            stop("response should be either a two-column matrix (no. successes ",
+                 "and no. failures) or a two level factor or a vector of 0 and 1's ",
+                 "for this family")
+        }
+        if(is.factor(y)){
+            if (nlevels(y) != 2) 
+                stop("response should be either a two-column matrix ",
+                     "(no. successes  and  no. failures) or a two level ", 
+                     "factor or a vector of 0 and 1's for this family")
+            y <- c(0, 1)[as.integer(y)]
+        }
+        if(!is.matrix(y)){
+            if(!all(y %in% c(0,1))) 
+                stop("response should be either a two-column matrix ",
+                     "(no. successes  and  no. failures) or a two level ",
+                     "factor or a vector of 0 and 1's for this family")
+            y <- cbind(y, 1-y)
+        }
+        return(y)  
+    }
+    
+    loss <- function(y, f, w = 1) {
+        ntrials <- rowSums(y)
+        y <- y[,1]
+        p <- link$linkinv(f)
+        -dbinom(x = y, size = ntrials, prob = p, log = log)
+    }
+    risk <- function(y, f, w = 1) {
+        sum(w * loss(y = y, f = f))
+    }
+    
+    ngradient <- function(y, f, w = 1) {
+        ntrials <- rowSums(y)
+        y <- y[,1]
+        p <- link$linkinv(f)
+        ngr <-  link$mu.eta(f)*(y - ntrials * p)/(p * (1 - p))
+    }
+    
+    offset <-function(y, w = 1) {
+        ntrials <- rowSums(y)
+        y <- y[,1]
+        p <- mean((y + 0.5)/(ntrials + 1))
+        return(link$linkfun(p))
+    }
+    
+    Family(ngradient = ngradient, risk = risk, loss = loss, check_y = y_check, 
+           response = function(f) link$linkinv(f), offset = offset,
            rclass = function(f) (f > 0) + 1 ,
-           check_y = biny,
-           name = paste("Negative Binomial Likelihood --",
-                        attr(link, "link"), "Link")))
+           name = "Binomial Distribution (similar to glm)")
 }
 
 ### Poisson
@@ -257,8 +376,10 @@ CoxPH <- function() {
         time <- y[,1]
         event <- y[,2]
         n <- length(time)
-        if (length(f) == 1) f <- rep(f, n)
-        if (length(w) == 1) w <- rep(w, n)
+        if (length(f) == 1) 
+            f <- rep(f, n)
+        if (length(w) == 1) 
+            w <- rep(w, n)
         indx <- rep(1:n, w)
         time <- time[indx]
         event <- event[indx]
@@ -282,7 +403,7 @@ CoxPH <- function() {
                storage.mode(f) <- "double"
                w[is.na(f)] <- 0.0
                f[is.na(f)] <- 0.0
-               .Call("ngradientCoxPLik", time, event, f, w, package = "mboost")
+               .Call("ngradientCoxPLik", time, event, f, w, PACKAGE = "mboost")
            },
            risk = risk <- function(y, f, w = 1) -sum(plloss(y, f, w), na.rm = TRUE),
            offset = function(y, w = 1) 0, ## perhaps use something different
@@ -328,14 +449,15 @@ NBinomial <- function(nuirange = c(0, 100)) {
         sum(w * plloss(y = y, f = fit, sigma = sigma))
     risk <- function(y, f, w = 1)
        sum(w * plloss(y = y, f = f, sigma = sigma))
-
     ngradient <- function(y, f, w = 1) {
         sigma <<- optimize(riskS, interval = nuirange,
                            y = y, fit = f, w = w)$minimum
         y - (y + sigma)/(exp(f) + sigma) * exp(f)
     }
 
-    Family(ngradient = ngradient, risk = risk,
+    Family(ngradient = ngradient, 
+           risk = risk,
+           offset = function(y, w) log(weighted.mean(y, w)),
            check_y = function(y) {
                stopifnot(all.equal(unique(y - floor(y)), 0))
                y
@@ -354,7 +476,8 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
         delta[1] + cumsum(c(0, exp(delta[-1])))
 
     plloss <- function(sigma, y, f, w = 1) {
-        if (length(f) == 1) f <- rep(f, length(y))
+        if (length(f) == 1) 
+            f <- rep(f, length(y))
         tmp <- lapply(1:(length(sigma) + 1), function(i) {
             if (i == 1) return(1 + exp(f - sigma[i]))
             if (i == (length(sigma) + 1))
@@ -377,7 +500,8 @@ PropOdds <- function(nuirange = c(-0.5, -1), offrange = c(-5, 5)) {
         delta <<- optim(par = delta, fn = riskS, y = y,
                         fit = f, w = w, method = "BFGS")$par
         sigma <<- d2s(delta)
-        if (length(f) == 1) f <- rep(f, length(y))
+        if (length(f) == 1) 
+            f <- rep(f, length(y))
         ng <- sapply(1:(length(sigma) + 1), function(i) {
             if (i > 1 & i < (length(sigma) + 1)) {
                 ret <- (1 - exp(2 * f - sigma[i - 1] - sigma[i])) /
@@ -631,15 +755,15 @@ AUC <- function() {
 					n1 <- length(ind1)
 					n0 <- length(ind0)
 				}
-				#need this for first iteration
-				if (length(f) == 1) {
-					f <- rep(f, n1 + n0)
-				} else {
-					# scale scores s.t. a gradient of zero makes sense for
-					# differences in f that are bigger than +/-1
-					f <- f/sd(f)
-				}
-
+				
+	            if (length(f) == 1)
+	                f <- rep(f, n1 + n0)
+	            # skip this in the first iteration
+	            if (length(unique(f)) != 1) 
+	                # scale scores s.t. a gradient of zero makes sense for
+	                # differences in f that are bigger than +/-1
+	                f <- f/sd(f)
+				
 				M0 <<- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) -
 							f[ind0])
 				M1 <- approxGrad(M0)
@@ -655,9 +779,11 @@ AUC <- function() {
 					ind0 <- which(rep(y, w) == -1)
 					n1 <- length(ind1)
 					n0 <- length(ind0)
-					if (length(f) == 1) {
-						f <- rep(f, n1 + n0)
-					} else f <- f/sd(f)
+					if (length(f) == 1)
+					    f <- rep(f, n1 + n0)
+					# skip this in the first iteration
+					if (length(unique(f)) != 1) 
+					    f <- f/sd(f)
 					M0 <- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) -
 								f[ind0])
 				}
@@ -675,8 +801,6 @@ AUC <- function() {
 						warning("response is constant - AUC is 1.")
 						return(0)
 					}
-					if (length(f) == 1)
-						f <- rep(f, n1 + n0)
 					M0 <- (matrix(f[ind1], nrow = n0, ncol = n1, byrow = TRUE) -
 								f[ind0])
 				}
@@ -856,11 +980,15 @@ Hurdle <- function(nuirange = c(0, 100)){
                     sigma)^{-1 / sigma - 1} / (1 - (1 + exp(f) *
                     sigma)^{-1 / sigma})
                     }
-    Family(ngradient = ngradient, risk = risk, check_y = function(y) {
+    Family(ngradient = ngradient, risk = risk, 
+           offset = function(y, w) log(weighted.mean(y, w)),
+           check_y = function(y) {
                stopifnot(all.equal(unique(y - floor(y)), 0))
-               y}, nuisance = function() return(sigma),
-               name = "Hurdle model, negative binomial non-zero part",
-               response = function(f) exp(f))
+               y
+           }, 
+           nuisance = function() return(sigma),
+           name = "Hurdle model, negative binomial non-zero part",
+           response = function(f) exp(f))
 }
 
 ### multinomial logit model
@@ -962,11 +1090,13 @@ Cindex <- function (sigma = 0.1, ipcw = 1) {
     
     survtime <- y[,1]
     event <- y[,2]
-    if (length(w) == 1) w <- rep(1, length(event))
-    if (length(f) == 1) {
-      f <- rep(f, length(survtime))}
-    
     n <- length(survtime)
+    
+    if (length(w) == 1) 
+        w <- rep(1, n)
+    if (length(f) == 1)
+        f <- rep(f, n)
+    
     etaj <- matrix(f, nrow = n, ncol = n, byrow = TRUE)
     etak <- matrix(f, nrow = n, ncol = n)
     etaMat <- etak - etaj
@@ -982,10 +1112,10 @@ Cindex <- function (sigma = 0.1, ipcw = 1) {
   risk = function(y, f, w = 1) { ## empirical risk
     survtime <- y[,1]
     event <- y[,2]
-    if (length(f) == 1) {
-      f <- rep(f, length(y))
-    }
     n <- length(survtime)
+    
+    if (length(f) == 1)
+      f <- rep(f, n)
     
     etaj <- matrix(f, nrow = n, ncol = n, byrow = TRUE)
     etak <- matrix(f, nrow = n, ncol = n)
@@ -1010,65 +1140,91 @@ Cindex <- function (sigma = 0.1, ipcw = 1) {
     name = paste("Concordance Probability by Uno"))
 }
 
-### Additional Binomial family 
-### Works not only with two-level factors but also 
-### with a two-column matrix of number of successes and
-### number of failures (see github issue #34 by fabian-s). 
-### In case of factors or binary vectors it uses the standard
-### 0 and 1 coding; the coefficients hence have the same level
-### as the ones resulting from glm() with family = "binomial".
-### Can deal with logit and probit link
 
-Binomial_glm <- function(link = "logit")
-{
-  if(! link %in% c("logit", "probit")) stop("link function must be either 'logit' or
-                                            'probit'")
-  link <- make.link(link)
-  
-  y_check <- function(y) {
-    if ((is.matrix(y) && NCOL(y)!=2)){
-      stop("response should be either a two-column matrix (no. successes  and  
-           no. failures), a two level factor or a vector of 0 and 1's for this family")
+# RCG model for bounded response variables, log link
+RCG <- function (nuirange = c(0, 1), offrange = c(-5, 5)) {
+    sigma <- c(1, 0.2)
+    plloss <- function(sigma, y, f, w = 1) {
+        alpha <- sigma[1]
+        rho <- sigma[2]
+        if (length(f) == 1)
+            f <- rep(f, length(y))
+        my <- 1 + (exp(f) - 1) * y
+        dmy <- my ^ 2 - 4 * rho * exp(f) * y * (1 - y)
+        fy <- lgamma(2 * alpha) - 2 * lgamma(alpha) + alpha * f + 
+            alpha * log(1 - rho) + log(my) + (alpha - 1) * log(y * (1 - y)) - 
+            (alpha + 0.5) * log(dmy)
+        return(-fy)
     }
-    if(is.factor(y)){
-      if (nlevels(y) != 2) stop("response should be either a two-column matrix 
-                                (no. successes  and  no. failures), a two level 
-                                factor or a vector of 0 and 1's for this family")
-      y <- c(0, 1)[as.integer(y)]
+    riskS <- function(sigma, y, fit, w = 1)
+        sum(w * plloss(y = y, f = fit, sigma = sigma))
+    risk <- function(y, f, w = 1)
+        sum(w * plloss(y = y, f = f, sigma = sigma))
+    ngradient <- function(y, f, w = 1) {
+        sigma <<- optim(par = sigma, fn = riskS, y = y, fit = f,
+            lower = c(0.001, 0.001), upper = c(100, 0.99),
+            w = w, method = "L-BFGS-B")$par
+        if (length(f) == 1)
+            f <- rep(f, length(y))
+        alpha <- sigma[1]
+        rho <- sigma[2]
+        my <- 1 + (exp(f) - 1) * y
+        dmy <- my ^ 2 - 4 * rho * exp(f) * y * (1 - y)
+        return(alpha + (y * exp(f)) / my - (2 * alpha + 1) * exp(f) *
+                   y * (my - 2 * rho * (1 - y)) / dmy)
     }
-    if(!is.matrix(y)){
-      if(!all(y %in% c(0,1))) stop("response should be either a two-column matrix 
-                                   (no. successes  and  no. failures), a two level 
-                                   factor or a vector of 0 and 1's for this family")
-      y <- cbind(y, 1-y)
+    offset <- function(y, w = 1)
+        0
+    dRCG <- function(f, sigma) {
+        alpha <- sigma[1]
+        rho <- sigma[2]
+        densw <- function(w, alpha, rho, f)
+            w * gamma(2 * alpha) / (gamma(alpha)) ^ 2 * (1 - rho) ^ alpha *
+            (exp(f))^alpha * ((exp(f) - 1) * w + 1) * (w * (1 - w))^(alpha - 1) /
+            ((((exp(f) - 1) * w + 1) ^ 2 - 4 * rho * exp(f) * w * (1 - w)) ^ (alpha + 0.5))
+        res <- rep(0, length(f))
+        for (k in 1:length(f))
+            res[k] <- integrate(densw, lower = 0, upper = 1, alpha, rho, f[k])$value
+        return(res)
     }
-    return(y)  
+    response <- function(f, sigma)
+        dRCG(f, sigma)
+    Fisher <- function(y, alpha, rho, X, coefs) {
+        X <- data.frame(X)
+        f.i <- matrix(0, ncol = length(coefs), nrow = length(coefs))
+        for (i in 1:length(y)) {
+            wobs <- as.numeric(y[i])
+            x <- as.matrix(X[i,])
+            xt <- t(x)
+            xtx <- xt %*% x
+            exb <- as.numeric(exp(x %*% coefs))
+            D1 <- (exb - 1) * wobs + 1
+            D2 <- D1 ^ 2 - 4 * rho * exb * wobs * (1 - wobs)
+            f.i <- f.i + (D1 * wobs * exb - (wobs * exb) ^ 2) * xtx / (D1 ^ 2) -
+                (alpha + 0.5) / (D2 ^ 2) * 
+                (2 * wobs * exb * xtx * (2 * wobs * exb - wobs + 1 - 2 * rho * (1 - wobs)) 
+                 * D2 - xtx * (2 * wobs * exb * (D1 - 2 * rho * (1 - wobs)))^2)
+        }
+        Fisher.information <- -f.i
+        return(Fisher.information)
     }
-  
-  loss <- function(y, f, w = 1) {
-    ntrials <- rowSums(y)
-    y <- y[,1]
-    p <- link$linkinv(f)
-    -dbinom(x = y, size = ntrials, prob = p, log = log)
-  }
-  risk <- function(y, f, w = 1) {
-    sum(w * loss(y = y, f = f))
-  }
-  
-  ngradient <- function(y, f, w = 1) {
-    ntrials <- rowSums(y)
-    y <- y[,1]
-    p <- link$linkinv(f)
-    ngr <-  link$mu.eta(f)*(y - ntrials * p)/(p * (1 - p))
-  }
-  
-  offset <-function(y, w = 1) {
-    ntrials <- rowSums(y)
-    y <- y[,1]
-    p <- mean((y + 0.5)/(ntrials + 1))
-    return(link$linkfun(p))
-  }
-  Family(ngradient = ngradient, risk = risk, loss = loss, check_y = y_check, 
-         response = function(f) link$linkinv(f), offset = offset,
-         name = "Binomial Distribution (similar to glm)")
-  }
+    
+    Family(
+        ngradient = ngradient,
+        risk = risk,
+        offset = offset,
+        # Fisher = Fisher,
+        check_y = function(y) {
+            if(!all(y < 1 & y > 0))
+                stop("y must be < 1 and > 0")
+            y
+        },
+        nuisance = function()
+            return(sigma),
+        response = function(f)
+            response(f, sigma = sigma),
+        rclass = function(f)
+            f,
+        name = "Ratio of Correlated Gammas (RCG)"
+    )
+}

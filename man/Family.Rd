@@ -23,6 +23,11 @@
 \alias{Multinomial}
 \alias{Cindex}
 \alias{RCG}
+\alias{as.Family}
+\alias{as.Family.lm}
+\alias{as.Family.glm}
+\alias{as.Family.copxh}
+\alias{as.Family.merMod}
 \title{ Gradient Boosting Families }
 \description{
     \code{boost_family} objects provide a convenient way to specify loss functions
@@ -64,6 +69,10 @@ Hurdle(nuirange = c(0, 100))
 Multinomial()
 Cindex(sigma = 0.1, ipcw = 1)
 RCG(nuirange = c(0, 1), offrange = c(-5, 5))
+\method{as.Family}{lm}(object)
+\method{as.Family}{glm}(object)
+\method{as.Family}{copxh}(object)
+\method{as.Family}{merMod}(object)
 }
 \arguments{
   \item{ngradient}{ a function with arguments \code{y}, \code{f} and \code{w} implementing the
