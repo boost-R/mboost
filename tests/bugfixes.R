@@ -548,9 +548,6 @@ if (require("survival")){
   summary(cbind(ipcw1, ipcw2))
   
   stopifnot(identical(ipcw1, ipcw2))
-<<<<<<< HEAD:tests/bugfixes.R
-}
-=======
 }
 
 ## make sure newdata is not used in fitted() but other arguments are:
@@ -581,4 +578,3 @@ blackboost(y ~ x, data = myData, weights = weights, family = Gaussian())
 
 
 
->>>>>>> master:tests/bugfixes.R
