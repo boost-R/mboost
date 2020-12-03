@@ -26,7 +26,7 @@ as.Family.lm <- function(object, ...) {
         if (length(f) == 1) f <- rep(f, N)
         if (length(w) == 1) w <- rep(w, N)
 
-        sum(lm.wfit(x = X, y = Y, weights = w, offset = c(f))$residuals^2)
+        sum(lm.wfit(x = X, y = Y, w = w, offset = c(f))$residuals^2)
     }
 
     ngradient <- function(y, f, w = 1) {
@@ -38,7 +38,7 @@ as.Family.lm <- function(object, ...) {
         ### up!!!
         stopifnot(NROW(f) == N)
 
-        model <<- lm.wfit(x = X, y = Y, weights = w, offset = c(f))
+        model <<- lm.wfit(x = X, y = Y, w = w, offset = c(f))
         cf <<- coef(model)
 
         ### residual wrt a constant for _all_ observations
