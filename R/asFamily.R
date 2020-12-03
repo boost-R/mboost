@@ -205,10 +205,11 @@ as.Family.coxph <- function(object, ...) {
     N <- nrow(model.frame(object))
 
     fm <- . ~ . + offset(offset_.)
-    m0 <- update(model, formula = fm, weights = weights_., evaluate = FALSE)
+    m0 <- update(model, formula = fm, 
+                 subset = subset_., weights = weights_., evaluate = FALSE)
     environment(m0$formula) <- env
 
-    offset_. <- weights_. <- NA
+    offset_. <- weights_. <- subset_. <- NA
 
     risk <- function(y, f, w = 1) {
         if (length(f) == 1) f <- rep(f, nrow(model.frame(model)))
@@ -216,6 +217,7 @@ as.Family.coxph <- function(object, ...) {
 
         assign("offset_.", f, env)
         assign("weights_.", w, env)
+        assign("subset_.", which(w > 0), env)
 
         tmp <- eval(m0, env)
         -logLik(tmp)
@@ -232,6 +234,7 @@ as.Family.coxph <- function(object, ...) {
 
         assign("offset_.", f, env)
         assign("weights_.", w, env)
+        assign("subset_.", which(w > 0), env)
 
         tmp <- eval(m0, env)
         if (logLik(tmp) < logLik(model))
@@ -240,7 +243,9 @@ as.Family.coxph <- function(object, ...) {
         cf <<- coef(model)
 
         ### residual wrt a constant for _all_ observations
-        residuals(model, type = "martingale")
+        ret <- numeric(N)
+        ret[w > 0] <- residuals(model, type = "martingale")
+        ret
     }
 
     Family(ngradient = ngradient, risk = risk,
