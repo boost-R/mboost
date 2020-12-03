@@ -17,14 +17,8 @@
 \details{
 \tabular{ll}{
 Package: \tab mboost\cr
-<<<<<<< HEAD:man/mboost_package.Rd
-Type: \tab Package\cr
-Version: \tab 2.8-0\cr
-Date: \tab 2017-xx-yy\cr
-=======
-Version: \tab 2.9-3\cr
-Date: \tab 2020-07-29\cr
->>>>>>> master:man/mboost_package.Rd
+Version: \tab 3.0-0\cr
+Date: \tab 2020-12-02\cr
 License: \tab GPL-2\cr
 }
 
@@ -66,15 +60,6 @@ License: \tab GPL-2\cr
 
 }
 
-<<<<<<< HEAD:man/mboost_package.Rd
-\section{NEWS in 2.7-series}{
-
-  Series 2.7 provides a new family (\code{Cindex}), variable importance measures
-  (\code{varimp}) and imrpoved plotting facilities. The manual was updated in 
-  various places, vignettes were improved and a lot of bugs were fixed. 
-
-  \bold{For more changes see}\cr\code{news(Version >= "2.7-0", package  = "mboost")}
-=======
 \section{NEWS in 2.9-series}{
 
   Series 2.9 provides a new family (\code{RCG}), uses \code{partykit::ctree} 
@@ -109,8 +94,6 @@ License: \tab GPL-2\cr
   various places, vignettes were improved and a lot of bugs were fixed. 
 
   \bold{For more details and other changes see}\cr\code{news(Version >= "2.7-0", package  = "mboost")}
->>>>>>> master:man/mboost_package.Rd
-  
 }
 
 \section{NEWS in 2.6-series}{

@@ -32,10 +32,6 @@
     to the \code{contrasts} replacement function and whose names are
     the names of columns of \code{data} containing factors.
     See \code{\link{model.matrix.default}}.}
-<<<<<<< HEAD:man/glmboost.Rd
-  \item{center}{logical indicating if the predictor variables are centered before fitting.}
-  \item{control}{ a list of parameters controlling the algorithm.}
-=======
   \item{center}{logical indicating of the predictor variables are centered before fitting.}
   \item{control}{ a list of parameters controlling the algorithm. For
     more details see \code{\link{boost_control}}. }
@@ -43,7 +39,6 @@
     used for the out-of-bag risk (i.e., if \code{boost_control(risk =
       "oobag")}). This argument is also used internally by
     \code{cvrisk}. }    
->>>>>>> master:man/glmboost.Rd
   \item{x}{ design matrix. Sparse matrices of class \code{Matrix} can be used as well.}
   \item{y}{ vector of responses. }
   \item{\dots}{ additional arguments passed to \code{\link{mboost_fit}}; currently none.}

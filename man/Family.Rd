@@ -22,12 +22,7 @@
 \alias{Hurdle}
 \alias{Multinomial}
 \alias{Cindex}
-<<<<<<< HEAD:man/Family.Rd
-\alias{Binomial_glm}
-=======
 \alias{RCG}
-
->>>>>>> master:man/Family.Rd
 \title{ Gradient Boosting Families }
 \description{
     \code{boost_family} objects provide a convenient way to specify loss functions
@@ -68,12 +63,7 @@ Gehan()
 Hurdle(nuirange = c(0, 100))
 Multinomial()
 Cindex(sigma = 0.1, ipcw = 1)
-<<<<<<< HEAD:man/Family.Rd
-Binomial_glm(link = "logit")
-=======
 RCG(nuirange = c(0, 1), offrange = c(-5, 5))
-
->>>>>>> master:man/Family.Rd
 }
 \arguments{
   \item{ngradient}{ a function with arguments \code{y}, \code{f} and \code{w} implementing the
@@ -110,11 +100,7 @@ RCG(nuirange = c(0, 1), offrange = c(-5, 5))
           searched for the minimum risk w.r.t. the nuisance parameter.
 	  In case of \code{PropOdds}, the starting values for
 	  the nuisance parameters. }
-<<<<<<< HEAD:man/Family.Rd
-  \item{offrange}{ interval to search for offset in.}
-=======
   \item{offrange}{ interval to search in for offset.}
->>>>>>> master:man/Family.Rd
   \item{sigma}{smoothness parameter for sigmoid functions inside \code{Cindex}.}
   \item{ipcw}{vector containing inverse probability of censoring weights for all observations. If omitted, it is estimated inside \code{Cindex} family.}
   \item{\dots}{ additional arguments to link functions.}
@@ -163,15 +149,11 @@ classification. For binary classification problems the response
 \code{y} has to be a \code{factor}. Internally \code{y} is re-coded
 to \eqn{-1} and \eqn{+1} (Buehlmann and Hothorn 2007). 
 
-<<<<<<< HEAD:man/Family.Rd
-\code{Binomial_glm()} is an alternative to \code{Binomial()} leading to coefficients of the same size as coefficients from a classical logit model via \code{\link{glm}}. Additionally, it works not only with a two-level factor but also with a two-column matrix containing number of successes and number of failures (again, similar to \code{\link{glm}}). 
-=======
 \code{Binomial(type = "glm")} is an alternative to \code{Binomial()} leading to 
 coefficients of the same size as coefficients from a classical logit 
 model via \code{\link{glm}}. Additionally, it works not only with a 
 two-level factor but also with a two-column matrix containing the number 
 of successes and number of failures (again, similar to \code{\link{glm}}). 
->>>>>>> master:man/Family.Rd
 
 \code{AUC()} uses \eqn{1-AUC(y, f)} as the loss function.
 The area under the ROC curve (AUC) is defined as
@@ -232,9 +214,6 @@ distribution approximation used in Ma and Huang (2005).
   (see \code{\link{Surv}} for details). For details on \code{Gehan()} see
   Johnson and Long (2011).
 
-<<<<<<< HEAD:man/Family.Rd
-  \code{Cindex()} optimizes the concordance-index for survival data (often denoted     as Harrell's C or C-index). The concordance index evaluates the rank-based           concordance probability between the model and the outcome. The C-index measures      whether large values of the model are associated with short survival times  and      vice versa. The interpretation is similar to the AUC: A C-index of 1 represents a    perfect discrimination while a C-index of 0.5 will be achieved by a completely       non-informative marker. The \code{Cindex()} family is based on an estimator by       Uno et al. (2011), which incorporates inverse probability of censoring weighting     \code{ipcw}. To make the estimator differentiable, sigmoid functions are applied;    the corresponding smoothness can be controlled via \code{sigma}. For details on      \code{Cindex()} see Mayr and Schmid (2014).
-=======
   \code{Cindex()} optimizes the concordance-index for survival data (often denoted
   as Harrell's C or C-index). The concordance index evaluates the rank-based
   concordance probability between the model and the outcome. The C-index measures
@@ -246,8 +225,6 @@ distribution approximation used in Ma and Huang (2005).
   \code{ipcw}. To make the estimator differentiable, sigmoid functions are applied;
   the corresponding smoothness can be controlled via \code{sigma}. For details on
   \code{Cindex()} see Mayr and Schmid (2014).
->>>>>>> master:man/Family.Rd
-    
   
   Hurdle models for zero-inflated count data can be fitted by using a combination
   of the \code{Binomial()} and \code{Hurdle()} families. While the \code{Binomial()}
@@ -264,13 +241,9 @@ distribution approximation used in Ma and Huang (2005).
   moment. The class corresponding to the last level of the factor coding
   of the response is used as reference class.
   
-<<<<<<< HEAD:man/Family.Rd
-  
-=======
   \code{RCG()} implements the ratio of correlated gammas (RCG) model proposed
   by Weinhold et al. (2016).
 
->>>>>>> master:man/Family.Rd
 }
 \section{Warning}{
   The coefficients resulting from boosting with family
@@ -302,14 +275,10 @@ distribution approximation used in Ma and Huang (2005).
     disease classification and biomarker selection with microarray
     data. \emph{Bioinformatics}, \bold{21}(24), 4356--4362.
     
-<<<<<<< HEAD:man/Family.Rd
-    Andreas Mayr and Matthias Schmid (2014). Boosting the concordance index for          survival data -- a unified framework to derive and evaluate biomarker combination.     \emph{PloS ONE}, \bold{9}(1):84483.
-=======
     Andreas Mayr and Matthias Schmid (2014). 
     Boosting the concordance index for survival data -- a unified 
     framework to derive and evaluate biomarker combination.     
     \emph{PloS ONE}, \bold{9}(1):84483.
->>>>>>> master:man/Family.Rd
 
     Whitney K. Newey and James L. Powell (1987),
     Asymmetric least squares estimation and testing.
@@ -329,14 +298,10 @@ distribution approximation used in Ma and Huang (2005).
     condition. \emph{Environmental and Ecological Statistics},
     \bold{18}(4), 709--733.
 
-<<<<<<< HEAD:man/Family.Rd
-    Uno H, Cai T, Pencina MJ, D Agostino RB and Wei LJ (2011). On the C-statistics       for evaluating overall adequacy of risk prediction procedures with censored          survival data. \emph{Stat Med}, \bold{30}(10), 1105--17.
-=======
     Uno H, Cai T, Pencina MJ, D Agostino RB and Wei LJ (2011). 
     On the C-statistics for evaluating overall adequacy of risk prediction 
     procedures with censored survival data. 
     \emph{Statistics in Medicine}, \bold{30}(10), 1105--17.
->>>>>>> master:man/Family.Rd
 
     Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
     (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
@@ -349,7 +314,6 @@ distribution approximation used in Ma and Huang (2005).
     differences with application to lung cancer microarray studies.
     \emph{Annals of Applied Statistics}, \bold{5}, 1081--1101.
     
-
     Weinhold, L., S. Pechlivanis, S. Wahl, P. Hoffmann and M. Schmid (2016) A Statistical Model for the
     Analysis of Bounded Response Variables in DNA Methylation Studies.
     \emph{BMC Bioinformatics}. 2016; 17: 480. \url{http://dx.doi.org/10.1186/s12859-016-1347-4}
