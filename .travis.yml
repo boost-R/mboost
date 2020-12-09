@@ -8,34 +8,11 @@
 #  - TEST_DIR=pkg/mboostDevel
 
 language: r
-dist: trusty
-cache: packages
-
-repos:
-  CRAN: https://cloud.r-project.org
-  # Rforge: http://R-Forge.R-project.org
+r:
+ - release
+ - devel
+ 
 
 before_install:
   - tlmgr install amsmath amsfonts hyperref natbib graphics threeparttable xcolor doublestroke subfigure url tools booktabs oberdiek geometry
-  # sudo apt-get install latex-xcolor texlive-generic-recommended texlive-fonts-recommended texlive-fonts-extra texlive-extra-utils texlive-latex-recommended texlive-latex-extra
 
-bioc_packages:
-  - KEGGgraph
-  - biomaRt
-  
-r_github_packages:
-  - hofnerb/stabs
-  - boost-R/mboost
-  - boost-R/gamboostLSS
-  - jimhester/covr
-  
-after_failure:
-  - ./travis-tool.sh dump_logs
-
-after_success:
-    Rscript -e 'library(covr); coveralls(line_exclusions = list("R/mboost_intern.R", "R/AAA.R" = 14:28))'
-
-notifications:
-  email:
-    on_success: change
-    on_failure: change
