@@ -1,6 +1,6 @@
 
-R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
-Copyright (C) 2015 The R Foundation for Statistical Computing
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -19,9 +19,6 @@ Type 'q()' to quit R.
 > library("mboost")
 Loading required package: parallel
 Loading required package: stabs
-This is mboost 2.6-0. See 'package?mboost' and 'news(package  = "mboost")'
-for a complete list of changes.
-
 > 
 > set.seed(290875)
 > x <- rnorm(100)
@@ -87,7 +84,7 @@ attr(,"offset")
 	 Generalized Linear Models Fitted via Gradient Boosting
 
 Call:
-glmboost.formula(formula = y ~ x, center = FALSE, family = NBinomial())
+glmboost.formula(formula = y ~ x, family = NBinomial(), center = FALSE)
 
 
 	 Negative Negative-Binomial Likelihood 
@@ -96,19 +93,19 @@ Loss function:
 
 Number of boosting iterations: mstop = 1000 
 Step size:  0.1 
-Offset:  1.63316 
+Offset:  1.633154 
 
 Coefficients: 
 (Intercept)           x 
-  -1.481156    1.912433 
+  -1.481151    1.912433 
 attr(,"offset")
-[1] 1.63316
+[1] 1.633154
 
 > coef(mod)
 (Intercept)           x 
-  -1.481156    1.912433 
+  -1.481151    1.912433 
 attr(,"offset")
-[1] 1.63316
+[1] 1.633154
 > nuisance(mod)
 [1] 1.331289
 > 
@@ -278,21 +275,21 @@ Loading required package: survival
 > wpbc <- wpbc[complete.cases(wpbc), colnames(wpbc) != "time"]
 > mAUC <- gamboost(status ~ ., data = wpbc, family = AUC())
 > 1 - mAUC$risk()
-  [1] 0.5779965 0.7027027 0.7151880 0.7303173 0.7426557 0.7488249 0.7573443
-  [8] 0.7643948 0.7658637 0.7720329 0.7786428 0.7812867 0.7837838 0.7899530
- [15] 0.7917156 0.7934783 0.7965629 0.7993537 0.8019976 0.8049354 0.8080200
- [22] 0.8102233 0.8130141 0.8178613 0.8197709 0.8235899 0.8300529 0.8332844
- [29] 0.8344595 0.8398942 0.8418038 0.8445946 0.8479730 0.8478261 0.8523796
- [36] 0.8531140 0.8608989 0.8633960 0.8658931 0.8689777 0.8744125 0.8776439
- [43] 0.8852820 0.8889542 0.8936545 0.8977673 0.9055523 0.9079025 0.9098120
- [50] 0.9130435 0.9196533 0.9249412 0.9237662 0.9253819 0.9303760 0.9353702
- [57] 0.9409518 0.9418331 0.9469741 0.9450646 0.9480024 0.9509401 0.9543184
- [64] 0.9513807 0.9537309 0.9575499 0.9568155 0.9599001 0.9600470 0.9610752
- [71] 0.9616627 0.9618096 0.9622503 0.9644536 0.9654818 0.9650411 0.9675382
- [78] 0.9681257 0.9681257 0.9681257 0.9710635 0.9731199 0.9715041 0.9726792
- [85] 0.9729730 0.9751763 0.9759107 0.9767920 0.9763514 0.9767920 0.9778202
- [92] 0.9781140 0.9787015 0.9785546 0.9787015 0.9785546 0.9791422 0.9788484
- [99] 0.9792891 0.9795828
+  [1] 0.0000000 0.5779965 0.7027027 0.7151880 0.7303173 0.7426557 0.7488249
+  [8] 0.7573443 0.7643948 0.7658637 0.7720329 0.7786428 0.7812867 0.7837838
+ [15] 0.7899530 0.7917156 0.7934783 0.7965629 0.7993537 0.8019976 0.8049354
+ [22] 0.8080200 0.8102233 0.8130141 0.8178613 0.8197709 0.8235899 0.8300529
+ [29] 0.8332844 0.8344595 0.8398942 0.8418038 0.8445946 0.8479730 0.8478261
+ [36] 0.8523796 0.8531140 0.8608989 0.8633960 0.8658931 0.8689777 0.8744125
+ [43] 0.8776439 0.8852820 0.8889542 0.8936545 0.8977673 0.9055523 0.9079025
+ [50] 0.9098120 0.9130435 0.9196533 0.9249412 0.9237662 0.9253819 0.9303760
+ [57] 0.9353702 0.9409518 0.9418331 0.9469741 0.9450646 0.9480024 0.9509401
+ [64] 0.9543184 0.9513807 0.9537309 0.9575499 0.9568155 0.9599001 0.9600470
+ [71] 0.9610752 0.9616627 0.9618096 0.9622503 0.9644536 0.9654818 0.9650411
+ [78] 0.9675382 0.9681257 0.9681257 0.9681257 0.9710635 0.9731199 0.9715041
+ [85] 0.9726792 0.9729730 0.9751763 0.9759107 0.9767920 0.9763514 0.9767920
+ [92] 0.9778202 0.9781140 0.9787015 0.9785546 0.9787015 0.9785546 0.9791422
+ [99] 0.9788484 0.9792891 0.9795828
 > 
 > 
 > # rank-based boosting
@@ -333,15 +330,11 @@ Loading required package: survival
 + ## different pre-processing? </FIXME>
 + round(coef(modWeighted) - coef(modSubset), 3)
 + }
-intercept        x1        x2        x3        x4        x5        x6        x7 
-   -0.196    -0.024     0.044     0.096     0.017    -0.148     0.035     0.182 
-       x8 
-    2.914 
+intercept        x1        x2        x3        x4        x5        x7        x8 
+   -0.609     0.000    -0.004     0.001    -0.001    -0.003     0.000    -0.004 
 attr(,"offset")
-[1] 5.386832
-Warning message:
-In coef(modWeighted) - coef(modSubset) :
-  longer object length is not a multiple of shorter object length
+[1] 5.867733
+> 
 > 
 > ## Binomial
 > y <- as.factor(sample(0:1, 100, replace = TRUE))
@@ -357,7 +350,7 @@ Call:
 glmboost.formula(formula = y ~ x1 + x2, family = Binomial())
 
 
-	 Negative Binomial Likelihood 
+	 Negative Binomial Likelihood (logit link) 
 
 Loss function: { 
      f <- pmin(abs(f), 36) * sign(f) 
@@ -377,8 +370,8 @@ NOTE: Coefficients from a Binomial model are half the size of coefficients
  from a model fitted via glm(... , family = 'binomial').
 See Warning section in ?coef.mboost
 
-(Intercept)          x1          x2 
--0.01576318 -0.06878163 -0.14595322 
+ (Intercept)           x1           x2 
+-0.007930788 -0.010047474  0.086191754 
 attr(,"offset")
 [1] -0.06007216
 
@@ -388,22 +381,68 @@ NOTE: Coefficients from a Binomial model are half the size of coefficients
  from a model fitted via glm(... , family = 'binomial').
 See Warning section in ?coef.mboost
 
-(Intercept)          x1          x2 
--0.01576318 -0.06878163 -0.14595322 
+ (Intercept)           x1           x2 
+-0.007930788 -0.010047474  0.086191754 
 attr(,"offset")
 [1] -0.06007216
 > 
 > glmMod <- glm(y ~ x1 + x2, family = 'binomial')
 > coef(glmMod)
 (Intercept)          x1          x2 
- -0.1516707  -0.1375633  -0.2919064 
-> stopifnot(all((coef(glmMod) - coef(mod, off2int = TRUE) * 2) < .Machine$double.eps))
+-0.13600589 -0.02009495  0.17238351 
+> stopifnot(all((coef(glmMod) - coef(mod, off2int = TRUE) * 2) < sqrt(.Machine$double.eps)))
 
 NOTE: Coefficients from a Binomial model are half the size of coefficients
  from a model fitted via glm(... , family = 'binomial').
 See Warning section in ?coef.mboost
 
 > 
+> ## C-index boosting
+> if (require("survival")) {
++   
++   sigma <- 0.5
++   w <- rnorm(100)
++   w.1 <- rnorm(100)
++   
++   x1 <- rnorm(100,sd=1)
++   x2 <- x1 + rnorm(100,sd=1)
++   x1.1 <- rnorm(100,sd=1)
++   x2.1 <- x1.1 + rnorm(100,sd=1)
++   X <- cbind(x1,x2)
++   X.1 <- cbind(x1.1,x2.1)
++   beta <- c(1,0.5)
++   survtime <- exp(X%*%beta + sigma*w)
++   censtime <- exp(X.1%*%beta + sigma*w.1)
++   event <- survtime < censtime
++   stime <- pmin(survtime,censtime)
++   dat <- data.frame(time = stime, event = event, x1 = x1, x2 = x2)
++   
++   # compute ipcweights outside the family
++   ipcw <- IPCweights(x = Surv(dat$time, dat$event))
++   model1 <- glmboost(Surv(time,event)~x1+x2, family=Cindex(ipcw = ipcw),
++                      control = boost_control(mstop=50), data = dat)
++   
++   
++   # compute ipcweights inside
++   model2 <- glmboost(Surv(time,event)~x1+x2, family=Cindex(ipcw = 1),
++                      control = boost_control(mstop=50), data = dat)
++   rbind(coef(model1, off2int = TRUE, which = ""), 
++         coef(model2, off2int = TRUE, which = ""))
++   
++   stopifnot(identical(coef(model1), coef(model2)))
++   
++   # change sigma
++   model1 <- glmboost(Surv(time,event)~x1+x2, family=Cindex(sigma = 0.01),
++                      control = boost_control(mstop=20), data = dat)
++   model2 <- glmboost(Surv(time,event)~x1+x2, family=Cindex(sigma = 0.2),
++                      control = boost_control(mstop=20), data = dat)
++   rbind(coef(model1, off2int = TRUE, which = ""), 
++         coef(model2, off2int = TRUE, which = ""))
++   stopifnot(!identical(coef(model1), coef(model2)))
++   
++ }
+> 
+> 
 > proc.time()
    user  system elapsed 
- 14.063   0.082  14.321 
+ 10.752   0.091  10.847 
