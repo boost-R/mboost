@@ -145,48 +145,6 @@ FP(elbowbreadth, scaling = FALSE)log(elbowbreadth)elbowbreadth^-2
 > # N.B. that the family needs to be called with empty brackets
 > 
 > 
-> ## No test: 
-> ############################################################
-> ## Do not run and check these examples automatically as
-> ## they take some time
-> 
-> ### Proportional odds model
-> data(iris)
-> iris$Species <- factor(iris$Species, ordered = TRUE)
-> if (require("MASS")) {
-+     (mod.polr <- polr(Species  ~ Sepal.Length, data = iris))
-+ }
-Loading required package: MASS
-Call:
-polr(formula = Species ~ Sepal.Length, data = iris)
-
-Coefficients:
-Sepal.Length 
-    3.452354 
-
-Intercepts:
-   setosa|versicolor versicolor|virginica 
-            18.56906             21.68982 
-
-Residual Deviance: 191.0767 
-AIC: 197.0767 
-> mod.PropOdds <- glmboost(Species  ~ Sepal.Length, data = iris,
-+                          family = PropOdds(nuirange = c(-0.5, 3)))
-> mstop(mod.PropOdds) <- 1000
-> ## thresholds are treated as nuisance parameters, to extract these use
-> nuisance(mod.PropOdds)
-[1] 3.398088 6.514687
-> ## effect estimate
-> coef(mod.PropOdds)["Sepal.Length"]
-Sepal.Length 
-    3.446255 
-> ## make thresholds comparable to a model without intercept
-> nuisance(mod.PropOdds) - coef(mod.PropOdds)["(Intercept)"] -
-+     attr(coef(mod.PropOdds), "offset")
-[1] 18.53578 21.65238
-> 
-> ## End(Not run and test)
-> ## End(No test)
 > 
 > ### Multinomial logit model via a linear array model
 > ## One needs to convert the data to a list
@@ -240,129 +198,8 @@ Warning in object$predict(newdata = newdata, which = which, aggregate = aggregat
         setosa versicolor virginica
 [1,] 0.6090049  0.2319469 0.1590482
 > 
-> ## No test: 
-> ############################################################
-> ## Do not run and check these examples automatically as
-> ## they take some time
-> 
-> ## Compare results with nnet::multinom
-> if (require("nnet")) {
-+     mlmn <- multinom(Species ~ Sepal.Length, data = iris)
-+     max(abs(fitted(mlm[1000], type = "response") -
-+             fitted(mlmn, type = "prob")))
-+ }
-Loading required package: nnet
-# weights:  9 (4 variable)
-initial  value 164.791843 
-iter  10 value 91.337114
-iter  20 value 91.035008
-final  value 91.033971 
-converged
-[1] 0.07486978
-> 
-> ## End(Not run and test)
-> ## End(No test)
 > 
 > 
-> ## No test: 
-> ############################################################
-> ## Do not run and check these examples automatically as
-> ## they take some time
-> 
-> ### Example for RCG model
-> ## generate covariate values
-> set.seed(12345)
-> x1 <- rnorm(500)
-> x2 <- rnorm(500)
-> ## generate linear predictors
-> zetaM <- 0.1 + 0.3 * x1 - 0.5 * x2 
-> zetaU <- 0.1 - 0.1 * x1 + 0.2 * x2
-> ## generate beta values
-> M <- rgamma(500, shape = 2, rate = exp(zetaM))
-> U <- rgamma(500, shape = 2, rate = exp(zetaU))
-> y <- M / (M + U)
-> 
-> ## fit RCG model
-> data <- data.frame(y, x1, x2)
-> RCGmodel <- glmboost(y ~ x1 + x2, data = data, family = RCG(),
-+                      control = boost_control(mstop = 2000,
-+                      trace = TRUE, nu = 0.01))
-[    1] ...................................... -- risk: -40.03106 
-[   41] ...................................... -- risk: -60.61721 
-[   81] ...................................... -- risk: -75.54391 
-[  121] ...................................... -- risk: -87.75013 
-[  161] ...................................... -- risk: -97.96363 
-[  201] ...................................... -- risk: -106.2965 
-[  241] ...................................... -- risk: -112.9433 
-[  281] ...................................... -- risk: -118.1435 
-[  321] ...................................... -- risk: -122.1471 
-[  361] ...................................... -- risk: -125.19 
-[  401] ...................................... -- risk: -127.4793 
-[  441] ...................................... -- risk: -129.1882 
-[  481] ...................................... -- risk: -130.4562 
-[  521] ...................................... -- risk: -131.393 
-[  561] ...................................... -- risk: -132.0827 
-[  601] ...................................... -- risk: -132.5892 
-[  641] ...................................... -- risk: -132.9604 
-[  681] ...................................... -- risk: -133.2322 
-[  721] ...................................... -- risk: -133.431 
-[  761] ...................................... -- risk: -133.5796 
-[  801] ...................................... -- risk: -133.6997 
-[  841] ...................................... -- risk: -133.7974 
-[  881] ...................................... -- risk: -133.8767 
-[  921] ...................................... -- risk: -133.9411 
-[  961] ...................................... -- risk: -133.9934 
-[1'001] ...................................... -- risk: -134.0359 
-[1'041] ...................................... -- risk: -134.0704 
-[1'081] ...................................... -- risk: -134.0985 
-[1'121] ...................................... -- risk: -134.1212 
-[1'161] ...................................... -- risk: -134.1397 
-[1'201] ...................................... -- risk: -134.1547 
-[1'241] ...................................... -- risk: -134.1669 
-[1'281] ...................................... -- risk: -134.1768 
-[1'321] ...................................... -- risk: -134.1848 
-[1'361] ...................................... -- risk: -134.1913 
-[1'401] ...................................... -- risk: -134.1966 
-[1'441] ...................................... -- risk: -134.2009 
-[1'481] ...................................... -- risk: -134.2044 
-[1'521] ...................................... -- risk: -134.2072 
-[1'561] ...................................... -- risk: -134.2095 
-[1'601] ...................................... -- risk: -134.2114 
-[1'641] ...................................... -- risk: -134.2129 
-[1'681] ...................................... -- risk: -134.2142 
-[1'721] ...................................... -- risk: -134.2152 
-[1'761] ...................................... -- risk: -134.216 
-[1'801] ...................................... -- risk: -134.2166 
-[1'841] ...................................... -- risk: -134.2172 
-[1'881] ...................................... -- risk: -134.2176 
-[1'921] ...................................... -- risk: -134.218 
-[1'961] ......................................
-Final risk: -134.2182 
-> ## true coefficients: gamma = (0.0, 0.4, -0.7),
-> ##                    alpha (= shape) = 2,
-> ##                    rho = 0
-> ## compare to coefficient estimates
-> coef(RCGmodel)
- (Intercept)           x1           x2 
- 0.006515134  0.431981395 -0.765034373 
-attr(,"offset")
-[1] 0
-> nuisance(RCGmodel)
-[1] 1.955096 0.001000
-> 
-> ## compute downstream tests 
-> ## (only suitable without early stopping, i.e., if likelihood based model converged)
-> downstream.test(RCGmodel)
-(Intercept)          x1          x2 
-  0.8986986   0.0000000   0.0000000 
-> 
-> ## compute conditional expectations
-> predictions <- predict(RCGmodel, type = "response")
-> plot(predictions, y)
-> abline(0,1)
-> 
-> ## End(Not run and test)
-> ## End(No test)
 > 
 > 
 > 
@@ -370,9 +207,6 @@ attr(,"offset")
 > 
 > 
 > cleanEx()
-
-detaching ‘package:nnet’, ‘package:MASS’
-
 > nameEx("baselearners")
 > ### * baselearners
 > 
@@ -576,25 +410,6 @@ attr(,"offset")
 >   form2 <- y ~ bols(x1) + bols(x2) + bols(x1, by = x2, intercept = FALSE) +
 +                bspatial(x1, x2, knots = 12, center = TRUE, df = 1)
 > 
-> ## No test: 
-> ############################################################
-> ## Do not run and check these examples automatically as
-> ## they take some time
-> 
->   mod1 <- gamboost(form1)
->   plot(mod1)
-> 
->   mod2 <- gamboost(form2)
->   ## automated plot function:
->   plot(mod2)
->   ## plot sum of linear and smooth effects:
->   library(lattice)
->   df <- expand.grid(x1 = unique(x1), x2 = unique(x2))
->   df$pred <- predict(mod2, newdata = df)
->   levelplot(pred ~ x1 * x2, data = df)
-> 
-> ## End(Not run and test)
-> ## End(No test)
 > 
 >   ## specify radial basis function base-learner for spatial effect
 >   ## and use data-adaptive effective range (theta = NULL, see 'args')
@@ -603,24 +418,6 @@ attr(,"offset")
 >   ## (not really a good setting)
 >   form4 <- y ~ brad(x1, x2, knots = 50, args = list(theta = 0.4))
 > 
-> ## No test: 
-> ############################################################
-> ## Do not run and check these examples automatically as
-> ## they take some time
->   mod3 <- gamboost(form3)
-Loading required namespace: fields
->   plot(mod3)
->   dim(extract(mod3, what = "design", which = "brad")[[1]])
-[1] 250 100
->   knots <- attr(extract(mod3, what = "design", which = "brad")[[1]], "knots")
-> 
->   mod4 <- gamboost(form4)
->   dim(extract(mod4, what = "design", which = "brad")[[1]])
-[1] 250  50
->   plot(mod4)
-> 
-> ## End(Not run and test)
-> ## End(No test)
 > 
 >   ### random intercept
 >   id <- factor(rep(1:10, each = 5))
@@ -865,42 +662,6 @@ bols(x_center, intercept = FALSE).x_center
 (Intercept)           x 
   -0.130000    0.000356 
 > 
-> ## No test: 
-> ############################################################
-> ## Do not run and check these examples automatically as
-> ## they take some time
-> 
->   ### large data set with ties
->   nunique <- 100
->   xindex <- sample(1:nunique, 1000000, replace = TRUE)
->   x <- runif(nunique)
->   y <- rnorm(length(xindex))
->   w <- rep.int(1, length(xindex))
-> 
->   ### brute force computations
->   op <- options()
->   options(mboost_indexmin = Inf, mboost_useMatrix = FALSE)
->   ## data pre-processing
->   b1 <- bbs(x[xindex])$dpp(w)
->   ## model fitting
->   c1 <- b1$fit(y)$model
->   options(op)
-> 
->   ### automatic search for ties, faster
->   b2 <- bbs(x[xindex])$dpp(w)
->   c2 <- b2$fit(y)$model
-> 
->   ### manual specification of ties, even faster
->   b3 <- bbs(x, index = xindex)$dpp(w)
->   c3 <- b3$fit(y)$model
-> 
->   all.equal(c1, c2)
-[1] TRUE
->   all.equal(c1, c3)
-[1] TRUE
-> 
-> ## End(Not run and test)
-> ## End(No test)
 > 
 >   ### cyclic P-splines
 >   set.seed(781)
@@ -991,40 +752,6 @@ Number of baselearners:  1
 >   volf <- matrix(fitted(mod), nrow = nrow(volcano))
 >   image(volf, main = "fitted")
 > 
-> ## No test: 
-> ############################################################
-> ## Do not run and check these examples automatically as
-> ## they take some time
-> 
->   ## the old-fashioned way, a waste of space and time
->   x <- expand.grid(x1, x2)
->   modx <- mboost(vol ~ bbs(Var2, df = 3, knots = 10) %X%
-+                        bbs(Var1, df = 3, knots = 10), data = x,
-+                        control = boost_control(nu = 0.25))
->   modx[250]
-
-	 Model-based Boosting
-
-Call:
-mboost(formula = vol ~ bbs(Var2, df = 3, knots = 10) %X% bbs(Var1,     df = 3, knots = 10), data = x, control = boost_control(nu = 0.25))
-
-
-	 Squared Error (Regression) 
-
-Loss function: (y - f)^2 
- 
-
-Number of boosting iterations: mstop = 250 
-Step size:  0.25 
-Offset:  130.1879 
-Number of baselearners:  1 
-
-> 
->   max(abs(fitted(mod) - fitted(modx)))
-[1] 2.70812e-09
-> 
-> ## End(Not run and test)
-> ## End(No test)
 > 
 >   ### setting contrasts via contrasts.arg
 >   x <- as.factor(sample(1:4, 100, replace = TRUE))
@@ -1138,9 +865,6 @@ attr(,"contrasts")$x
 > 
 > graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
-
-detaching ‘package:lattice’
-
 > nameEx("blackboost")
 > ### * blackboost
 > 
@@ -1180,45 +904,11 @@ Number of baselearners:  1
 > plot(dist ~ speed, data = cars)
 > lines(cars$speed, predict(cars.gb), col = "red")
 > 
-> ## No test: 
-> ############################################################
-> ## Do not run this example automatically as it takes
-> ## some time (~ 5-10 seconds depending on the system)
-> 
-> ### set up and plot additive tree model
-> if (require("partykit")) {
-+     ctrl <- ctree_control(maxdepth = 3)
-+     viris <- subset(iris, Species != "setosa")
-+     viris$Species <- viris$Species[, drop = TRUE]
-+     imod <- mboost(Species ~ btree(Sepal.Length, tree_controls = ctrl) +
-+                              btree(Sepal.Width, tree_controls = ctrl) +
-+                              btree(Petal.Length, tree_controls = ctrl) +
-+                              btree(Petal.Width, tree_controls = ctrl),
-+                    data = viris, family = Binomial())[500]
-+     layout(matrix(1:4, ncol = 2))
-+     plot(imod)
-+ }
-Loading required package: partykit
-Loading required package: grid
-Loading required package: libcoin
-Loading required package: mvtnorm
-
-Attaching package: ‘partykit’
-
-The following object is masked from ‘package:mboost’:
-
-    varimp
-
-> ## End(No test)
 > 
 > 
 > 
 > 
 > cleanEx()
-
-detaching ‘package:partykit’, ‘package:mvtnorm’, ‘package:libcoin’,
-  ‘package:grid’
-
 > nameEx("boost_family-class")
 > ### * boost_family-class
 > 
@@ -1256,113 +946,9 @@ Loss function: abs(y - f)
 > 
 > ### ** Examples
 > 
-> ## No test: 
-> ############################################################
-> ## Do not run these examples automatically as they take
-> ## some time (~ 30 seconds depending on the system)
-> 
-> ### a simple linear example
-> set.seed(1907)
-> data <- data.frame(x1 = rnorm(100), x2 = rnorm(100),
-+                    z = factor(sample(1:3, 100, replace = TRUE)))
-> data$y <- rnorm(100, mean = data$x1 - data$x2 - 1 * (data$z == 2) +
-+                             1 * (data$z == 3), sd = 0.1)
-> linmod <- glmboost(y ~ x1 + x2 + z, data = data,
-+                    control = boost_control(mstop = 200))
-> 
-> ## compute confidence interval from 10 samples. Usually one should use
-> ## at least 1000 samples.
-> CI <- confint(linmod, B = 10, level = 0.9)
-Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
-  zero weights
-Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
-  zero weights
-Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
-  zero weights
-Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
-  zero weights
-Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
-  zero weights
-Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
-  zero weights
-Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
-  zero weights
-Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
-  zero weights
-Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
-  zero weights
-Warning in cvrisk.mboost(mod, folds = cv(model.weights(mod), B = B.mstop),  :
-  zero weights
-> CI
-	Bootstrap Confidence Intervals
-                     5%        95%
-(Intercept) -0.03568058  0.0506726
-x1           0.98140709  1.0017749
-x2          -1.02655918 -0.9974541
-z2          -0.99526892 -0.9080530
-z3           0.98039752  1.0597156
-> 
-> ## to compute a confidence interval for another level simply change the
-> ## level in the print function:
-> print(CI, level = 0.8)
-	Bootstrap Confidence Intervals
-                    10%         90%
-(Intercept) -0.03114532  0.03218757
-x1           0.98233507  1.00064471
-x2          -1.02602355 -1.00020406
-z2          -0.98698611 -0.91337440
-z3           0.99518001  1.05128435
-> ## or print a subset (with point estimates):
-> print(CI, level = 0.8, pe = TRUE, which = "z")
-	Bootstrap Confidence Intervals
-         beta        10%        90%
-z2 -0.9609916 -0.9869861 -0.9133744
-z3  1.0131871  0.9951800  1.0512843
-> 
-> ### a simple smooth example
-> set.seed(1907)
-> data <- data.frame(x1 = rnorm(100), x2 = rnorm(100))
-> data$y <- rnorm(100, mean = data$x1^2 - sin(data$x2), sd = 0.1)
-> gam <- gamboost(y ~ x1 + x2, data = data,
-+                 control = boost_control(mstop = 200))
-> 
-> ## compute confidence interval from 10 samples. Usually one should use
-> ## at least 1000 samples.
-> CI_gam <- confint(gam, B = 10, level = 0.9)
-Start computing bootstrap confidence intervals... 
-B = 1Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
-  zero weights
-B = 2Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
-  zero weights
-B = 3Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
-  zero weights
-B = 4Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
-  zero weights
-B = 5Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
-  zero weights
-B = 6Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
-  zero weights
-B = 7Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
-  zero weights
-B = 8Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
-  zero weights
-B = 9Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
-  zero weights
-B = 10Warning in cvrisk.mboost(object = list(baselearner = list(`bbs(x1, df = dfbase)` = list( :
-  zero weights
-
-> 
-> par(mfrow = c(1, 2))
-> plot(CI_gam, which = 1)
-> plot(CI_gam, which = 2)
-> ## to compute a confidence interval for another level simply change the
-> ## level in the plot or lines function:
-> lines(CI_gam, which = 2, level = 0.8)
-> ## End(No test)
 > 
 > 
 > 
-> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("cvrisk")
 > ### * cvrisk
@@ -1518,18 +1104,6 @@ Degrees of freedom (for mstop = 45): 1.917234
 >   all(bs25 == bs25_2)
 [1] TRUE
 > 
-> ## No test: 
-> ############################################################
-> ## Do not run this example automatically as it takes
-> ## some time (~ 5 seconds depending on the system)
-> 
->   ### trees
->   blackbox <- blackboost(DEXfat ~ ., data = bodyfat)
->   cvtree <- cvrisk(blackbox, papply = lapply)
->   plot(cvtree)
->   
-> ## End(Not run this automatically)  
-> ## End(No test)
 > 
 > 
 > ### cvrisk in parallel modes:
@@ -1810,52 +1384,6 @@ detaching ‘package:Matrix’
 > 
 > ### ** Examples
 > 
-> ## No test: 
-> ############################################################
-> ## Do not run this example automatically as it takes
-> ## some time (~ 5-10 seconds depending on the system)
-> 
->   data("bodyfat", package = "TH.data")
->   set.seed(290875)
-> 
->   ### model conditional expectation of DEXfat given
->   model <- mboost(DEXfat ~
-+       bols(age) +                 ### a linear function of age
-+       btree(hipcirc, waistcirc) + ### a smooth non-linear interaction of
-+                                   ### hip and waist circumference
-+       bbs(kneebreadth),           ### a smooth function of kneebreadth
-+       data = bodyfat, control = boost_control(mstop = 100))
-> 
->   ### bootstrap for assessing `optimal' number of boosting iterations
->   cvm <- cvrisk(model, papply = lapply)
-> 
->   ### restrict model to mstop(cvm)
->   model[mstop(cvm), return = FALSE]
-NULL
->   mstop(model)
-[1] 100
-> 
->   ### plot age and kneebreadth
->   layout(matrix(1:2, nc = 2))
->   plot(model, which = c("age", "kneebreadth"))
-> 
->   ### plot interaction of hip and waist circumference
->   attach(bodyfat)
->   nd <- expand.grid(hipcirc = h <- seq(from = min(hipcirc),
-+                                   to = max(hipcirc),
-+                                   length = 100),
-+                     waistcirc = w <- seq(from = min(waistcirc),
-+                                   to = max(waistcirc),
-+                                   length = 100))
->   plot(model, which = 2, newdata = nd)
->   detach(bodyfat)
-> 
->   ### customized plot
->   layout(1)
->   pr <- predict(model, which = "hip", newdata = nd)
->   persp(x = h, y = w, z = matrix(pr, nrow = 100, ncol = 100))
-> 
-> ## End(No test)
 > 
 > 
 > 
@@ -3580,41 +3108,9 @@ Cutoff: 0.95; q: 3; PFER:  1
 PFER (specified upper bound):  1 
 PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
 > 
-> ## No test: 
-> ############################################################
-> ## Do not run and check these examples automatically as
-> ## they take some time (~ 10 seconds depending on the system)
-> 
->   ## now run stability selection
->   (sbody <- stabsel(mod, q = 3, PFER = 1, sampling.type = "MB"))
-	Stability Selection without further assumptions
-
-Selected variables:
-waistcirc   hipcirc 
-        3         4 
-
-Selection probabilities:
- (Intercept)          age elbowbreadth  kneebreadth     anthro3b     anthro3c 
-        0.00         0.00         0.00         0.02         0.10         0.17 
-     anthro4     anthro3a    waistcirc      hipcirc 
-        0.18         0.56         0.98         0.99 
-
----
-Cutoff: 0.95; q: 3; PFER:  1 
-PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
-
->   opar <- par(mai = par("mai") * c(1, 1, 1, 2.7))
->   plot(sbody)
->   par(opar)
-> 
->   plot(sbody, type = "maxsel", ymargin = 6)
-> 
-> ## End(Not run and test)
-> ## End(No test)
 > 
 > 
 > 
-> graphics::par(get("par.postscript", pos = 'CheckExEnv'))
 > cleanEx()
 > nameEx("survFit")
 > ### * survFit
@@ -3777,7 +3273,7 @@ Levels: Petal.Length < Sepal.Length, setosa < Petal.Width
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  57.256 7.676 76.818 21.038 16.022 
+Time elapsed:  5.043 0.116 5.161 0 0 
 > grDevices::dev.off()
 null device 
           1 
