@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 for f in ./R/*~; do
     rm -f $f
