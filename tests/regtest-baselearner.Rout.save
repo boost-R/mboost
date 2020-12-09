@@ -16,6 +16,8 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
+> .all.equal <- function(...) isTRUE(all.equal(...))
+> 
 > library("mboost")
 Loading required package: parallel
 Loading required package: stabs
@@ -318,8 +320,8 @@ In bols(X, df = ncol(X)) : base-learner contains missing values;
 missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > stopifnot(max(abs(coef(f1) - coef(f2))) < sqrt(.Machine$double.eps))
 > 
-> stopifnot(all.equal(get_index(data.frame(x, x)), get_index(X)))
-> stopifnot(all.equal(get_index(data.frame(x)), get_index(X)))
+> stopifnot(.all.equal(get_index(data.frame(x, x)), get_index(X)))
+> stopifnot(.all.equal(get_index(data.frame(x)), get_index(X)))
 > 
 > ### check handling of missings for cyclic effects
 > h <- hyper_bbs(data.frame(x = x), vary = "", cyclic = TRUE)
@@ -591,8 +593,8 @@ In df2lambda(X = diag(rankMatrix(X$X1, method = "qr", warn.t = FALSE) *  :
 > ### manual specification of ties, even faster
 > b3 <- bbs(x, index = xindex)$dpp(w)
 > c3 <- b3$fit(y)$model
-> stopifnot(all.equal(c1, c2))
-> stopifnot(all.equal(c1, c3))
+> stopifnot(.all.equal(c1, c2))
+> stopifnot(.all.equal(c1, c3))
 > 
 > ### new T spline monotonicity
 > library("lattice")
@@ -1336,4 +1338,4 @@ In bols(z2, by = z3) : Dropped unobserved factor levels
 > 
 > proc.time()
    user  system elapsed 
- 27.330   0.565  27.893 
+ 25.616   0.704  26.321 

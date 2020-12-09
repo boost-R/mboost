@@ -1,4 +1,6 @@
 
+.all.equal <- function(...) isTRUE(all.equal(...))
+
 require("mboost")
 require("survival")
 
@@ -17,12 +19,12 @@ aic <- AIC(cars.gb, method = "corrected")
 aic
 
 aic2 <- AIC(cars.gb, method = "corrected", df = "actset")
-stopifnot(all.equal(aic, aic2))
+stopifnot(.all.equal(aic, aic2))
 
 ht <- hatvalues(cars.gb)
 
 ## extract residual
-stopifnot(all.equal(resid(cars.gb), cars.gb$resid()))
+stopifnot(.all.equal(resid(cars.gb), cars.gb$resid()))
 par(mfrow = c(1, 2))
 plot(cars$speed, resid(cars.gb[0]))
 cars$resid <- resid(cars.gb)
@@ -45,12 +47,12 @@ lines(cars$speed, predict(smooth.spline(cars$speed, cars$dist), cars$speed)$y,
 summary(cars.gb)
 
 #### check boosting hat matrix and subsetting / predict
-stopifnot(isTRUE(all.equal(drop(attr(ht, "hatmatrix") %*% cars$dist),
+stopifnot(isTRUE(.all.equal(drop(attr(ht, "hatmatrix") %*% cars$dist),
                            as.vector(predict(cars.gb[50])))))
 ht25 <- hatvalues(cars.gb[25])
-stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% cars$dist),
+stopifnot(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% cars$dist),
                            as.vector(predict(cars.gb[25])))))
-stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% cars$dist),
+stopifnot(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% cars$dist),
                            as.vector(fitted(cars.gb[25])))))
 
 ### check boosting hat matrix with multiple independent variables
@@ -68,9 +70,9 @@ ht <- hatvalues(bf_gam)
 off <- bf_gam$offset
 u <- bf_gam$ustart
 
-stopifnot(isTRUE(all.equal(drop(attr(ht, "hatmatrix") %*% u + off),
+stopifnot(isTRUE(.all.equal(drop(attr(ht, "hatmatrix") %*% u + off),
                            as.vector(predict(bf_gam)))))
-stopifnot(isTRUE(all.equal(drop(attr(ht, "hatmatrix") %*% u + off),
+stopifnot(isTRUE(.all.equal(drop(attr(ht, "hatmatrix") %*% u + off),
                            as.vector(fitted(bf_gam)))))
 
 
@@ -125,7 +127,7 @@ stopifnot(max(abs(fitted(gc) - fitted(g))) < 1 / 10000)
 pc1 <- predict(gc)
 pc2 <- predict(gc, newdata = data.frame(xn = xn, xf = xf))
 pc3 <- predict(g)
-stopifnot(all.equal(pc1, pc2))
+stopifnot(.all.equal(pc1, pc2))
 stopifnot(max(abs(pc2 - pc3)) < 1 / 10000)
 
 ### formula interfaces
@@ -338,16 +340,16 @@ stopifnot(max(abs(predict(mod9) - predict(mod10))) < sqrt(.Machine$double.eps))
 
 ## test that mstop = 0 is possible
 compare_models <- function (m1, m2) {
-    stopifnot(all.equal(coef(m1), coef(m2)))
-    stopifnot(all.equal(predict(m1), predict(m2)))
-    stopifnot(all.equal(fitted(m1), fitted(m2)))
-    stopifnot(all.equal(as.vector(residuals(m1)), as.vector(residuals(m2))))
-    stopifnot(all.equal(selected(m1), selected(m2)))
-    stopifnot(all.equal(risk(m1), risk(m2)))
+    stopifnot(.all.equal(coef(m1), coef(m2)))
+    stopifnot(.all.equal(predict(m1), predict(m2)))
+    stopifnot(.all.equal(fitted(m1), fitted(m2)))
+    stopifnot(.all.equal(as.vector(residuals(m1)), as.vector(residuals(m2))))
+    stopifnot(.all.equal(selected(m1), selected(m2)))
+    stopifnot(.all.equal(risk(m1), risk(m2)))
     ## remove obvious differences from objects
     m1$control <- m2$control <- NULL
     m1$call <- m2$call <- NULL
-    if (!all.equal(m1, m2))
+    if (!.all.equal(m1, m2))
         stop("Objects of offset model + 1 step and model with 1 step not identical")
     invisible(NULL)
 }
@@ -361,9 +363,9 @@ mod3 <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
 stopifnot(is.null(coef(mod)))
 stopifnot(predict(mod) == rep(mod$offset, nrow(bodyfat)))
 stopifnot(fitted(mod) == rep(mod$offset, nrow(bodyfat)))
-stopifnot(all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat)))
+stopifnot(.all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat)))
 stopifnot(is.null(selected(mod)))
-stopifnot(all.equal(risk(mod), risk(mod2)[1]))
+stopifnot(.all.equal(risk(mod), risk(mod2)[1]))
 
 mstop(mod3) <- 0
 compare_models(mod, mod3)
@@ -382,9 +384,9 @@ mod3 <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
 stopifnot(is.null(coef(mod)))
 stopifnot(predict(mod) == rep(mod$offset, nrow(bodyfat)))
 stopifnot(fitted(mod) == rep(mod$offset, nrow(bodyfat)))
-stopifnot(all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat), check.attributes = FALSE))
+stopifnot(.all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat), check.attributes = FALSE))
 stopifnot(is.null(selected(mod)))
-stopifnot(all.equal(risk(mod), risk(mod2)[1]))
+stopifnot(.all.equal(risk(mod), risk(mod2)[1]))
 
 mstop(mod3) <- 0
 compare_models(mod, mod3)
