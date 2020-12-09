@@ -1,29 +1,38 @@
 Package: mboost
 Title: Model-Based Boosting
 Version: 3.0-0
-Date: 2020-12-02
-Authors@R: c(person("Torsten", "Hothorn", role = "aut", 
+Date: 2020-12-09
+Authors@R: c(person("Torsten", "Hothorn", role = c("cre", "aut"), 
+                email = "Torsten.Hothorn@R-project.org",
                 comment = c(ORCID = "0000-0001-8301-0471")),
-             person("Peter", "Buehlmann", role = "aut"),
-             person("Thomas", "Kneib", role = "aut"),
-             person("Matthias", "Schmid", role = "aut"),
-             person("Benjamin", "Hofner", role = c("aut", "cre"),
-	            email = "benjamin.hofner@pei.de", 
+             person("Peter", "Buehlmann", role = "aut",
+                    comment = c(ORCID = "0000-0002-1782-6015")),
+             person("Thomas", "Kneib", role = "aut",
+                    comment = c(ORCID = "0000-0003-3390-0972")),
+             person("Matthias", "Schmid", role = "aut",
+                    comment = c(ORCID = "0000-0002-0788-0317")),
+             person("Benjamin", "Hofner", role = "aut",
 	            comment = c(ORCID = "0000-0003-2810-3186")),
-             person("Fabian", "Sobotka", role = "ctb"),
-             person("Fabian", "Scheipl", role = "ctb"),
-	           person("Andreas", "Mayr", role = "ctb"))
+             person("Fabian", "Otto-Sobotka", role = "ctb",
+                    comment = c(ORCID = "0000-0002-9874-1311")),
+             person("Fabian", "Scheipl", role = "ctb",
+                    comment = c(ORCID = "0000-0001-8172-3603")),
+             person("Andreas", "Mayr", role = "ctb",
+                    comment = c(ORCID = "0000-0001-7106-9732")))
 Description: Functional gradient descent algorithm
   (boosting) for optimizing general risk functions utilizing
   component-wise (penalised) least squares estimates or regression
   trees as base-learners for fitting generalized linear, additive
   and interaction models to potentially high-dimensional data.
+  Models and algorithms are described in \doi{10.1214/07-STS242}, 
+  a hands-on tutorial is available from \doi{10.1007/s00180-012-0382-5}.
+  The package allows user-specified loss functions and base-learners.
 Depends: R (>= 3.2.0), methods, stats, parallel, stabs (>= 0.5-0)
 Imports: Matrix, survival, splines, lattice, nnls, quadprog, utils,
-	graphics, grDevices, partykit (>= 1.2-1)
-Suggests: TH.data, MASS, fields, BayesX, gbm, mlbench,
-    RColorBrewer, rpart (>= 4.0-3), randomForest, nnet,
-	testthat (>= 0.10.0), kangar00, sandwich, lme4
+        graphics, grDevices, partykit (>= 1.2-1)
+Suggests: TH.data, MASS, fields, BayesX, gbm, mlbench, RColorBrewer,
+        rpart (>= 4.0-3), randomForest, nnet, testthat (>= 0.10.0),
+        kangar00
 LazyData: yes
 License: GPL-2
 BugReports: https://github.com/boost-R/mboost/issues
