@@ -1,9 +1,11 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.9-4 (2020-12-02)}{
+\section{Changes in mboost version 2.9-4 (2020-12-09)}{
   \subsection{User-visible changes}{
     \itemize{
+      \item New maintainer: Torsten Hothorn follows Benjamin Hofner, who curated the 2.6-2.9 series, as
+            maintainer. All authors thank Benny for 4 years of package maintainance!
       \item Added \code{by} argument to \code{btree}; only binary factors
             are allowed.
     }
