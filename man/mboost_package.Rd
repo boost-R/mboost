@@ -241,10 +241,6 @@ License: \tab GPL-2\cr
   \bold{For more details and other changes see}\cr\code{news(Version >= "2.0-0" & Version < "2.1-0", package  = "mboost")}
 
 }
-\author{
-  Torsten Hothorn,Peter Buehlmann, Thomas Kneib, Matthias Schmid and
-  Benjamin Hofner <\email{Benjamin.Hofner@pei.de}>
-}
 
 \references{
   Peter Buehlmann and Torsten Hothorn (2007),

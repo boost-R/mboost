@@ -526,7 +526,8 @@ bl1 \%O\% bl2
 
   Benjamin Hofner, Thomas Kneib and Torsten Hothorn (2016), 
   A Unified Framework of Constrained Regression. 
-  \emph{Statistics & Computing}, \bold{26}, 1--14.
+  \emph{Statistics & Computing}, \bold{26}, 1--14. \cr
+  \doi{10.1007/s11222-014-9520-y}
   
   Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable
   selection and model choice in geoadditive regression models,

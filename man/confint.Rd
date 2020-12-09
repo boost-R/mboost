@@ -117,11 +117,12 @@
   \code{print} and/or \code{plot} functions.
 }
 \references{
-  Benjamin Hofner, Thomas Kneib and Torsten Hothorn (2014),
-  A Unified Framework of Constrained Regression. \emph{Statistics &
-    Computing}. Online first. DOI:10.1007/s11222-014-9520-y.
 
-  Preliminary version: \url{http://arxiv.org/abs/1403.7118}
+  Benjamin Hofner, Thomas Kneib and Torsten Hothorn (2016), 
+  A Unified Framework of Constrained Regression. 
+  \emph{Statistics & Computing}, \bold{26}, 1--14. \cr
+  \doi{10.1007/s11222-014-9520-y}
+
 }
 \author{
   Benjamin Hofner <benjamin.hofner@fau.de>
