@@ -1,26 +1,15 @@
 demo
-test
+tests
 www
 www_src
 inst/NEWS.html
 inst/NEWS.pdf
-<<<<<<< HEAD
-=======
 inst/IAKR51FL.DTA
 inst/india.Rdata
 inst/india.raw
->>>>>>> master
-vignettes/.*\.Rout\.save$
 checks.R
 buildCRAN
 copy_Rout_to_Routsave.R
-<<<<<<< HEAD
-svn_release.txt
-to_do_list.txt
-^\..*
-.*/auto
-.*\.yml
-=======
 SOP_release.txt
 to_do_list.txt
 ^\..*
@@ -29,4 +18,3 @@ to_do_list.txt
 ^.*\.Rproj$
 ^\.Rproj\.user$
 revdep
->>>>>>> master
