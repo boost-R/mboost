@@ -69,6 +69,11 @@ for f in *~; do
     rm -f $f
 done
 
+for f in .*~; do
+    rm -f $f
+done
+
+
 find . -name "DEADJOE" -exec rm -f {} \;
 
 exit 0
