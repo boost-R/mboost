@@ -11,8 +11,22 @@ language: r
 r:
  - release
  - devel
- 
+
+cache: packages 
+
+# for codecov
+r_packages:
+  - covr
 
 before_install:
   - tlmgr install amsmath amsfonts hyperref natbib graphics threeparttable xcolor doublestroke subfigure url tools booktabs oberdiek geometry
 
+bioc_packages:
+  - KEGGgraph
+  - biomaRt
+
+after_failure:
+  - ./travis-tool.sh dump_logs
+
+after_success:
+    Rscript -e 'library(covr); coveralls(line_exclusions = list("R/mboost_intern.R", "R/AAA.R" = 14:28))'
