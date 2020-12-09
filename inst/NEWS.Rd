@@ -7,7 +7,7 @@
       \item Tag devel version as 3.0-0.
       \item Add experimental \code{as.Family} generic, with methods
             for objects of class \code{lm}, \code{glm}, \code{coxph}, and \code{merMod}.
-      \item Some improvements in \code{stabsel}.
+      \item Add Tobias Kuehn and Almond Stoecker as contributors of \code{varimp}.
     }
   }
 }

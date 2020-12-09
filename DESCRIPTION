@@ -18,7 +18,9 @@ Authors@R: c(person("Torsten", "Hothorn", role = c("cre", "aut"),
              person("Fabian", "Scheipl", role = "ctb",
                     comment = c(ORCID = "0000-0001-8172-3603")),
              person("Andreas", "Mayr", role = "ctb",
-                    comment = c(ORCID = "0000-0001-7106-9732")))
+                    comment = c(ORCID = "0000-0001-7106-9732")),
+             person("Tobias", "Kuehn", role = "ctb"),
+             person("Almond", "Stoecker", role = "ctb"))
 Description: Functional gradient descent algorithm
   (boosting) for optimizing general risk functions utilizing
   component-wise (penalised) least squares estimates or regression
