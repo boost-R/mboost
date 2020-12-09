@@ -18,7 +18,7 @@
 \tabular{ll}{
 Package: \tab mboost\cr
 Version: \tab 3.0-0\cr
-Date: \tab 2020-12-02\cr
+Date: \tab 2020-12-09\cr
 License: \tab GPL-2\cr
 }
 
@@ -60,6 +60,15 @@ License: \tab GPL-2\cr
 
 }
 
+\section{NEWS in 3.0-series}{
+
+  Series 3.0-0 comes with new families generated on-the-fly from fitted
+  models, such as a generalised linear mixed effects model.
+
+  \bold{For more details and other changes see}\cr\code{news(Version >= "3.0-0", package  = "mboost")}
+  
+}
+
 \section{NEWS in 2.9-series}{
 
   Series 2.9 provides a new family (\code{RCG}), uses \code{partykit::ctree} 
@@ -94,6 +103,7 @@ License: \tab GPL-2\cr
   various places, vignettes were improved and a lot of bugs were fixed. 
 
   \bold{For more details and other changes see}\cr\code{news(Version >= "2.7-0", package  = "mboost")}
+  
 }
 
 \section{NEWS in 2.6-series}{
@@ -239,20 +249,23 @@ License: \tab GPL-2\cr
 \references{
   Peter Buehlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
-  \emph{Statistical Science}, \bold{22}(4), 477--505.
+  \emph{Statistical Science}, \bold{22}(4), 477--505. \cr
+  \doi{10.1214/07-STS242}
 
   Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Matthias Schmid and
   Benjamin Hofner (2010), Model-based Boosting 2.0. \emph{Journal of
-  Machine Learning Research}, \bold{11}, 2109--2113.
+  Machine Learning Research}, \bold{11}, 2109--2113. \cr
+  \url{https://jmlr.csail.mit.edu/papers/v11/hothorn10a.html}
 
   Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011),
   A framework for unbiased model selection based on boosting.
-  \emph{Journal of Computational and Graphical Statistics}, \bold{20}, 956--971.
+  \emph{Journal of Computational and Graphical Statistics}, \bold{20}, 956--971. \cr
+  \doi{10.1198/jcgs.2011.09220}
 
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
   (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
   Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
-  \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
+  \doi{10.1007/s00180-012-0382-5}
 
   Available as vignette via: \code{vignette(package = "mboost",
     "mboost_tutorial")}
@@ -260,7 +273,7 @@ License: \tab GPL-2\cr
   Souhaib Ben Taieba and Rob J. Hyndman (2014),
   A gradient boosting approach to the Kaggle load forecasting competition.
   \emph{International Journal of Forecasting}, \bold{30}, 382--394.\cr
-  \url{http://dx.doi.org/10.1016/j.ijforecast.2013.07.005}
+  \doi{10.1016/j.ijforecast.2013.07.005}
 
 }
 
