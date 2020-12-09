@@ -16,12 +16,11 @@ for f in ./man/*.ps; do
     rm -f $f
 done
 
-
-for f in ./inst/*~; do
+for f in ./inst/doc/*~; do
     rm -f $f
 done
 
-for f in ./inst/doc/*~; do
+for f in ./inst/*~; do
     rm -f $f
 done
 
