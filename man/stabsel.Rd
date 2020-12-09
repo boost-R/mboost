@@ -10,7 +10,7 @@
 }
 \usage{
 ## a method to compute stability selection paths for fitted mboost models
-\method{stabsel}{mboost}(x, cutoff, q, PFER, mstop = NULL,
+\method{stabsel}{mboost}(x, cutoff, q, PFER, grid = 0:mstop(x),
         folds = subsample(model.weights(x), B = B),
         B = ifelse(sampling.type == "MB", 100, 50),
         assumption = c("unimodal", "r-concave", "none"),
@@ -29,7 +29,7 @@
   \item{PFER}{upper bound for the per-family error rate. This
     specifies the amount of falsely selected base-learners, which is
     tolerated. See details.}
-  \item{mstop}{ maximum number of boosting iterations. }
+  \item{grid}{ a numeric vector of the form \code{0:m}. See also \code{\link{cvrisk}}. }   
   \item{folds}{ a weight matrix with number of rows equal to the number
     of observations, see \code{\link{cvrisk}} and
     \code{\link[stabs]{subsample}}. Usually one should not
@@ -42,14 +42,14 @@
     distributions of the selection probabilities and simultaneous
     selection probabilities. Only applicable for
     \code{sampling.type = "SS"}. For \code{sampling.type = "MB"} we
-    always use \code{"none"}.}
+    always use code{"none"}.}
   \item{sampling.type}{ use sampling scheme of of Shah & Samworth
-    (2013), i.e., with complementary pairs (\code{sampling.type = "SS"}),
+    (2013), i.e., with complementarty pairs (\code{sampling.type = "SS"}),
     or the original sampling scheme of Meinshausen & Buehlmann (2010).}
   \item{B}{ number of subsampling replicates. Per default, we use 50
     complementary pairs for the error bounds of Shah & Samworth (2013)
     and 100 for the error bound derived in  Meinshausen & Buehlmann
-    (2010). As we use \eqn{B} complementary pairs in the former case
+    (2010). As we use \eqn{B} complementray pairs in the former case
     this leads to \eqn{2B} subsamples.}
   \item{papply}{ (parallel) apply function, defaults to
     \code{\link[parallel]{mclapply}}. Alternatively, \code{parLapply}
