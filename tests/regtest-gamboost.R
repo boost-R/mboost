@@ -1,5 +1,5 @@
 
-.all.equal <- function(...) isTRUE(all.equal(...))
+.all.equal <- function(...) isTRUE(all.equal(..., check.environment = FALSE))
 
 require("mboost")
 require("survival")

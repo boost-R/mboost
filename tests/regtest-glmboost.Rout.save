@@ -1,5 +1,5 @@
 
-R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+R Under development (unstable) (2020-12-09 r79597) -- "Unsuffered Consequences"
 Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -16,9 +16,8 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
-> .all.equal <- function(...) isTRUE(all.equal(...))
-> require("mboost")
-Loading required package: mboost
+> .all.equal <- function(...) isTRUE(all.equal(..., check.environment = FALSE))
+> library("mboost")
 Loading required package: parallel
 Loading required package: stabs
 > 
@@ -627,4 +626,4 @@ See Warning section in ?coef.mboost
 > 
 > proc.time()
    user  system elapsed 
-  8.021   0.087   8.105 
+  9.546   0.121   9.660 

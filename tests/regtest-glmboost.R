@@ -1,6 +1,6 @@
 
-.all.equal <- function(...) isTRUE(all.equal(...))
-require("mboost")
+.all.equal <- function(...) isTRUE(all.equal(..., check.environment = FALSE))
+library("mboost")
 
 set.seed(290875)
 

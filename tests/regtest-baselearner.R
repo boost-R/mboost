@@ -1,5 +1,5 @@
 
-.all.equal <- function(...) isTRUE(all.equal(...))
+.all.equal <- function(...) isTRUE(all.equal(..., check.environment = FALSE))
 
 library("mboost")
 attach(asNamespace("mboost"))

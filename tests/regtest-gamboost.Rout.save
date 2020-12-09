@@ -1,5 +1,5 @@
 
-R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+R Under development (unstable) (2020-12-09 r79597) -- "Unsuffered Consequences"
 Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -16,7 +16,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
-> .all.equal <- function(...) isTRUE(all.equal(...))
+> .all.equal <- function(...) isTRUE(all.equal(..., check.environment = FALSE))
 > 
 > require("mboost")
 Loading required package: mboost
@@ -590,4 +590,4 @@ Warning in Xfun(mf, vary, args) :
 > 
 > proc.time()
    user  system elapsed 
-  4.479   0.089   4.560 
+  5.214   0.077   5.284 

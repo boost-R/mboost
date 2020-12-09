@@ -1,5 +1,5 @@
 
-R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+R Under development (unstable) (2020-12-09 r79597) -- "Unsuffered Consequences"
 Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -16,7 +16,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > 
-> .all.equal <- function(...) isTRUE(all.equal(...))
+> .all.equal <- function(...) isTRUE(all.equal(..., check.environment = FALSE))
 > 
 > library("mboost")
 Loading required package: parallel
@@ -1338,4 +1338,4 @@ In bols(z2, by = z3) : Dropped unobserved factor levels
 > 
 > proc.time()
    user  system elapsed 
- 25.616   0.704  26.321 
+ 30.808   0.581  31.428 
