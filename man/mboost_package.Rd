@@ -240,20 +240,23 @@ License: \tab GPL-2\cr
 \references{
   Peter Buehlmann and Torsten Hothorn (2007),
   Boosting algorithms: regularization, prediction and model fitting.
-  \emph{Statistical Science}, \bold{22}(4), 477--505.
+  \emph{Statistical Science}, \bold{22}(4), 477--505. \cr
+  \doi{10.1214/07-STS242}
 
   Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Matthias Schmid and
   Benjamin Hofner (2010), Model-based Boosting 2.0. \emph{Journal of
-  Machine Learning Research}, \bold{11}, 2109--2113.
+  Machine Learning Research}, \bold{11}, 2109--2113. \cr
+  \url{https://jmlr.csail.mit.edu/papers/v11/hothorn10a.html}
 
   Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011),
   A framework for unbiased model selection based on boosting.
-  \emph{Journal of Computational and Graphical Statistics}, \bold{20}, 956--971.
+  \emph{Journal of Computational and Graphical Statistics}, \bold{20}, 956--971. \cr
+  \doi{10.1198/jcgs.2011.09220}
 
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
   (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
   Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
-  \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
+  \doi{10.1007/s00180-012-0382-5}
 
   Available as vignette via: \code{vignette(package = "mboost",
     "mboost_tutorial")}
@@ -261,7 +264,7 @@ License: \tab GPL-2\cr
   Souhaib Ben Taieba and Rob J. Hyndman (2014),
   A gradient boosting approach to the Kaggle load forecasting competition.
   \emph{International Journal of Forecasting}, \bold{30}, 382--394.\cr
-  \url{http://dx.doi.org/10.1016/j.ijforecast.2013.07.005}
+  \doi{10.1016/j.ijforecast.2013.07.005}
 
 }
 
