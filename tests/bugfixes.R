@@ -1,4 +1,6 @@
 
+.all.equal <- function(...) isTRUE(all.equal(..., check.environment = FALSE))
+
 require("mboost")
 require("Matrix")
 
@@ -15,12 +17,12 @@ ctrl <- boost_control(mstop = 10)
 X <- cbind(int = 1, x = dummy$x)
 gb <- glmboost(x = X, y = dummy$y, family = Binomial(), center = FALSE,
                control = ctrl)
-stopifnot(all.equal(predict(gb), predict(gb, newdata = X)))
+stopifnot(.all.equal(predict(gb), predict(gb, newdata = X)))
 
 if (FALSE) {
 gb <- gamboost(x = X, y = dummy$y, family = Binomial(),
                control = ctrl)
-stopifnot(all.equal(predict(gb), predict(gb, newdata = X)))
+stopifnot(.all.equal(predict(gb), predict(gb, newdata = X)))
 }
 
 ### predict with center = TRUE in glmboost.matrix() did not work
@@ -102,8 +104,8 @@ cgc <- coef(gc, off2int = TRUE)
 cg <- coef(g, off2int = TRUE) - c(mean(xn) * coef(g)[2], 0)
 names(cgc) <- NULL
 names(cg) <- NULL
-stopifnot(all.equal(cgc, cg))
-stopifnot(all.equal(mstop(AIC(gc, "classical")),
+stopifnot(.all.equal(cgc, cg))
+stopifnot(.all.equal(mstop(AIC(gc, "classical")),
                     mstop(AIC(g, "classical"))))
 
 ### fit ANCOVA models with centering
@@ -164,7 +166,7 @@ mod2 <- glmboost(DEXfat ~ ., data = bodyfat[rep(1:n, w),], center = FALSE)
 aic2 <- AIC(mod2, "corrected")
 attributes(aic2) <- NULL
 
-stopifnot(all.equal(round(aic1, 3), round(aic2, 3)))
+stopifnot(.all.equal(round(aic1, 3), round(aic2, 3)))
 
 mod1 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl)
 aic1 <- AIC(mod1, "corrected")
@@ -174,7 +176,7 @@ mod2 <- gamboost(DEXfat ~ ., data = bodyfat[rep(1:n, w),], con = ctrl)
 aic2 <- AIC(mod2, "corrected")
 attributes(aic2) <- NULL
 
-stopifnot(all.equal(round(aic1, 1), round(aic2, 1)))
+stopifnot(.all.equal(round(aic1, 1), round(aic2, 1)))
 
 mod1 <- blackboost(DEXfat ~ ., data = bodyfat, weights = w)
 mod2 <- blackboost(DEXfat ~ ., data = bodyfat[rep(1:n, w),])
@@ -319,7 +321,7 @@ fm <- Family(ngradient = G@ngradient, risk = G@risk)
 
 m1 <- glmboost(y ~ x, family = G, center = FALSE)
 m2 <- glmboost(y ~ x, family = fm, center = FALSE)
-stopifnot(all.equal(coef(m1), coef(m2)))
+stopifnot(.all.equal(coef(m1), coef(m2)))
 
 ### formula evaluation
 f <- function() {
@@ -556,9 +558,9 @@ mod <- mboost(DEXfat ~ btree(age) + bols(waistcirc) + bbs(hipcirc),
               control = boost_control(mstop = 10),
               data = bodyfat)
 fitted(mod, newdata = bodyfat)
-stopifnot(all.equal(fitted(mod, aggregate = "cumsum")[,10], 
+stopifnot(.all.equal(fitted(mod, aggregate = "cumsum")[,10], 
                     fitted(mod), check.attributes = FALSE))
-stopifnot(all.equal(fitted(mod, aggregate = "cumsum"), 
+stopifnot(.all.equal(fitted(mod, aggregate = "cumsum"), 
                     fitted(mod, newdata = bodyfat, aggregate = "cumsum")))
 
 

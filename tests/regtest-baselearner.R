@@ -1,4 +1,6 @@
 
+.all.equal <- function(...) isTRUE(all.equal(..., check.environment = FALSE))
+
 library("mboost")
 attach(asNamespace("mboost"))
 library("MASS")
@@ -206,8 +208,8 @@ f1 <- fit(dpp(bbs(x, df = ncol(X)), w), y)
 f2 <- fit(dpp(bols(X, df = ncol(X)), w), y)
 stopifnot(max(abs(coef(f1) - coef(f2))) < sqrt(.Machine$double.eps))
 
-stopifnot(all.equal(get_index(data.frame(x, x)), get_index(X)))
-stopifnot(all.equal(get_index(data.frame(x)), get_index(X)))
+stopifnot(.all.equal(get_index(data.frame(x, x)), get_index(X)))
+stopifnot(.all.equal(get_index(data.frame(x)), get_index(X)))
 
 ### check handling of missings for cyclic effects
 h <- hyper_bbs(data.frame(x = x), vary = "", cyclic = TRUE)
@@ -416,8 +418,8 @@ c2 <- b2$fit(y)$model
 ### manual specification of ties, even faster
 b3 <- bbs(x, index = xindex)$dpp(w)
 c3 <- b3$fit(y)$model
-stopifnot(all.equal(c1, c2))
-stopifnot(all.equal(c1, c3))
+stopifnot(.all.equal(c1, c2))
+stopifnot(.all.equal(c1, c3))
 
 ### new T spline monotonicity
 library("lattice")

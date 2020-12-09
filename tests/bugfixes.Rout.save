@@ -1,5 +1,5 @@
 
-R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+R Under development (unstable) (2020-12-09 r79597) -- "Unsuffered Consequences"
 Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -15,6 +15,8 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
+> 
+> .all.equal <- function(...) isTRUE(all.equal(..., check.environment = FALSE))
 > 
 > require("mboost")
 Loading required package: mboost
@@ -36,12 +38,12 @@ Loading required package: Matrix
 > X <- cbind(int = 1, x = dummy$x)
 > gb <- glmboost(x = X, y = dummy$y, family = Binomial(), center = FALSE,
 +                control = ctrl)
-> stopifnot(all.equal(predict(gb), predict(gb, newdata = X)))
+> stopifnot(.all.equal(predict(gb), predict(gb, newdata = X)))
 > 
 > if (FALSE) {
 + gb <- gamboost(x = X, y = dummy$y, family = Binomial(),
 +                control = ctrl)
-+ stopifnot(all.equal(predict(gb), predict(gb, newdata = X)))
++ stopifnot(.all.equal(predict(gb), predict(gb, newdata = X)))
 + }
 > 
 > ### predict with center = TRUE in glmboost.matrix() did not work
@@ -143,8 +145,8 @@ See Warning section in ?coef.mboost
 
 > names(cgc) <- NULL
 > names(cg) <- NULL
-> stopifnot(all.equal(cgc, cg))
-> stopifnot(all.equal(mstop(AIC(gc, "classical")),
+> stopifnot(.all.equal(cgc, cg))
+> stopifnot(.all.equal(mstop(AIC(gc, "classical")),
 +                     mstop(AIC(g, "classical"))))
 > 
 > ### fit ANCOVA models with centering
@@ -225,7 +227,7 @@ See Warning section in ?coef.mboost
 > aic2 <- AIC(mod2, "corrected")
 > attributes(aic2) <- NULL
 > 
-> stopifnot(all.equal(round(aic1, 3), round(aic2, 3)))
+> stopifnot(.all.equal(round(aic1, 3), round(aic2, 3)))
 > 
 > mod1 <- gamboost(DEXfat ~ ., data = bodyfat, weights = w, con = ctrl)
 > aic1 <- AIC(mod1, "corrected")
@@ -235,7 +237,7 @@ See Warning section in ?coef.mboost
 > aic2 <- AIC(mod2, "corrected")
 > attributes(aic2) <- NULL
 > 
-> stopifnot(all.equal(round(aic1, 1), round(aic2, 1)))
+> stopifnot(.all.equal(round(aic1, 1), round(aic2, 1)))
 > 
 > mod1 <- blackboost(DEXfat ~ ., data = bodyfat, weights = w)
 > mod2 <- blackboost(DEXfat ~ ., data = bodyfat[rep(1:n, w),])
@@ -400,7 +402,7 @@ Error in object$newX(newdata) :
 > 
 > m1 <- glmboost(y ~ x, family = G, center = FALSE)
 > m2 <- glmboost(y ~ x, family = fm, center = FALSE)
-> stopifnot(all.equal(coef(m1), coef(m2)))
+> stopifnot(.all.equal(coef(m1), coef(m2)))
 > 
 > ### formula evaluation
 > f <- function() {
@@ -858,9 +860,9 @@ Loading required package: survival
 Warning message:
 In fitted.mboost(mod, newdata = bodyfat) :
   Argument 'newdata' was  ignored. Please use 'predict()' to make predictions for new data.
-> stopifnot(all.equal(fitted(mod, aggregate = "cumsum")[,10], 
+> stopifnot(.all.equal(fitted(mod, aggregate = "cumsum")[,10], 
 +                     fitted(mod), check.attributes = FALSE))
-> stopifnot(all.equal(fitted(mod, aggregate = "cumsum"), 
+> stopifnot(.all.equal(fitted(mod, aggregate = "cumsum"), 
 +                     fitted(mod, newdata = bodyfat, aggregate = "cumsum")))
 Warning message:
 In fitted.mboost(mod, newdata = bodyfat, aggregate = "cumsum") :
@@ -959,4 +961,4 @@ Number of baselearners:  1
 > 
 > proc.time()
    user  system elapsed 
- 34.908   0.168  35.070 
+ 35.595   0.172  35.783 

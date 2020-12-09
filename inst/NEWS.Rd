@@ -12,7 +12,6 @@
   }
 }
 
-
 \section{Changes in mboost version 2.9-4 (2020-12-09)}{
   \subsection{User-visible changes}{
     \itemize{

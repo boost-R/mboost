@@ -1,5 +1,6 @@
 
-require("mboost")
+.all.equal <- function(...) isTRUE(all.equal(..., check.environment = FALSE))
+library("mboost")
 
 set.seed(290875)
 
@@ -51,12 +52,12 @@ stopifnot(mstop(aic3) == 4)
 which(abs(coef(mydf.lm, which = "")) < abs(coef(mydf.gb[mstop(aic)], which = "")))
 
 #### check boosting hat matrix and subsetting / predict
-stopifnot(isTRUE(all.equal(drop(attr(ht, "hatmatrix") %*% mydf$y),
+stopifnot(isTRUE(.all.equal(drop(attr(ht, "hatmatrix") %*% mydf$y),
                            as.vector(predict(mydf.gb[1000])))))
 ht25 <- hatvalues(mydf.gb[25])
-stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
+stopifnot(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
                            as.vector(predict(mydf.gb[25])))))
-stopifnot(isTRUE(all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
+stopifnot(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
                            as.vector(fitted(mydf.gb[25])))))
 
 ### a simple two-dimensional example from `glmboost.Rd'
@@ -69,26 +70,26 @@ plot(cars.gb)
 ### coefficients should coincide
 cf <- coef(cars.gb)
 attr(cf, "offset") <- NULL
-stopifnot(all.equal(cf, coef(lm(dist ~ speed, data = cars))))
+stopifnot(.all.equal(cf, coef(lm(dist ~ speed, data = cars))))
 
 ### check aggregate = "none"
-stopifnot(all.equal(cumsum(c(coef(cars.gb, aggregate = "none", off2int = TRUE)$speed)),
+stopifnot(.all.equal(cumsum(c(coef(cars.gb, aggregate = "none", off2int = TRUE)$speed)),
         c(coef(cars.gb, aggregate = "cumsum", off2int = TRUE)$speed)))
 
 ### extract model terms
-stopifnot(all.equal(extract(cars.gb, what = "design"),
+stopifnot(.all.equal(extract(cars.gb, what = "design"),
                     matrix(c(rep(1, 50), cars$speed)),
                     check.attributes = FALSE))
-stopifnot(all.equal(extract(cars.gb, what = "design", which = "(Intercept)"), 
+stopifnot(.all.equal(extract(cars.gb, what = "design", which = "(Intercept)"), 
                     rep(1, 50), check.attributes = FALSE))
-stopifnot(all.equal(extract(cars.gb, what = "coefficients"), coef(cars.gb)))
-stopifnot(all.equal(extract(cars.gb, what = "residuals"), resid(cars.gb)))
-stopifnot(all.equal(extract(cars.gb, what = "variable.names"), variable.names(cars.gb)))
-stopifnot(all.equal(extract(cars.gb, what = "offset"), 0))
-stopifnot(all.equal(extract(cars.gb, what = "nuisance"), nuisance(cars.gb)))
+stopifnot(.all.equal(extract(cars.gb, what = "coefficients"), coef(cars.gb)))
+stopifnot(.all.equal(extract(cars.gb, what = "residuals"), resid(cars.gb)))
+stopifnot(.all.equal(extract(cars.gb, what = "variable.names"), variable.names(cars.gb)))
+stopifnot(.all.equal(extract(cars.gb, what = "offset"), 0))
+stopifnot(.all.equal(extract(cars.gb, what = "nuisance"), nuisance(cars.gb)))
 stopifnot(is.na(extract(cars.gb, what = "nuisance")))
-stopifnot(all.equal(extract(cars.gb, what = "weights"), model.weights(cars.gb)))
-stopifnot(all.equal(extract(cars.gb, what = "control"), boost_control(mstop = 1000, nu = 1)))
+stopifnot(.all.equal(extract(cars.gb, what = "weights"), model.weights(cars.gb)))
+stopifnot(.all.equal(extract(cars.gb, what = "control"), boost_control(mstop = 1000, nu = 1)))
 
 ### logistic regression
 mydf <- data.frame(x = runif(100), z = rnorm(100),
@@ -98,11 +99,11 @@ bmod <- glmboost(y ~ x + z, data = mydf, family = Binomial(), center = FALSE,
 gmod <- glm(y ~ x + z, data = mydf, family = binomial())
 llg <- logLik(gmod)
 attributes(llg) <- NULL
-stopifnot(all.equal(logLik(bmod), llg))
+stopifnot(.all.equal(logLik(bmod), llg))
 stopifnot(max(abs(predict(gmod, type = "link")/2 - fitted(bmod))) <
                   sqrt(.Machine$double.eps))
 cfb <- coef(bmod, off2int = TRUE) * 2
-stopifnot(all.equal(cfb, coef(gmod)))
+stopifnot(.all.equal(cfb, coef(gmod)))
 aic <- AIC(bmod, "classical")
 stopifnot(abs(AIC(gmod) - attr(aic, "AIC")[mstop(bmod)]) < 1e-5)
 
@@ -137,34 +138,34 @@ if (require("survival")) {
                        event = c(1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
                        x     = c(1, 0, 0, 1, 0, 1, 1, 1, 0, 0))
 
-    stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, method = "breslow")),
+    stopifnot(.all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, method = "breslow")),
                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test,
                        family = CoxPH(), center = FALSE,
                        control = boost_control(mstop = 2000, nu = 1)), which = 1:2)[2]))
 
-    stopifnot(all.equal(cx$loglik[2], logLik(gl)))
+    stopifnot(.all.equal(cx$loglik[2], logLik(gl)))
 
     indx <- c(1, 1, 1, 2:10)
     w <- tabulate(indx)
 
-    stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, weights = w,
+    stopifnot(.all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, weights = w,
                                    method = "breslow")),
                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test, weights = w,
                        family = CoxPH(), center = FALSE,
                        control = boost_control(mstop = 200, nu = 1)), which = 1:2)[2]))
 
-    stopifnot(all.equal(cx$loglik[2], logLik(gl)))
+    stopifnot(.all.equal(cx$loglik[2], logLik(gl)))
 
     indx <- c(1, 1, 1, 3:10)
     w <- tabulate(indx)
 
-    stopifnot(all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test[indx,],
+    stopifnot(.all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test[indx,],
                                    method = "breslow")),
                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test, weights = w,
                        family = CoxPH(), center = FALSE,
                        control = boost_control(mstop = 1000)), which = 1:2)[2], tolerance = .Machine$double.eps ^ 0.125))
 
-    stopifnot(all.equal(cx$loglik[2], logLik(gl)))
+    stopifnot(.all.equal(cx$loglik[2], logLik(gl)))
 }
 
 
@@ -207,7 +208,7 @@ gbmod <- glmboost(y ~ x1 + x2, data = df, family = Poisson(), control = ctrl,
 
 llg <- logLik(gmod)
 attributes(llg) <- NULL
-stopifnot(all.equal(logLik(gbmod), llg))
+stopifnot(.all.equal(logLik(gbmod), llg))
 
 ### hat matrix is only approximate!
 stopifnot(abs(AIC(gmod) - attr(AIC(gbmod, "classical"), "AIC")[mstop(gbmod)]) < 1)
@@ -246,16 +247,16 @@ for (i in 1:4){
 }
 ## compare which = NULL and which == c(1, 2)
 # type = "none"
-stopifnot(all.equal(pred[[1]][[1]], pred[[4]][[1]]$x1 + pred[[4]][[1]]$x2, check.attributes = FALSE))
+stopifnot(.all.equal(pred[[1]][[1]], pred[[4]][[1]]$x1 + pred[[4]][[1]]$x2, check.attributes = FALSE))
 # type = "sum"
 predictions <- as.matrix(DF[, c("x1", "x2")]) %*% matrix(coef(amod), ncol = 1) +
     attr(coef(amod), "offset")
-stopifnot(all.equal(pred[[1]][[2]], predictions, check.attributes = FALSE))
-stopifnot(all.equal(c(pred[[1]][[2]]),
+stopifnot(.all.equal(pred[[1]][[2]], predictions, check.attributes = FALSE))
+stopifnot(.all.equal(c(pred[[1]][[2]]),
                     rowSums(pred[[4]][[2]]) + attr(coef(amod), "offset"),
                     check.attributes = FALSE))
 # type = "cumsum"
-stopifnot(all.equal(pred[[1]][[3]], pred[[4]][[3]]$x1 + pred[[4]][[3]]$x2 + attr(coef(amod), "offset")))
+stopifnot(.all.equal(pred[[1]][[3]], pred[[4]][[3]]$x1 + pred[[4]][[3]]$x2 + attr(coef(amod), "offset")))
 
 ## same with names
 agg <- c("none", "sum", "cumsum")
@@ -339,21 +340,21 @@ for (i in 1:4){
 ## compare which = NULL and which == c(1, 2);
 ## The offset should be always dropped for bmod, but kept for amod
 # type = "none"
-stopifnot(all.equal(preda[[1]][[1]], preda[[4]][[1]]$x1 + preda[[4]][[1]]$x2, check.attributes = FALSE))
-stopifnot(all.equal(predb[[1]][[1]], predb[[4]][[1]]$x1 + predb[[4]][[1]]$x2, check.attributes = FALSE))
+stopifnot(.all.equal(preda[[1]][[1]], preda[[4]][[1]]$x1 + preda[[4]][[1]]$x2, check.attributes = FALSE))
+stopifnot(.all.equal(predb[[1]][[1]], predb[[4]][[1]]$x1 + predb[[4]][[1]]$x2, check.attributes = FALSE))
 # type = "sum"
 predictionsA <- as.matrix(newdata[, c("x1", "x2")]) %*% matrix(coef(amod), ncol = 1) +
     attr(coef(amod), "offset")
 predictionsB <- as.matrix(newdata[, c("x1", "x2")]) %*% matrix(coef(bmod), ncol = 1)
-stopifnot(all.equal(preda[[1]][[2]], predictionsA, check.attributes = FALSE))
-stopifnot(all.equal(predb[[1]][[2]], predictionsB, check.attributes = FALSE))
-stopifnot(all.equal(c(preda[[1]][[2]]), rowSums(preda[[4]][[2]]) + attr(coef(amod), "offset"),
+stopifnot(.all.equal(preda[[1]][[2]], predictionsA, check.attributes = FALSE))
+stopifnot(.all.equal(predb[[1]][[2]], predictionsB, check.attributes = FALSE))
+stopifnot(.all.equal(c(preda[[1]][[2]]), rowSums(preda[[4]][[2]]) + attr(coef(amod), "offset"),
                     check.attributes = FALSE))
-stopifnot(all.equal(c(predb[[1]][[2]]), rowSums(predb[[4]][[2]]),
+stopifnot(.all.equal(c(predb[[1]][[2]]), rowSums(predb[[4]][[2]]),
                     check.attributes = FALSE))
 # type = "cumsum"
-stopifnot(all.equal(predb[[1]][[3]], predb[[4]][[3]]$x1 + predb[[4]][[3]]$x2))
-stopifnot(all.equal(predb[[1]][[3]], predb[[4]][[3]]$x1 + predb[[4]][[3]]$x2))
+stopifnot(.all.equal(predb[[1]][[3]], predb[[4]][[3]]$x1 + predb[[4]][[3]]$x2))
+stopifnot(.all.equal(predb[[1]][[3]], predb[[4]][[3]]$x1 + predb[[4]][[3]]$x2))
 
 ### compare predictions with gamboost
 mod1 <- glmboost(y ~ -1 + x1 + x2 + x3, data = DF, center=FALSE)
@@ -419,7 +420,7 @@ mod <- glmboost(x = X, y = y)
 Xd <- X
 storage.mode(Xd) <- "double"
 modd <- glmboost(x = Xd, y = y)
-stopifnot(all.equal(coef(modd), coef(mod)))
+stopifnot(.all.equal(coef(modd), coef(mod)))
 
 ### probit models
 set.seed(29)
@@ -433,10 +434,10 @@ coef(mod)
 mod2 <- glmboost(y ~ x, family = Binomial(link = "probit"),
                  control = boost_control(nu = 0.5, mstop = 1000))
 coef(mod2, off2int = TRUE)
-stopifnot(all.equal(round(coef(mod), 2), round(coef(mod2, off2int = TRUE), 2)))
+stopifnot(.all.equal(round(coef(mod), 2), round(coef(mod2, off2int = TRUE), 2)))
 
 data("GlaucomaM", package = "TH.data")
 coef(mod3 <- glm(Class ~ varg, data = GlaucomaM, family = binomial(link = "probit")))
 coef(mod4 <- glmboost(Class ~ varg, data = GlaucomaM, family = Binomial(link = "probit"))[1000])
-stopifnot(all.equal(round(coef(mod3), 3), round(coef(mod4, off2int = TRUE), 3)))
+stopifnot(.all.equal(round(coef(mod3), 3), round(coef(mod4, off2int = TRUE), 3)))
 
