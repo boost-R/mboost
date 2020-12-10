@@ -13,6 +13,21 @@ install:
 before_build:
   - bash -c "echo '^travis-tool\.sh\.cmd$' >> .Rbuildignore"
 
+# Adapt as necessary starting from here
+environment:
+  global:
+    GCC_PATH: mingw_64
+    R_ARCH: x64
+    USE_RTOOLS: true
+    R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+  matrix:
+    - configuration: release
+      R_VERSION: release
+      BIOC_USE_DEVEL: "FALSE"
+    - configuration: devel
+      R_VERSION: devel
+      BIOC_USE_DEVEL: "TRUE"
+
 build_script:
   - travis-tool.sh install_bioc KEGGgraph biomaRt
   - travis-tool.sh install_deps
