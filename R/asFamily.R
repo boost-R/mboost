@@ -22,12 +22,8 @@ as.Family.lm <- function(object, ...) {
     Y <- model.response(model.frame(object))
     N <- nrow(model.frame(object))
 
-    risk <- function(y, f, w = 1) {
-        if (length(f) == 1) f <- rep(f, N)
-        if (length(w) == 1) w <- rep(w, N)
-
-        sum(lm.wfit(x = X, y = Y, w = w, offset = c(f))$residuals^2)
-    }
+    risk <- function(y, f, w = 1)
+        sum(w * (Y - (c(f) + X %*% cf))^2)
 
     ngradient <- function(y, f, w = 1) {
         if (length(f) == 1) f <- rep(f, N)
@@ -62,18 +58,17 @@ as.Family.glm <- function(object, ...) {
     Y <- model.response(model.frame(object))
     N <- nrow(model.frame(object))
 
-    fam <- family(object)$family
+    fam <- family(object)
     p <- object$rank
-    if (fam %in% c("gaussian", "Gamma", "inverse.gaussian")) 
+    if (fam$family %in% c("gaussian", "Gamma", "inverse.gaussian")) 
         p <- p + 1
 
     risk <- function(y, f, w = 1) {
-        if (length(f) == 1) f <- rep(f, N)
-        if (length(w) == 1) w <- rep(w, N)
-
-        tmp <- glm.fit(x = X, y = Y, weights = w, offset = c(f), 
-                       family = object$family)
-        return(-(p - tmp$aic / 2))
+        mu <- fam$linkin(c(f) + X %*% cf)
+        dev <- sum(fam$dev.resids(object$y, mu, w))
+        aic <- fam$aic(y = object$y, n = 1, mu = mu, wt = w)
+        ### see stats:::glm.wfit and stats:::logLik.glm
+        return(aic / 2)
     }
 
     ngradient <- function(y, f, w = 1) {
@@ -86,7 +81,8 @@ as.Family.glm <- function(object, ...) {
         stopifnot(NROW(f) == N)
 
         tmp <- glm.fit(x = X, y = Y, weights = w, offset = c(f), 
-                       family = object$family)
+                       family = fam)
+        #### see stats:::glm.wfit and stats:::logLik.glm
         if ((p - tmp$aic / 2) < logLik(model))
             warning("risk increase; decrease stepsize nu")
 
@@ -102,7 +98,7 @@ as.Family.glm <- function(object, ...) {
            offset = function(y, w) 0,
            nuisance = function() return(list(coefficients = cf)),
            name = "glm",
-           response = function(f) object$family$linkinv(f))
+           response = function(f) fam$linkinv(f))
 }
 
 model.matrix.merFamily <- function(object, ...)
@@ -120,7 +116,8 @@ as.Family.merMod <- function(object, ...) {
     environment(model@call$formula) <- env
     environment(attr(model@frame, "formula")) <- env
 
-    N <- nrow(model.frame(object))
+    N <- nrow(mf <- model.frame(object))
+    Y <- model.response(mf)
 
     ffm <- as.formula(paste(deparse(ffm[[2]]), "~ 1 - 1"))
     cl$formula <- ffm
@@ -133,18 +130,18 @@ as.Family.merMod <- function(object, ...) {
 
     offset_. <- weights_. <- start_. <- lp_. <- NA
 
+    fam <- family(object)
+
     risk <- function(y, f, w = 1) {
-        if (length(f) == 1) f <- rep(f, N)
-        if (length(w) == 1) w <- rep(w, N)
-
-        assign("offset_.", f, env)
-        assign("weights_.", w, env)
-
-        tmp <- eval(update(model, offset = offset_., weights = weights_.), env)
-        lp <- predict(tmp)
-        assign("lp_.", lp, env)
-
-        -logLik(eval(update(m0, offset = lp_., weights = weights_., evaluate = FALSE), env))
+        ### newdata removes offset from predict
+        lp <- predict(model, newdata = mf) + c(f)
+        if (inherits(object, "lmerMod"))
+            return(sum(w * (Y - lp)^2))
+        mu <- fam$linkinv(lp)
+        dev <- sum(fam$dev.resids(m0$y, mu, w))
+        aic <- fam$aic(y = m0$y, n = 1, mu = mu, wt = w, dev = dev)
+        ### see as.Family.glm@risk
+        return(aic / 2)
     }
 
     ngradient <- function(y, f, w = 1) {
@@ -191,7 +188,7 @@ as.Family.merMod <- function(object, ...) {
            offset = function(y, w) 0,
            nuisance = function() return(list(ff = ff, rf = rf, theta = theta)),
            name = "glmer",
-           response = function(f) object@resp$family$linkinv(f))
+           response = function(f) fam$linkinv(f))
 }
 
 as.Family.coxph <- function(object, ...) {
@@ -212,14 +209,20 @@ as.Family.coxph <- function(object, ...) {
     offset_. <- weights_. <- subset_. <- NA
 
     risk <- function(y, f, w = 1) {
-        if (length(f) == 1) f <- rep(f, nrow(model.frame(model)))
-        if (length(w) == 1) w <- rep(w, nrow(model.frame(model)))
 
         assign("offset_.", f, env)
         assign("weights_.", w, env)
         assign("subset_.", which(w > 0), env)
+        assign("cf_.", cf, env)
 
-        tmp <- eval(m0, env)
+        ### do not re-estimate parameters in cf but rather evaluate
+        ### partial likelihood with cf and f
+        tmp <- eval(update(model, formula = fm, 
+                           subset = subset_., 
+                           weights = weights_.,
+                           init = cf_., 
+                           control = coxph.control(iter.max = 0), 
+                           evaluate = FALSE), env)
         -logLik(tmp)
     }
 
