@@ -41,12 +41,14 @@ btree <- function(..., by = NULL, nmax = Inf,
         iby <- rep(1, NROW(mf))
     }
 
-    ret <- list(model.frame = function() {
-                    if (vary == "") return(mf)
-                    ret <- cbind(mf, by)
-                    colnames(ret)[ncol(ret)] <- vary
-                    ret
-                },
+    mffun <- function() {
+        if (vary == "") return(mf)
+        ret <- cbind(mf, by)
+        colnames(ret)[ncol(ret)] <- vary
+        ret
+    }
+
+    ret <- list(model.frame = mffun,
                 get_call = function(){
                     cll <- deparse(cll, width.cutoff=500L)
                     if (length(cll) > 1)
@@ -74,7 +76,7 @@ btree <- function(..., by = NULL, nmax = Inf,
         ### name for working response (different from any x)
         rname <- paste(sample(LETTERS, 25, replace = TRUE), collapse = "")
         fm <- as.formula(paste(rname, " ~ ", paste(colnames(mf), collapse = "+")))
-        df <- mf
+        df <- mffun()
         df[[rname]] <- y
         d <- extree_data(fm, data = df, yx = "none", 
                          nmax = c(yx = Inf, z = nmax))
@@ -103,7 +105,7 @@ btree <- function(..., by = NULL, nmax = Inf,
                 return(coef[unclass(where),,drop = FALSE] * iby)
 
             predict <- function(newdata = NULL) {
-                if (is.null(newdata)) newdata <- mymf
+                if (is.null(newdata)) newdata <- mffun()
                 vmatch <- match(names(mymf), names(newdata))
                 wh <- factor(fitted_node(tree, newdata, vmatch = vmatch), 
                              levels = levels(where), labels = levels(where))
@@ -129,7 +131,7 @@ btree <- function(..., by = NULL, nmax = Inf,
             aggregate <- match.arg(aggregate)
 
             if (is.null(newdata)) 
-                newdata <- mymf 
+                newdata <- mffun()
             if (!is.data.frame(newdata))
                 newdata <- as.data.frame(newdata)
 
