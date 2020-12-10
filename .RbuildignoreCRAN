@@ -18,3 +18,4 @@ to_do_list.txt
 ^.*\.Rproj$
 ^\.Rproj\.user$
 revdep
+README.md
