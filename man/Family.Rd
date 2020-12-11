@@ -341,10 +341,6 @@ mod <- mboost(DEXfat ~ ., data = bodyfat, family = MyGaussian())
 # N.B. that the family needs to be called with empty brackets
 
 
-\donttest{############################################################
-## Do not run and check these examples automatically as
-## they take some time
-
 ### Proportional odds model
 data(iris)
 iris$Species <- factor(iris$Species, ordered = TRUE)
@@ -361,9 +357,6 @@ coef(mod.PropOdds)["Sepal.Length"]
 ## make thresholds comparable to a model without intercept
 nuisance(mod.PropOdds) - coef(mod.PropOdds)["(Intercept)"] -
     attr(coef(mod.PropOdds), "offset")
-
-## End(Not run and test)
-}
 
 ### Multinomial logit model via a linear array model
 ## One needs to convert the data to a list
@@ -388,7 +381,7 @@ pred2 <- predict(mlm, type = "response", newdata = newdata)
 pred[1, ]
 pred2
 
-\donttest{############################################################
+\dontrun{############################################################
 ## Do not run and check these examples automatically as
 ## they take some time
 
@@ -402,10 +395,6 @@ if (require("nnet")) {
 ## End(Not run and test)
 }
 
-
-\donttest{############################################################
-## Do not run and check these examples automatically as
-## they take some time
 
 ### Example for RCG model
 ## generate covariate values
@@ -440,11 +429,6 @@ downstream.test(RCGmodel)
 predictions <- predict(RCGmodel, type = "response")
 plot(predictions, y)
 abline(0,1)
-
-## End(Not run and test)
-}
-
-
 
 }
 \keyword{models}

@@ -129,7 +129,7 @@
   \code{\link{mboost_methods}} for other methods.
 }
 \examples{
-\donttest{
+\dontrun{
 ############################################################
 ## Do not run these examples automatically as they take
 ## some time (~ 30 seconds depending on the system)

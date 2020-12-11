@@ -280,10 +280,6 @@ License: \tab GPL-2\cr
 }
 
 \examples{
-\donttest{
-############################################################
-## Do not run this example automatically as it takes
-## some time (~ 5-10 seconds depending on the system)
 
   data("bodyfat", package = "TH.data")
   set.seed(290875)
@@ -323,7 +319,6 @@ License: \tab GPL-2\cr
   pr <- predict(model, which = "hip", newdata = nd)
   persp(x = h, y = w, z = matrix(pr, nrow = 100, ncol = 100))
 
-}
 }
 
 \keyword{ package }

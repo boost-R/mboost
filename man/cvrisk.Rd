@@ -153,7 +153,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   bs25_2 <- cv(model.weights(model), type="bootstrap")
   all(bs25 == bs25_2)
 
-\donttest{
+\dontrun{
 ############################################################
 ## Do not run this example automatically as it takes
 ## some time (~ 5 seconds depending on the system)

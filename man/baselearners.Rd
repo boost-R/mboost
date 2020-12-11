@@ -619,10 +619,6 @@ bl1 \%O\% bl2
   form2 <- y ~ bols(x1) + bols(x2) + bols(x1, by = x2, intercept = FALSE) +
                bspatial(x1, x2, knots = 12, center = TRUE, df = 1)
 
-\donttest{############################################################
-## Do not run and check these examples automatically as
-## they take some time
-
   mod1 <- gamboost(form1)
   plot(mod1)
 
@@ -635,9 +631,6 @@ bl1 \%O\% bl2
   df$pred <- predict(mod2, newdata = df)
   levelplot(pred ~ x1 * x2, data = df)
 
-## End(Not run and test)
-}
-
   ## specify radial basis function base-learner for spatial effect
   ## and use data-adaptive effective range (theta = NULL, see 'args')
   form3 <- y ~ brad(x1, x2)
@@ -645,9 +638,6 @@ bl1 \%O\% bl2
   ## (not really a good setting)
   form4 <- y ~ brad(x1, x2, knots = 50, args = list(theta = 0.4))
 
-\donttest{############################################################
-## Do not run and check these examples automatically as
-## they take some time
   mod3 <- gamboost(form3)
   plot(mod3)
   dim(extract(mod3, what = "design", which = "brad")[[1]])
@@ -656,9 +646,6 @@ bl1 \%O\% bl2
   mod4 <- gamboost(form4)
   dim(extract(mod4, what = "design", which = "brad")[[1]])
   plot(mod4)
-
-## End(Not run and test)
-}
 
   ### random intercept
   id <- factor(rep(1:10, each = 5))
@@ -740,7 +727,7 @@ bl1 \%O\% bl2
   signif(cf_center, 3)
   signif(coef(lm(y ~ x, data = tmpdata)), 3)
 
-\donttest{############################################################
+\dontrun{############################################################
 ## Do not run and check these examples automatically as
 ## they take some time
 
@@ -840,7 +827,7 @@ bl1 \%O\% bl2
   volf <- matrix(fitted(mod), nrow = nrow(volcano))
   image(volf, main = "fitted")
 
-\donttest{############################################################
+\dontrun{############################################################
 ## Do not run and check these examples automatically as
 ## they take some time
 
