@@ -13,6 +13,10 @@ glmboost(y ~ x, family = G)
 
 glmboost(y ~ x, family = fm)
 
+mG <- glmboost(y ~ x, family = Gaussian())
+mH <- glmboost(y ~ x, family = Huber(10))
+all.equal(coef(mG), coef(mH))
+
 
 x <- rnorm(100)
 y <- rnbinom(length(x), size = 2, mu = exp(x * 2))
