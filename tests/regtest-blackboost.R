@@ -48,16 +48,20 @@ tctrl <- ctree_control(teststat = "max",
 bb <- mboost(medv ~ btree(crim, zn, indus, nox, age) + 
                     btree(crim, zn, indus, nox, age, by = chas), 
              data = BostonHousing)
-fitted(bb)[1:10]
-predict(bb, newdata = BostonHousing[1:10,])
+stopifnot(isTRUE(all.equal(fitted(bb)[1:10], 
+                    c(predict(bb, newdata = BostonHousing[1:10,])), 
+                    check.attributes = FALSE)))
 nd <- BostonHousing[1:10,]
 nd$chas[] <- "0"
-predict(bb, newdata = nd, which = 1)
-predict(bb, newdata = nd, which = 2)
+p0 <- predict(bb, newdata = nd, which = 1)
+stopifnot(isTRUE(all.equal(c(unique(predict(bb, newdata = nd, which = 2))), 0, 
+                           check.attributes = FALSE)))
 nd$chas[] <- "1"
-predict(bb, newdata = nd, which = 2)
-table(selected(bb))
-table(selected(bb[50]))
+p1 <- predict(bb, newdata = nd, which = 1)
+stopifnot(isTRUE(all.equal(p0, p1)))
+print(predict(bb, newdata = nd, which = 2))
+print(table(selected(bb)))
+print(table(selected(bb[50])))
 
 ### check different interfaces
 x <- as.matrix(BostonHousing[,colnames(BostonHousing) != "medv"])
