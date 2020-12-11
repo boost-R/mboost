@@ -7,6 +7,11 @@
       \item \code{btree(..., by = )} cause problems when restricting the number of boosting iterations.
     }
   }
+   \subsection{Miscellaneous}{
+   \itemize{
+      \item Speed-up vignettes.
+    }
+  }
 }
 
 \section{Changes in mboost version 2.9-4 (2020-12-09)}{

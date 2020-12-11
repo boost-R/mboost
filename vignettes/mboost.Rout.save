@@ -5,6 +5,10 @@
 
 > options(mboost_dftraceS = TRUE)
 
+> cvm <- structure(c(3.74633735312306, 5.02946541353383, 
++     3.80586309523809, 4.09154401154402, 5.18187411378943, 5.60488505747126, 
++     5.26579 .... [TRUNCATED] 
+
 > if (!require("mboost")) install.packages("mboost", 
 +     dependencies = TRUE)
 Loading required package: mboost
@@ -28,12 +32,6 @@ The following object is masked from ‘package:mboost’:
 
 
 > library("partykit")
-
-> if (file.exists("model.Rda")) {
-+     load("model.Rda")
-+     mboost <- function(...) return(model)
-+     cvrisk <- function(...) return(cvm)
-+ }
 
 > data("bodyfat", package = "TH.data")
 
@@ -84,8 +82,6 @@ Offset:  29.63
 Number of baselearners:  19 
 
 
-> cvm <- cvrisk(model, grid = 1:100 * 10)
-
 > model[mstop(cvm)]
 
 	 Model-based Boosting
@@ -135,8 +131,6 @@ Number of baselearners:  19
 > print(plot(model, which = "btree", newdata = nd, col.regions = col, 
 +     at = seq(from = -16, to = 16, length = 100)))
 
-> save(model, cvm, file = "model.Rda")
-
 > nd <- with(bodyfat, data.frame(anthro3b = seq(min(anthro3b), 
 +     max(anthro3b), length = 100)))
 
@@ -153,4 +147,4 @@ Number of baselearners:  19
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
-108.818   1.867  60.131 
+  5.094   0.067   5.159 
