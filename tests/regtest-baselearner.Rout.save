@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2020-12-09 r79597) -- "Unsuffered Consequences"
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
 Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -1335,7 +1335,157 @@ In bols(z2, by = z) : Dropped unobserved factor levels
 Warning message:
 In bols(z2, by = z3) : Dropped unobserved factor levels
 > 
+> ### bkernel
+> if (require("kangar00")) {
++     tmpdir <- tempdir()
++     wd <- setwd(tmpdir)
++     download.file("https://downloads.hindawi.com/journals/cmmm/2017/6742763.f2.zip", 
++                   destfile = "bkernel.zip", extra = "--no-check-certificate", 
++                   method = "wget", quiet = TRUE)
++     unzip("bkernel.zip")
++     txt <- readLines("Kernel_Boosting_example_code.R")
++     writeLines(txt[-c(1:10, 149:length(txt))], con = "run.R")
++     source("run.R", echo = TRUE)
++     setwd(wd)
++ }
+Loading required package: kangar00
+
+Attaching package: 'kangar00'
+
+The following object is masked from 'asNamespace("mboost")':
+
+    make_psd
+
+
+> set.seed(1104)
+
+> CORES <- 1
+
+> download <- FALSE
+
+> if (!require("KEGGgraph")) {
++     source("https://bioconductor.org/biocLite.R")
++     biocLite("KEGGgraph", suppressUpdates = TRUE)
++ }
+Loading required package: KEGGgraph
+
+Attaching package: 'KEGGgraph'
+
+The following object is masked from 'package:graphics':
+
+    plot
+
+The following object is masked from 'package:base':
+
+    plot
+
+
+> if (!require("biomaRt")) {
++     source("https://bioconductor.org/biocLite.R")
++     biocLite("biomaRt", suppressUpdates = TRUE)
++ }
+Loading required package: biomaRt
+
+> if (!require("mboost")) {
++     install.packages("mboost")
++ }
+
+> if (!require("kangar00")) {
++     install.packages("kangar00")
++ }
+
+> library("mboost")
+
+> library("kangar00")
+
+> if (download == TRUE) {
++     list.of.pathways <- list()
++     for (pw in c("hsa04662", "hsa04917", "hsa05145", "hsa05210", 
++         "hsa04024"))  .... [TRUNCATED] 
+
+> anno <- get_anno(snp.info, pathway.info)
+
+> geno <- get(load("genotype.data.Rda"))
+
+> pheno <- get(load("phenotype.data.Rda"))
+
+> gwd <- GWASdata(pheno = pheno, anno = anno, geno = geno, 
++     desc = "study_data")
+
+> data <- list(case_control_status = pheno$case_control_status, 
++     gwd = gwd)
+
+> kernels <- paste0("bkernel(gwd, kernel = \"net\", pathway = list.of.pathways[[", 
++     seq(1:length(list.of.pathways)), "]], df = 4)")
+
+> kernels <- paste(kernels, collapse = " + ")
+
+> (fm <- as.formula(paste("case_control_status ~ ", 
++     kernels)))
+case_control_status ~ bkernel(gwd, kernel = "net", pathway = list.of.pathways[[1]], 
+    df = 4) + bkernel(gwd, kernel = "net", pathway = list.of.pathways[[2]], 
+    df = 4) + bkernel(gwd, kernel = "net", pathway = list.of.pathways[[3]], 
+    df = 4) + bkernel(gwd, kernel = "net", pathway = list.of.pathways[[4]], 
+    df = 4) + bkernel(gwd, kernel = "net", pathway = list.of.pathways[[5]], 
+    df = 4)
+
+> data$case_control_status <- factor(data$case_control_status)
+
+> logit <- glm(case_control_status ~ age + sex, data = gwd@pheno, 
++     family = binomial())
+
+> summary(logit)
+
+Call:
+glm(formula = case_control_status ~ age + sex, family = binomial(), 
+    data = gwd@pheno)
+
+Deviance Residuals: 
+     Min        1Q    Median        3Q       Max  
+-1.40863  -1.16853   0.00252   1.15372   1.42560  
+
+Coefficients:
+             Estimate Std. Error z value Pr(>|z|)  
+(Intercept)  0.800774   0.464828   1.723   0.0849 .
+age         -0.012361   0.008824  -1.401   0.1612  
+sex         -0.452833   0.286332  -1.581   0.1138  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 277.26  on 199  degrees of freedom
+Residual deviance: 272.85  on 197  degrees of freedom
+AIC: 278.85
+
+Number of Fisher Scoring iterations: 4
+
+
+> mod <- mboost(fm, data = data, control = boost_control(mstop = 0, 
++     trace = TRUE), offset = predict(logit), family = Binomial())
+
+> cat("Cross-validation started.\n")
+Cross-validation started.
+
+> folds_subsampl <- cv(model.weights(mod), type = "subsampling", 
++     B = 5)
+
+> cvr <- cvrisk(mod, folds = folds_subsampl, grid = 0:20, 
++     mc.cores = CORES)
+[  1] ..................
+Final risk: 68.80205 
+[  1] ..................
+Final risk: 72.01955 
+[  1] ..................
+Final risk: 67.02656 
+[  1] ..................
+Final risk: 69.86766 
+[  1] ..................
+Final risk: 71.82216 
+
+> plot(cvr)
+There were 22 warnings (use warnings() to see them)
 > 
 > proc.time()
    user  system elapsed 
- 30.808   0.581  31.428 
+ 91.431   1.478  94.153 

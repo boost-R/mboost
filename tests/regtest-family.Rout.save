@@ -75,6 +75,11 @@ attr(,"offset")
 [1] 0.04741503
 
 > 
+> mG <- glmboost(y ~ x, family = Gaussian())
+> mH <- glmboost(y ~ x, family = Huber(10))
+> all.equal(coef(mG), coef(mH))
+[1] TRUE
+> 
 > 
 > x <- rnorm(100)
 > y <- rnbinom(length(x), size = 2, mu = exp(x * 2))
@@ -861,4 +866,4 @@ See Warning section in ?coef.mboost
 > 
 > proc.time()
    user  system elapsed 
-  8.575   0.068   8.635 
+  9.182   0.107   9.284 
