@@ -3,27 +3,18 @@ www
 www_src
 inst/NEWS.html
 inst/NEWS.pdf
-<<<<<<< HEAD
 checks.R
 buildCRAN
 copy_Rout_to_Routsave.R
 svn_release.txt
-=======
 inst/IAKR51FL.DTA
 inst/india.Rdata
 inst/india.raw
-checks.R
-buildCRAN
-copy_Rout_to_Routsave.R
 SOP_release.txt
->>>>>>> master
 to_do_list.txt
 ^\..*
 .*/auto
 .*\.yml
 ^.*\.Rproj$
 ^\.Rproj\.user$
-<<<<<<< HEAD
-=======
 revdep
->>>>>>> master
