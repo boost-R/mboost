@@ -87,6 +87,8 @@ btree <- function(..., by = NULL, nmax = Inf,
         } else {
             ### fit the model lm(rname ~ cf * vary) internally, mob-style
             ytrafo <- function(subset, weights, info, estfun, object, ...) {
+                if (length(subset) < 2 || sum(weights) == 0)
+                    return(list(estfun = Y, converged = FALSE))
                 if (sd(iby[subset]) < sqrt(.Machine$double.eps))
                     return(list(estfun = Y, converged = FALSE))
                 x <- (iby * sqrt(weights))[subset]
