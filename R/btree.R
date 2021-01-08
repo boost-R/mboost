@@ -16,7 +16,6 @@ btree <- function(..., by = NULL, nmax = Inf,
     cll <- match.call()
     cll[[1]] <- as.name("btree")
 
-    ctrl <- tree_controls
     mf <- list(...)
     if (length(mf) == 1 && is.data.frame(mf[[1]])) {
         mf <- mf[[1]]
@@ -29,7 +28,7 @@ btree <- function(..., by = NULL, nmax = Inf,
     vary <- ""
     if (!is.null(by)){
         vary <- deparse(substitute(by))
-        stopifnot(is.factor(by) || all(by %in% 0:1))
+        stopifnot(is.factor(by) || is.numeric(by))
         if (is.factor(by)) {
             stopifnot(nlevels(by) == 2L)
             xlev <- levels(by)
@@ -81,12 +80,27 @@ btree <- function(..., by = NULL, nmax = Inf,
         d <- extree_data(fm, data = df, yx = "none", 
                          nmax = c(yx = Inf, z = nmax))
         Y <- NULL
-        ytrafo <- function(subset, weights, info, estfun, object, ...) 
-            list(estfun = Y, unweighted = TRUE) 
+        if (vary == "") {
+            ytrafo <- function(subset, weights, info, estfun, object, ...) 
+                list(estfun = Y, unweighted = TRUE) 
+            tree_controls$update <- FALSE
+        } else {
+            ### fit the model lm(rname ~ cf * vary) internally, mob-style
+            ytrafo <- function(subset, weights, info, estfun, object, ...) {
+                if (sd(iby[subset]) < sqrt(.Machine$double.eps))
+                    return(list(estfun = Y, converged = FALSE))
+                x <- (iby * sqrt(weights))[subset]
+                sx2 <- sum(x^2)
+                cf <- c(x %*% (sqrt(weights) * Y)[subset] / sum(x^2))
+                list(estfun = weights * (Y - cf * iby), 
+                     coefficients = cf,
+                     objfun = NA, object = NA, converged = TRUE)
+            } 
+            tree_controls$update <- TRUE
+            tree_controls$lookahead <- TRUE
+        }
         mymf <- model.frame(d)
-        tree_controls$update <- FALSE
-        subset <- which(weights > 0 & iby == 1)
-        weights <- weights * iby
+        subset <- which(weights > 0)
 
         fitfun <- function(y) {
             if (!is.matrix(y)) y <- matrix(y, ncol = 1)
@@ -97,9 +111,11 @@ btree <- function(..., by = NULL, nmax = Inf,
                                weights = weights, ctrl = tree_controls, 
                                doFit = TRUE)$node
             where <- factor(fitted_node(tree, mymf))
-            coef <- do.call("rbind", tapply(1:NROW(y), where, function(i)
-                colSums(y[i,,drop = FALSE] * weights[i]) / sum(weights[i]), 
-                simplify = FALSE))
+            coef <- do.call("rbind", tapply(1:NROW(y), where, function(i) {
+                                x <- iby[i] * sqrt(weights[i])
+                                x %*% (sqrt(weights[i]) * y[i, drop = FALSE]) / sum(x^2)
+                            }, simplify = FALSE)
+                    )
 
             fitted <- function()
                 return(coef[unclass(where),,drop = FALSE] * iby)
@@ -112,7 +128,7 @@ btree <- function(..., by = NULL, nmax = Inf,
                 ret <- coef[unclass(wh),,drop = FALSE]
                 if (vary != "") {
                     by <- newdata[, vary]
-                    stopifnot(is.factor(by) || all(by %in% 0:1))
+                    stopifnot(is.factor(by) || is.numeric(by))
                     if (is.factor(by)) {
                         stopifnot(isTRUE(all.equal(levels(by), xlev)))
                         by <- (0:1)[by]

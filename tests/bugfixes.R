@@ -181,8 +181,7 @@ stopifnot(.all.equal(round(aic1, 1), round(aic2, 1)))
 mod1 <- blackboost(DEXfat ~ ., data = bodyfat, weights = w)
 mod2 <- blackboost(DEXfat ~ ., data = bodyfat[rep(1:n, w),])
 
-ratio <- mod1$risk() / mod2$risk()
-stopifnot(ratio[1] > 0.95 && ratio[2] < 1.05)
+stopifnot(isTRUE(all.equal(mod1$risk(), mod2$risk())))
 
 if (FALSE){
 ### df <= 2

@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2020-12-09 r79597) -- "Unsuffered Consequences"
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
 Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -242,8 +242,7 @@ See Warning section in ?coef.mboost
 > mod1 <- blackboost(DEXfat ~ ., data = bodyfat, weights = w)
 > mod2 <- blackboost(DEXfat ~ ., data = bodyfat[rep(1:n, w),])
 > 
-> ratio <- mod1$risk() / mod2$risk()
-> stopifnot(ratio[1] > 0.95 && ratio[2] < 1.05)
+> stopifnot(isTRUE(all.equal(mod1$risk(), mod2$risk())))
 > 
 > if (FALSE){
 + ### df <= 2
@@ -961,4 +960,4 @@ Number of baselearners:  1
 > 
 > proc.time()
    user  system elapsed 
- 35.595   0.172  35.783 
+ 31.258   0.163  31.424 

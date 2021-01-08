@@ -8,6 +8,7 @@
       \item Add experimental \code{as.Family} generic, with methods
             for objects of class \code{lm}, \code{glm}, \code{coxph}, and \code{merMod}.
       \item Add Tobias Kuehn and Almond Stoecker as contributors of \code{varimp}.
+      \item Generalise \code{by} argument in \code{btree} to numeric vectors.
     }
   }
 }

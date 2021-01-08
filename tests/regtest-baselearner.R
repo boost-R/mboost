@@ -524,3 +524,26 @@ mod <- mboost(y ~ bols(x, by = z))
 mod <- mboost(y ~ bols(z2, by = z))
 mod <- mboost(y ~ bols(z2, by = z3))
 
+### check btree(, by = )
+library("partykit")
+x <- runif(1000)
+grp <- gl(2, length(x) / 2)
+y <- rnorm(length(x), 1 + 2 * x * (0:1)[grp], sd = .1)
+w <- rep(1, length(x))
+
+tctrl <- ctree_control(
+         teststat = "quad", testtype = "Teststatistic", 
+         mincriterion = 0, minsplit = 2, minbucket = 2,
+         saveinfo = FALSE)
+
+m <- fit(dpp(btree(x, by = grp, tree_controls = tctrl), w), y)
+
+mf <- m$fitted()
+cf2 <- coef(lm(mf ~ 1 + x, subset = grp == "2"))
+stopifnot(.all.equal(cf2, c(1, 2), tol = .05, check.attributes = FALSE))
+
+m <- fit(dpp(btree(x, by = relevel(grp, "2"), tree_controls = tctrl), w), y)
+
+mf <- m$fitted()
+cf1 <- coef(lm(mf ~ 1 + x, subset = grp == "1"))
+stopifnot(.all.equal(cf1, c(1, 0), tol = .05, check.attributes = FALSE))
