@@ -5,7 +5,7 @@ import(stabs)
 
 import(Matrix)
 import(parallel)
-importFrom(survival, Surv, survfit)
+importFrom(survival, Surv, survfit, coxph.control)
 importFrom(splines, bs, splineDesign)
 importFrom(lattice, levelplot, barchart)
 importFrom(nnls, nnls)
