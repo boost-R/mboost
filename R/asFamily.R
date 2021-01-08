@@ -206,7 +206,7 @@ as.Family.coxph <- function(object, ...) {
                  subset = subset_., weights = weights_., evaluate = FALSE)
     environment(m0$formula) <- env
 
-    offset_. <- weights_. <- subset_. <- NA
+    offset_. <- weights_. <- subset_. <- cf_. <- NA
 
     risk <- function(y, f, w = 1) {
 
