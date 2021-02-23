@@ -838,7 +838,7 @@ bl_lin <- function(blg, Xfun, args) {
                 ## Use sparse data represenation if data set is huge
                 ## and a data.frame
                 if (is.data.frame(newdata) && nrow(newdata) > options("mboost_indexmin")[[1]]) {
-                    index <- get_index(newdata)
+                    index <- get_index(newdata[, blg$get_names(), drop = FALSE])
                     newdata <- newdata[index[[1]], , drop = FALSE]
                     index <- index[[2]]
                 }
