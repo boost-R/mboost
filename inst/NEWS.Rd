@@ -1,7 +1,7 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.9-5 (2021-03-05)}{
+\section{Changes in mboost version 2.9-5 (2021-04-06)}{
   \subsection{Bug-fixes}{
     \itemize{
       \item \code{btree(..., by = )} caused problems when restricting the number of boosting iterations.
