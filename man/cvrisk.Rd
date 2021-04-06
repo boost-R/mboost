@@ -105,7 +105,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   importance of knowing when to stop - a sequential stopping rule for
   component-wise gradient boosting. \emph{Methods of Information in
     Medicine}, \bold{51}, 178--186. \cr
-  DOI: \url{http://dx.doi.org/10.3414/ME11-02-0030}
+  DOI: \doi{10.3414/ME11-02-0030}
 
 }
 \seealso{\code{\link{AIC.mboost}} for

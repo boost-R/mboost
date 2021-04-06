@@ -620,16 +620,20 @@ bl1 \%O\% bl2
                bspatial(x1, x2, knots = 12, center = TRUE, df = 1)
 
   mod1 <- gamboost(form1)
+  \dontrun{
   plot(mod1)
+  }
 
   mod2 <- gamboost(form2)
   ## automated plot function:
   plot(mod2)
   ## plot sum of linear and smooth effects:
-  library(lattice)
+  library("lattice")
   df <- expand.grid(x1 = unique(x1), x2 = unique(x2))
   df$pred <- predict(mod2, newdata = df)
+  \dontrun{
   levelplot(pred ~ x1 * x2, data = df)
+  }
 
   ## specify radial basis function base-learner for spatial effect
   ## and use data-adaptive effective range (theta = NULL, see 'args')
@@ -639,13 +643,17 @@ bl1 \%O\% bl2
   form4 <- y ~ brad(x1, x2, knots = 50, args = list(theta = 0.4))
 
   mod3 <- gamboost(form3)
+  \dontrun{
   plot(mod3)
+  }
   dim(extract(mod3, what = "design", which = "brad")[[1]])
   knots <- attr(extract(mod3, what = "design", which = "brad")[[1]], "knots")
 
   mod4 <- gamboost(form4)
   dim(extract(mod4, what = "design", which = "brad")[[1]])
+  \dontrun{
   plot(mod4)
+  }
 
   ### random intercept
   id <- factor(rep(1:10, each = 5))
@@ -696,8 +704,10 @@ bl1 \%O\% bl2
   for (i in seq(along = levels(z)))
       with(nd[nd$z == i,], lines(x, pred_gam, col = z, lty = "dashed"))
   ### convenience function for plotting
+  \dontrun{
   par(mfrow = c(1,3))
   plot(mod_gam)
+  }
 
 
   ### remove intercept from base-learner

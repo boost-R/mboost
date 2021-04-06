@@ -309,7 +309,7 @@ distribution approximation used in Ma and Huang (2005).
     Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
     (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
     Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
-    \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
+    \doi{10.1007/s00180-012-0382-5}
 
     Available as vignette via: \code{vignette(package = "mboost", "mboost_tutorial")}
 
@@ -320,7 +320,7 @@ distribution approximation used in Ma and Huang (2005).
 
     Weinhold, L., S. Pechlivanis, S. Wahl, P. Hoffmann and M. Schmid (2016) A Statistical Model for the
     Analysis of Bounded Response Variables in DNA Methylation Studies.
-    \emph{BMC Bioinformatics}. 2016; 17: 480. \url{http://dx.doi.org/10.1186/s12859-016-1347-4}
+    \emph{BMC Bioinformatics}. 2016; 17: 480. \doi{10.1186/s12859-016-1347-4}
 }
 \seealso{\code{\link{mboost}} for the usage of \code{Family}s. See
     \code{\link{boost_family-class}} for objects resulting from a call to \code{Family}. }
