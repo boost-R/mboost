@@ -534,6 +534,6 @@ if (require("kangar00")) {
     unzip("bkernel.zip")
     txt <- readLines("Kernel_Boosting_example_code.R")
     writeLines(txt[-c(1:10, 149:length(txt))], con = "run.R")
-    source("run.R", echo = TRUE)
+    source("run.R", echo = FALSE)
     setwd(wd)
 }

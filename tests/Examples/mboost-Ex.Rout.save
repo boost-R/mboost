@@ -1,6 +1,6 @@
 
-R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
-Copyright (C) 2020 The R Foundation for Statistical Computing
+R Under development (unstable) (2021-04-05 r80145) -- "Unsuffered Consequences"
+Copyright (C) 2021 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -3478,7 +3478,8 @@ PFER corresponds to signif. level 0.1 (without multiplicity adjustment)
 > 
 > 
 > library("survival")
-> data("ovarian", package = "survival")
+> data("cancer", package = "survival")
+> 
 > 
 > fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps
 > fit <- glmboost(fm, data = ovarian, family = CoxPH(),
@@ -3626,7 +3627,7 @@ Levels: Petal.Length < Sepal.Length, setosa < Petal.Width
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  27.017 0.468 27.491 0 0 
+Time elapsed:  34.102 0.888 34.992 0 0 
 > grDevices::dev.off()
 null device 
           1 
