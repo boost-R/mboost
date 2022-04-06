@@ -43,7 +43,7 @@ void C_matprod(double *x, int nrx, int ncx,
 
     if (nrx > 0 && ncx > 0 && nry > 0 && ncy > 0) {
         F77_CALL(dgemm)(transa, transb, &nrx, &ncy, &ncx, &one,
-	                x, &nrx, y, &nry, &zero, z, &nrx);
+	                x, &nrx, y, &nry, &zero, z, &nrx FCONE FCONE);
     } else /* zero-extent operations should return zeroes */
 	for(i = 0; i < nrx*ncy; i++) z[i] = 0;
 }

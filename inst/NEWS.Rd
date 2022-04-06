@@ -1,6 +1,14 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
+\section{Changes in mboost version 2.9-6 (2022-04-06)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Fix BLAS problem.
+    }
+  }
+}
+
 \section{Changes in mboost version 2.9-5 (2021-04-06)}{
   \subsection{Bug-fixes}{
     \itemize{
