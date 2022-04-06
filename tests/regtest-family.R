@@ -265,7 +265,7 @@ glmModboost <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm", link = "pro
 glmModboost[500]
 round(rbind(coef(glmMod), coef(glmModboost, off2int =TRUE)),3)
 ## use matrix of successes and failures
-y <- matrix(ncol = 2, nrow = length(x1), data = rpois(lambda = 30, n = 2*length(x)) )
+y <- matrix(ncol = 2, nrow = length(x1), data = rpois(lambda = 30, n =2*length(x1)) )
 glmMod <- glm(y ~ x1 + x2, family = binomial())
 coef(glmMod)
 glmModboost <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm"))

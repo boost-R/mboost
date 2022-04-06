@@ -1,6 +1,6 @@
 
-R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
-Copyright (C) 2020 The R Foundation for Statistical Computing
+R Under development (unstable) (2022-04-05 r82091) -- "Unsuffered Consequences"
+Copyright (C) 2022 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -534,7 +534,7 @@ attr(,"offset")
 [1,]      -0.102 -0.201 0.145
 [2,]      -0.100 -0.196 0.141
 > ## use matrix of successes and failures
-> y <- matrix(ncol = 2, nrow = length(x1), data = rpois(lambda = 30, n = 2*length(x)) )
+> y <- matrix(ncol = 2, nrow = length(x1), data = rpois(lambda = 30, n =2*length(x1)) )
 > glmMod <- glm(y ~ x1 + x2, family = binomial())
 > coef(glmMod)
 (Intercept)          x1          x2 
@@ -577,7 +577,7 @@ attr(,"offset")
 > glmMod <- glm(y ~ x1 + x2, family = binomial())
 > coef(glmMod)
 (Intercept)          x1          x2 
- -0.1926301   1.4760665   0.7297972 
+  0.1683506   1.5157657   0.7426741 
 > glmModboost <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm"),
 +                         control = boost_control(nu = 0.2))
 > glmModboost[1000]
@@ -600,18 +600,18 @@ Loss function: {
 
 Number of boosting iterations: mstop = 1000 
 Step size:  0.2 
-Offset:  0 
+Offset:  0.1000835 
 
 Coefficients: 
 (Intercept)          x1          x2 
- -0.1930073   1.4751344   0.7291976 
+ 0.06656884  1.51242634  0.74061787 
 attr(,"offset")
-[1] 0
+[1] 0.1000835
 
 > round(rbind(coef(glmMod), coef(glmModboost, off2int =TRUE)),2)
      (Intercept)   x1   x2
-[1,]       -0.19 1.48 0.73
-[2,]       -0.19 1.48 0.73
+[1,]        0.17 1.52 0.74
+[2,]        0.17 1.51 0.74
 > 
 > 
 > ## 
@@ -866,4 +866,4 @@ See Warning section in ?coef.mboost
 > 
 > proc.time()
    user  system elapsed 
-  9.182   0.107   9.284 
+  9.246   0.120   9.368 
