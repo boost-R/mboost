@@ -79,7 +79,7 @@ plot.varimp <- function(x, percent = TRUE, type = c("variable", "blearner"),
   
   ### --------------------------------------------------
   ### check arguments
-  if( !(class(x) == "varimp") ) 
+  if( !inherits(x, "varimp") ) 
     stop(paste(deparse(substitute(x)), "is not of class varimp."))
   
   if( !(is.logical(percent)) )
