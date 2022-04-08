@@ -5,6 +5,7 @@
   \subsection{Bug-fixes}{
     \itemize{
       \item Fix BLAS problem.
+      \item More \dontrun's in manual packages
     }
   }
 }

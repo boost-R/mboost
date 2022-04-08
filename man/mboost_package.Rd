@@ -292,8 +292,12 @@ License: \tab GPL-2\cr
       bbs(kneebreadth),           ### a smooth function of kneebreadth
       data = bodyfat, control = boost_control(mstop = 100))
 
-  ### bootstrap for assessing `optimal' number of boosting iterations
-  cvm <- cvrisk(model, papply = lapply)
+  ### 10-fold cv for assessing `optimal' number of boosting iterations
+  cvm <- cvrisk(model, papply = lapply, 
+                folds = cv(model.weights(model), type = "kfold"))
+  ### probably needs larger initial mstop but the
+  ### CRAN team is picky about running times for examples
+  plot(cvm)
 
   ### restrict model to mstop(cvm)
   model[mstop(cvm), return = FALSE]

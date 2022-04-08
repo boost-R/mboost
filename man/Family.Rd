@@ -412,7 +412,7 @@ y <- M / (M + U)
 ## fit RCG model
 data <- data.frame(y, x1, x2)
 RCGmodel <- glmboost(y ~ x1 + x2, data = data, family = RCG(),
-                     control = boost_control(mstop = 2000,
+                     control = boost_control(mstop = 1000,
                      trace = TRUE, nu = 0.01))
 ## true coefficients: gamma = (0.0, 0.4, -0.7),
 ##                    alpha (= shape) = 2,

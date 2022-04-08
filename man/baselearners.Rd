@@ -626,7 +626,9 @@ bl1 \%O\% bl2
 
   mod2 <- gamboost(form2)
   ## automated plot function:
+  \dontrun{
   plot(mod2)
+  }
   ## plot sum of linear and smooth effects:
   library("lattice")
   df <- expand.grid(x1 = unique(x1), x2 = unique(x2))
