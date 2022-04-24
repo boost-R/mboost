@@ -96,7 +96,7 @@ gamboost(formula, data = list(), na.action = na.omit, weights = NULL,
 
   Matthias Schmid and Torsten Hothorn (2008),
   Boosting additive models using component-wise P-splines as
-  base-learners. \emph{Computational Statistics \& Data Analysis},
+  base-learners. \emph{Computational Statistics & Data Analysis},
   \bold{53}(2), 298--311.
 
   Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Mattthias Schmid
