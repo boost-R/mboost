@@ -15,12 +15,6 @@
   and interaction models to potentially high-dimensional data.
 }
 \details{
-\tabular{ll}{
-Package: \tab mboost\cr
-Version: \tab 2.9-3\cr
-Date: \tab 2020-07-29\cr
-License: \tab GPL-2\cr
-}
 
   This package is intended for modern regression modeling and stands
   in-between classical generalized linear and additive models, as for example
