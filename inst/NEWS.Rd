@@ -1,11 +1,19 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
+\section{Changes in mboost version 2.9-7 (2022-04-25)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Don't escape &
+    }
+  }
+}
+
 \section{Changes in mboost version 2.9-6 (2022-04-06)}{
   \subsection{Bug-fixes}{
     \itemize{
       \item Fix BLAS problem.
-      \item More \dontrun's in manual packages
+      \item More \samp{\\dontrun} in manual packages
     }
   }
 }
