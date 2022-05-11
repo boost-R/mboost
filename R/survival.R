@@ -29,7 +29,7 @@ survFit.mboost <- function(object, newdata = NULL, ...)
     devent <- n.event > 0
     if (!is.null(newdata)){
         S <- exp( tcrossprod( -H, exp(as.numeric(predict(object,
-        newdata=newdata)- mean(predict(object)))) ))[devent,]
+        newdata=newdata)- mean(predict(object)))) ))[devent, , drop = FALSE]
         colnames(S) <- rownames(newdata)
     } else S <- matrix(exp(-H)[devent], ncol = 1)
 
