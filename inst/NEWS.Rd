@@ -1,6 +1,14 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
+\section{Changes in mboost version 2.9-8 (2023-03-09)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item S3 argument mismatch
+    }
+  }
+}
+
 \section{Changes in mboost version 2.9-7 (2022-04-25)}{
   \subsection{Bug-fixes}{
     \itemize{
@@ -8,6 +16,7 @@
     }
   }
 }
+
 
 \section{Changes in mboost version 2.9-6 (2022-04-06)}{
   \subsection{Bug-fixes}{
