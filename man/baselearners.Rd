@@ -620,24 +620,23 @@ bl1 \%O\% bl2
   form2 <- y ~ bols(x1) + bols(x2) + bols(x1, by = x2, intercept = FALSE) +
                bspatial(x1, x2, knots = 12, center = TRUE, df = 1)
 
-\donttest{############################################################
-## Do not run and check these examples automatically as
-## they take some time
-
   mod1 <- gamboost(form1)
+  \dontrun{
   plot(mod1)
+  }
 
   mod2 <- gamboost(form2)
   ## automated plot function:
+  \dontrun{
   plot(mod2)
+  }
   ## plot sum of linear and smooth effects:
-  library(lattice)
+  library("lattice")
   df <- expand.grid(x1 = unique(x1), x2 = unique(x2))
   df$pred <- predict(mod2, newdata = df)
+  \dontrun{
   levelplot(pred ~ x1 * x2, data = df)
-
-## End(Not run and test)
-}
+  }
 
   ## specify radial basis function base-learner for spatial effect
   ## and use data-adaptive effective range (theta = NULL, see 'args')
@@ -646,20 +645,18 @@ bl1 \%O\% bl2
   ## (not really a good setting)
   form4 <- y ~ brad(x1, x2, knots = 50, args = list(theta = 0.4))
 
-\donttest{############################################################
-## Do not run and check these examples automatically as
-## they take some time
   mod3 <- gamboost(form3)
+  \dontrun{
   plot(mod3)
+  }
   dim(extract(mod3, what = "design", which = "brad")[[1]])
   knots <- attr(extract(mod3, what = "design", which = "brad")[[1]], "knots")
 
   mod4 <- gamboost(form4)
   dim(extract(mod4, what = "design", which = "brad")[[1]])
+  \dontrun{
   plot(mod4)
-
-## End(Not run and test)
-}
+  }
 
   ### random intercept
   id <- factor(rep(1:10, each = 5))
@@ -710,8 +707,10 @@ bl1 \%O\% bl2
   for (i in seq(along = levels(z)))
       with(nd[nd$z == i,], lines(x, pred_gam, col = z, lty = "dashed"))
   ### convenience function for plotting
+  \dontrun{
   par(mfrow = c(1,3))
   plot(mod_gam)
+  }
 
 
   ### remove intercept from base-learner
@@ -741,7 +740,7 @@ bl1 \%O\% bl2
   signif(cf_center, 3)
   signif(coef(lm(y ~ x, data = tmpdata)), 3)
 
-\donttest{############################################################
+\dontrun{############################################################
 ## Do not run and check these examples automatically as
 ## they take some time
 
@@ -841,7 +840,7 @@ bl1 \%O\% bl2
   volf <- matrix(fitted(mod), nrow = nrow(volcano))
   image(volf, main = "fitted")
 
-\donttest{############################################################
+\dontrun{############################################################
 ## Do not run and check these examples automatically as
 ## they take some time
 

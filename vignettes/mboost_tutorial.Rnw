@@ -88,6 +88,7 @@ if (compareVersion(pd$Version, "2.1-0") < 0){ # must be mboost 2.1-X or newer
     warning("Current version of mboost is installed!")
     install.packages("mboost", repos = "http://cran.at.r-project.org")
 }
+options(digits = 3)
 require("mboost")
 set.seed(190781)
 ### make graphics directory if not existing

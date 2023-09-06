@@ -40,6 +40,29 @@ if (!inherits(tst, "try-error")) {
     }
 }
 
+### with by-argument, a certain type of interaction
+tctrl <- ctree_control(teststat = "max",
+                       testtype = "Teststatistic",
+                       mincriterion = 0,
+                       maxdepth = 2)
+bb <- mboost(medv ~ btree(crim, zn, indus, nox, age) + 
+                    btree(crim, zn, indus, nox, age, by = chas), 
+             data = BostonHousing)
+stopifnot(isTRUE(all.equal(fitted(bb)[1:10], 
+                    c(predict(bb, newdata = BostonHousing[1:10,])), 
+                    check.attributes = FALSE)))
+nd <- BostonHousing[1:10,]
+nd$chas[] <- "0"
+p0 <- predict(bb, newdata = nd, which = 1)
+stopifnot(isTRUE(all.equal(c(unique(predict(bb, newdata = nd, which = 2))), 0, 
+                           check.attributes = FALSE)))
+nd$chas[] <- "1"
+p1 <- predict(bb, newdata = nd, which = 1)
+stopifnot(isTRUE(all.equal(p0, p1)))
+print(predict(bb, newdata = nd, which = 2))
+print(table(selected(bb)))
+print(table(selected(bb[50])))
+
 ### check different interfaces
 x <- as.matrix(BostonHousing[,colnames(BostonHousing) != "medv"])
 y <- BostonHousing$medv

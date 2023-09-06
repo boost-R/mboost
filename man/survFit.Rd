@@ -45,7 +45,8 @@
 \examples{
 
 library("survival")
-data("ovarian", package = "survival")
+data("cancer", package = "survival")
+
 
 fm <- Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps
 fit <- glmboost(fm, data = ovarian, family = CoxPH(),

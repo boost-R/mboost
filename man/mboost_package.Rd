@@ -15,12 +15,15 @@
   and interaction models to potentially high-dimensional data.
 }
 \details{
+<<<<<<< HEAD
 \tabular{ll}{
 Package: \tab mboost\cr
 Version: \tab 3.0-0\cr
 Date: \tab 2020-12-09\cr
 License: \tab GPL-2\cr
 }
+=======
+>>>>>>> master
 
   This package is intended for modern regression modeling and stands
   in-between classical generalized linear and additive models, as for example
@@ -285,10 +288,6 @@ License: \tab GPL-2\cr
 }
 
 \examples{
-\donttest{
-############################################################
-## Do not run this example automatically as it takes
-## some time (~ 5-10 seconds depending on the system)
 
   data("bodyfat", package = "TH.data")
   set.seed(290875)
@@ -301,8 +300,12 @@ License: \tab GPL-2\cr
       bbs(kneebreadth),           ### a smooth function of kneebreadth
       data = bodyfat, control = boost_control(mstop = 100))
 
-  ### bootstrap for assessing `optimal' number of boosting iterations
-  cvm <- cvrisk(model, papply = lapply)
+  ### 10-fold cv for assessing `optimal' number of boosting iterations
+  cvm <- cvrisk(model, papply = lapply, 
+                folds = cv(model.weights(model), type = "kfold"))
+  ### probably needs larger initial mstop but the
+  ### CRAN team is picky about running times for examples
+  plot(cvm)
 
   ### restrict model to mstop(cvm)
   model[mstop(cvm), return = FALSE]
@@ -328,7 +331,6 @@ License: \tab GPL-2\cr
   pr <- predict(model, which = "hip", newdata = nd)
   persp(x = h, y = w, z = matrix(pr, nrow = 100, ncol = 100))
 
-}
 }
 
 \keyword{ package }

@@ -26,8 +26,8 @@ Description: Functional gradient descent algorithm
   component-wise (penalised) least squares estimates or regression
   trees as base-learners for fitting generalized linear, additive
   and interaction models to potentially high-dimensional data.
-  Models and algorithms are described in \doi{10.1214/07-STS242}, 
-  a hands-on tutorial is available from \doi{10.1007/s00180-012-0382-5}.
+  Models and algorithms are described in <doi:10.1214/07-STS242>,
+  a hands-on tutorial is available from <doi:10.1007/s00180-012-0382-5>.
   The package allows user-specified loss functions and base-learners.
 Depends: R (>= 3.2.0), methods, stats, parallel, stabs (>= 0.5-0)
 Imports: Matrix, survival, splines, lattice, nnls, quadprog, utils,

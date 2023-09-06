@@ -96,7 +96,7 @@ gamboost(formula, data = list(), na.action = na.omit, weights = NULL,
 
   Matthias Schmid and Torsten Hothorn (2008),
   Boosting additive models using component-wise P-splines as
-  base-learners. \emph{Computational Statistics \& Data Analysis},
+  base-learners. \emph{Computational Statistics & Data Analysis},
   \bold{53}(2), 298--311.
 
   Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Mattthias Schmid
@@ -107,7 +107,7 @@ gamboost(formula, data = list(), na.action = na.omit, weights = NULL,
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
   (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
   Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
-  \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
+  \doi{10.1007/s00180-012-0382-5}
 
   Available as vignette via: \code{vignette(package = "mboost", "mboost_tutorial")}
 }

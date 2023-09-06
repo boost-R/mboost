@@ -447,7 +447,422 @@ See Warning section in ?coef.mboost
 +   
 + }
 > 
+<<<<<<< HEAD
 > 
 > proc.time()
    user  system elapsed 
  10.752   0.091  10.847 
+=======
+> ## check Binomial(type = "glm")
+> glmModboost <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm"))
+> glmModboost[1000] 
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ x1 + x2, family = Binomial(type = "glm"))
+
+
+	 Binomial Distribution (similar to glm) 
+
+Loss function: { 
+     ntrials <- rowSums(y) 
+     y <- y[, 1] 
+     p <- link$linkinv(f) 
+     -dbinom(x = y, size = ntrials, prob = p, log = log) 
+ } 
+ 
+
+Number of boosting iterations: mstop = 1000 
+Step size:  0.1 
+Offset:  -0.06001801 
+
+Coefficients: 
+(Intercept)          x1          x2 
+-0.09562402 -0.29960765  0.21829889 
+attr(,"offset")
+[1] -0.06001801
+
+> round(rbind(coef(glmMod), coef(glmModboost, off2int =TRUE), 2*coef(mod, off2int = TRUE)),3)
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+     (Intercept)    x1    x2
+[1,]      -0.136 -0.02 0.172
+[2,]      -0.156 -0.30 0.218
+[3,]      -0.136 -0.02 0.172
+> ## use different link
+> glmMod <- glm(y ~ x1 + x2, family = binomial(link = "probit"))
+> coef(glmMod)
+(Intercept)          x1          x2 
+ -0.1018936  -0.2012023   0.1448793 
+> glmModboost <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm", link = "probit"))
+> glmModboost[500]
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ x1 + x2, family = Binomial(type = "glm",     link = "probit"))
+
+
+	 Binomial Distribution (similar to glm) 
+
+Loss function: { 
+     ntrials <- rowSums(y) 
+     y <- y[, 1] 
+     p <- link$linkinv(f) 
+     -dbinom(x = y, size = ntrials, prob = p, log = log) 
+ } 
+ 
+
+Number of boosting iterations: mstop = 500 
+Step size:  0.1 
+Offset:  -0.03760829 
+
+Coefficients: 
+(Intercept)          x1          x2 
+-0.06246989 -0.19603232  0.14148039 
+attr(,"offset")
+[1] -0.03760829
+
+> round(rbind(coef(glmMod), coef(glmModboost, off2int =TRUE)),3)
+     (Intercept)     x1    x2
+[1,]      -0.102 -0.201 0.145
+[2,]      -0.100 -0.196 0.141
+> ## use matrix of successes and failures
+> y <- matrix(ncol = 2, nrow = length(x1), data = rpois(lambda = 30, n =2*length(x1)) )
+> glmMod <- glm(y ~ x1 + x2, family = binomial())
+> coef(glmMod)
+(Intercept)          x1          x2 
+ 0.01105974  0.00994127 -0.03606502 
+> glmModboost <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm"))
+> glmModboost[500]
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ x1 + x2, family = Binomial(type = "glm"))
+
+
+	 Binomial Distribution (similar to glm) 
+
+Loss function: { 
+     ntrials <- rowSums(y) 
+     y <- y[, 1] 
+     p <- link$linkinv(f) 
+     -dbinom(x = y, size = ntrials, prob = p, log = log) 
+ } 
+ 
+
+Number of boosting iterations: mstop = 500 
+Step size:  0.1 
+Offset:  0.006259969 
+
+Coefficients: 
+ (Intercept)           x1           x2 
+ 0.004799774  0.009941270 -0.036065023 
+attr(,"offset")
+[1] 0.006259969
+
+> round(rbind(coef(glmMod), coef(glmModboost, off2int =TRUE)),3)
+     (Intercept)   x1     x2
+[1,]       0.011 0.01 -0.036
+[2,]       0.011 0.01 -0.036
+> ## use binary vector
+> y <- rbinom(prob = plogis(x1 + x2), size = 1, n = length(x1))
+> glmMod <- glm(y ~ x1 + x2, family = binomial())
+> coef(glmMod)
+(Intercept)          x1          x2 
+  0.1683506   1.5157657   0.7426741 
+> glmModboost <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm"),
++                         control = boost_control(nu = 0.2))
+> glmModboost[1000]
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ x1 + x2, family = Binomial(type = "glm"),     control = boost_control(nu = 0.2))
+
+
+	 Binomial Distribution (similar to glm) 
+
+Loss function: { 
+     ntrials <- rowSums(y) 
+     y <- y[, 1] 
+     p <- link$linkinv(f) 
+     -dbinom(x = y, size = ntrials, prob = p, log = log) 
+ } 
+ 
+
+Number of boosting iterations: mstop = 1000 
+Step size:  0.2 
+Offset:  0.1000835 
+
+Coefficients: 
+(Intercept)          x1          x2 
+ 0.06656884  1.51242634  0.74061787 
+attr(,"offset")
+[1] 0.1000835
+
+> round(rbind(coef(glmMod), coef(glmModboost, off2int =TRUE)),2)
+     (Intercept)   x1   x2
+[1,]        0.17 1.52 0.74
+[2,]        0.17 1.51 0.74
+> 
+> 
+> ## 
+> ## Binomial with other links
+> ## and interface type = "adaboost" or "glm"
+> set.seed(123)
+> y <- as.factor(sample(0:1, 100, replace = TRUE))
+> x1 <- rnorm(100)
+> x2 <- rnorm(100)
+> 
+> mod <- glmboost(y ~ x1 + x2, family = Binomial(type = "adaboost", link = "cauchit"))
+> mod[500]
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ x1 + x2, family = Binomial(type = "adaboost",     link = "cauchit"))
+
+
+	 Negative Binomial Likelihood -- cauchit link 
+
+Loss function: { 
+     p <- link$linkinv(f) 
+     y <- (y + 1)/2 
+     -y * log(p) - (1 - y) * log(1 - p) 
+ } 
+ 
+
+Number of boosting iterations: mstop = 500 
+Step size:  0.1 
+Offset:  -0.2235265 
+
+Coefficients: 
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+ (Intercept)           x1           x2 
+-0.007410285 -0.017629960 -0.197800409 
+attr(,"offset")
+[1] -0.2235265
+
+> mod2 <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm", link = "cauchit"))
+> mod2[500]
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ x1 + x2, family = Binomial(type = "glm",     link = "cauchit"))
+
+
+	 Binomial Distribution (similar to glm) 
+
+Loss function: { 
+     ntrials <- rowSums(y) 
+     y <- y[, 1] 
+     p <- link$linkinv(f) 
+     -dbinom(x = y, size = ntrials, prob = p, log = log) 
+ } 
+ 
+
+Number of boosting iterations: mstop = 500 
+Step size:  0.1 
+Offset:  -0.110401 
+
+Coefficients: 
+(Intercept)          x1          x2 
+-0.12023054 -0.01733872 -0.19738975 
+attr(,"offset")
+[1] -0.110401
+
+> glmMod <- glm(y ~ x1 + x2 , family = binomial(link = "cauchit"))
+> stopifnot(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+> rbind(coef(glmMod), coef(mod, off2int = TRUE), coef(mod2, off2int = TRUE))
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+     (Intercept)          x1         x2
+[1,]  -0.2312005 -0.01788017 -0.1981612
+[2,]  -0.2309368 -0.01762996 -0.1978004
+[3,]  -0.2306316 -0.01733872 -0.1973898
+> 
+> mod <- glmboost(y ~ x1 + x2, family = Binomial(type = "adaboost", link = "probit"))
+> mod[500]
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ x1 + x2, family = Binomial(type = "adaboost",     link = "probit"))
+
+
+	 Negative Binomial Likelihood -- probit link 
+
+Loss function: { 
+     p <- link$linkinv(f) 
+     y <- (y + 1)/2 
+     -y * log(p) - (1 - y) * log(1 - p) 
+ } 
+ 
+
+Number of boosting iterations: mstop = 500 
+Step size:  0.1 
+Offset:  -0.1763742 
+
+Coefficients: 
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+  (Intercept)            x1            x2 
+-6.006544e-05 -1.129000e-02 -1.404508e-01 
+attr(,"offset")
+[1] -0.1763742
+
+> glmMod <- glm(y ~ x1 + x2 , family = binomial(link = "probit"))
+> stopifnot(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+> mod2 <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm", link = "probit"))
+> mod2[500]
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ x1 + x2, family = Binomial(type = "glm",     link = "probit"))
+
+
+	 Binomial Distribution (similar to glm) 
+
+Loss function: { 
+     ntrials <- rowSums(y) 
+     y <- y[, 1] 
+     p <- link$linkinv(f) 
+     -dbinom(x = y, size = ntrials, prob = p, log = log) 
+ } 
+ 
+
+Number of boosting iterations: mstop = 500 
+Step size:  0.1 
+Offset:  -0.08784484 
+
+Coefficients: 
+(Intercept)          x1          x2 
+-0.08858786 -0.01128836 -0.14044916 
+attr(,"offset")
+[1] -0.08784484
+
+> rbind(coef(glmMod), coef(mod, off2int = TRUE), coef(mod2, off2int = TRUE))
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+     (Intercept)          x1         x2
+[1,]  -0.1764348 -0.01129052 -0.1404515
+[2,]  -0.1764342 -0.01129000 -0.1404508
+[3,]  -0.1764327 -0.01128836 -0.1404492
+> 
+> 
+> mod <- glmboost(y ~ x1 + x2, family = Binomial(type = "adaboost", link = "log"))
+> mod[500]
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ x1 + x2, family = Binomial(type = "adaboost",     link = "log"))
+
+
+	 Negative Binomial Likelihood -- log link 
+
+Loss function: { 
+     p <- link$linkinv(f) 
+     y <- (y + 1)/2 
+     -y * log(p) - (1 - y) * log(1 - p) 
+ } 
+ 
+
+Number of boosting iterations: mstop = 500 
+Step size:  0.1 
+Offset:  -0.8439701 
+
+Coefficients: 
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+ (Intercept)           x1           x2 
+-0.005874508 -0.003759397 -0.141144724 
+attr(,"offset")
+[1] -0.8439701
+
+> glmMod <- glm(y ~ x1 + x2 , family = binomial(link = "log"))
+> stopifnot(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+> mod2 <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm", link = "log"))
+> mod2[500]
+
+	 Generalized Linear Models Fitted via Gradient Boosting
+
+Call:
+glmboost.formula(formula = y ~ x1 + x2, family = Binomial(type = "glm",     link = "log"))
+
+
+	 Binomial Distribution (similar to glm) 
+
+Loss function: { 
+     ntrials <- rowSums(y) 
+     y <- y[, 1] 
+     p <- link$linkinv(f) 
+     -dbinom(x = y, size = ntrials, prob = p, log = log) 
+ } 
+ 
+
+Number of boosting iterations: mstop = 500 
+Step size:  0.1 
+Offset:  -0.7657179 
+
+Coefficients: 
+ (Intercept)           x1           x2 
+-0.084126052 -0.003758924 -0.141143977 
+attr(,"offset")
+[1] -0.7657179
+
+> rbind(coef(glmMod), coef(mod, off2int = TRUE), coef(mod2, off2int = TRUE))
+
+NOTE: Coefficients from a Binomial model are half the size of coefficients
+ from a model fitted via glm(... , family = 'binomial').
+See Warning section in ?coef.mboost
+
+     (Intercept)           x1         x2
+[1,]  -0.8498452 -0.003762303 -0.1411426
+[2,]  -0.8498446 -0.003759397 -0.1411447
+[3,]  -0.8498439 -0.003758924 -0.1411440
+> 
+> 
+> proc.time()
+   user  system elapsed 
+  9.246   0.120   9.368 
+>>>>>>> master

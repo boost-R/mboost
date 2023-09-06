@@ -93,7 +93,7 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
   (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
   Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
-  \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
+  \doi{10.1007/s00180-012-0382-5}
 
   Available as vignette via: \code{vignette(package = "mboost", "mboost_tutorial")}
 

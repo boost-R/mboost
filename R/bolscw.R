@@ -120,5 +120,5 @@ coef.bm_cwlin <- function(object, all = FALSE, ...) {
 }
 
 ### extract hatmatrix
-hatvalues.bl_cwlin <- function(model)
+hatvalues.bl_cwlin <- function(model, ...)
     model$hatvalues()

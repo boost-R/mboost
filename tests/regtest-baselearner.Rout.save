@@ -1,6 +1,11 @@
 
+<<<<<<< HEAD
 R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
 Copyright (C) 2020 The R Foundation for Statistical Computing
+=======
+R Under development (unstable) (2021-04-05 r80145) -- "Unsuffered Consequences"
+Copyright (C) 2021 The R Foundation for Statistical Computing
+>>>>>>> master
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -1335,6 +1340,7 @@ In bols(z2, by = z) : Dropped unobserved factor levels
 Warning message:
 In bols(z2, by = z3) : Dropped unobserved factor levels
 > 
+<<<<<<< HEAD
 > ### check btree(, by = )
 > library("partykit")
 Loading required package: grid
@@ -1376,3 +1382,56 @@ The following object is masked from 'package:mboost':
 > proc.time()
    user  system elapsed 
  25.709   0.652  26.356 
+=======
+> ### bkernel
+> if (require("kangar00")) {
++     tmpdir <- tempdir()
++     wd <- setwd(tmpdir)
++     download.file("https://downloads.hindawi.com/journals/cmmm/2017/6742763.f2.zip", 
++                   destfile = "bkernel.zip", extra = "--no-check-certificate", 
++                   method = "wget", quiet = TRUE)
++     unzip("bkernel.zip")
++     txt <- readLines("Kernel_Boosting_example_code.R")
++     writeLines(txt[-c(1:10, 149:length(txt))], con = "run.R")
++     source("run.R", echo = FALSE)
++     setwd(wd)
++ }
+Loading required package: kangar00
+
+Attaching package: 'kangar00'
+
+The following object is masked from 'asNamespace("mboost")':
+
+    make_psd
+
+Loading required package: KEGGgraph
+
+Attaching package: 'KEGGgraph'
+
+The following object is masked from 'package:graphics':
+
+    plot
+
+The following object is masked from 'package:base':
+
+    plot
+
+Loading required package: biomaRt
+Cross-validation started.
+[  1] ..................
+Final risk: 74.92605 
+[  1] ..................
+Final risk: 66.94996 
+[  1] ..................
+Final risk: 69.67069 
+[  1] ..................
+Final risk: 66.76257 
+[  1] ..................
+Final risk: 70.07644 
+Warning message:
+no DISPLAY variable so Tk is not available 
+> 
+> proc.time()
+   user  system elapsed 
+ 96.621   2.589 101.235 
+>>>>>>> master

@@ -325,7 +325,7 @@ downstream.test(object, ...)
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
   (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
   Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
-  \url{http://dx.doi.org/10.1007/s00180-012-0382-5}
+  \doi{10.1007/s00180-012-0382-5}
 
   Clifford M. Hurvich, Jeffrey S. Simonoff and Chih-Ling Tsai (1998),
   Smoothing parameter selection in nonparametric regression using
@@ -348,7 +348,7 @@ downstream.test(object, ...)
   importance of knowing when to stop - a sequential stopping rule for
   component-wise gradient boosting. \emph{Methods of Information in
     Medicine}, \bold{51}, 178--186. \cr
-  DOI: \url{http://dx.doi.org/10.3414/ME11-02-0030}
+  DOI: \doi{10.3414/ME11-02-0030}
 
 }
 \seealso{

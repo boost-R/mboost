@@ -9,6 +9,48 @@
             for objects of class \code{lm}, \code{glm}, \code{coxph}, and \code{merMod}.
       \item Add Tobias Kuehn and Almond Stoecker as contributors of \code{varimp}.
       \item Generalise \code{by} argument in \code{btree} to numeric vectors.
+}
+}
+}
+
+\section{Changes in mboost version 2.9-8 (2023-08-06)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item S3 argument mismatch
+      \item include \code{R_ext/BLAS.h}
+    }
+  }
+}
+
+\section{Changes in mboost version 2.9-7 (2022-04-25)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Don't escape &
+    }
+  }
+}
+
+
+\section{Changes in mboost version 2.9-6 (2022-04-06)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Fix BLAS problem.
+      \item More \samp{\\dontrun} in manual packages
+    }
+  }
+}
+
+\section{Changes in mboost version 2.9-5 (2021-04-06)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item \code{btree(..., by = )} caused problems when restricting the number of boosting iterations.
+    }
+  }
+   \subsection{Miscellaneous}{
+   \itemize{
+      \item Speed-up vignettes.
+      \item Use less precision in numerical vignette outputs.
+>>>>>>> master
     }
   }
 }

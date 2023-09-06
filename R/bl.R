@@ -933,11 +933,11 @@ coef.bm_lin <- function(object, ...) {
 }
 
 ### extract fitted values
-fitted.bm <- function(object)
+fitted.bm <- function(object, ...)
     object$fitted()
 
 ### extract hatmatrix
-hatvalues.bl_lin <- function(model)
+hatvalues.bl_lin <- function(model, ...)
     model$hatvalues()
 
 ### data preprocessing (plug in weights)
