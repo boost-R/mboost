@@ -1,10 +1,11 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
-\section{Changes in mboost version 2.9-8 (2023-03-09)}{
+\section{Changes in mboost version 2.9-8 (2023-08-06)}{
   \subsection{Bug-fixes}{
     \itemize{
       \item S3 argument mismatch
+      \item include \code{R_ext/BLAS.h}
     }
   }
 }

@@ -3,7 +3,8 @@
 #include <Rmath.h>
 #include <Rinternals.h>
 #include <Rdefines.h>
-#include <R_ext/Applic.h> /* for dgemm */
+// #include <R_ext/Applic.h> /* for dgemm */
+#include <R_ext/BLAS.h> /* for dgemm */
 
 
 /**
