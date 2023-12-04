@@ -42,7 +42,7 @@
     distributions of the selection probabilities and simultaneous
     selection probabilities. Only applicable for
     \code{sampling.type = "SS"}. For \code{sampling.type = "MB"} we
-    always use code{"none"}.}
+    always use \code{"none"}.}
   \item{sampling.type}{ use sampling scheme of of Shah & Samworth
     (2013), i.e., with complementarty pairs (\code{sampling.type = "SS"}),
     or the original sampling scheme of Meinshausen & Buehlmann (2010).}

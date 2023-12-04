@@ -87,7 +87,7 @@ RCG(nuirange = c(0, 1), offrange = c(-5, 5))
   \item{nuisance}{ a function for extracting nuisance parameters from the family.}
   \item{weights}{ a character indicating what type of weights are
     allowed. These can be either arbitrary (non-negative) weights
-    code{"any"}, only zero and one weights \code{"zeroone"},
+    \code{"any"}, only zero and one weights \code{"zeroone"},
     (non-negative) interger weights \code{"case"}, or no weights are
     allowed \code{"none"}.}
   \item{name}{ a character giving the name of the loss function for pretty printing. }
