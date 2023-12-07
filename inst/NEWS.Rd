@@ -1,6 +1,14 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
+\section{Changes in mboost version 2.9-9 (2023-12-07)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Fix Rd formatting issues
+    }
+  }
+}
+
 \section{Changes in mboost version 2.9-8 (2023-08-06)}{
   \subsection{Bug-fixes}{
     \itemize{
