@@ -196,7 +196,7 @@ bl1 \%O\% bl2
     determines how the constrained least squares problem should be
     solved. If \code{type = "quad.prog"}, a numeric quadratic
     programming method (Goldfarb and Idnani, 1982, 1983) is used
-    (see \code{\link{solve.QP}} in package \pkg{quadprog}). If
+    (see \code{\link[quadprog]{solve.QP}} in package \pkg{quadprog}). If
     \code{type = "iterative"}, the iterative procedure described in
     Hofner et al. (2011b) is used. The quadratic programming approach is
     usually much faster than the iterative approach. For details see
