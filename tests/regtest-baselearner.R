@@ -525,15 +525,16 @@ mod <- mboost(y ~ bols(z2, by = z))
 mod <- mboost(y ~ bols(z2, by = z3))
 
 ### bkernel
-if (require("kangar00")) {
-    tmpdir <- tempdir()
-    wd <- setwd(tmpdir)
-    download.file("https://downloads.hindawi.com/journals/cmmm/2017/6742763.f2.zip", 
-                  destfile = "bkernel.zip", extra = "--no-check-certificate", 
-                  method = "wget", quiet = TRUE)
-    unzip("bkernel.zip")
-    txt <- readLines("Kernel_Boosting_example_code.R")
-    writeLines(txt[-c(1:10, 149:length(txt))], con = "run.R")
-    source("run.R", echo = FALSE)
-    setwd(wd)
-}
+### removed in 2.9-10 because kangar00 often fails to check
+#if (require("kangar00")) {
+#    tmpdir <- tempdir()
+#    wd <- setwd(tmpdir)
+#    download.file("https://downloads.hindawi.com/journals/cmmm/2017/6742763.f2.zip", 
+#                  destfile = "bkernel.zip", extra = "--no-check-certificate", 
+#                  method = "wget", quiet = TRUE)
+#    unzip("bkernel.zip")
+#    txt <- readLines("Kernel_Boosting_example_code.R")
+#    writeLines(txt[-c(1:10, 149:length(txt))], con = "run.R")
+#    source("run.R", echo = FALSE)
+#    setwd(wd)
+#}

@@ -1,6 +1,25 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
+\section{Changes in mboost version 2.9-11 (2024-08-19)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Fix Rd formatting issues
+      \item Use \code{R_Calloc}
+    }
+  }
+}
+
+\section{Changes in mboost version 2.9-10 (2024-04-29)}{
+  \subsection{Bug-fixes}{
+    \itemize{
+      \item Fix Rd formatting issues
+      \item Disable tests requiring \pkg{kangar00}
+    }
+  }
+}
+
+
 \section{Changes in mboost version 2.9-9 (2023-12-07)}{
   \subsection{Bug-fixes}{
     \itemize{
