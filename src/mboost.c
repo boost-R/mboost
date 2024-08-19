@@ -67,7 +67,7 @@ SEXP R_trace_gamboost(SEXP nobs, SEXP H, SEXP xselect)
     B = LENGTH(xselect);
     n = INTEGER(nobs)[0];
     nn = n * n;
-    z = Calloc(nn, double);
+    z = R_Calloc(nn, double);
     PROTECT(ans = allocVector(VECSXP, 2));
     SET_VECTOR_ELT(ans, 0, hatmat = allocMatrix(REALSXP, n, n));
     dhatmat = REAL(hatmat);    
@@ -92,7 +92,7 @@ SEXP R_trace_gamboost(SEXP nobs, SEXP H, SEXP xselect)
             dtrace[b] += dhatmat[i + n * i];
             
     }
-    Free(z);
+    R_Free(z);
     UNPROTECT(1);
     return(ans);
 }
@@ -157,7 +157,7 @@ SEXP R_trace_glmboost(SEXP x, SEXP MPinv, SEXP xselect) {
     SET_VECTOR_ELT(ans, 1, trace = allocVector(REALSXP, B));
     dtrace = REAL(trace);
     for (i = 0; i < n * n; i++) dhatmatrix[i] = 0.0;
-    z = Calloc(n, double);
+    z = R_Calloc(n, double);
     
     /* for each boosting iteration */
     for (b = 0; b < B; b++) {
@@ -173,7 +173,7 @@ SEXP R_trace_glmboost(SEXP x, SEXP MPinv, SEXP xselect) {
         
     }
     UNPROTECT(1);
-    Free(z);
+    R_Free(z);
     return(ans);
 }
 
@@ -227,7 +227,7 @@ SEXP ngradientCoxPLik(SEXP time, SEXP event, SEXP f, SEXP w) {
     ievent = INTEGER(event);
     df = REAL(f);
     dw = REAL(w);
-    dummy = Calloc(n, double);
+    dummy = R_Calloc(n, double);
     
     for (i = 0; i < n; i++) {
         df[i] = exp(df[i]);
@@ -249,7 +249,7 @@ SEXP ngradientCoxPLik(SEXP time, SEXP event, SEXP f, SEXP w) {
         dans[i] = ievent[i] - dans[i];
     }
 
-    Free(dummy);
+    R_Free(dummy);
     UNPROTECT(1);
     return(ans);
 }
