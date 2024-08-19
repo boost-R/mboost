@@ -93,12 +93,12 @@
     estimates be plotted?
   }
   \item{print_levelplot}{
-    logical, should the \pkg{lattice} \code{\link{levelplot}} be printed
+    logical, should the \pkg{lattice} \code{\link[lattice]{levelplot}} be printed
     or simply returned for further modifications. This argument is only
     considered if bivariate effect estimates are plotted. If
     \code{print_levelplot} is set to \code{FALSE}, a list with objects
     \code{mean}, \code{lowerPI} and \code{upperPI} is returned
-    containing the three \code{\link{levelplot}} objects.
+    containing the three \code{\link[lattice]{levelplot}} objects.
   }
   \item{pe}{
     logical, should the point estimtate (PE) be also returned?

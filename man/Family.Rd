@@ -213,7 +213,7 @@ distribution approximation used in Ma and Huang (2005).
   of the pairwise absolute differences of residuals. The response needs to
   be defined as \code{Surv(y, delta)}, where \code{y} is the observed survial
   time (subject to censoring) and \code{delta} is the non-censoring indicator
-  (see \code{\link{Surv}} for details). For details on \code{Gehan()} see
+  (see \code{\link[survival]{Surv}} for details). For details on \code{Gehan()} see
   Johnson and Long (2011).
 
   \code{Cindex()} optimizes the concordance-index for survival data (often denoted
