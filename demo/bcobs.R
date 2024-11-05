@@ -100,7 +100,7 @@ bcobs <- function(..., index = NULL, lambda = 1, knots = 20,
 library("mboost")
 library("cobs")
 
-data("bodyfat", package = "mboost")
+data("bodyfat", package = "TH.data")
 
 bb <- function(...) bcobs(..., constraint = "increase")
 bmod <- mboost(DEXfat ~ . , data = bodyfat, baselearner = bb,

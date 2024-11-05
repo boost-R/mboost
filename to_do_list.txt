@@ -1,6 +1,8 @@
 
 future
 
+    o  check demos, most don't work anymore
+
     o  allow for Matrices in buser 
 
     o  implement partial dependency plots for blackboost, see

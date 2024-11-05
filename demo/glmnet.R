@@ -2,6 +2,7 @@
 library("mboost")
 library("glmnet")
 
+### website doesn't exist anymore
 url <- "http://www-stat.stanford.edu/~hastie/glmnet/glmnetData"
 wd <- getwd()
 setwd(system.file("demo", package = "mboost"))
