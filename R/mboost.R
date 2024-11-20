@@ -518,15 +518,11 @@ mboost <- function(formula, data = list(), na.action = na.omit, weights = NULL,
 
     if (is.character(baselearner)) {
         baselearner <- match.arg(baselearner)
-        bname <- baselearner
         if (baselearner %in% c("bss", "bns")) {
             warning("bss and bns are deprecated, bbs is used instead")
             baselearner <- "bbs"
         }
-        baselearner <- get(baselearner, mode = "function",
-                           envir = parent.frame())
-    } else {
-        bname <- deparse(substitute(baselearner))
+        baselearner <- get(baselearner, mode = "function")
     }
     stopifnot(is.function(baselearner))
 
