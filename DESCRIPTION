@@ -1,7 +1,6 @@
 Package: mboost
 Title: Model-Based Boosting
-Version: 2.9-11
-Date: 2024-08-19
+Version: 2.9-12
 Authors@R: c(person("Torsten", "Hothorn", role = c("cre", "aut"), 
                 email = "Torsten.Hothorn@R-project.org",
                 comment = c(ORCID = "0000-0001-8301-0471")),
@@ -32,7 +31,7 @@ Imports: Matrix, survival (>= 3.2-10), splines, lattice, nnls, quadprog, utils,
 	graphics, grDevices, partykit (>= 1.2-1)
 Suggests: TH.data, MASS, fields, BayesX, gbm, mlbench,
     RColorBrewer, rpart (>= 4.0-3), randomForest, nnet,
-	testthat (>= 0.10.0), kangar00
+	testthat (>= 0.10.0), kangar00, bibtex, lme4, nlme
 License: GPL-2
 BugReports: https://github.com/boost-R/mboost/issues
 URL: https://github.com/boost-R/mboost
