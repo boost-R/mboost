@@ -91,7 +91,7 @@
 \section{Illustrations and Applications}
 
 This document reproduces the data analyses presented in
-\cite{hothetal06}. For a description of the theory behind
+\cite{Hothorn:2006:Biostatistics:16344280}. For a description of the theory behind
 applications shown here we refer to the original manuscript.
 The results differ slightly due to technical changes or bugfixes in \textbf{mboost}
 that have been implemented after the paper was printed.
@@ -410,7 +410,19 @@ plot(GBSG2learn$ltime, L2Bpr, cex = GBSG2w / 4,
 \clearpage
 
 \bibliographystyle{plainnat}
-\bibliography{boost}
+
+<<bib, echo = FALSE>>=
+thisdir <- getwd()
+bibfile <- system.file("REFERENCES.bib", package = "mboost")
+### bibfile may contain spaces LaTeX is unable to deal with on MacOS it seems
+if (file.copy(bibfile, to = thisdir, overwrite = TRUE)) {
+    bibfile <- "REFERENCES.bib"
+} else {
+    ### hope for the best
+    bibfile <- file.path("..", "inst", "REFERENCES.bib")
+}
+@
+\bibliography{\Sexpr{bibfile}}
 
 
 \end{document}

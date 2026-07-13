@@ -81,7 +81,7 @@
 \section{Illustrations}
 
 This document reproduces the data analyses presented in
-\cite{BuhlmannHothorn06}. For a description of the theory behind
+\cite{Buehlmann:2008:StatSci}. For a description of the theory behind
 applications shown here we refer to the original manuscript. The results
 differ slightly due to technical changes or bugfixes in \textbf{mboost}
 that have been implemented after the paper was printed. Most important,
@@ -182,7 +182,7 @@ squared error for $100$ bootstrap samples is depicted in the upper part of
 Figure~\ref{bodyfat-oob-plot}. The plot
 leads to the impression that approximately $m_\text{stop} = \Sexpr{mopt}$ would be a sufficient
 number of boosting iterations.
-In Section~\ref{subsec.stopping}, a corrected version of the Akaike
+A corrected version of the Akaike
 information criterion (AIC) is proposed for determining the optimal number
 of boosting iterations. This criterion attains its
 minimum for
@@ -223,7 +223,7 @@ source("setup.R")
 @
 
 Being more flexible than the linear model which we fitted to the
-\Robject{bodyfat} data in Section~\ref{subsec.compLS}, we estimate an additive
+\Robject{bodyfat} data, we estimate an additive
 model
 %for the mean-centered covariates
 using the \Rcmd{gamboost} function from \Rpackage{mboost} (first with
@@ -236,8 +236,7 @@ The degrees of freedom in the componentwise smoothing spline base procedure
 can be defined by the \Rcmd{dfbase} argument, defaulting to $4$.
 
 We can estimate the number of boosting iterations $m_\text{stop}$
-using the corrected AIC criterion described in
-Section~\ref{subsec.stopping}
+using the corrected AIC criterion
 %(see Figure~\ref{bodyfat-gamboost-AIC})
 via
 <<bodyfat-gamboost-prune, echo = TRUE>>=
@@ -303,7 +302,7 @@ ctrl <- boost_control(mstop = 5000)
 bf_bs <- glmboost(bsfm, data = bodyfat, control = ctrl)
 mstop(aic <- AIC(bf_bs))
 @
-The corrected AIC criterion (see Section~\ref{subsec.stopping}) suggests to
+The corrected AIC criterion suggests to
 stop after $m_\text{stop} = \Sexpr{mstop(aic)}$
 boosting iterations and the final model selects
 $\Sexpr{sum(abs(coef(bf_bs[mstop(aic)])) > 0 )}$ (transformed) predictor
@@ -376,8 +375,7 @@ and we first extract the matrix of expression levels and the response variable:
 x <- t(exprs(westbc))
 y <- pData(westbc)$nodal.y
 @
-We aim at using $L_2$Boosting for classification, see
-Section~\ref{subsubsec.binclass},
+We aim at using $L_2$Boosting for classification
 with classical AIC based on the binomial log-likelihood for stopping the
 boosting iterations. Thus, we first
 transform the factor \Robject{y} to a numeric variable with $0/1$ coding:
@@ -447,8 +445,6 @@ ps <- length(cf[abs(cf) > 0])
 @
 where the AIC is computed as -2(log-likelihood) + 2(degrees of freedom) = 2
 (evaluating loss) + 2(degrees of freedom), see Formula~(\ref{aicl2}).
-The notion of degrees of freedom
-is discussed in Section~\ref{subsec.df}.
 
 Figure~\ref{west-glmboost-plot} shows the AIC curve depending on
 the number of boosting iterations. When we stop after $m_\text{stop} =
@@ -689,6 +685,19 @@ For more examples, such as fitting an additive Cox model using
 \clearpage
 
 \bibliographystyle{plainnat}
-\bibliography{boost}
+
+<<bib, echo = FALSE>>=
+thisdir <- getwd()
+bibfile <- system.file("REFERENCES.bib", package = "mboost")
+### bibfile may contain spaces LaTeX is unable to deal with on MacOS it seems
+if (file.copy(bibfile, to = thisdir, overwrite = TRUE)) {
+    bibfile <- "REFERENCES.bib"
+} else {
+    ### hope for the best
+    bibfile <- file.path("..", "inst", "REFERENCES.bib")
+}
+@
+\bibliography{\Sexpr{bibfile}}
+
 
 \end{document}
