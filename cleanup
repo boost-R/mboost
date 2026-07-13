@@ -45,6 +45,23 @@ for f in ./src/*~; do
 done
 
 
+for f in ./vignettes/*~; do
+    rm -f $f
+done
+
+
+for f in ./vignettes/*bak; do
+    rm -f $f
+done
+
+
+for f in ./inst/*bak; do
+    rm -f $f
+done
+
+
+
+
 for f in ./inst/cache/*~; do
     rm -f $f
 done
