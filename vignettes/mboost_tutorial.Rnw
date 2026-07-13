@@ -159,7 +159,7 @@ of interest to build a good prognostic model using a small subset of marker
 genes. Hence, there is a need for statistical techniques to select the most
 informative features out of a large set of predictor variables. A related
 problem is to select the appropriate modeling alternative for each of the
-covariates \citep[``model choice'', ][]{Kneib:Hothorn:Tutz:modelchoice:2009}.
+covariates \citep[``model choice'', ][]{kneib+hothorn+tutz:2009}.
 This problem even arises when data sets are not high-dimensional. For example, a
 continuous covariate could be included into a statistical model using linear,
 non-linear or interaction effects with other predictor variables.
@@ -183,8 +183,7 @@ forests (\citealt{rf}) that result in non-interpretable ``black-box''
 predictions.
 
 In this tutorial, we describe the \textsf{R} \citep{r-core:2012} add-on package
-\textbf{mboost} \citep{Hothorn+Buehlmann+Kneib+Schmid+Hofner:mboost:2010,
-  pkg:mboost:CRAN:2.1}, which implements methods to fit generalized linear
+\textbf{mboost} \citep{Hothorn+Buehlmann+Kneib+Schmid+Hofner_2010, pkg:mboost}, which implements methods to fit generalized linear
 models (GLMs), generalized additive models (GAMs, \citealt{hastietib}), and
 generalizations thereof using component-wise gradient boosting techniques. The
 \textbf{mboost} package can thus be used for regression, classification,
@@ -201,7 +200,7 @@ properties. In Section \ref{sec:mboost}, the \textbf{mboost} package is
 presented in detail. Here we present the infrastructure of the package and show
 how to use \textbf{mboost} to obtain interpretable statistical model fits. All
 steps are illustrated using a clinical data set that was collected by
-\citet{garcia}. The authors conducted a study to predict the body fat content of
+\citet{garcia2005}. The authors conducted a study to predict the body fat content of
 study participants by means of common anthropometric measurements. The response
 variable was obtained by Dual X-Ray Absorptiometry (DXA). DXA is an accurate but
 expensive method for measuring the body fat content. In order to reduce costs,
@@ -340,7 +339,7 @@ fit. As a general rule, due to the additive update in step 4(d), the estimate of
 a function~$f_j$ at iteration $m_{\mathrm{stop}}$ has the same structure as the
 corresponding base-learner. For example, $f_j$ is a linear function if the
 base-learner used to model $f_j$ in step~4(b) is a simple linear model (see
-\citealt{BuhlmannHothorn06}, p.~484, also see Section \ref{sec:mboost} for
+\citealt{Buehlmann:2008:StatSci}, p.~484, also see Section \ref{sec:mboost} for
 details). Similarly, $f_j$ is a smooth function of the $j$th covariate $\x_j$ if
 the corresponding base-learner is smooth as well. Note that it is generally
 possible to incorporate observation weights into component-wise gradient
@@ -351,7 +350,7 @@ A crucial issue is the choice of the stopping iteration
 $m_{\mathrm{stop}}$. Several authors have argued that boosting algorithms should
 generally not be run until convergence. Otherwise, overfits resulting in a
 suboptimal prediction accuracy would be likely to occur (see
-\citealt{BuhlmannHothorn06}). We therefore use a finite stopping iteration for
+\citealt{Buehlmann:2008:StatSci}). We therefore use a finite stopping iteration for
 component-wise gradient boosting that optimizes the prediction accuracy (``early
 stopping strategy''). As a consequence, the stopping iteration becomes a tuning
 parameter of the algorithm, and cross-validation techniques or AIC-based
@@ -360,7 +359,7 @@ contrast to the choice of the stopping iteration, the choice of the step length
 factor $\nu$ has been shown to be of minor importance for the predictive
 performance of a boosting algorithm. The only requirement is that the value of
 $\nu$ is small (e.g., $\nu=0.1$, see
-\citealt{Schmid:Hothorn:boosting-p-Splines}). Small values of $\nu$ are
+\citealt{schmid+hothorn:2008b}). Small values of $\nu$ are
 necessary to guarantee that the algorithm does not overshoot the minimum of the
 empirical risk $\mathcal{R}$.
 
@@ -492,7 +491,8 @@ Appendix.
 
 \noindent The aim of this case study is to compute accurate predictions for the
 body fat of women based on available anthropometric measurements. Observations
-of 71 German women are available with the data set \R{bodyfat} \citep{garcia}
+of 71 German women are available with the data set \R{bodyfat}
+\citep{garcia2005}
 included in \textbf{mboost}. We first load the package and the data set%
 \footnote{The data set \R{bodyfat} has been moved to the package \textbf{TH.data}.}.
 
@@ -512,7 +512,8 @@ presented in Table~\ref{tab:casepred}.
 
 \begin{table}[h!]
   \centering
-  \caption{Available variables in the \R{bodyfat} data, for details see \cite{garcia}.}
+  \caption{Available variables in the \R{bodyfat} data, for details see
+\cite{garcia2005}.}
    \label{tab:casepred}
   \begin{tabular}{lp{0.5\linewidth}}
     \toprule
@@ -533,7 +534,7 @@ presented in Table~\ref{tab:casepred}.
   \end{tabular}
 \end{table}
 
-In the original publication \citep{garcia}, the presented prediction formula was
+In the original publication \citep{garcia2005}, the presented prediction formula was
 based on a linear model with backward-elimination for variable selection. The
 resulting final model utilized hip circumference (\R{hipcirc}), knee breadth
 (\R{kneebreadth}) and a compound covariate (\R{anthro3a}), which is defined as
@@ -751,7 +752,7 @@ ridge-penalized effects for (b) and (c), (e) varying coefficient terms (i.e.,
 interactions). If a penalized base-learner is specified, a special penalty based
 on the differences of the effects of adjacent categories is automatically used
 for ordinal variables (\R{x <- as.ordered(x)}) instead of the ridge penalty
-\citep{Hofner:unbiased:2011}. Figure~\ref{fig:expl_bols} shows two effect
+\citep{Hofner+Hothorn+Kneib_2011}. Figure~\ref{fig:expl_bols} shows two effect
 estimates that result from \R{bols()} base-learners, a simple linear effect and
 an effect estimate for a factor variable. The call to an ordinary penalized
 least squares base-learner is as follows:
@@ -780,7 +781,7 @@ linear models are used. Two definitions of degrees of freedom are implemented in
 uses $\text{trace}(2 \mathcal{S} - \mathcal{S}^\top\mathcal{S})$. The latter
 definition is tailored to the comparison of models based on residual sums of
 squares and hence is better suitable in the boosting context \citep[see][for
-details]{Hofner:unbiased:2011}.
+details]{Hofner+Hothorn+Kneib_2011}.
 
 %% figure is build at the end of the document
 \setkeys{Gin}{width = 0.45\textwidth}
@@ -915,7 +916,7 @@ remains unpenalized (i.e., the so-called null space). As we usually apply second
 order differences, a linear effect (with intercept) remains unpenalized and thus
 $\df \geq 2$ for all smoothing parameters. A solution is given by a P-spline
 decomposition
-\citep[see][]{Kneib:Hothorn:Tutz:modelchoice:2009,Hofner:unbiased:2011}. The
+\citep[see][]{kneib+hothorn+tutz:2009,Hofner+Hothorn+Kneib_2011}. The
 smooth effect $f(x)$ is decomposed in the unpenalized polynomial and a smooth
 deviation from this polynomial. For differences of order 2 (= default), we thus
 get:
@@ -980,7 +981,7 @@ is given in Table~\ref{tab:bbs}.
 P-splines. They allow to fit spatial effects and smooth interaction surfaces. An
 example of a two dimensional function estimate is given in
 Figure~\ref{fig:expl_bspatial}. For further details on bivariate P-splines in
-the boosting context see \citet{Kneib:Hothorn:Tutz:modelchoice:2009}. The
+the boosting context see \citet{kneib+hothorn+tutz:2009}. The
 effects can be obtained from a call to
 \begin{Schunk}
 \begin{Sinput}
@@ -1025,7 +1026,7 @@ base-learners, we initially specify a small value for the degrees of freedom,
 i.e., we set a small random effects variance (relative to the residual
 variance). By repeatedly selecting the base-learner, the boosting algorithm can
 then adapt to the ``true'' random effects variance. For more details see
-\citet[Web Appendix]{Kneib:Hothorn:Tutz:modelchoice:2009}. We can specify random
+\citet[Web Appendix]{kneib+hothorn+tutz:2009}. We can specify random
 effects base-learners with a call to
 \begin{Schunk}
 \begin{Sinput}
@@ -1050,7 +1051,7 @@ term.
 
 \noindent Tree-based base-learner (per default stumps) can be included in the
 model using the \R{btree()} base-learner
-\citep{Hothorn:2006:JCGS,Hothorn+Buehlmann+Kneib+Schmid+Hofner:mboost:2010}.
+\citep{Hothorn:2006:JCGS,Hothorn+Buehlmann+Kneib+Schmid+Hofner_2010}.
 Note that this is the only base-learner which is not fitted using penalized
 least squares. Radial basis functions (e.g., for spatial effects) can be
 specified using the base-learner \R{brad()}. Details on this base-learner are
@@ -1058,7 +1059,7 @@ given in \citep{Hofner:PhDThesis:2011}. Monotonic effects of continuous or
 ordered categorical variables can be estimated using the \R{bmono()}
 base-learner which can also estimate convex or concave effects. Details on
 monotonic effect estimation and examples of the estimation of boosting models
-with monotonic effects are given in \citet{Hofner:monotonic:2011} in the context
+with monotonic effects are given in \citet{Hofner+Mueller+Hothorn_2011} in the context
 of species distribution models. The base-learner \R{bmrf()} implements Markov
 random fields, which can be used for the estimation of spatial effects of
 regions \citep{Sobotka:2010,mayr:gamboostlss:2011}. With the base-learner
@@ -1155,7 +1156,7 @@ is specified via the \R{by} argument.
 for body fat of women. It might be of interest to evaluate if there exists also
 a non-linear relationship between some of the predictors and the DXA measurement
 of body fat. To investigate this issue, we fit a model with the same predictors
-as in \cite{garcia} but without assuming linearity of the effects. We apply
+as in \cite{garcia2005} but without assuming linearity of the effects. We apply
 \R{gamboost()} with the P-spline base-learner \R{bbs()} to incorporate smooth
 effects.
 
@@ -1208,7 +1209,7 @@ possibilities to determine the stopping iteration exist. One can use information
 criteria such as AIC\footnote{see \R{?AIC.boost} for further details} to find
 the optimal model. However, this is usually not recommended as AIC-based
 stopping tends to overshoot the optimal $m_{\text{stop}}$ dramatically
-\citep[see][]{Hast:comment:2007,Mayr:mstop:2012}. Instead, it is advised to use
+\citep[see][]{Hast:comment:2007,Mayr_2012}. Instead, it is advised to use
 cross-validated estimates of the empirical risk to choose an appropriate number
 of boosting iterations. This approach aims at optimizing the prognosis on new
 data. In \textbf{mboost} infrastructure exists to compute bootstrap estimates,
@@ -1226,9 +1227,8 @@ hand or using the convenience function \R{cv()} (see below). Finally, the user
 can specify a function of the \R{lapply} ``type'' to \R{papply}. Per default
 this is either \R{mclapply} for parallel computing if package \textbf{multicore}
 \citep{Urbanek:2011} is available, or the code is run sequentially using
-\R{lapply}. Alternatively, the user can apply other parallelization methods such
-as \R{clusterApplyLB} \citep[package \textbf{snow}][]{Tierny:Snow:2011} with
-some further effort for the setup (see \R{?cvrisk}).
+\R{lapply}. Alternatively, the user can apply other parallelization methods 
+with some further effort for the setup (see \R{?cvrisk}).
 
 The easiest way to set up a variety of weight matrices for cross-validation is
 the function
@@ -1528,7 +1528,7 @@ of the absolute values of the residuals, i.e.
 Another alternative for settings with continuous response is modeling
 conditional quantiles through quantile regression \citep{Koen2005} --
 implemented in \textbf{mboost} with the \R{QuantReg()} family
-\citep{Fenske:2011}. The main advantage of quantile regression is (beyond its
+\citep{Fenske+Kneib+Hothorn_2011}. The main advantage of quantile regression is (beyond its
 robustness towards outliers) that it does not rely on any distributional
 assumptions on the response or the error terms. The appropriate loss function
 here is the check-function shown in Figure~\ref{fig:fam_quantreg}. For the
@@ -1538,7 +1538,7 @@ quantile regression is given in the Appendix.
 
 \paragraph{Case Study (ctd.): Prediction of Body Fat}\hfill\\
 
-We reproduce the model of the original publication \citep{garcia}, but instead
+We reproduce the model of the original publication \citep{garcia2005}, but instead
 of modeling the mean we focus on the median:
 <<quantreg_gamboost>>=
 ## Same model as glm1 but now with QuantReg() family
@@ -1572,7 +1572,7 @@ internal re-coding\footnote{Note that in \textbf{mboost} the response must be
   specified as a binary \R{factor}.} means that the negative binomial
 log-likelihood loss (\R{family = Binomial()}) and the exponential loss
 (\R{family = AdaExp()}) coincide in their population minimizer
-\citep[see][Section 3]{BuhlmannHothorn06}.
+\citep[see][Section 3]{Buehlmann:2008:StatSci}.
 
 Note that the transformation $\tilde{y} = 2y -1$ changes the interpretation of
 the effect estimates because now we get the half of the log-odds ratio. One
@@ -1613,7 +1613,7 @@ negative log-likelihood density of this distribution is implemented in
 simply minimizes the empirical risk $\mathcal{R}$ over the overdispersion
 parameter given the current boosting estimate $\hat{f}^{[m]}$ after step~4 of
 the component-wise gradient boosting algorithm. A thorough introduction and the
-detailed algorithm is given by \citet{Schmid:Multidim:2010}.
+detailed algorithm is given by \citet{Schmid+Potapov+Pfahlberg:2010}.
 
 Survival models can also be considered in \textbf{mboost}: \R{CoxPH()},
 \R{Weibull()}, \R{Loglog()} and \R{Lognormal()} all implement families for
@@ -1628,7 +1628,7 @@ further families: \R{AUC()} can be used to optimize the area under the ROC
 curve, \R{GammaReg()} implements the negative Gamma log-likelihood with
 logarithmic link function, \R{ExpectReg()} implements expectile regression
 \citep{Sobotka:2010} and \R{PropOdds()} leads to proportional odds models for
-ordinal outcome variables \citep{Schmid:2010:PropOdds}.
+ordinal outcome variables \citep{Schmid+Hothorn+Maloney_2011}.
 
 Despite the wide range of available families, users might wish to implement new
 loss functions. One only needs a differentiable loss function and the
@@ -1734,7 +1734,7 @@ ngradient = function(y, f, w = NULL)  tau * ((y - f) >= 0) +
 Of further interest is also the starting value for the algorithm, which is
 specified via the \R{offset} argument. For quantile regression it was
 demonstrated that the offset may be set to the median of the response
-\citep{Fenske:2011}. With this information, we can already specify our new family
+\citep{Fenske+Kneib+Hothorn_2011}. With this information, we can already specify our new family
 for quantile regression:
 <<OurQR>>=
 OurQuantReg <- function(tau = 0.5){    ## function to include dependency on tau
@@ -1811,7 +1811,7 @@ the slight heteroscedasticity found in this data example: For smaller values of
 \R{hipcirc} the range between the quantiles is smaller than for higher values.
 Note that the outer quantile-lines can be interpreted as prediction intervals for new
 observations \citep{Meins2006, MayrPI}. For more on quantile regression in the context of
-boosting we refer to \cite{Fenske:2011}.
+boosting we refer to \cite{Fenske+Kneib+Hothorn_2011}.
 
 \end{document}
 
