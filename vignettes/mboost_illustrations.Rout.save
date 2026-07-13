@@ -322,7 +322,16 @@ Degrees of freedom (for mstop = 86): 11.348
 
 > abline(a = 0, b = 1, lty = 2, lwd = 0.5)
 
+> thisdir <- getwd()
+
+> bibfile <- system.file("REFERENCES.bib", package = "mboost")
+
+> if (file.copy(bibfile, to = thisdir, overwrite = TRUE)) {
++     bibfile <- "REFERENCES.bib"
++ } else {
++     bibfile <- file.path("..", "inst", "REF ..." ... [TRUNCATED] 
+
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
-  6.636   0.100   6.733 
+  4.310   0.123   4.440 

@@ -7,7 +7,7 @@
 \newcommand{\argmin}{\operatorname{argmin}\displaylimits}
 
 %%\VignetteIndexEntry{mboost}
-%%\VignetteDepends{mboost, partykit, TH.data}
+%%\VignetteDepends{mboost, partykit, TH.data,bibtex}
 
 %% software markup
 \let\proglang=\textsf
@@ -744,7 +744,7 @@ component-wise functional gradient descent, splines, decision trees.
 \end{keywords}
 
 \section{Overview}
-The \proglang{R} add-on package \pkg{mboost} \citep{PKG:mboost} implements tools for fitting
+The \proglang{R} add-on package \pkg{mboost} \citep{mboost} implements tools for fitting
 and evaluating
 a variety of regression and classification models that have been suggested in machine learning and statistics.
 Optimization within the empirical risk minimization framework is performed
@@ -834,7 +834,7 @@ As a major improvement over the 1.0 series, computations on larger data sets
 (both with respect to the number of observations and the number of variables) are now
 facilitated by memory efficient implementations of the base-learners, mostly
 by applying sparse matrix techniques \citep[package
-\pkg{Matrix},][]{PKG:Matrix} and parallelization for a
+\pkg{Matrix},][]{Matrix} and parallelization for a
 cross-validation-based choice of the number of boosting iterations
 per default via package \pkg{parallel}. A more
 elaborate description of \pkg{mboost} 2.0 features is available
@@ -1058,8 +1058,7 @@ of selected base-learners and is the basis for stability selection
 \citep[in function \code{stabsel()}, cf.][]{mebu10}.
 Secondly, an interface for parallel computing (based on \pkg{parallel}) is
 automatically used (if available) for cross-validation-based stopping of the
-algorithm in \code{cvrisk()}. With some extra work, other parallelization packages
-such as \pkg{snow} \citep{PKG:snow} can immediately be integrated.
+algorithm in \code{cvrisk()}. With some extra work, other parallelization packages can be integrated.
 Moreover, \code{cvrisk()} allows for more flexible definitions of resampling schemes
 ($k$-fold, cross-validation, bootstrap, subsampling).
 Thirdly, the
@@ -1106,7 +1105,9 @@ if (file.copy(bibfile, to = thisdir, overwrite = TRUE)) {
     ### hope for the best
     bibfile <- file.path("..", "inst", "REFERENCES.bib")
 }
+library("bibtex")
+write.bib(c("mboost", "Matrix"), file = "packages.bib")
 @
-\bibliography{\Sexpr{bibfile}}
+\bibliography{\Sexpr{bibfile},packages}
 
 \end{document}

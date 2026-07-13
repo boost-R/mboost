@@ -232,6 +232,22 @@ NULL
 (Intercept)     hipcirc kneebreadth    anthro3a 
     -63.516       0.533       0.770       7.835 
 
+> thisdir <- getwd()
+
+> bibfile <- system.file("REFERENCES.bib", package = "mboost")
+
+> if (file.copy(bibfile, to = thisdir, overwrite = TRUE)) {
++     bibfile <- "REFERENCES.bib"
++ } else {
++     bibfile <- file.path("..", "inst", "REF ..." ... [TRUNCATED] 
+
+> library("bibtex")
+
+> write.bib(c("lme4", "nlme", "mboost", "gbm"), file = "packages.bib")
+Converted 4 of 4 package citations to BibTeX
+Writing 8 Bibtex entries ... OK
+Results written to file 'packages.bib'
+
 > loss = function(y, f) tau * (y - f) * ((y - f) >= 
 +     0) + (tau - 1) * (y - f) * ((y - f) < 0)
 
@@ -697,4 +713,4 @@ pdf
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
-  5.408   0.731   4.950 
+  3.033   0.667   3.029 

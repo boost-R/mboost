@@ -325,7 +325,16 @@ The following object is masked from ‘package:mboost’:
 > plot(GBSG2learn$ltime, L2Bpr, cex = GBSG2w/4, xlim = range(GBSG2learn$ltime[GBSG2w > 
 +     0]), ylim = yl, ylab = "Predicted", xlab = "Observed", m .... [TRUNCATED] 
 
+> thisdir <- getwd()
+
+> bibfile <- system.file("REFERENCES.bib", package = "mboost")
+
+> if (file.copy(bibfile, to = thisdir, overwrite = TRUE)) {
++     bibfile <- "REFERENCES.bib"
++ } else {
++     bibfile <- file.path("..", "inst", "REF ..." ... [TRUNCATED] 
+
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
-  9.909   0.093  10.000 
+  5.297   0.111   5.403 

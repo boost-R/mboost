@@ -144,7 +144,23 @@ Number of baselearners:  19
 > lines(nd$anthro3b, predict(model, which = "bols(anthro3b", 
 +     newdata = nd), type = "l", lty = "dashed")
 
+> thisdir <- getwd()
+
+> bibfile <- system.file("REFERENCES.bib", package = "mboost")
+
+> if (file.copy(bibfile, to = thisdir, overwrite = TRUE)) {
++     bibfile <- "REFERENCES.bib"
++ } else {
++     bibfile <- file.path("..", "inst", "REF ..." ... [TRUNCATED] 
+
+> library("bibtex")
+
+> write.bib(c("mboost", "Matrix"), file = "packages.bib")
+Converted 2 of 2 package citations to BibTeX
+Writing 5 Bibtex entries ... OK
+Results written to file 'packages.bib'
+
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
-  5.094   0.067   5.159 
+  3.371   0.108   3.474 

@@ -3,7 +3,7 @@
 \documentclass[10pt]{scrartcl}
 
 %%\VignetteIndexEntry{mboost Tutorial}
-%%\VignetteDepends{mboost,lattice,RColorBrewer,TH.data}
+%%\VignetteDepends{mboost,lattice,RColorBrewer,TH.data,bibtex,gbm,lme4,nlme}
 
 \usepackage{threeparttable}  % needed for \tnote (footnotes in table)
 \usepackage[utf8]{inputenc}
@@ -182,8 +182,8 @@ fits. This is a major advantage over machine learning methods such as random
 forests (\citealt{rf}) that result in non-interpretable ``black-box''
 predictions.
 
-In this tutorial, we describe the \textsf{R} \citep{r-core:2012} add-on package
-\textbf{mboost} \citep{Hothorn+Buehlmann+Kneib+Schmid+Hofner_2010, pkg:mboost}, which implements methods to fit generalized linear
+In this tutorial, we describe the \textsf{R} add-on package
+\textbf{mboost} \citep{Hothorn+Buehlmann+Kneib+Schmid+Hofner_2010,mboost}, which implements methods to fit generalized linear
 models (GLMs), generalized additive models (GAMs, \citealt{hastietib}), and
 generalizations thereof using component-wise gradient boosting techniques. The
 \textbf{mboost} package can thus be used for regression, classification,
@@ -386,7 +386,7 @@ likelihood estimates.
 As pointed out above, the \textsf{R} add-on package \textbf{mboost} implements
 model-based boosting methods as introduced above that result in interpretable
 models. This is in contrast to other boosting packages such as \textbf{gbm}
-\citep{Ridgeway:gbm:2010}, which implements tree-based boosting methods that
+\citep{ridgew99,gbm}, which implements tree-based boosting methods that
 lead to black-box predictions. The \textbf{mboost} package offers a modular
 nature that allows to specify a wide range of statistical models.
 
@@ -1042,7 +1042,7 @@ variable, say \R{time}, within the groups of \R{id}, one can use \R{brandom(id,
   by = time)}, i.e., the first argument determines the grouping (as for the
 random intercept) and the \R{by} argument then determines the variable for which
 the effect is allowed to vary between the groups. In the notation of
-\textbf{nlme} \citep{nlme2012} and \textbf{lme4} \citep{lme4} the random
+\textbf{nlme} \citep{nlme} and \textbf{lme4} \citep{lme4} the random
 intercept would be specified as \R{(1 | id)} and the random slope would be
 specified as \R{(time - 1 | id)}, i.e., a random slope without random intercept
 term.
@@ -1226,7 +1226,7 @@ cross-validation samples via the \R{folds} argument. This can be done either by
 hand or using the convenience function \R{cv()} (see below). Finally, the user
 can specify a function of the \R{lapply} ``type'' to \R{papply}. Per default
 this is either \R{mclapply} for parallel computing if package \textbf{multicore}
-\citep{Urbanek:2011} is available, or the code is run sequentially using
+is available, or the code is run sequentially using
 \R{lapply}. Alternatively, the user can apply other parallelization methods 
 with some further effort for the setup (see \R{?cvrisk}).
 
@@ -1678,8 +1678,10 @@ if (file.copy(bibfile, to = thisdir, overwrite = TRUE)) {
     ### hope for the best
     bibfile <- file.path("..", "inst", "REFERENCES.bib")
 }
+library("bibtex")
+write.bib(c("lme4", "nlme", "mboost", "gbm"), file = "packages.bib")
 @
-\bibliography{\Sexpr{bibfile}}
+\bibliography{\Sexpr{bibfile},packages}
 
 
 \clearpage
