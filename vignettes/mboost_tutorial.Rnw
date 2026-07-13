@@ -1667,7 +1667,19 @@ that are found at \url{http://cran.r-project.org/package=mboost} or in
 \textsf{R} via \R{vignette(package = "mboost")}.
 
 \bibliographystyle{abbrvnat}
-\bibliography{mboost_tutorial}   % name your BibTeX data base
+
+<<bib, echo = FALSE>>=
+thisdir <- getwd()
+bibfile <- system.file("REFERENCES.bib", package = "mboost")
+### bibfile may contain spaces LaTeX is unable to deal with on MacOS it seems
+if (file.copy(bibfile, to = thisdir, overwrite = TRUE)) {
+    bibfile <- "REFERENCES.bib"
+} else {
+    ### hope for the best
+    bibfile <- file.path("..", "inst", "REFERENCES.bib")
+}
+@
+\bibliography{\Sexpr{bibfile}}
 
 
 \clearpage
