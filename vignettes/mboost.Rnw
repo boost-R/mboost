@@ -1,5 +1,6 @@
 \documentclass[a4paper]{article}
 \usepackage{jmlr2e}
+
 \usepackage{color,hyperref}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -749,7 +750,7 @@ a variety of regression and classification models that have been suggested in ma
 Optimization within the empirical risk minimization framework is performed
 via a component-wise functional gradient descent algorithm.
 The algorithm originates from the statistical view on boosting
-algorithms \citep{fht00,pbyu03}. The theory and its implementation in
+algorithms \citep{friedmanetal2000,buehlmannyu2003}. The theory and its implementation in
 \pkg{mboost} allow for fitting complex prediction models,
 taking potentially many interactions of features into account, as well as
 for fitting additive and linear models.
@@ -788,10 +789,10 @@ potentially high-dimensional feature vectors $x_i$, and $w_i$ are some weights.
 The component-wise boosting algorithm starts with some offset for $f$ and iteratively fits residuals defined
 by the negative gradient of the loss function evaluated at the current fit by updating
 only the best model component in each iteration. The
-details have been described by \cite{pbyu03}. Early stopping via resampling approaches or
+details have been described by \cite{buehlmannyu2003}. Early stopping via resampling approaches or
 AIC leads to sparse models in the sense that only a subset of important model components
 $f_j$ defines the final model. A more thorough introduction to boosting with applications
-in statistics based on version 1.0 of \pkg{mboost} is given by \cite{BuhlmannHothorn06}.
+in statistics based on version 1.0 of \pkg{mboost} is given by \cite{Buehlmann:2008:StatSci}.
 
 As of version 2.0, the package allows for fitting models to binary, numeric, ordered and
 censored responses, i.e., regression of the mean, robust regression, classification
@@ -862,7 +863,7 @@ different model components (linear terms: \code{bols()}; smooth
 terms: \code{bbs()}; interactions: \code{btree()}).
 The loss function (here, the check function for the $0.5$ quantile)
 along with its negative gradient function are defined by the
-\code{QuantReg(0.5)} family \citep{Fenske+Kneib+Hothorn:2009}.
+\code{QuantReg(0.5)} family \citep{Fenske+Kneib+Hothorn_2011}.
 The model structure (specified using the formula \code{fm}), the data and the family
 are then passed to function \code{mboost()} for model fitting:
 <<setup, echo = FALSE>>=
@@ -1095,6 +1096,17 @@ lines(nd$anthro3b, predict(model, which = "bols(anthro3b", newdata = nd),
 \end{center}
 \end{figure}
 
-\bibliography{boost}
+<<bib, echo = FALSE>>=
+thisdir <- getwd()
+bibfile <- system.file("REFERENCES.bib", package = "mboost")
+### bibfile may contain spaces LaTeX is unable to deal with on MacOS it seems
+if (file.copy(bibfile, to = thisdir, overwrite = TRUE)) {
+    bibfile <- "REFERENCES.bib"
+} else {
+    ### hope for the best
+    bibfile <- file.path("..", "inst", "REFERENCES.bib")
+}
+@
+\bibliography{\Sexpr{bibfile}}
 
 \end{document}
