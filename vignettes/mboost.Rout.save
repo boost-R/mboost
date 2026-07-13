@@ -155,12 +155,26 @@ Number of baselearners:  19
 
 > library("bibtex")
 
-> write.bib(c("mboost", "Matrix"), file = "packages.bib")
-Converted 2 of 2 package citations to BibTeX
-Writing 5 Bibtex entries ... OK
+> library("bibtex")
+
+> mboost <- citation(package = "mboost", auto = TRUE)
+
+> x <- unclass(mboost)
+
+> attr(x[[1]], "key") <- "mboost"
+
+> class(x) <- class(mboost)
+
+> x$doi <- "10.32614/CRAN.package.mboost"
+
+> writeLines(toBibtex(x), con = "packages.bib")
+
+> write.bib(c("Matrix"), file = "packages.bib", append = TRUE)
+Converted 1 of 1 package citations to BibTeX
+Writing 1 Bibtex entries ... OK
 Results written to file 'packages.bib'
 
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
-  3.371   0.108   3.474 
+  3.407   0.083   3.492 

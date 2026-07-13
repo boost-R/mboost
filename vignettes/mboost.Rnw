@@ -1106,7 +1106,14 @@ if (file.copy(bibfile, to = thisdir, overwrite = TRUE)) {
     bibfile <- file.path("..", "inst", "REFERENCES.bib")
 }
 library("bibtex")
-write.bib(c("mboost", "Matrix"), file = "packages.bib")
+library("bibtex")
+mboost <- citation(package = "mboost", auto = TRUE)
+x <- unclass(mboost)
+attr(x[[1]], "key") <- "mboost"
+class(x) <- class(mboost)
+x$doi <- "10.32614/CRAN.package.mboost"
+writeLines(toBibtex(x), con = "packages.bib")
+write.bib(c("Matrix"), file = "packages.bib", append = TRUE)
 @
 \bibliography{\Sexpr{bibfile},packages}
 

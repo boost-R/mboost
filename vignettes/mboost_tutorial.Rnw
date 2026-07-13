@@ -1042,7 +1042,7 @@ variable, say \R{time}, within the groups of \R{id}, one can use \R{brandom(id,
   by = time)}, i.e., the first argument determines the grouping (as for the
 random intercept) and the \R{by} argument then determines the variable for which
 the effect is allowed to vary between the groups. In the notation of
-\textbf{nlme} \citep{nlme} and \textbf{lme4} \citep{lme4} the random
+\textbf{nlme} \citep{nlme1,nlme2} and \textbf{lme4} \citep{lme4} the random
 intercept would be specified as \R{(1 | id)} and the random slope would be
 specified as \R{(time - 1 | id)}, i.e., a random slope without random intercept
 term.
@@ -1678,8 +1678,15 @@ if (file.copy(bibfile, to = thisdir, overwrite = TRUE)) {
     ### hope for the best
     bibfile <- file.path("..", "inst", "REFERENCES.bib")
 }
+
 library("bibtex")
-write.bib(c("lme4", "nlme", "mboost", "gbm"), file = "packages.bib")
+mboost <- citation(package = "mboost", auto = TRUE)
+x <- unclass(mboost)
+attr(x[[1]], "key") <- "mboost"
+class(x) <- class(mboost)
+x$doi <- "10.32614/CRAN.package.mboost"
+writeLines(toBibtex(x), con = "packages.bib")
+write.bib(c("lme4", "nlme", "gbm"), file = "packages.bib", append = TRUE)
 @
 \bibliography{\Sexpr{bibfile},packages}
 

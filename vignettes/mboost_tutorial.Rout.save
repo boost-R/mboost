@@ -243,9 +243,22 @@ NULL
 
 > library("bibtex")
 
-> write.bib(c("lme4", "nlme", "mboost", "gbm"), file = "packages.bib")
-Converted 4 of 4 package citations to BibTeX
-Writing 8 Bibtex entries ... OK
+> mboost <- citation(package = "mboost", auto = TRUE)
+
+> x <- unclass(mboost)
+
+> attr(x[[1]], "key") <- "mboost"
+
+> class(x) <- class(mboost)
+
+> x$doi <- "10.32614/CRAN.package.mboost"
+
+> writeLines(toBibtex(x), con = "packages.bib")
+
+> write.bib(c("lme4", "nlme", "gbm"), file = "packages.bib", 
++     append = TRUE)
+Converted 3 of 3 package citations to BibTeX
+Writing 4 Bibtex entries ... OK
 Results written to file 'packages.bib'
 
 > loss = function(y, f) tau * (y - f) * ((y - f) >= 
@@ -713,4 +726,4 @@ pdf
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
-  3.033   0.667   3.029 
+  3.320   0.676   3.180 
