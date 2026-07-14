@@ -35,3 +35,4 @@ Suggests: TH.data, MASS, fields, BayesX, gbm, mlbench,
 License: GPL-2
 BugReports: https://github.com/boost-R/mboost/issues
 URL: https://github.com/boost-R/mboost
+Encoding: UTF-8
