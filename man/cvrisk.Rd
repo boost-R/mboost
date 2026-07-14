@@ -63,7 +63,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
 \details{
 
   The number of boosting iterations is a hyper-parameter of the
-  boosting algorithms implemented in this package. Honest,
+  boosting algorithms implemented in this package \bibcitep{mboost::Mayr_2012}. Honest,
   i.e., cross-validated, estimates of the empirical risk
   for different stopping parameters \code{mstop} are computed by
   this function which can be utilized to choose an appropriate
@@ -94,20 +94,7 @@ cv(weights, type = c("bootstrap", "kfold", "subsampling"),
   of bootstrap iterations. \code{plot} and \code{print} methods
   are available as well as a \code{mstop} method.
 }
-\references{
-
-  Torsten Hothorn, Friedrich Leisch, Achim Zeileis and Kurt Hornik (2006),
-  The design and analysis of benchmark experiments.
-  \emph{Journal of Computational and Graphical Statistics}, \bold{14}(3),
-  675--699.
-
-  Andreas Mayr, Benjamin Hofner, and Matthias Schmid (2012). The
-  importance of knowing when to stop - a sequential stopping rule for
-  component-wise gradient boosting. \emph{Methods of Information in
-    Medicine}, \bold{51}, 178--186. \cr
-  DOI: \doi{10.3414/ME11-02-0030}
-
-}
+\references{\bibshow{*}}
 \seealso{\code{\link{AIC.mboost}} for
   \code{AIC} based selection of the stopping iteration. Use \code{mstop}
   to extract the optimal stopping iteration from \code{cvrisk}
