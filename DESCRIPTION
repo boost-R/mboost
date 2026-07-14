@@ -27,11 +27,10 @@ Description: Functional gradient descent algorithm
   a hands-on tutorial is available from <doi:10.1007/s00180-012-0382-5>.
   The package allows user-specified loss functions and base-learners.
 Depends: R (>= 3.2.0), methods, stats, parallel, stabs (>= 0.5-0)
-Imports: Matrix, survival (>= 3.2-10), splines, lattice, nnls, quadprog, utils,
-	graphics, grDevices, partykit (>= 1.2-1)
-Suggests: TH.data, MASS, fields, BayesX, gbm, mlbench,
-    RColorBrewer, rpart (>= 4.0-3), randomForest, nnet,
-	testthat (>= 0.10.0), kangar00, bibtex, lme4, nlme
+Imports: Matrix, survival (>= 3.2-10), splines, lattice, nnls, quadprog, utils, 
+  graphics, grDevices, partykit (>= 1.2-1)
+Suggests: TH.data, MASS, fields, BayesX, gbm, mlbench, 
+  RColorBrewer, rpart (>= 4.0-3), randomForest, nnet, kangar00, bibtex, lme4, nlme, cobs
 License: GPL-2
 BugReports: https://github.com/boost-R/mboost/issues
 URL: https://github.com/boost-R/mboost
