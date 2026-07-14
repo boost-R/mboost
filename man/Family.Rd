@@ -97,7 +97,8 @@ RCG(nuirange = c(0, 1), offrange = c(-5, 5))
   \item{tau}{ the quantile or expectile to be estimated, a number strictly between 0 and 1.}
   \item{qoffset}{ quantile of response distribution to be used as offset, i.e., 
       starting values for the intercept. Per default the median of the response is used,
-      which is in general a good choice (see Fenske et al. 2011, for details).}
+      which is in general a good choice
+      \bibcitep{see|mboost::Fenske+Kneib+Hothorn_2011}|for details}.}
   \item{nuirange}{ a vector containing the end-points of the interval to be
           searched for the minimum risk w.r.t. the nuisance parameter.
 	  In case of \code{PropOdds}, the starting values for
@@ -116,9 +117,9 @@ RCG(nuirange = c(0, 1), offrange = c(-5, 5))
   gradient of \code{loss(y, f)} with respect to \code{f}.
 
   Pre-fabricated functions for the most commonly used loss functions are
-  available as well. Buehlmann and Hothorn (2007) give a detailed
+  available as well. \bibcitet{mboost::Buehlmann:2008:StatSci} give a detailed
   overview of the available loss functions. An updated overview can 
-  be found in Hofner et al (2014). 
+  be found in \bibcitet{mboost::Hofner_Mayr_2014}.
   
   The \code{offset} function returns the population minimizers evaluated at the 
   response, i.e., \eqn{1/2 \log(p / (1 - p))} for \code{Binomial()} or \code{AdaExp()}
@@ -137,7 +138,7 @@ RCG(nuirange = c(0, 1), offrange = c(-5, 5))
 \code{AdaExp()}, \code{Binomial()} and \code{AUC()} implement
 families for binary classification. \code{AdaExp()} uses the
 exponential loss, which essentially leads to the AdaBoost algorithm
-of Freund and Schapire (1996). \code{Binomial()} implements the
+of \bibcitet{mboost::nr:freund.schapire:1996}. \code{Binomial()} implements the
 negative binomial log-likelihood of a logistic regression model
 as loss function. Thus, using \code{Binomial} family closely corresponds
 to fitting a logistic model. Alternative link functions
@@ -145,7 +146,7 @@ can be specified.
 
 However, the coefficients resulting from boosting with family
 \code{Binomial(link = "logit")} are \eqn{1/2} of the coefficients of a logit model
-obtained via \code{\link{glm}}.  Buehlmann and Hothorn (2007) argue that the
+obtained via \code{\link{glm}}.  \bibcitet{mboost::Buehlmann:2008:StatSci} argue that the
 family \code{Binomial} is the preferred choice for binary
 classification. For binary classification problems the response
 \code{y} has to be a \code{factor}. Internally \code{y} is re-coded
@@ -163,7 +164,7 @@ The area under the ROC curve (AUC) is defined as
 Since this is not differentiable in \code{f}, we approximate the jump function
 \eqn{I((f_i - f_j) > 0)} by the distribution function of the triangular
 distribution on \eqn{[-1, 1]} with mean \eqn{0}, similar to the logistic
-distribution approximation used in Ma and Huang (2005).
+distribution approximation used in \bibcitet{mboost::Ma_Huang_2005}.
 
   \code{Gaussian()} is the default family in \code{\link{mboost}}. It
   implements \eqn{L_2}Boosting for continuous response. Note
@@ -191,12 +192,14 @@ distribution approximation used in Ma and Huang (2005).
   models. Hence, survival models can be boosted using this family.
 
   \code{QuantReg()} implements boosting for quantile regression, which is
-  introduced in Fenske et al. (2009). \code{ExpectReg} works in analogy,
-  only for expectiles, which were introduced to regression by Newey and Powell (1987).
+  introduced in \bibcitet{mboost::Fenske+Kneib+Hothorn_2011}. \code{ExpectReg} works in analogy,
+  only for expectiles, which were introduced to regression by
+  \bibcitet{mboost::Newey_Powell_1987}.
 
   Families with an additional scale parameter can be used for fitting
   models as well: \code{PropOdds()} leads to proportional odds models
-  for ordinal outcome variables (Schmid et al., 2011). When using this
+  for ordinal outcome variables
+  \bibcitep{mboost::Schmid+Hothorn+Maloney_2011}. When using this
   family, an ordered set of threshold parameters is re-estimated in each
   boosting iteration. An example is given below which also shows how to
   obtain the thresholds. \code{NBinomial()} leads to regression models with
@@ -205,8 +208,8 @@ distribution approximation used in Ma and Huang (2005).
   the negative log-likelihood functions of accelerated failure time
   models with Weibull, log-logistic, and lognormal distributed outcomes,
   respectively. Hence, parametric survival models can be boosted using
-  these families. For details see Schmid and Hothorn (2008) and Schmid
-  et al. (2010).
+  these families. For details see
+  \bibcitet{mboost::schmid:hothorn:aft-boost,mboost::Schmid+Potapov+Pfahlberg:2010}.
 
   \code{Gehan()} implements rank-based estimation of survival data in an
   accelerated failure time model. The loss function is defined as the sum
@@ -214,7 +217,7 @@ distribution approximation used in Ma and Huang (2005).
   be defined as \code{Surv(y, delta)}, where \code{y} is the observed survial
   time (subject to censoring) and \code{delta} is the non-censoring indicator
   (see \code{\link[survival]{Surv}} for details). For details on \code{Gehan()} see
-  Johnson and Long (2011).
+  \bibcitet{mboost::Johnson_2011}.
 
   \code{Cindex()} optimizes the concordance-index for survival data (often denoted
   as Harrell's C or C-index). The concordance index evaluates the rank-based
@@ -223,11 +226,10 @@ distribution approximation used in Ma and Huang (2005).
   vice versa. The interpretation is similar to the AUC: A C-index of 1 represents a
   perfect discrimination while a C-index of 0.5 will be achieved by a completely
   non-informative marker. The \code{Cindex()} family is based on an estimator by
-  Uno et al. (2011), which incorporates inverse probability of censoring weighting
+  \bibcitet{mboost::Uno_Cai_2011}, which incorporates inverse probability of censoring weighting
   \code{ipcw}. To make the estimator differentiable, sigmoid functions are applied;
   the corresponding smoothness can be controlled via \code{sigma}. For details on
-  \code{Cindex()} see Mayr and Schmid (2014).
-    
+  \code{Cindex()} see \bibcitet{mboost::Mayr_Schmid_2014}.
   
   Hurdle models for zero-inflated count data can be fitted by using a combination
   of the \code{Binomial()} and \code{Hurdle()} families. While the \code{Binomial()}
@@ -245,7 +247,7 @@ distribution approximation used in Ma and Huang (2005).
   of the response is used as reference class.
   
   \code{RCG()} implements the ratio of correlated gammas (RCG) model proposed
-  by Weinhold et al. (2016).
+  by \bibcitet{mboost::Weinhold_2016}.
 
 }
 \section{Warning}{
@@ -259,69 +261,7 @@ distribution approximation used in Ma and Huang (2005).
 \value{
   An object of class \code{boost_family}.
 }
-\references{
-    Peter Buehlmann and Torsten Hothorn (2007),
-    Boosting algorithms: regularization, prediction and model fitting.
-    \emph{Statistical Science}, \bold{22}(4), 477--505.
-
-    Nora Fenske, Thomas Kneib, and Torsten Hothorn (2011),
-    Identifying risk factors for severe childhood malnutrition by
-    boosting additive quantile regression.
-	\emph{Journal of the American Statistical Association}, \bold{106}:494-510.
-
-    Yoav Freund and Robert E. Schapire (1996),
-    Experiments with a new boosting algorithm.
-    In \emph{Machine Learning: Proc. Thirteenth International Conference},
-    148--156.
-
-    Shuangge Ma and Jian Huang (2005), Regularized ROC method for
-    disease classification and biomarker selection with microarray
-    data. \emph{Bioinformatics}, \bold{21}(24), 4356--4362.
-    
-    Andreas Mayr and Matthias Schmid (2014). 
-    Boosting the concordance index for survival data -- a unified 
-    framework to derive and evaluate biomarker combination.     
-    \emph{PloS ONE}, \bold{9}(1):84483.
-
-    Whitney K. Newey and James L. Powell (1987),
-    Asymmetric least squares estimation and testing.
-    \emph{Econometrika}, \bold{55}, 819--847.
-
-    Matthias Schmid and Torsten Hothorn (2008),
-    Flexible boosting of accelerated failure time models.
-    \emph{BMC Bioinformatics}, \bold{9}(269).
-
-    Matthias Schmid, Sergej Potapov, Annette Pfahlberg,
-    and Torsten Hothorn (2010). Estimation and regularization techniques for
-    regression models with multidimensional prediction functions.
-    \emph{Statistics and Computing}, \bold{20}, 139--150.
-
-    Schmid, M., T. Hothorn, K. O. Maloney, D. E. Weller and S. Potapov
-    (2011): Geoadditive regression modeling of stream biological
-    condition. \emph{Environmental and Ecological Statistics},
-    \bold{18}(4), 709--733.
-
-    Uno H, Cai T, Pencina MJ, D Agostino RB and Wei LJ (2011). 
-    On the C-statistics for evaluating overall adequacy of risk prediction 
-    procedures with censored survival data. 
-    \emph{Statistics in Medicine}, \bold{30}(10), 1105--17.
-
-    Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
-    (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
-    Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
-    \doi{10.1007/s00180-012-0382-5}
-
-    Available as vignette via: \code{vignette(package = "mboost", "mboost_tutorial")}
-
-    Brent A. Johnson and Qi Long (2011) Survival ensembles by the sum of pairwise
-    differences with application to lung cancer microarray studies.
-    \emph{Annals of Applied Statistics}, \bold{5}, 1081--1101.
-    
-
-    Weinhold, L., S. Pechlivanis, S. Wahl, P. Hoffmann and M. Schmid (2016) A Statistical Model for the
-    Analysis of Bounded Response Variables in DNA Methylation Studies.
-    \emph{BMC Bioinformatics}. 2016; 17: 480. \doi{10.1186/s12859-016-1347-4}
-}
+\references{\bibshow{*}}
 \seealso{\code{\link{mboost}} for the usage of \code{Family}s. See
     \code{\link{boost_family-class}} for objects resulting from a call to \code{Family}. }
 \author{
