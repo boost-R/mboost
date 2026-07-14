@@ -723,14 +723,14 @@ structure(c(3.7463373531230646, 5.0294654135338313, 3.805863095238093,
 Torsten Hothorn, Peter B\"uhlmann, Thomas Kneib, Mattthias Schmid
 and Benjamin Hofner (2010),  Model-based Boosting 2.0. \emph{Journal of Machine Learning Research}, \textbf{11},
 2109 -- 2113;\\
-URL \url{http://jmlr.csail.mit.edu/papers/v11/hothorn10a.html}.
+URL \url{https://jmlr.org/papers/v11/hothorn10a.html}.
 \end{center}
 \bigskip
 
 \begin{abstract}
 This is an extended version of the manuscript Torsten Hothorn, Peter B\"uhlmann, Thomas Kneib, Mattthias Schmid
 and Benjamin Hofner (2010),  Model-based Boosting 2.0. \emph{Journal of Machine Learning Research}, \textbf{11},
-2109 -- 2113; \url{http://jmlr.csail.mit.edu/papers/v11/hothorn10a.html}.
+2109 -- 2113; \url{https://jmlr.org/papers/v11/hothorn10a.html}.
 
 We describe version 2.0 of the \proglang{R} add-on package \pkg{mboost}.
 The package implements boosting for optimizing general risk functions utilizing
@@ -1006,8 +1006,6 @@ print(plot(model, which = "btree", newdata = nd, col.regions = col,
 The sources of the \pkg{mboost} package are distributed
 at the Comprehensive \proglang{R} Archive Network under GPL-2,
 along with binaries for all major platforms as well as documentation and regression tests.
-Development versions are available from \url{http://R-forge.R-project.org}.
-
 
 \section{Overview on 2.0 Series Features}
 \label{sec:2.0-series-features}

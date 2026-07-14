@@ -81,12 +81,12 @@
 options(prompt = "R> ", continue = "+  ", width = 80)
 pd <- packageDescription("mboost")
 if (any(is.na(pd))){
-    install.packages("mboost", repos = "http://cran.at.r-project.org")
+    install.packages("mboost", repos = "https://CRAN.R-project.org")
     pd <- packageDescription("mboost")
 }
 if (compareVersion(pd$Version, "2.1-0") < 0){ # must be mboost 2.1-X or newer
     warning("Current version of mboost is installed!")
-    install.packages("mboost", repos = "http://cran.at.r-project.org")
+    install.packages("mboost", repos = "https://CRAN.R-project.org")
 }
 options(digits = 3)
 require("mboost")
@@ -125,8 +125,7 @@ if (!file.exists("graphics"))
   Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Mattthias Schmid (2014),
   Model-based Boosting in \textsf{R} -- A Hands-on Tutorial Using the \textsf{R}
   Package mboost. \emph{Computational Statistics}, 29:3--35.\\
-  DOI \href{http://dx.doi.org/10.1007/s00180-012-0382-5}{10.1007/s00180-012-0382-5}.\\
-  The final publication is available at \url{http://link.springer.com}.\\[2em]
+  DOI \href{https://dx.doi.org/10.1007/s00180-012-0382-5}{10.1007/s00180-012-0382-5}.\\[2em]
   Changes to the results in the original manuscript are due to changes in some
   defaults of \textbf{mboost} (most notably the definition of degrees of freedom
   has changed in \textbf{mboost} 2.2-0). See NEWS for details.
@@ -1663,7 +1662,7 @@ introduction to the basic functionalities of the \textbf{mboost} package,
 highlighting its usage from a practical perspective. Readers who are interested
 in further illustrations, as well as in a more technical description of the
 \textbf{mboost} package, are referred to the package manual and the vignettes
-that are found at \url{http://cran.r-project.org/package=mboost} or in
+that are found at \url{https://CRAN.R-project.org/package=mboost} or in
 \textsf{R} via \R{vignette(package = "mboost")}.
 
 \bibliographystyle{abbrvnat}
