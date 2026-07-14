@@ -4,7 +4,7 @@
 > pd <- packageDescription("mboost")
 
 > if (any(is.na(pd))) {
-+     install.packages("mboost", repos = "http://cran.at.r-project.org")
++     install.packages("mboost", repos = "https://CRAN.R-project.org")
 +     pd <- packageDescription("mboost")
 + }
 
@@ -726,4 +726,4 @@ pdf
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
-  3.320   0.676   3.180 
+  3.122   0.674   3.045 
