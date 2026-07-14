@@ -110,12 +110,6 @@
 \value{
   A plot of the fitted model.
 }
-\references{
-  Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
-  (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
-  Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
-  \doi{10.1007/s00180-012-0382-5}
-}
 \seealso{
   \code{\link{mboost_methods}} for further methods.
 }
