@@ -148,12 +148,12 @@ bl1 \%O\% bl2
                  \code{center = "differenceMatrix"} is based on the difference matrix
                  (the default for \code{bbs} with one covariate only)
                  and \code{center = "spectralDecomp"} uses a spectral decomposition
-                 of the penalty matrix (see Fahrmeir et al., 2004, Section 2.3 for details).
+                 of the penalty matrix \bibcitep{see|mboost::Fahrmeir2004|Section 2.3 for details).
                  The latter option is the default (and currently only option) for \code{bbs}
                  with multiple covariates or \code{bmrf}.}
   \item{cyclic}{ if \code{cyclic = TRUE} the fitted values coincide at the boundaries
                  (useful for cyclic covariates such as day time etc.). 
-                 For details see Hofner et al. (2016).}
+                 For details see \bibcitet{mboost::Hofner_Kneib_Hothorn_2015}.}
   \item{covFun}{ the covariance function (i.e. radial basis)
                  needed to compute the basis functions. Per
                  default \code{\link[fields]{stationary.cov}} function
@@ -195,13 +195,14 @@ bl1 \%O\% bl2
   \item{type}{
     determines how the constrained least squares problem should be
     solved. If \code{type = "quad.prog"}, a numeric quadratic
-    programming method (Goldfarb and Idnani, 1982, 1983) is used
+    programming method
+    \bibcitep{mboost::Goldfarb:1982,mboost::Goldfarb:1983} is used
     (see \code{\link[quadprog]{solve.QP}} in package \pkg{quadprog}). If
     \code{type = "iterative"}, the iterative procedure described in
-    Hofner et al. (2011b) is used. The quadratic programming approach is
+    \bibcitet{mboost::Hofner+Mueller+Hothorn_2011}. 
+    The quadratic programming approach is
     usually much faster than the iterative approach. For details see
-    Hofner et al. (2016).
-  }
+    \bibcitet{mboost::Hofner_Kneib_Hothorn_2015}.}
   \item{lambda2}{ penalty parameter for the (monotonicity) constraint. }
   \item{niter}{ maximum number of iterations used to compute constraint
     estimates. Increase this number if a warning is displayed. }
@@ -257,7 +258,7 @@ bl1 \%O\% bl2
   corresponding design matrix (which can be omitted using
   \code{intercept = FALSE}). It is \emph{strongly} advised to (mean-)
   center continuous covariates, if no intercept is used in \code{bols}
-  (see Hofner et al., 2011a). If \code{x} is a matrix, it is directly used
+  \bibcitep{see|mboost::Hofner+Hothorn+Kneib_2011|}. If \code{x} is a matrix, it is directly used
   as the design matrix and no further preprocessing (such as addition of
   an intercept) is conducted. When \code{df} (or \code{lambda}) is
   given, a ridge estimator with \code{df} degrees of freedom (see
@@ -265,9 +266,10 @@ bl1 \%O\% bl2
   all variables are treated as a group, i.e., they enter the model
   together if the corresponding base-learner is selected. For ordinal
   variables, a ridge penalty for the differences of the adjacent
-  categories (Gertheiss and Tutz 2009, Hofner et al. 2011a) is applied.
+  categories \bibcitep{mboost::gertheiss:pen_ordinal:2009,mboost::Hofner+Hothorn+Kneib_2011} 
+  is applied.
 
-  With \code{bbs}, the P-spline approach of Eilers and Marx (1996) is
+  With \code{bbs}, the P-spline approach of \bibcitet{mboost::Eilers1996} is
   used. P-splines use a squared \emph{k}-th-order difference penalty
   which can be interpreted as an approximation of the integrated squared
   \emph{k}-th derivative of the spline. In \code{bbs} the argument
@@ -279,16 +281,16 @@ bl1 \%O\% bl2
   specify the points where the function is joined (e.g.,
   \code{boundary.knots = c(0, 2 * pi)} for angles as in a sine function
   or \code{boundary.knots = c(0, 24)} for hours during the day). For
-  details on cylcic splines in the context of boosting see Hofner et
-  al. (2016). 
+  details on cylcic splines in the context of boosting see 
+  \bibcitet{mboost::Hofner_Kneib_Hothorn_2015}.
 
   \code{bspatial} implements bivariate tensor product P-splines for the
   estimation of either spatial effects or interaction surfaces. Note
   that \code{bspatial(x, y)} is equivalent to \code{bbs(x, y, df = 6)}.
   For possible arguments and defaults see there. The penalty term is
   constructed based on bivariate extensions of the univariate penalties
-  in \code{x} and \code{y} directions, see Kneib, Hothorn and Tutz
-  (2009) for details. Note that the dimensions of the penalty matrix
+  in \code{x} and \code{y} directions, see  \bibcitet{mboost::kneib+hothorn+tutz:2009}. 
+  Note that the dimensions of the penalty matrix
   increase (quickly) with the number of knots with strong impact on
   computational time. Thus, both should not be chosen to large.
   Different knots for \code{x} and \code{y} can be specified by a named
@@ -347,8 +349,8 @@ bl1 \%O\% bl2
   (\code{bols(x)}), a linear effect of \code{y} (\code{bols(y)}), and
   their interaction (\code{bols(x*y)}) are subtracted from the effect
   and have to be added separately to the model equation. More details on
-  centering can be found in Kneib, Hothorn and Tutz (2009) and Fahrmeir,
-  Kneib and Lang (2004). We strongly recommend to consult the latter reference
+  centering can be found in \bibcitet{mboost::kneib+hothorn+tutz:2009} and
+  \bibcitet{mboost::Fahrmeir2004}. We strongly recommend to consult the latter reference
   before using this option.
 
   \code{brad(x)} specifies penalized radial basis functions as used in
@@ -382,7 +384,7 @@ bl1 \%O\% bl2
   \code{bkernel} can be used to fit linear (\code{kernel = "lin"}), 
   size-adjusted (\code{kernel = "sia"}) or network (\code{kernel = "net"})
   kernels based on genetic pathways for genome-wide assosiation studies. 
-  For details see Friedrichs et al. (2017) and check the associated package
+  For details see \bibcitet{mboost::Friedrichs_2017} and check the associated package
   \CRANpkg{kangar00}.
 
   \code{buser(X, K)} specifies a base-learner with user-specified design
@@ -411,12 +413,13 @@ bl1 \%O\% bl2
   Smooth estimates with constraints can be computed using the
   base-learner \code{bmono()} which specifies P-spline base-learners
   with an additional asymmetric penalty enforcing monotonicity or
-  convexity/concavity (see and Eilers, 2005). For more details in the
-  boosting context and monotonic effects of ordinal factors see Hofner,
-  Mueller and Hothorn (2011b). The quadratic-programming based algorithm
-  is described in Hofner et al. (2016). Alternative monotonicity
-  constraints are implemented via T-splines in \code{bbs()} (Beliakov,
-  2000). In general it is advisable to use \code{bmono} to fit monotonic splines 
+  convexity/concavity \bibcitep{see|mboost::Eilers2005|}. For more details in the
+  boosting context and monotonic effects of ordinal factors see
+  \bibcitet{mboost::Hofner+Mueller+Hothorn_2011}. The quadratic-programming based algorithm
+  is described in \bibcitet{mboost::Hofner_Kneib_Hothorn_2015}. Alternative monotonicity
+  constraints are implemented via T-splines in \code{bbs()}
+  \bibcitep{mboost::Beliakov2000}. 
+  In general it is advisable to use \code{bmono} to fit monotonic splines 
   as T-splines show undesirable behaviour if the observed data deviates 
   from monotonicty.
 
@@ -425,16 +428,17 @@ bl1 \%O\% bl2
   \code{\%X\%}. When the design matrix can be written as the Kronecker
   product of two matrices \code{X = kronecker(X2, X1)}, then \code{bl1
   \%O\% bl2} with design matrices X1 and X2, respectively, can be used
-  to efficiently compute Ridge-estimates following Currie, Durban,
-  Eilers (2006). In all cases the overall degrees of freedom of the
+  to efficiently compute Ridge-estimates following
+  \bibcitet{mboost::Currie_Durban_Eilers_2006}. 
+  In all cases the overall degrees of freedom of the
   combined base-learner increase (additive or multiplicative,
   respectively). These three features are experimental and for expert
   use only.
 
   \code{btree} fits a stump to one or more variables. Note that
   \code{\link{blackboost}} is more efficient for boosting stumps. For
-  further references see Hothorn, Hornik, Zeileis (2006) and Hothorn et
-  al. (2010).
+  further references see \bibcitet{mboost::Hothorn:2006:JCGS} and 
+  \bibcitet{mboost::Hothorn+Buehlmann+Kneib+Schmid+Hofner_2010}.
 
   Note that the base-learners \code{bns} and \code{bss} are deprecated
   (and no longer available). Please use \code{bbs} instead, which
@@ -461,7 +465,7 @@ bl1 \%O\% bl2
       default \deqn{\mathrm{df}(\lambda) = \mathrm{trace}(2S -
       S^{\top}S),}{df(\lambda) = trace(2S - S'S),} with smoother matrix
       \eqn{S = X(X^{\top}X + \lambda K)^{-1} X}{S = X(X'X + \lambda
-      K)^(-1) X} is used (see Hofner et al., 2011a). If \code{TRUE}, the
+      K)^(-1) X} is used \bibcitep{see|mboost::Hofner+Hothorn+Kneib_2011}. If \code{TRUE}, the
       trace of the smoother matrix \eqn{\mathrm{df}(\lambda) =
       \mathrm{trace}(S)} is used as degrees of freedom.
 
@@ -481,69 +485,7 @@ bl1 \%O\% bl2
  \code{bl} (base-learner) with a \code{fit} function. The call to
  \code{fit} finally returns an object of class \code{bm} (base-model).
 }
-\references{
-
-  Iain D. Currie, Maria Durban, and Paul H. C. Eilers (2006),
-  Generalized linear array models with applications to
-  multidimensional smoothing. \emph{Journal of the Royal
-  Statistical Society, Series B--Statistical Methodology},
-  \bold{68}(2), 259--280.
-
-  Paul H. C. Eilers (2005), Unimodal smoothing. \emph{Journal of
-  Chemometrics}, \bold{19}, 317--328.
-
-  Paul H. C. Eilers and Brian D. Marx (1996), Flexible smoothing with B-splines
-  and penalties. \emph{Statistical Science}, \bold{11}(2), 89-121.
-
-  Ludwig Fahrmeir, Thomas Kneib and Stefan Lang (2004), Penalized structured
-  additive regression for space-time data: a Bayesian perspective.
-  \emph{Statistica Sinica}, \bold{14}, 731-761.
-
-  Jan Gertheiss and Gerhard Tutz (2009), Penalized regression with ordinal
-  predictors, \emph{International Statistical Review}, \bold{77}(3), 345--365.
-
-  D. Goldfarb and A. Idnani (1982),  Dual and Primal-Dual Methods
-  for Solving Strictly Convex Quadratic Programs.  In J. P. Hennart
-  (ed.), Numerical Analysis, Springer-Verlag, Berlin, pp. 226-239.
-
-  D. Goldfarb and A. Idnani (1983),  A numerically stable dual
-  method for solving strictly convex quadratic programs.
-  \emph{Mathematical Programming}, \bold{27}, 1--33.
-  
-  S. Friedrichs, J. Manitz, P. Burger, C.I. Amos, A. Risch, J.C. Chang-Claude, 
-  H.E. Wichmann, T. Kneib, H. Bickeboeller, and B. Hofner (2017), 
-  Pathway-Based Kernel Boosting for the Analysis of Genome-Wide Association Studies.
-  \emph{Computational and Mathematical Methods in Medicine}. 2017(6742763), 1-17. 
-  \doi{10.1155/2017/6742763}.
-
-  Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011a),
-  A framework for unbiased model selection based on boosting.
-  \emph{Journal of Computational and Graphical Statistics}, \bold{20}, 956--971.
-
-  Benjamin Hofner, Joerg Mueller, and Torsten Hothorn (2011b),
-  Monotonicity-Constrained Species Distribution Models.
-  \emph{Ecology}, \bold{92}, 1895--1901.
-
-  Benjamin Hofner, Thomas Kneib and Torsten Hothorn (2016), 
-  A Unified Framework of Constrained Regression. 
-  \emph{Statistics & Computing}, \bold{26}, 1--14.
-  
-  Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable
-  selection and model choice in geoadditive regression models,
-  \emph{Biometrics}, \bold{65}(2), 626--634.
-
-  Torsten Hothorn, Kurt Hornik, Achim Zeileis (2006), Unbiased recursive
-  partitioning: A conditional inference framework. \emph{Journal of
-    Computational and Graphical Statistics}, \bold{15}, 651--674.
-
-  Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Matthias Schmid and
-  Benjamin Hofner (2010), Model-based Boosting 2.0, \emph{Journal of
-    Machine Learning Research}, \bold{11}, 2109--2113.
-
-  G. M. Beliakov (2000), Shape Preserving Approximation using Least Squares
-  Splines, \emph{Approximation Theory and its Applications},
-  \bold{16}(4), 80--98.
-}
+\references{\bibshow{*}}
 
 \seealso{\code{\link{mboost}}}
 
