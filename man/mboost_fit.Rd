@@ -66,38 +66,6 @@ mboost_fit(blg, response, weights = rep(1, NROW(response)), offset = NULL,
   \code{\link{AIC}}, \code{\link{plot}} and \code{\link{predict}}
   methods being available.
 }
-\references{
-
-  Peter Buehlmann and Bin Yu (2003),
-  Boosting with the L2 loss: regression and classification.
-  \emph{Journal of the American Statistical Association}, \bold{98},
-  324--339.
-
-  Peter Buehlmann and Torsten Hothorn (2007),
-  Boosting algorithms: regularization, prediction and model fitting.
-  \emph{Statistical Science}, \bold{22}(4), 477--505.
-
-  Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Mattthias Schmid and
-  Benjamin Hofner (2010), Model-based Boosting 2.0. \emph{Journal of
-  Machine Learning Research}, \bold{11}, 2109--2113.
-
-  Yoav Freund and Robert E. Schapire (1996),
-  Experiments with a new boosting algorithm.
-  In \emph{Machine Learning: Proc. Thirteenth International Conference},
-  148--156.
-
-  Jerome H. Friedman (2001),
-  Greedy function approximation: A gradient boosting machine.
-  \emph{The Annals of Statistics}, \bold{29}, 1189--1232.
-
-  Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
-  (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
-  Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
-  \doi{10.1007/s00180-012-0382-5}
-
-  Available as vignette via: \code{vignette(package = "mboost", "mboost_tutorial")}
-
-}
 \seealso{\code{\link{glmboost}} for boosted linear models and
   \code{\link{blackboost}} for boosted trees. See e.g. \code{\link{bbs}}
   for possible base-learners. See \code{\link{cvrisk}} for

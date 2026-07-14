@@ -16,27 +16,13 @@ IPCweights(x, maxweight = 5)
 
   Inverse probability of censoring weights are one possibility to fit
   models formulated in the \emph{full data world} in the presence of censoring,
-  i.e., the \emph{observed data world}, see van der Laan and Robins (2003) for
-  the underlying theory and Hothorn et al. (2006) for an application to
+  i.e., the \emph{observed data world} \bibcitep{mboost::Laan_Robins_2003}, see 
+  \bibcitet{Hothorn:2006:Biostatistics:16344280} for an application to
   survival analysis.
 
 }
 \value{
   A vector of numeric weights. 
 }
-\references{ 
-
-    Mark J. van der Laan and James M. Robins (2003), 
-    \emph{Unified Methods for Censored Longitudinal Data and Causality}, 
-    Springer, New York.
-
-    Torsten Hothorn, Peter Buehlmann, Sandrine Dudoit,
-    Annette Molinaro and Mark J. van der Laan (2006), Survival ensembles.
-    \emph{Biostatistics} \bold{7}(3), 355--373.
-
-    Peter Buehlmann and Torsten Hothorn (2007),
-    Boosting algorithms: regularization, prediction and model fitting.
-    \emph{Statistical Science}, \bold{22}(4), 477--505.
-
-}
+\references{\bibshow{*}}
 \keyword{survival}

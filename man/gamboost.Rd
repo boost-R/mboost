@@ -39,9 +39,10 @@ gamboost(formula, data = list(), na.action = na.omit, weights = NULL,
     B-spline basis (see Schmid and Hothorn 2008), \code{\link{bols}}
     linear models and \code{\link{btree}} boosts stumps. 
     \code{bss} and \code{bns} are deprecated.
-    Component-wise smoothing splines have been considered in Buehlmann
-    and Yu (2003) and Schmid and Hothorn (2008) investigate P-splines
-    with a B-spline basis. Kneib, Hothorn and Tutz (2009) also utilize
+    Component-wise smoothing splines have been considered in
+    \bibcitet{mboost::buehlmannyu2003} and
+    \bibcitet{mboost::schmid+hothorn:2008b} investigate P-splines
+    with a B-spline basis. \bibcitet{mboost::kneib+hothorn+tutz:2009} also utilize
     P-splines with a B-spline basis, supplement them with their
     bivariate tensor product version to estimate interaction surfaces
     and spatial effects and also consider random effects base
@@ -79,38 +80,7 @@ gamboost(formula, data = list(), na.action = na.omit, weights = NULL,
   \code{\link{AIC}}, \code{\link{plot}} and \code{\link{predict}}
   methods being available.
 }
-\references{
-
-  Peter Buehlmann and Bin Yu (2003),
-  Boosting with the L2 loss: regression and classification.
-  \emph{Journal of the American Statistical Association}, \bold{98},
-  324--339.
-
-  Peter Buehlmann and Torsten Hothorn (2007),
-  Boosting algorithms: regularization, prediction and model fitting.
-  \emph{Statistical Science}, \bold{22}(4), 477--505.
-
-  Thomas Kneib, Torsten Hothorn and Gerhard Tutz (2009), Variable selection and
-  model choice in geoadditive regression models, \emph{Biometrics}, \bold{65}(2),
-  626--634.
-
-  Matthias Schmid and Torsten Hothorn (2008),
-  Boosting additive models using component-wise P-splines as
-  base-learners. \emph{Computational Statistics & Data Analysis},
-  \bold{53}(2), 298--311.
-
-  Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Mattthias Schmid
-  and Benjamin Hofner (2010),
-  Model-based Boosting 2.0.
-  \emph{Journal of Machine Learning Research}, \bold{11}, 2109 -- 2113.
-
-  Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
-  (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
-  Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
-  \doi{10.1007/s00180-012-0382-5}
-
-  Available as vignette via: \code{vignette(package = "mboost", "mboost_tutorial")}
-}
+\references{\bibshow{*}}
 \seealso{
   See \code{\link{mboost_fit}} for the generic boosting function, 
   \code{\link{glmboost}} for boosted linear models, and

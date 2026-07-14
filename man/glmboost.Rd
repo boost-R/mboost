@@ -48,8 +48,8 @@
   A (generalized) linear model is fitted using a boosting algorithm based on component-wise
   univariate linear models. The fit, i.e., the regression coefficients, can be
   interpreted in the usual way. The methodology is described in
-  Buehlmann and Yu (2003), Buehlmann (2006), and Buehlmann and Hothorn (2007).
-  Examples and further details are given in Hofner et al (2014).
+  \bibcitet{mboost::buehlmannyu2003,mboost::buehlmann2006} and
+  \bibcitet{mboost::Buehlmann:2008:StatSci}.
 
 }
 \value{
@@ -59,31 +59,7 @@
   \code{par("mai")} before calling the \code{plot} method of \code{glmboost}
   objects visualizing the coefficients path.
 }
-\references{
-
-  Peter Buehlmann and Bin Yu (2003),
-  Boosting with the L2 loss: regression and classification.
-  \emph{Journal of the American Statistical Association}, \bold{98},
-  324--339.
-
-  Peter Buehlmann (2006), Boosting for high-dimensional linear models.
-  \emph{The Annals of Statistics}, \bold{34}(2), 559--583.
-
-  Peter Buehlmann and Torsten Hothorn (2007),
-  Boosting algorithms: regularization, prediction and model fitting.
-  \emph{Statistical Science}, \bold{22}(4), 477--505.
-
-  Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Mattthias Schmid and
-  Benjamin Hofner (2010), Model-based Boosting 2.0. \emph{Journal of
-    Machine Learning Research}, \bold{11}, 2109--2113.
-
-  Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
-  (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
-  Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
-  \doi{10.1007/s00180-012-0382-5}
-
-  Available as vignette via: \code{vignette(package = "mboost", "mboost_tutorial")}
-}
+\references{\bibshow{*}}
 \seealso{
   See \code{\link{mboost_fit}} for the generic boosting function, 
   \code{\link{gamboost}} for boosted additive models, and
