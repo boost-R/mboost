@@ -1,5 +1,7 @@
 
 library("mboost")
+set.seed(290875)
+
 
 data("bodyfat", package = "TH.data")
 

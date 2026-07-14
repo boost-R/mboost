@@ -1,0 +1,77 @@
+
+R Under development (unstable) (2026-07-13 r90246) -- "Unsuffered Consequences"
+Copyright (C) 2026 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> 
+> library("mboost")
+Loading required package: parallel
+Loading required package: stabs
+> set.seed(290875)
+> 
+> 
+> data("bodyfat", package = "TH.data")
+> 
+> object <- glmboost(DEXfat ~ ., data = bodyfat, center = TRUE)
+> a <- stabsel(object, cutoff = 0.9, q = 2)
+> a
+	Stability Selection with unimodality assumption
+
+No variables selected
+
+Selection probabilities:
+ (Intercept)          age elbowbreadth  kneebreadth     anthro3b      anthro4 
+        0.00         0.00         0.00         0.01         0.03         0.05 
+    anthro3c     anthro3a    waistcirc      hipcirc 
+        0.09         0.11         0.84         0.87 
+
+---
+Cutoff: 0.9; q: 2; PFER (*):  0.173 
+   (*) or expected number of low selection probability variables
+PFER corresponds to signif. level 0.0173 (without multiplicity adjustment)
+
+> plot(a)
+> 
+> object <- gamboost(DEXfat ~ ., data = bodyfat)
+> a <- stabsel(object, cutoff = 0.9, q = 2)
+> a
+	Stability Selection with unimodality assumption
+
+Selected variables:
+bbs(hipcirc, df = dfbase) 
+                        3 
+
+Selection probabilities:
+         bbs(age, df = dfbase) bbs(elbowbreadth, df = dfbase) 
+                          0.00                           0.00 
+ bbs(kneebreadth, df = dfbase)     bbs(anthro3c, df = dfbase) 
+                          0.00                           0.01 
+    bbs(anthro3b, df = dfbase)      bbs(anthro4, df = dfbase) 
+                          0.12                           0.13 
+    bbs(anthro3a, df = dfbase)    bbs(waistcirc, df = dfbase) 
+                          0.22                           0.62 
+     bbs(hipcirc, df = dfbase) 
+                          0.90 
+
+---
+Cutoff: 0.9; q: 2; PFER (*):  0.192 
+   (*) or expected number of low selection probability variables
+PFER corresponds to signif. level 0.0213 (without multiplicity adjustment)
+
+> plot(a)
+> 
+> proc.time()
+   user  system elapsed 
+  4.571   3.054   3.845 
