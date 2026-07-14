@@ -50,13 +50,9 @@ with(DF, points(x1, x2, cex=0.5))
 ###
 # Fit model with Krig (package fields)
 require(fields)
-TMP <- mboost:::hyper_brad(DF[,2:3], vary= "", knots=100, cov.function = stationary.cov, args=list(Covariance="Matern", smoothness = 1.5, theta=NULL))
-a <- Krig(x = as.matrix(DF[,2:3]), Y = DF[,1], df=20, knots = TMP$knots, cov.args=TMP$args)
-pr3 <- matrix(predict(a, nD), nrow=length(x1), ncol=length(x2))
+TMP <- mboost:::hyper_brad(DF[,2:3], vary= "", knots=100, covFun = stationary.cov, args=list(Covariance="Matern", smoothness = 1.5, theta=NULL))
 
 contour(x1, x2, z)
-contour(x1, x2, pr3, add=TRUE, lty="dashed", col="red")
-with(DF, points(x1, x2, cex=0.5))
 
 ########################################
 #        Univariate kriging            #
@@ -90,6 +86,6 @@ lines(sort(x1), sort(x1)^2 - mean(sort(x1)^2), col="red")
 
 x = DF[1:300,2:3]
 require(fields)
-theta_hat <- mboost:::effective_range(x, eps = 0.001, cov.function=stationary.cov,
+theta_hat <- mboost:::effective_range(x, eps = 0.001, covFun=stationary.cov,
                              args=list(Covariance = "Matern", smoothness = 1.5, theta = NULL))
 stopifnot( (attr(theta_hat, "c_value") - 9.23339238) < sqrt(.Machine$double.eps) )
