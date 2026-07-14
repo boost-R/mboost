@@ -43,13 +43,13 @@
     selection probabilities. Only applicable for
     \code{sampling.type = "SS"}. For \code{sampling.type = "MB"} we
     always use \code{"none"}.}
-  \item{sampling.type}{ use sampling scheme of of Shah & Samworth
-    (2013), i.e., with complementarty pairs (\code{sampling.type = "SS"}),
-    or the original sampling scheme of Meinshausen & Buehlmann (2010).}
+  \item{sampling.type}{ use sampling scheme of of
+    \bibcitet{mboost::Shah_Samworth_2013}, i.e., with complementarty pairs (\code{sampling.type = "SS"}),
+    or the original sampling scheme of \bibcitet{mboost::mebu10}.}
   \item{B}{ number of subsampling replicates. Per default, we use 50
-    complementary pairs for the error bounds of Shah & Samworth (2013)
-    and 100 for the error bound derived in  Meinshausen & Buehlmann
-    (2010). As we use \eqn{B} complementray pairs in the former case
+    complementary pairs for the error bounds of \bibcitet{mboost::Shah_Samworth_2013}
+    and 100 for the error bound derived in \bibcitet{mboost::mebu10}. 
+    As we use \eqn{B} complementray pairs in the former case
     this leads to \eqn{2B} subsamples.}
   \item{papply}{ (parallel) apply function, defaults to
     \code{\link[parallel]{mclapply}}. Alternatively, \code{parLapply}
@@ -68,7 +68,7 @@
 \details{
 
   For details see \code{\link[stabs]{stabsel}} in package \pkg{stabs}
-  and Hofner et al. (2015).
+  and \bibcitet{mboost::Hofner_Boccuto_2015}.
 
 }
 \value{
@@ -86,21 +86,8 @@
     probabilities.}
   \item{call}{the call.}
 }
-\references{
+\references{\bibshow{*}}
 
-  B. Hofner, L. Boccuto and M. Goeker (2015),
-  Controlling false discoveries in high-dimensional situations: Boosting
-  with stability selection. \emph{BMC Bioinformatics}, \bold{16:144}.
-
-  N. Meinshausen and P. Buehlmann (2010), Stability selection.
-  \emph{Journal of the Royal Statistical Society, Series B},
-  \bold{72}, 417--473.
-
-  R.D. Shah and R.J. Samworth (2013), Variable selection with error
-  control: another look at stability selection. \emph{Journal of the Royal
-  Statistical Society, Series B}, \bold{75}, 55--80.
-
-}
 \seealso{
   \code{\link[stabs]{stabsel}} and
   \code{\link[stabs]{stabsel_parameters}}
