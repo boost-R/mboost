@@ -12,6 +12,10 @@ for f in ./man/*~; do
     rm -f $f
 done
 
+for f in ./demo/*~; do
+    rm -f $f
+done
+
 for f in ./man/*.ps; do
     rm -f $f
 done
