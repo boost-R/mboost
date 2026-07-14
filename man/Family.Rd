@@ -289,7 +289,7 @@ if (require("MASS")) {
 }
 mod.PropOdds <- glmboost(Species  ~ Sepal.Length, data = iris,
                          family = PropOdds(nuirange = c(-0.5, 3)))
-mstop(mod.PropOdds) <- 1000
+mstop(mod.PropOdds) <- 250
 ## thresholds are treated as nuisance parameters, to extract these use
 nuisance(mod.PropOdds)
 ## effect estimate
@@ -352,7 +352,7 @@ y <- M / (M + U)
 ## fit RCG model
 data <- data.frame(y, x1, x2)
 RCGmodel <- glmboost(y ~ x1 + x2, data = data, family = RCG(),
-                     control = boost_control(mstop = 1000,
+                     control = boost_control(mstop = 250,
                      trace = TRUE, nu = 0.01))
 ## true coefficients: gamma = (0.0, 0.4, -0.7),
 ##                    alpha (= shape) = 2,

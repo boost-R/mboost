@@ -544,10 +544,10 @@ bl1 \%O\% bl2
                            # zero because they were (not yet) selected.
 
   ### example for bspatial
-  x1 <- runif(250,-pi,pi)
-  x2 <- runif(250,-pi,pi)
+  x1 <- runif(100,-pi,pi)
+  x2 <- runif(length(x1),-pi,pi)
 
-  y <- sin(x1) * sin(x2) + rnorm(250, sd = 0.4)
+  y <- sin(x1) * sin(x2) + rnorm(length(x1), sd = 0.4)
 
   spline3 <- bspatial(x1, x2, knots = 12)
   Xmat <- extract(spline3, "design")
@@ -583,23 +583,14 @@ bl1 \%O\% bl2
   }
 
   ## specify radial basis function base-learner for spatial effect
-  ## and use data-adaptive effective range (theta = NULL, see 'args')
-  form3 <- y ~ brad(x1, x2)
-  ## Now use different settings, e.g. 50 knots and theta fixed to 0.4
+  ## with non-default settings, e.g. 50 knots and theta fixed to 0.4
   ## (not really a good setting)
-  form4 <- y ~ brad(x1, x2, knots = 50, args = list(theta = 0.4))
+  form3 <- y ~ brad(x1, x2, knots = 50, args = list(theta = 0.4))
 
   mod3 <- gamboost(form3)
+  dim(extract(mod3, what = "design", which = "brad")[[1]])
   \dontrun{
   plot(mod3)
-  }
-  dim(extract(mod3, what = "design", which = "brad")[[1]])
-  knots <- attr(extract(mod3, what = "design", which = "brad")[[1]], "knots")
-
-  mod4 <- gamboost(form4)
-  dim(extract(mod4, what = "design", which = "brad")[[1]])
-  \dontrun{
-  plot(mod4)
   }
 
   ### random intercept
@@ -779,8 +770,6 @@ bl1 \%O\% bl2
   mod <- mboost(vol ~ bbs(x1, df = 3, knots = 10)\%O\%
                       bbs(x2, df = 3, knots = 10),
                       control = boost_control(nu = 0.25))
-  mod[250]
-
   volf <- matrix(fitted(mod), nrow = nrow(volcano))
   image(volf, main = "fitted")
 
