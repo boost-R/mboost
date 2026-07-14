@@ -17,7 +17,7 @@ IPCweights(x, maxweight = 5)
   Inverse probability of censoring weights are one possibility to fit
   models formulated in the \emph{full data world} in the presence of censoring,
   i.e., the \emph{observed data world} \bibcitep{mboost::Laan_Robins_2003}, see 
-  \bibcitet{Hothorn:2006:Biostatistics:16344280} for an application to
+  \bibcitet{mboost::Hothorn:2006:Biostatistics:16344280} for an application to
   survival analysis.
 
 }

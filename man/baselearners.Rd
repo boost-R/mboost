@@ -148,7 +148,7 @@ bl1 \%O\% bl2
                  \code{center = "differenceMatrix"} is based on the difference matrix
                  (the default for \code{bbs} with one covariate only)
                  and \code{center = "spectralDecomp"} uses a spectral decomposition
-                 of the penalty matrix \bibcitep{see|mboost::Fahrmeir2004|Section 2.3 for details).
+                 of the penalty matrix \bibcitep{see|mboost::Fahrmeir2004|Section 2.3 for details}.
                  The latter option is the default (and currently only option) for \code{bbs}
                  with multiple covariates or \code{bmrf}.}
   \item{cyclic}{ if \code{cyclic = TRUE} the fitted values coincide at the boundaries
@@ -465,7 +465,7 @@ bl1 \%O\% bl2
       default \deqn{\mathrm{df}(\lambda) = \mathrm{trace}(2S -
       S^{\top}S),}{df(\lambda) = trace(2S - S'S),} with smoother matrix
       \eqn{S = X(X^{\top}X + \lambda K)^{-1} X}{S = X(X'X + \lambda
-      K)^(-1) X} is used \bibcitep{see|mboost::Hofner+Hothorn+Kneib_2011}. If \code{TRUE}, the
+      K)^(-1) X} is used \bibcitep{see|mboost::Hofner+Hothorn+Kneib_2011|}. If \code{TRUE}, the
       trace of the smoother matrix \eqn{\mathrm{df}(\lambda) =
       \mathrm{trace}(S)} is used as degrees of freedom.
 

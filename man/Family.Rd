@@ -98,7 +98,7 @@ RCG(nuirange = c(0, 1), offrange = c(-5, 5))
   \item{qoffset}{ quantile of response distribution to be used as offset, i.e., 
       starting values for the intercept. Per default the median of the response is used,
       which is in general a good choice
-      \bibcitep{see|mboost::Fenske+Kneib+Hothorn_2011}|for details}.}
+      \bibcitep{see|mboost::Fenske+Kneib+Hothorn_2011|for details}.}
   \item{nuirange}{ a vector containing the end-points of the interval to be
           searched for the minimum risk w.r.t. the nuisance parameter.
 	  In case of \code{PropOdds}, the starting values for
