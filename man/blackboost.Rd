@@ -49,9 +49,11 @@ blackboost(formula, data = list(),
 \details{
 
   This function implements the `classical'
-  gradient boosting utilizing regression trees as base-learners.
+  gradient boosting \bibcitep{mboost::nr:freund.schapire:1996,mboost::friedman2001} 
+  as reviewed by \bibcitet{mboost::Buehlmann:2008:StatSci} 
+  utilizing unbiased regression trees \bibcitep{mboost::Hothorn:2006:JCGS} as base-learners.
   Essentially, the same algorithm is implemented in package
-  \code{\link[gbm]{gbm}}. The
+  \code{\link[gbm]{gbm}} \bibcitet{mboost::ridgew99}. The
   main difference is that arbitrary loss functions to be optimized
   can be specified via the \code{family} argument to \code{blackboost} whereas
   \code{\link[gbm]{gbm}} uses hard-coded loss functions.
@@ -69,30 +71,7 @@ blackboost(formula, data = list(),
   An object of class \code{mboost} with \code{\link{print}}
   and \code{\link{predict}} methods being available.
 }
-\references{
-
-  Peter Buehlmann and Torsten Hothorn (2007),
-  Boosting algorithms: regularization, prediction and model fitting.
-  \emph{Statistical Science}, \bold{22}(4), 477--505.
-
-  Torsten Hothorn, Kurt Hornik and Achim Zeileis (2006). Unbiased recursive
-  partitioning: A conditional inference framework. \emph{Journal of
-  Computational and Graphical Statistics}, \bold{15}(3), 651--674.
-
-  Yoav Freund and Robert E. Schapire (1996),
-  Experiments with a new boosting algorithm.
-  In \emph{Machine Learning: Proc. Thirteenth International Conference},
-  148--156.
-
-  Jerome H. Friedman (2001),
-  Greedy function approximation: A gradient boosting machine.
-  \emph{The Annals of Statistics}, \bold{29}, 1189--1232.
-
-  Greg Ridgeway (1999), The state of boosting.
-  \emph{Computing Science and Statistics}, \bold{31},
-  172--181.
-
-}
+\references{\bibshow{*}}
 
 \seealso{
   See \code{\link{mboost_fit}} for the generic boosting function, 
