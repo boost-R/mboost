@@ -48,7 +48,7 @@
   package \code{mboost}, which is also available as
   \code{vignette(package = "mboost", "mboost_tutorial")}.
 
-  \bibcitet{mboost:Taieba_Hyndman_2014} used this package for fitting their model in the
+  \bibcitet{mboost::Taieba_Hyndman_2014} used this package for fitting their model in the
   Kaggle Global Energy Forecasting Competition 2012. The corresponding research
   paper is a good starting point when you plan to analyze your data using
   \code{mboost}.

@@ -153,7 +153,8 @@ bl1 \%O\% bl2
                  with multiple covariates or \code{bmrf}.}
   \item{cyclic}{ if \code{cyclic = TRUE} the fitted values coincide at the boundaries
                  (useful for cyclic covariates such as day time etc.). 
-                 For details see \bibcitet{mboost::Hofner_Kneib_Hothorn_2015}.}
+                 For details see \bibcitet{mboost::Hofner_Kneib_Hothorn_2015}.
+}
   \item{covFun}{ the covariance function (i.e. radial basis)
                  needed to compute the basis functions. Per
                  default \code{\link[fields]{stationary.cov}} function
@@ -196,13 +197,15 @@ bl1 \%O\% bl2
     determines how the constrained least squares problem should be
     solved. If \code{type = "quad.prog"}, a numeric quadratic
     programming method
-    \bibcitep{mboost::Goldfarb:1982,mboost::Goldfarb:1983} is used
+    %%% PROBLEM: mboost::Goldfarb:1982
+    \bibcitep{mboost::Goldfarb:1983} is used
     (see \code{\link[quadprog]{solve.QP}} in package \pkg{quadprog}). If
     \code{type = "iterative"}, the iterative procedure described in
     \bibcitet{mboost::Hofner+Mueller+Hothorn_2011}. 
     The quadratic programming approach is
     usually much faster than the iterative approach. For details see
-    \bibcitet{mboost::Hofner_Kneib_Hothorn_2015}.}
+    \bibcitet{mboost::Hofner_Kneib_Hothorn_2015}.
+}
   \item{lambda2}{ penalty parameter for the (monotonicity) constraint. }
   \item{niter}{ maximum number of iterations used to compute constraint
     estimates. Increase this number if a warning is displayed. }
