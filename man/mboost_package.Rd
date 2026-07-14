@@ -30,7 +30,8 @@
   high dimensions. The response may be numeric, binary, ordered,
   censored or count data.
 
-  Both theory and applications are discussed by Buehlmann and Hothorn (2007).
+  Both theory and applications are discussed by
+  \bibcitet{mboost::Buehlmann:2008:StatSci}.
   UseRs without a basic knowledge of boosting methods are asked
   to read this introduction before analyzing data using this package.
   The examples presented in this paper are available as package vignette
@@ -41,13 +42,13 @@
   of the data analyst.
 
   A description of novel features that were introduced in version 2.0 is
-  given in Hothorn et. al (2010).
+  given in \bibcitet{mboost::Hothorn+Buehlmann+Kneib+Schmid+Hofner_2010}.
 
-  Hofner et al. (2014) present a comprehensive hands-on tutorial for using the
+  \bibcitet{mboost::Hofner_Mayr_2014} present a comprehensive hands-on tutorial for using the
   package \code{mboost}, which is also available as
   \code{vignette(package = "mboost", "mboost_tutorial")}.
 
-  Ben Taieba and Hyndman (2013) used this package for fitting their model in the
+  \bibcitet{mboost:Taieba_Hyndman_2014} used this package for fitting their model in the
   Kaggle Global Energy Forecasting Competition 2012. The corresponding research
   paper is a good starting point when you plan to analyze your data using
   \code{mboost}.
@@ -226,41 +227,7 @@
   \bold{For more details and other changes see}\cr\code{news(Version >= "2.0-0" & Version < "2.1-0", package  = "mboost")}
 
 }
-\author{
-  Torsten Hothorn,Peter Buehlmann, Thomas Kneib, Matthias Schmid and
-  Benjamin Hofner <\email{Benjamin.Hofner@pei.de}>
-}
-
-\references{
-  Peter Buehlmann and Torsten Hothorn (2007),
-  Boosting algorithms: regularization, prediction and model fitting.
-  \emph{Statistical Science}, \bold{22}(4), 477--505. \cr
-  \doi{10.1214/07-STS242}
-
-  Torsten Hothorn, Peter Buehlmann, Thomas Kneib, Matthias Schmid and
-  Benjamin Hofner (2010), Model-based Boosting 2.0. \emph{Journal of
-  Machine Learning Research}, \bold{11}, 2109--2113. \cr
-  \url{https://jmlr.csail.mit.edu/papers/v11/hothorn10a.html}
-
-  Benjamin Hofner, Torsten Hothorn, Thomas Kneib, and Matthias Schmid (2011),
-  A framework for unbiased model selection based on boosting.
-  \emph{Journal of Computational and Graphical Statistics}, \bold{20}, 956--971. \cr
-  \doi{10.1198/jcgs.2011.09220}
-
-  Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
-  (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
-  Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
-  \doi{10.1007/s00180-012-0382-5}
-
-  Available as vignette via: \code{vignette(package = "mboost",
-    "mboost_tutorial")}
-
-  Souhaib Ben Taieba and Rob J. Hyndman (2014),
-  A gradient boosting approach to the Kaggle load forecasting competition.
-  \emph{International Journal of Forecasting}, \bold{30}, 382--394.\cr
-  \doi{10.1016/j.ijforecast.2013.07.005}
-
-}
+\references{\bibshow{*}}
 
 \seealso{
   The main fitting functions include:\cr

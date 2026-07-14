@@ -286,20 +286,20 @@ downstream.test(object, ...)
   For (generalized) linear and additive models, the \code{AIC} function
   can be used to compute both the classical AIC (only available for
   \code{familiy = Binomial()} and \code{familiy = Poisson()}) and
-  corrected AIC (Hurvich et al., 1998, only available when \code{family
-  = Gaussian()} was used). Details on the used approximations for the
-  hat matrix can be found in Buehlmann and Hothorn (2007). The AIC is
+  corrected AIC \bibcitep{mboost::hur98}, only available when \code{family
+  = Gaussian()} was used. Details on the used approximations for the
+  hat matrix can be found in \bibcitet{mboost::Buehlmann:2008:StatSci}. The AIC is
   useful for the determination of the optimal number of boosting
   iterations to be applied (which can be extracted via \code{mstop}).
   The degrees of freedom are either computed via the trace of the
   boosting hat matrix (which is rather slow even for moderate sample
   sizes) or the number of variables (non-zero coefficients) that entered
   the model so far (faster but only meaningful for linear models fitted
-  via \code{\link{gamboost}} (see Hastie, 2007)). For a discussion of
-  the use of AIC based stopping see also Mayr, Hofner and Schmid (2012).
+  via \code{\link{gamboost}} \bibcitep{see|mboost::hast:comment:2007|}. For a discussion of
+  the use of AIC based stopping see also \bibcitet{mboost::Mayr_2012}.
 
   In addition, the general Minimum Description Length criterion
-  (Buehlmann and Yu, 2006) can be computed using function \code{AIC}.
+  \bibcitep{mboost::JMLR:v7:buehlmann06a} can be computed using function \code{AIC}.
 
   Note that \code{logLik} and \code{AIC} only make sense when the
   corresponding \code{\link{Family}} implements the appropriate loss
@@ -320,37 +320,8 @@ downstream.test(object, ...)
   The coefficients resulting from boosting with family
   \code{Binomial(link = "logit")} are \eqn{1/2} of the coefficients of a logit  model obtained via \code{\link{glm}} (see \code{\link{Binomial}}).
 }
-\references{
+\references{\bibshow{*}}
 
-  Benjamin Hofner, Andreas Mayr, Nikolay Robinzonov and Matthias Schmid
-  (2014). Model-based Boosting in R: A Hands-on Tutorial Using the R
-  Package mboost. \emph{Computational Statistics}, \bold{29}, 3--35.\cr
-  \doi{10.1007/s00180-012-0382-5}
-
-  Clifford M. Hurvich, Jeffrey S. Simonoff and Chih-Ling Tsai (1998),
-  Smoothing parameter selection in nonparametric regression using
-  an improved Akaike information criterion.
-  \emph{Journal of the Royal Statistical Society, Series B},
-  \bold{20}(2), 271--293.
-
-  Peter Buehlmann and Torsten Hothorn (2007),
-  Boosting algorithms: regularization, prediction and model fitting.
-  \emph{Statistical Science}, \bold{22}(4), 477--505.
-
-  Trevor Hastie (2007), Discussion of ``Boosting algorithms:
-  Regularization, prediction and model fitting'' by Peter Buehlmann and
-  Torsten Hothorn. \emph{Statistical Science}, \bold{22}(4), 505.
-
-  Peter Buehlmann and Bin Yu (2006), Sparse boosting. \emph{Journal of
-  Machine Learning Research}, \bold{7}, 1001--1024.
-
-  Andreas Mayr, Benjamin Hofner, and Matthias Schmid (2012). The
-  importance of knowing when to stop - a sequential stopping rule for
-  component-wise gradient boosting. \emph{Methods of Information in
-    Medicine}, \bold{51}, 178--186. \cr
-  DOI: \doi{10.3414/ME11-02-0030}
-
-}
 \seealso{
   \code{\link{gamboost}}, \code{\link{glmboost}} and
   \code{\link{blackboost}} for model fitting.
