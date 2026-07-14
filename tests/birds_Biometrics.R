@@ -1,4 +1,6 @@
 
+options(digits = 3)
+
 library("mboost")
 data("birds", package = "TH.data")
 

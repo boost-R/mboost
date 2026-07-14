@@ -1,4 +1,6 @@
 
+options(digits = 3)
+
 library("mboost")
 
 set.seed(290875)

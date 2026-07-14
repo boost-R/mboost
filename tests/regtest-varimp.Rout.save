@@ -1,7 +1,7 @@
 
-R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
-Copyright (C) 2020 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu (64-bit)
+R Under development (unstable) (2026-07-13 r90246) -- "Unsuffered Consequences"
+Copyright (C) 2026 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -15,6 +15,9 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
+> 
+> options(digits = 3)
+> 
 > require("mboost")
 Loading required package: mboost
 Loading required package: parallel
@@ -139,4 +142,4 @@ In plot.varimp(varimp(gam), maxchar = 3) :
 > 
 > proc.time()
    user  system elapsed 
-  1.561   0.056   1.609 
+  1.104   0.099   1.187 

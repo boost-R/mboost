@@ -1,4 +1,7 @@
 
+options(digits = 3)
+
+
 .all.equal <- function(...) isTRUE(all.equal(..., check.environment = FALSE))
 
 require("mboost")

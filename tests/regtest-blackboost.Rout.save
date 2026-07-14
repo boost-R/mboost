@@ -1,7 +1,7 @@
 
-R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
-Copyright (C) 2020 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu (64-bit)
+R Under development (unstable) (2026-07-13 r90246) -- "Unsuffered Consequences"
+Copyright (C) 2026 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -15,6 +15,8 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
+> 
+> options(digits = 3)
 > 
 > require("mboost")
 Loading required package: mboost
@@ -161,23 +163,24 @@ The following object is masked from 'package:mboost':
 
     varimp
 
-[1] 2.367443
+[1] 2.37
 Loading required package: gbm
-Loaded gbm 2.1.8
-[1] 2.753747
+Loaded gbm 2.3.1
+This version of gbm is no longer under development. Consider transitioning to gbm3, https://github.com/gbm-developers/gbm3
+[1] 2.75
   btree(crim, zn, indus, nox, age, by = chas)
-2                                    7.152142
-2                                    3.712117
-2                                    3.712117
-2                                    3.712117
-2                                    3.712117
-2                                    3.712117
-2                                    7.152142
-2                                    7.152142
-2                                    7.152142
-2                                    7.152142
+2                                        7.15
+2                                        3.71
+2                                        3.71
+2                                        3.71
+2                                        3.71
+2                                        3.71
+2                                        7.15
+2                                        7.15
+2                                        7.15
+2                                        7.15
 attr(,"offset")
-[1] 22.53281
+[1] 22.5
 
  1  2 
 80 20 
@@ -185,19 +188,19 @@ attr(,"offset")
  1  2 
 37 13 
 $surv
-           [,1]
- [1,] 0.9998525
- [2,] 0.9995783
- [3,] 0.9976226
- [4,] 0.9940370
- [5,] 0.9721303
- [6,] 0.9478526
- [7,] 0.9136972
- [8,] 0.8638501
- [9,] 0.7750319
-[10,] 0.6674639
-[11,] 0.4586412
-[12,] 0.2230826
+       [,1]
+ [1,] 1.000
+ [2,] 1.000
+ [3,] 0.998
+ [4,] 0.994
+ [5,] 0.972
+ [6,] 0.948
+ [7,] 0.914
+ [8,] 0.864
+ [9,] 0.775
+[10,] 0.667
+[11,] 0.459
+[12,] 0.223
 
 $time
   1   2   3  22  23  24  25   5   7   8  10  11 
@@ -209,19 +212,19 @@ $n.event
 attr(,"class")
 [1] "survFit"
 $surv
-                  1             3        12
- [1,]  6.298003e-01  9.662441e-01 0.9999996
- [2,]  2.665197e-01  9.064610e-01 0.9999989
- [3,]  5.740156e-04  5.744951e-01 0.9999940
- [4,]  7.181237e-09  2.484063e-01 0.9999849
- [5,]  3.256063e-39  1.385352e-03 0.9999288
- [6,]  1.190722e-73  3.836580e-06 0.9998651
- [7,] 1.270618e-123  7.456847e-10 0.9997726
- [8,] 5.201668e-200  1.582169e-15 0.9996313
- [9,]  0.000000e+00  1.687796e-26 0.9993580
-[10,]  0.000000e+00  1.308696e-41 0.9989818
-[11,]  0.000000e+00  1.485013e-79 0.9980378
-[12,]  0.000000e+00 1.931359e-152 0.9962269
+              1         3    12
+ [1,]  6.30e-01  9.66e-01 1.000
+ [2,]  2.67e-01  9.06e-01 1.000
+ [3,]  5.74e-04  5.74e-01 1.000
+ [4,]  7.18e-09  2.48e-01 1.000
+ [5,]  3.26e-39  1.39e-03 1.000
+ [6,]  1.19e-73  3.84e-06 1.000
+ [7,] 1.27e-123  7.46e-10 1.000
+ [8,] 5.20e-200  1.58e-15 1.000
+ [9,]  0.00e+00  1.69e-26 0.999
+[10,]  0.00e+00  1.31e-41 0.999
+[11,]  0.00e+00  1.49e-79 0.998
+[12,]  0.00e+00 1.93e-152 0.996
 
 $time
   1   2   3  22  23  24  25   5   7   8  10  11 
@@ -237,4 +240,4 @@ Warning message:
 > 
 > proc.time()
    user  system elapsed 
- 29.919   0.113  30.029 
+ 19.613   0.112  19.716 

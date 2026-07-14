@@ -1,7 +1,7 @@
 
-R Under development (unstable) (2020-12-09 r79597) -- "Unsuffered Consequences"
-Copyright (C) 2020 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu (64-bit)
+R Under development (unstable) (2026-07-13 r90246) -- "Unsuffered Consequences"
+Copyright (C) 2026 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -15,6 +15,8 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
+> 
+> options(digits = 3)
 > 
 > .all.equal <- function(...) isTRUE(all.equal(..., check.environment = FALSE))
 > library("mboost")
@@ -104,7 +106,7 @@ Offset:  0
 
 Coefficients: 
 (Intercept)       speed 
- -17.579095    3.932409 
+     -17.58        3.93 
 attr(,"offset")
 [1] 0
 
@@ -240,9 +242,9 @@ In glmboost.formula(fm, data = ovarian, family = CoxPH(), control = boost_contro
 > A3 <- survFit(fit3)
 > 
 > max(A1$surv-A2$surv)
-[1] 4.991776e-05
+[1] 4.99e-05
 > max(A1$surv-A3$surv)
-[1] 0.07803166
+[1] 0.078
 > 
 > newdata <- ovarian[c(1,3,12),]
 > A1 <- survfit(fit, newdata = newdata, censor = FALSE)
@@ -250,9 +252,9 @@ In glmboost.formula(fm, data = ovarian, family = CoxPH(), control = boost_contro
 > A3 <- survFit(fit3, newdata = newdata)
 > 
 > max(A1$surv-A2$surv)
-[1] 8.23777e-05
+[1] 8.24e-05
 > max(A1$surv-A3$surv)
-[1] 0.1886635
+[1] 0.189
 > 
 > ### Poisson models
 > 
@@ -373,13 +375,13 @@ Loss function: (y - f)^2
 
 Number of boosting iterations: mstop = 10 
 Step size:  0.1 
-Offset:  0.05114654 
+Offset:  0.0511 
 
 Coefficients: 
-      x1 
-2.095157 
+ x1 
+2.1 
 attr(,"offset")
-[1] 0.05114654
+[1] 0.0511
 
 > pr <- predict(amod, which=1:3)
 > stopifnot(ncol(pr) == 3 || all(pr[,c(1,ncol)] == 0))
@@ -398,13 +400,13 @@ Loss function: (y - f)^2
 
 Number of boosting iterations: mstop = 100 
 Step size:  0.1 
-Offset:  0.05114654 
+Offset:  0.0511 
 
 Coefficients: 
 (Intercept)          x1          x2 
- 0.02278342  3.20585948 -0.24376100 
+     0.0228      3.2059     -0.2438 
 attr(,"offset")
-[1] 0.05114654
+[1] 0.0511
 
 > 
 > ## check predictions with offset
@@ -541,13 +543,13 @@ Loss function: (y - f)^2
 
 Number of boosting iterations: mstop = 10 
 Step size:  0.1 
-Offset:  0.05114654 
+Offset:  0.0511 
 
 Coefficients: 
-      x1 
-2.095157 
+ x1 
+2.1 
 attr(,"offset")
-[1] 0.05114654
+[1] 0.0511
 
 > stopifnot(length(coef(amod)) == 1)
 > stopifnot(length(coef(amod, which=1:3)) == 3)
@@ -583,7 +585,7 @@ y
 > mod <- glm(y ~ x, family = binomial(link = "probit"))
 > coef(mod)
 (Intercept)           x 
- 0.09253477  3.10331037 
+     0.0925      3.1033 
 > 
 > mod2 <- glmboost(y ~ x, family = Binomial(link = "probit"),
 +                  control = boost_control(nu = 0.5, mstop = 1000))
@@ -594,7 +596,7 @@ NOTE: Coefficients from a Binomial model are half the size of coefficients
 See Warning section in ?coef.mboost
 
 (Intercept)           x 
- 0.09211252  3.10050675 
+     0.0921      3.1005 
 > stopifnot(.all.equal(round(coef(mod), 2), round(coef(mod2, off2int = TRUE), 2)))
 
 NOTE: Coefficients from a Binomial model are half the size of coefficients
@@ -605,7 +607,7 @@ See Warning section in ?coef.mboost
 > data("GlaucomaM", package = "TH.data")
 > coef(mod3 <- glm(Class ~ varg, data = GlaucomaM, family = binomial(link = "probit")))
 (Intercept)        varg 
-  -1.857396    6.689428 
+      -1.86        6.69 
 > coef(mod4 <- glmboost(Class ~ varg, data = GlaucomaM, family = Binomial(link = "probit"))[1000])
 
 NOTE: Coefficients from a Binomial model are half the size of coefficients
@@ -613,7 +615,7 @@ NOTE: Coefficients from a Binomial model are half the size of coefficients
 See Warning section in ?coef.mboost
 
 (Intercept)        varg 
-  -1.857388    6.689372 
+      -1.86        6.69 
 attr(,"offset")
 [1] 0
 > stopifnot(.all.equal(round(coef(mod3), 3), round(coef(mod4, off2int = TRUE), 3)))
@@ -626,4 +628,4 @@ See Warning section in ?coef.mboost
 > 
 > proc.time()
    user  system elapsed 
-  9.546   0.121   9.660 
+  4.289   0.128   4.389 

@@ -1,3 +1,6 @@
+
+options(digits = 3)
+
 require("mboost")
 require("lattice")
 

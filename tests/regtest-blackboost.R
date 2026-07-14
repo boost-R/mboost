@@ -1,4 +1,6 @@
 
+options(digits = 3)
+
 require("mboost")
 if (require("partykit")) {
 
