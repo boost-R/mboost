@@ -1,5 +1,4 @@
-demo
-tests
+testthat
 www
 www_src
 inst/NEWS.html
