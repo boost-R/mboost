@@ -296,17 +296,17 @@ D2 <- kronecker(diag(10 + 3 + 1), diff(diag(5 + 3 + 1),
                               differences = diff_order))
 
 beta <- coef(mod1)[[1]]
-sum((D1 %*% beta)[D1 %*% beta <= 0])
-sum((D2 %*% beta)[D2 %*% beta <= 0])
+round(sum((D1 %*% beta)[D1 %*% beta <= 0]), 3)
+round(sum((D2 %*% beta)[D2 %*% beta <= 0]), 3)
 
 beta <- coef(mod21)[[1]]
-sum((D1 %*% beta)[D1 %*% beta <= 0])
-sum((D2 %*% beta)[D2 %*% beta <= 0])
+round(sum((D1 %*% beta)[D1 %*% beta <= 0]), 3)
+round(sum((D2 %*% beta)[D2 %*% beta <= 0]), 3)
 stopifnot(all(D1 %*% beta > - 2e-05))
 
 beta <- coef(mod22)[[1]]
-sum((D1 %*% beta)[D1 %*% beta <= 0])
-sum((D2 %*% beta)[D2 %*% beta <= 0])
+round(sum((D1 %*% beta)[D1 %*% beta <= 0]), 3)
+round(sum((D2 %*% beta)[D2 %*% beta <= 0]), 3)
 stopifnot(all(D2 %*% beta > - 2e-05))
 
 #nd <- expand.grid(sort(x1), sort(x2))

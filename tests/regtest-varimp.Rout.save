@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2026-07-13 r90246) -- "Unsuffered Consequences"
+R version 4.6.1 (2026-06-24) -- "Happy Hop"
 Copyright (C) 2026 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu
 
@@ -142,4 +142,4 @@ In plot.varimp(varimp(gam), maxchar = 3) :
 > 
 > proc.time()
    user  system elapsed 
-  1.104   0.099   1.187 
+  1.060   0.087   1.130 

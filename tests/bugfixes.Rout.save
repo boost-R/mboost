@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2026-07-13 r90246) -- "Unsuffered Consequences"
+R version 4.6.1 (2026-06-24) -- "Happy Hop"
 Copyright (C) 2026 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu
 
@@ -310,6 +310,8 @@ The following object is masked from 'package:mboost':
 [  41] ...................................... -- risk: 9006 
 [  81] ..................
 Final risk: 8977 
+Warning message:
+package 'mvtnorm' was built under R version 4.7.0 
 > 
 > ### bbs with weights and expanded data
 > x <- runif(100)
@@ -953,4 +955,4 @@ Number of baselearners:  1
 > 
 > proc.time()
    user  system elapsed 
- 18.381   0.172  18.542 
+  17.94    0.17   18.10 

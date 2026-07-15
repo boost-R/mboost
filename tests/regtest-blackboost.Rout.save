@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2026-07-13 r90246) -- "Unsuffered Consequences"
+R version 4.6.1 (2026-06-24) -- "Happy Hop"
 Copyright (C) 2026 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu
 
@@ -235,9 +235,10 @@ $n.event
 
 attr(,"class")
 [1] "survFit"
-Warning message:
-'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
+Warning messages:
+1: package 'mvtnorm' was built under R version 4.7.0 
+2: 'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
 > 
 > proc.time()
    user  system elapsed 
- 19.613   0.112  19.716 
+ 18.676   0.097  18.764 

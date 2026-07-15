@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2026-07-13 r90246) -- "Unsuffered Consequences"
+R version 4.6.1 (2026-06-24) -- "Happy Hop"
 Copyright (C) 2026 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu
 
@@ -477,22 +477,22 @@ Warning messages:
 +                               differences = diff_order))
 > 
 > beta <- coef(mod1)[[1]]
-> sum((D1 %*% beta)[D1 %*% beta <= 0])
+> round(sum((D1 %*% beta)[D1 %*% beta <= 0]), 3)
 [1] -117
-> sum((D2 %*% beta)[D2 %*% beta <= 0])
+> round(sum((D2 %*% beta)[D2 %*% beta <= 0]), 3)
 [1] 0
 > 
 > beta <- coef(mod21)[[1]]
-> sum((D1 %*% beta)[D1 %*% beta <= 0])
-[1] -4.71e-14
-> sum((D2 %*% beta)[D2 %*% beta <= 0])
-[1] -0.00396
+> round(sum((D1 %*% beta)[D1 %*% beta <= 0]), 3)
+[1] 0
+> round(sum((D2 %*% beta)[D2 %*% beta <= 0]), 3)
+[1] -0.004
 > stopifnot(all(D1 %*% beta > - 2e-05))
 > 
 > beta <- coef(mod22)[[1]]
-> sum((D1 %*% beta)[D1 %*% beta <= 0])
-[1] -2.9e-12
-> sum((D2 %*% beta)[D2 %*% beta <= 0])
+> round(sum((D1 %*% beta)[D1 %*% beta <= 0]), 3)
+[1] 0
+> round(sum((D2 %*% beta)[D2 %*% beta <= 0]), 3)
 [1] 0
 > stopifnot(all(D2 %*% beta > - 2e-05))
 > 
@@ -1376,4 +1376,4 @@ In bols(z2, by = z3) : Dropped unobserved factor levels
 > 
 > proc.time()
    user  system elapsed 
- 17.267   0.326  17.583 
+ 16.850   0.317  17.160 

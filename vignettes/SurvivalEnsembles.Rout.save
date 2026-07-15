@@ -33,6 +33,7 @@ Loading required package: partykit
 Loading required package: grid
 Loading required package: libcoin
 Loading required package: mvtnorm
+Warning: package ‘mvtnorm’ was built under R version 4.7.0
 
 Attaching package: ‘partykit’
 
@@ -337,4 +338,4 @@ The following object is masked from ‘package:mboost’:
  *** Run successfully completed ***
 > proc.time()
    user  system elapsed 
-  5.297   0.111   5.403 
+   5.33    0.12    5.45 
