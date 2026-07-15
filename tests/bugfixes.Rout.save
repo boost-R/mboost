@@ -310,8 +310,6 @@ The following object is masked from 'package:mboost':
 [  41] ...................................... -- risk: 9006 
 [  81] ..................
 Final risk: 8977 
-Warning message:
-package 'mvtnorm' was built under R version 4.7.0 
 > 
 > ### bbs with weights and expanded data
 > x <- runif(100)
@@ -955,4 +953,4 @@ Number of baselearners:  1
 > 
 > proc.time()
    user  system elapsed 
-  17.94    0.17   18.10 
+ 18.782   0.129  18.901 

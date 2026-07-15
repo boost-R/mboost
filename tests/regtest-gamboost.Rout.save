@@ -592,4 +592,4 @@ Warning in Xfun(mf, vary, args) :
 > 
 > proc.time()
    user  system elapsed 
-  2.326   0.126   2.436 
+  2.359   0.089   2.436 

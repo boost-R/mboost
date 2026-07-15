@@ -1376,4 +1376,4 @@ In bols(z2, by = z3) : Dropped unobserved factor levels
 > 
 > proc.time()
    user  system elapsed 
- 16.850   0.317  17.160 
+ 17.061   0.367  17.430 

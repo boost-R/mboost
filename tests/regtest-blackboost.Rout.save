@@ -235,10 +235,9 @@ $n.event
 
 attr(,"class")
 [1] "survFit"
-Warning messages:
-1: package 'mvtnorm' was built under R version 4.7.0 
-2: 'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
+Warning message:
+'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
 > 
 > proc.time()
    user  system elapsed 
- 18.676   0.097  18.764 
+ 18.314   0.102  18.412 
