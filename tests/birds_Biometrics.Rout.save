@@ -314,4 +314,4 @@ Final risk: 498
 > 
 > proc.time()
    user  system elapsed 
-  5.239   0.124   5.358 
+  5.200   0.152   5.348 

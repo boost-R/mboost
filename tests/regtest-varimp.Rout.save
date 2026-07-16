@@ -146,4 +146,4 @@ In plot.varimp(varimp(gam), maxchar = 3) :
 > 
 > proc.time()
    user  system elapsed 
-  1.124   0.083   1.195 
+  1.072   0.071   1.135 

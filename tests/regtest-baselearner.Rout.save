@@ -25,23 +25,7 @@ Type 'q()' to quit R.
 > library("mboost")
 Loading required package: parallel
 Loading required package: stabs
-> attach(asNamespace("mboost"))
-The following objects are masked from package:mboost:
-
-    %+%, %O%, %X%, AUC, AdaExp, Binomial, Cindex, CoxPH, ExpectReg, FP,
-    Family, GammaReg, GaussClass, GaussReg, Gaussian, Gehan, Huber,
-    Hurdle, IPCweights, Laplace, Loglog, Lognormal, Multinomial,
-    NBinomial, Poisson, PropOdds, QuantReg, RCG, Weibull,
-    as.data.frame.varimp, bbs, bkernel, blackboost, bmono, bmrf, bns,
-    bols, boost_control, brad, brandom, bspatial, bss, btree, buser,
-    confint.glmboost, confint.mboost, cv, cvrisk, downstream.test,
-    extract, fitted.mboost, gamboost, glmboost, lines.mboost,
-    lines.mboost.ci, mboost, mboost_fit, mboost_intern, mstop, mstop<-,
-    nuisance, plot.cvrisk, plot.glmboost, plot.mboost, plot.mboost.ci,
-    plot.varimp, predict.glmboost, predict.mboost, print.glmboost.ci,
-    risk, selected.mboost, stabsel.mboost, stabsel_parameters.mboost,
-    survFit, varimp
-
+> attach(asNamespace("mboost"), warn.conflicts = FALSE)
 > library("MASS")
 > library("Matrix")
 > 
@@ -1413,4 +1397,4 @@ In bols(z2, by = z3) : Dropped unobserved factor levels
 > 
 > proc.time()
    user  system elapsed 
- 16.925   0.345  17.259 
+ 16.505   0.353  16.855 
