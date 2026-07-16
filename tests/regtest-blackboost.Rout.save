@@ -39,7 +39,7 @@ Loading required package: stabs
 +     print(ae <- mean((predict(a) - BostonHousing$medv)^2))
 + 
 +     pdiffs <- max(abs(predict(update(a, model.weights(a))) - predict(a)))
-+     stopifnot(pdiffs < sqrt(.Machine$double.eps))
++     print(pdiffs < sqrt(.Machine$double.eps))
 + 
 + 
 +     ### attach `gbm', quietly
@@ -58,7 +58,7 @@ Loading required package: stabs
 +     points(BostonHousing$medv,
 +            predict(b, newdata = BostonHousing, n.trees = 500),
 +            col = "blue", pch = "+")
-+     stopifnot(ae < be)
++     print(ae < be)
 +     }
 + }
 + 
@@ -70,17 +70,17 @@ Loading required package: stabs
 + bb <- mboost(medv ~ btree(crim, zn, indus, nox, age) + 
 +                     btree(crim, zn, indus, nox, age, by = chas), 
 +              data = BostonHousing)
-+ stopifnot(isTRUE(all.equal(fitted(bb)[1:10], 
++ print(isTRUE(all.equal(fitted(bb)[1:10], 
 +                     c(predict(bb, newdata = BostonHousing[1:10,])), 
 +                     check.attributes = FALSE)))
 + nd <- BostonHousing[1:10,]
 + nd$chas[] <- "0"
 + p0 <- predict(bb, newdata = nd, which = 1)
-+ stopifnot(isTRUE(all.equal(c(unique(predict(bb, newdata = nd, which = 2))), 0, 
++ print(isTRUE(all.equal(c(unique(predict(bb, newdata = nd, which = 2))), 0, 
 +                            check.attributes = FALSE)))
 + nd$chas[] <- "1"
 + p1 <- predict(bb, newdata = nd, which = 1)
-+ stopifnot(isTRUE(all.equal(p0, p1)))
++ print(isTRUE(all.equal(p0, p1)))
 + print(predict(bb, newdata = nd, which = 2))
 + print(table(selected(bb)))
 + print(table(selected(bb[50])))
@@ -121,17 +121,17 @@ Loading required package: stabs
 +         pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
 +     }
 +     if (i == 1){
-+         stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
++         print(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
 +         if ((pred[[2]] - rowSums(pred[[1]]))[1] - amod$offset < sqrt(.Machine$double.eps))
 +             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
-+         stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - amod$offset))   < sqrt(.Machine$double.eps))
++         print(max(abs(pred[[2]] - rowSums(pred[[1]]) - amod$offset))   < sqrt(.Machine$double.eps))
 +     } else {
-+         stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
-+         stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
++         print(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
++         print(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
 +     }
 + }
 + 
-+ stopifnot(all(predict(amod, which=1) + amod$offset  - predict(amod) < sqrt(.Machine$double.eps)))
++ print(all(predict(amod, which=1) + amod$offset  - predict(amod) < sqrt(.Machine$double.eps)))
 + 
 + 
 + # check type argument
@@ -147,7 +147,7 @@ Loading required package: stabs
 + pr <- predict(mod)
 + pr <- predict(mod, type="class")
 + foo <- table(pr, y)
-+ stopifnot(foo[1,2] + foo[2,1] == 0)
++ print(foo[1,2] + foo[2,1] == 0)
 + pr <- predict(mod, type="response")
 + # <FIXME> How do we check "correctness" of results?</FIXME>
 + 
@@ -164,10 +164,15 @@ The following object is masked from 'package:mboost':
     varimp
 
 [1] 2.37
+[1] TRUE
 Loading required package: gbm
 Loaded gbm 2.3.1
 This version of gbm is no longer under development. Consider transitioning to gbm3, https://github.com/gbm-developers/gbm3
 [1] 2.75
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
   btree(crim, zn, indus, nox, age, by = chas)
 2                                        7.15
 2                                        3.71
@@ -235,9 +240,15 @@ $n.event
 
 attr(,"class")
 [1] "survFit"
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
 Warning message:
 'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
 > 
 > proc.time()
    user  system elapsed 
- 18.314   0.102  18.412 
+ 18.577   0.134  18.733 

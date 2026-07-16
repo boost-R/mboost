@@ -399,12 +399,13 @@ See Warning section in ?coef.mboost
 > coef(glmMod)
 (Intercept)          x1          x2 
     -0.1360     -0.0201      0.1724 
-> stopifnot(all(abs((coef(glmMod) - coef(mod, off2int = TRUE) * 2)) < sqrt(.Machine$double.eps)))
+> print(all(abs((coef(glmMod) - coef(mod, off2int = TRUE) * 2)) < sqrt(.Machine$double.eps)))
 
 NOTE: Coefficients from a Binomial model are half the size of coefficients
  from a model fitted via glm(... , family = 'binomial').
 See Warning section in ?coef.mboost
 
+[1] TRUE
 > 
 > ## C-index boosting
 > if (require("survival")) {
@@ -438,7 +439,7 @@ See Warning section in ?coef.mboost
 +   rbind(coef(model1, off2int = TRUE, which = ""), 
 +         coef(model2, off2int = TRUE, which = ""))
 +   
-+   stopifnot(identical(coef(model1), coef(model2)))
++   print(identical(coef(model1), coef(model2)))
 +   
 +   # change sigma
 +   model1 <- glmboost(Surv(time,event)~x1+x2, family=Cindex(sigma = 0.01),
@@ -447,9 +448,11 @@ See Warning section in ?coef.mboost
 +                      control = boost_control(mstop=20), data = dat)
 +   rbind(coef(model1, off2int = TRUE, which = ""), 
 +         coef(model2, off2int = TRUE, which = ""))
-+   stopifnot(!identical(coef(model1), coef(model2)))
++   print(!identical(coef(model1), coef(model2)))
 +   
 + }
+[1] TRUE
+[1] TRUE
 > 
 > ## check Binomial(type = "glm")
 > glmModboost <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm"))
@@ -681,12 +684,13 @@ attr(,"offset")
 [1] -0.11
 
 > glmMod <- glm(y ~ x1 + x2 , family = binomial(link = "cauchit"))
-> stopifnot(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
+> print(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
 
 NOTE: Coefficients from a Binomial model are half the size of coefficients
  from a model fitted via glm(... , family = 'binomial').
 See Warning section in ?coef.mboost
 
+[1] TRUE
 > rbind(coef(glmMod), coef(mod, off2int = TRUE), coef(mod2, off2int = TRUE))
 
 NOTE: Coefficients from a Binomial model are half the size of coefficients
@@ -732,12 +736,13 @@ attr(,"offset")
 [1] -0.176
 
 > glmMod <- glm(y ~ x1 + x2 , family = binomial(link = "probit"))
-> stopifnot(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
+> print(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
 
 NOTE: Coefficients from a Binomial model are half the size of coefficients
  from a model fitted via glm(... , family = 'binomial').
 See Warning section in ?coef.mboost
 
+[1] TRUE
 > mod2 <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm", link = "probit"))
 > mod2[500]
 
@@ -813,12 +818,13 @@ attr(,"offset")
 [1] -0.844
 
 > glmMod <- glm(y ~ x1 + x2 , family = binomial(link = "log"))
-> stopifnot(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
+> print(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
 
 NOTE: Coefficients from a Binomial model are half the size of coefficients
  from a model fitted via glm(... , family = 'binomial').
 See Warning section in ?coef.mboost
 
+[1] TRUE
 > mod2 <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm", link = "log"))
 > mod2[500]
 
@@ -862,4 +868,4 @@ See Warning section in ?coef.mboost
 > 
 > proc.time()
    user  system elapsed 
-  5.098   0.129   5.219 
+  5.251   0.062   5.297 

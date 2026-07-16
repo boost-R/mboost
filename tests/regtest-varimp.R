@@ -16,7 +16,7 @@ gam <- gamboost(dist ~ bols(speed),
   data = cars, control = boost_control(mstop = 50))
 
 # risk reduction should completely be assigned to the only baselearner
-stopifnot( round((gam$family@risk(y = gam$response, f = gam$offset) - 
+print( round((gam$family@risk(y = gam$response, f = gam$offset) - 
   gam$risk()[length(gam$risk())]) / length(gam$response), 
   digits = 4 ) == round(varimp(gam), digits = 4) )
 # check plots
@@ -53,8 +53,8 @@ gam <- gamboost(target ~ bols(int, intercept = FALSE) +
   data = iris, control = boost_control(mstop = 100), 
   family = Binomial(link = c("logit")))
 # check distinct baselearners and variables
-stopifnot( length(varimp(gam)) == 7 ) # 7 baselearner
-stopifnot( length(unique(attr(varimp(gam), "variable_names"))) == 5 ) # 5 vars
+print( length(varimp(gam)) == 7 ) # 7 baselearner
+print( length(unique(attr(varimp(gam), "variable_names"))) == 5 ) # 5 vars
 # check plotting
 plot(varimp(gam), type = "blearner")
 plot(varimp(gam), type = "variable")

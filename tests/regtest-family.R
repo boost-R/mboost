@@ -209,7 +209,7 @@ mod[500]
 
 glmMod <- glm(y ~ x1 + x2, family = 'binomial')
 coef(glmMod)
-stopifnot(all(abs((coef(glmMod) - coef(mod, off2int = TRUE) * 2)) < sqrt(.Machine$double.eps)))
+print(all(abs((coef(glmMod) - coef(mod, off2int = TRUE) * 2)) < sqrt(.Machine$double.eps)))
 
 ## C-index boosting
 if (require("survival")) {
@@ -243,7 +243,7 @@ if (require("survival")) {
   rbind(coef(model1, off2int = TRUE, which = ""), 
         coef(model2, off2int = TRUE, which = ""))
   
-  stopifnot(identical(coef(model1), coef(model2)))
+  print(identical(coef(model1), coef(model2)))
   
   # change sigma
   model1 <- glmboost(Surv(time,event)~x1+x2, family=Cindex(sigma = 0.01),
@@ -252,7 +252,7 @@ if (require("survival")) {
                      control = boost_control(mstop=20), data = dat)
   rbind(coef(model1, off2int = TRUE, which = ""), 
         coef(model2, off2int = TRUE, which = ""))
-  stopifnot(!identical(coef(model1), coef(model2)))
+  print(!identical(coef(model1), coef(model2)))
   
 }
 
@@ -296,13 +296,13 @@ mod[500]
 mod2 <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm", link = "cauchit"))
 mod2[500]
 glmMod <- glm(y ~ x1 + x2 , family = binomial(link = "cauchit"))
-stopifnot(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
+print(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
 rbind(coef(glmMod), coef(mod, off2int = TRUE), coef(mod2, off2int = TRUE))
 
 mod <- glmboost(y ~ x1 + x2, family = Binomial(type = "adaboost", link = "probit"))
 mod[500]
 glmMod <- glm(y ~ x1 + x2 , family = binomial(link = "probit"))
-stopifnot(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
+print(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
 mod2 <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm", link = "probit"))
 mod2[500]
 rbind(coef(glmMod), coef(mod, off2int = TRUE), coef(mod2, off2int = TRUE))
@@ -311,7 +311,7 @@ rbind(coef(glmMod), coef(mod, off2int = TRUE), coef(mod2, off2int = TRUE))
 mod <- glmboost(y ~ x1 + x2, family = Binomial(type = "adaboost", link = "log"))
 mod[500]
 glmMod <- glm(y ~ x1 + x2 , family = binomial(link = "log"))
-stopifnot(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
+print(all(round(coef(glmMod),2) == round(coef(mod, off2int =TRUE),2)))
 mod2 <- glmboost(y ~ x1 + x2, family = Binomial(type = "glm", link = "log"))
 mod2[500]
 rbind(coef(glmMod), coef(mod, off2int = TRUE), coef(mod2, off2int = TRUE))

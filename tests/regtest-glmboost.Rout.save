@@ -47,7 +47,8 @@ Loading required package: stabs
 > mydf.lm <- lm(y ~ ., data = mydf)
 > 
 > ### compare coefficients
-> stopifnot(max(abs(coef(mydf.gb) - coef(mydf.lm))) < 1e-10)
+> print(max(abs(coef(mydf.gb) - coef(mydf.lm))) < 1e-10)
+[1] TRUE
 > 
 > ### a little bit more difficult
 > mydf <- dgp(beta = c(1, 2.5, rep(0, 38)))
@@ -56,18 +57,22 @@ Loading required package: stabs
 +                     control = boost_control(mstop = 1000, nu = 1))
 > aic <- AIC(mydf.gb, method = "corrected")
 > ht <- hatvalues(mydf.gb)
-> stopifnot(mstop(aic) == 12)
+> print(mstop(aic) == 12)
+[1] TRUE
 > plot(aic, ylim = c(0,3))
 > mydf.lm <- lm(y ~ ., data = mydf)
 > 
 > ## use AIC with active set as df
 > aic2 <- AIC(mydf.gb, method = "corrected", df = "actset")
-> stopifnot(mstop(aic2)== 9)
-> stopifnot(attr(aic2, "df")[9] == 9)
+> print(mstop(aic2)== 9)
+[1] TRUE
+> print(attr(aic2, "df")[9] == 9)
+[1] TRUE
 > 
 > ## use gMDL
 > aic3 <- AIC(mydf.gb, method = "gMDL")
-> stopifnot(mstop(aic3) == 4)
+> print(mstop(aic3) == 4)
+[1] TRUE
 > 
 > ### compare coefficients
 > which(abs(coef(mydf.lm, which = "")) < abs(coef(mydf.gb[mstop(aic)], which = "")))
@@ -75,13 +80,16 @@ Loading required package: stabs
           1           2          11          15          38 
 > 
 > #### check boosting hat matrix and subsetting / predict
-> stopifnot(isTRUE(.all.equal(drop(attr(ht, "hatmatrix") %*% mydf$y),
+> print(isTRUE(.all.equal(drop(attr(ht, "hatmatrix") %*% mydf$y),
 +                            as.vector(predict(mydf.gb[1000])))))
+[1] TRUE
 > ht25 <- hatvalues(mydf.gb[25])
-> stopifnot(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
+> print(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
 +                            as.vector(predict(mydf.gb[25])))))
-> stopifnot(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
+[1] TRUE
+> print(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
 +                            as.vector(fitted(mydf.gb[25])))))
+[1] TRUE
 > 
 > ### a simple two-dimensional example from `glmboost.Rd'
 > data("cars")
@@ -115,29 +123,41 @@ attr(,"offset")
 > ### coefficients should coincide
 > cf <- coef(cars.gb)
 > attr(cf, "offset") <- NULL
-> stopifnot(.all.equal(cf, coef(lm(dist ~ speed, data = cars))))
+> print(.all.equal(cf, coef(lm(dist ~ speed, data = cars))))
+[1] TRUE
 > 
 > ### check aggregate = "none"
-> stopifnot(.all.equal(cumsum(c(coef(cars.gb, aggregate = "none", off2int = TRUE)$speed)),
+> print(.all.equal(cumsum(c(coef(cars.gb, aggregate = "none", off2int = TRUE)$speed)),
 +         c(coef(cars.gb, aggregate = "cumsum", off2int = TRUE)$speed)))
+[1] TRUE
 Warning message:
 In coef.glmboost(cars.gb, aggregate = "none", off2int = TRUE) :
   'off2int = TRUE' ignored for 'aggregate = "none"'
 > 
 > ### extract model terms
-> stopifnot(.all.equal(extract(cars.gb, what = "design"),
+> print(.all.equal(extract(cars.gb, what = "design"),
 +                     matrix(c(rep(1, 50), cars$speed)),
 +                     check.attributes = FALSE))
-> stopifnot(.all.equal(extract(cars.gb, what = "design", which = "(Intercept)"), 
+[1] TRUE
+> print(.all.equal(extract(cars.gb, what = "design", which = "(Intercept)"), 
 +                     rep(1, 50), check.attributes = FALSE))
-> stopifnot(.all.equal(extract(cars.gb, what = "coefficients"), coef(cars.gb)))
-> stopifnot(.all.equal(extract(cars.gb, what = "residuals"), resid(cars.gb)))
-> stopifnot(.all.equal(extract(cars.gb, what = "variable.names"), variable.names(cars.gb)))
-> stopifnot(.all.equal(extract(cars.gb, what = "offset"), 0))
-> stopifnot(.all.equal(extract(cars.gb, what = "nuisance"), nuisance(cars.gb)))
-> stopifnot(is.na(extract(cars.gb, what = "nuisance")))
-> stopifnot(.all.equal(extract(cars.gb, what = "weights"), model.weights(cars.gb)))
-> stopifnot(.all.equal(extract(cars.gb, what = "control"), boost_control(mstop = 1000, nu = 1)))
+[1] TRUE
+> print(.all.equal(extract(cars.gb, what = "coefficients"), coef(cars.gb)))
+[1] TRUE
+> print(.all.equal(extract(cars.gb, what = "residuals"), resid(cars.gb)))
+[1] TRUE
+> print(.all.equal(extract(cars.gb, what = "variable.names"), variable.names(cars.gb)))
+[1] TRUE
+> print(.all.equal(extract(cars.gb, what = "offset"), 0))
+[1] TRUE
+> print(.all.equal(extract(cars.gb, what = "nuisance"), nuisance(cars.gb)))
+[1] TRUE
+> print(is.na(extract(cars.gb, what = "nuisance")))
+[1] TRUE
+> print(.all.equal(extract(cars.gb, what = "weights"), model.weights(cars.gb)))
+[1] TRUE
+> print(.all.equal(extract(cars.gb, what = "control"), boost_control(mstop = 1000, nu = 1)))
+[1] TRUE
 > 
 > ### logistic regression
 > mydf <- data.frame(x = runif(100), z = rnorm(100),
@@ -147,18 +167,22 @@ In coef.glmboost(cars.gb, aggregate = "none", off2int = TRUE) :
 > gmod <- glm(y ~ x + z, data = mydf, family = binomial())
 > llg <- logLik(gmod)
 > attributes(llg) <- NULL
-> stopifnot(.all.equal(logLik(bmod), llg))
-> stopifnot(max(abs(predict(gmod, type = "link")/2 - fitted(bmod))) <
+> print(.all.equal(logLik(bmod), llg))
+[1] TRUE
+> print(max(abs(predict(gmod, type = "link")/2 - fitted(bmod))) <
 +                   sqrt(.Machine$double.eps))
+[1] TRUE
 > cfb <- coef(bmod, off2int = TRUE) * 2
 
 NOTE: Coefficients from a Binomial model are half the size of coefficients
  from a model fitted via glm(... , family = 'binomial').
 See Warning section in ?coef.mboost
 
-> stopifnot(.all.equal(cfb, coef(gmod)))
+> print(.all.equal(cfb, coef(gmod)))
+[1] TRUE
 > aic <- AIC(bmod, "classical")
-> stopifnot(abs(AIC(gmod) - attr(aic, "AIC")[mstop(bmod)]) < 1e-5)
+> print(abs(AIC(gmod) - attr(aic, "AIC")[mstop(bmod)]) < 1e-5)
+[1] TRUE
 > 
 > ### weighted least squares problem
 > 
@@ -175,14 +199,17 @@ See Warning section in ?coef.mboost
 +                 control = boost_control(mstop = 5000, nu = 1))
 > 
 > ### compare fitted values
-> stopifnot(max(abs(fitted(lmmod) -fitted(lmb))) < sqrt(.Machine$double.eps))
+> print(max(abs(fitted(lmmod) -fitted(lmb))) < sqrt(.Machine$double.eps))
+[1] TRUE
 > 
 > ### compare hat matrices
-> stopifnot(max(abs(hatvalues(lmmod) - hatvalues(lmb))) < sqrt(.Machine$double.eps))
+> print(max(abs(hatvalues(lmmod) - hatvalues(lmb))) < sqrt(.Machine$double.eps))
+[1] TRUE
 > 
 > ### compare boosting hat matrix with fitted values
-> stopifnot(max(abs(attr(hatvalues(lmb), "hatmatrix") %*% (df$y - lmb$offset) + lmb$offset -
+> print(max(abs(attr(hatvalues(lmb), "hatmatrix") %*% (df$y - lmb$offset) + lmb$offset -
 +         fitted(lmb))) < sqrt(.Machine$double.eps))
+[1] TRUE
 > 
 > ### Cox model (check for CoxPH family)
 > if (require("survival")) {
@@ -191,36 +218,42 @@ See Warning section in ?coef.mboost
 +                        event = c(1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
 +                        x     = c(1, 0, 0, 1, 0, 1, 1, 1, 0, 0))
 + 
-+     stopifnot(.all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, method = "breslow")),
++     print(.all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, method = "breslow")),
 +                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test,
 +                        family = CoxPH(), center = FALSE,
 +                        control = boost_control(mstop = 2000, nu = 1)), which = 1:2)[2]))
 + 
-+     stopifnot(.all.equal(cx$loglik[2], logLik(gl)))
++     print(.all.equal(cx$loglik[2], logLik(gl)))
 + 
 +     indx <- c(1, 1, 1, 2:10)
 +     w <- tabulate(indx)
 + 
-+     stopifnot(.all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, weights = w,
++     print(.all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, weights = w,
 +                                    method = "breslow")),
 +                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test, weights = w,
 +                        family = CoxPH(), center = FALSE,
 +                        control = boost_control(mstop = 200, nu = 1)), which = 1:2)[2]))
 + 
-+     stopifnot(.all.equal(cx$loglik[2], logLik(gl)))
++     print(.all.equal(cx$loglik[2], logLik(gl)))
 + 
 +     indx <- c(1, 1, 1, 3:10)
 +     w <- tabulate(indx)
 + 
-+     stopifnot(.all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test[indx,],
++     print(.all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test[indx,],
 +                                    method = "breslow")),
 +                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test, weights = w,
 +                        family = CoxPH(), center = FALSE,
 +                        control = boost_control(mstop = 1000)), which = 1:2)[2], tolerance = .Machine$double.eps ^ 0.125))
 + 
-+     stopifnot(.all.equal(cx$loglik[2], logLik(gl)))
++     print(.all.equal(cx$loglik[2], logLik(gl)))
 + }
 Loading required package: survival
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
 > 
 > 
 > ## Cox model with predictions obtained from survFit function
@@ -269,12 +302,15 @@ In glmboost.formula(fm, data = ovarian, family = CoxPH(), control = boost_contro
 > 
 > llg <- logLik(gmod)
 > attributes(llg) <- NULL
-> stopifnot(.all.equal(logLik(gbmod), llg))
+> print(.all.equal(logLik(gbmod), llg))
+[1] TRUE
 > 
 > ### hat matrix is only approximate!
-> stopifnot(abs(AIC(gmod) - attr(AIC(gbmod, "classical"), "AIC")[mstop(gbmod)]) < 1)
+> print(abs(AIC(gmod) - attr(AIC(gbmod, "classical"), "AIC")[mstop(gbmod)]) < 1)
+[1] TRUE
 > 
-> stopifnot(max(abs(predict(gmod) -  predict(gbmod))) < 1e-4)
+> print(max(abs(predict(gmod) -  predict(gbmod))) < 1e-4)
+[1] TRUE
 > 
 > ################################################################################
 > ### Check predictions
@@ -297,29 +333,41 @@ In glmboost.formula(fm, data = ovarian, family = CoxPH(), control = boost_contro
 +         pred[[i]][[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
 +     }
 +     if (i == 1){
-+         stopifnot(max(abs(pred[[i]][[2]] - pred[[i]][[3]][,ncol(pred[[i]][[3]])]))  < sqrt(.Machine$double.eps))
++         print(max(abs(pred[[i]][[2]] - pred[[i]][[3]][,ncol(pred[[i]][[3]])]))  < sqrt(.Machine$double.eps))
 +         if ((pred[[i]][[2]] - rowSums(pred[[i]][[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
 +             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
-+         stopifnot(max(abs(pred[[i]][[2]] - rowSums(pred[[i]][[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
++         print(max(abs(pred[[i]][[2]] - rowSums(pred[[i]][[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
 +     } else {
-+         stopifnot(max(abs(pred[[i]][[2]] - sapply(pred[[i]][[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
-+         stopifnot(max(abs(pred[[i]][[2]] - sapply(pred[[i]][[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
++         print(max(abs(pred[[i]][[2]] - sapply(pred[[i]][[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
++         print(max(abs(pred[[i]][[2]] - sapply(pred[[i]][[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
 +     }
 + }
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
 Warning message:
 'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
 > ## compare which = NULL and which == c(1, 2)
 > # type = "none"
-> stopifnot(.all.equal(pred[[1]][[1]], pred[[4]][[1]]$x1 + pred[[4]][[1]]$x2, check.attributes = FALSE))
+> print(.all.equal(pred[[1]][[1]], pred[[4]][[1]]$x1 + pred[[4]][[1]]$x2, check.attributes = FALSE))
+[1] TRUE
 > # type = "sum"
 > predictions <- as.matrix(DF[, c("x1", "x2")]) %*% matrix(coef(amod), ncol = 1) +
 +     attr(coef(amod), "offset")
-> stopifnot(.all.equal(pred[[1]][[2]], predictions, check.attributes = FALSE))
-> stopifnot(.all.equal(c(pred[[1]][[2]]),
+> print(.all.equal(pred[[1]][[2]], predictions, check.attributes = FALSE))
+[1] TRUE
+> print(.all.equal(c(pred[[1]][[2]]),
 +                     rowSums(pred[[4]][[2]]) + attr(coef(amod), "offset"),
 +                     check.attributes = FALSE))
+[1] TRUE
 > # type = "cumsum"
-> stopifnot(.all.equal(pred[[1]][[3]], pred[[4]][[3]]$x1 + pred[[4]][[3]]$x2 + attr(coef(amod), "offset")))
+> print(.all.equal(pred[[1]][[3]], pred[[4]][[3]]$x1 + pred[[4]][[3]]$x2 + attr(coef(amod), "offset")))
+[1] TRUE
 > 
 > ## same with names
 > agg <- c("none", "sum", "cumsum")
@@ -330,22 +378,31 @@ Warning message:
 +         pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
 +     }
 +     if (i == 1){
-+         stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
++         print(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
 +         if ((pred[[2]] - rowSums(pred[[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
 +             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
-+         stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
++         print(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
 +     } else {
-+         stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
-+         stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
++         print(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
++         print(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
 +     }
 + }
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
 Warning message:
 'aggregate = sum' adds the offset, 'aggregate = none' doesn't. 
 > 
 > y <- rnorm(100, mean = 3 * x1^2, sd = 2)
 > DF2 <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
 > amod <- glmboost(y ~ -1 + x1 + I(x1^2), data = DF2, center = FALSE)
-> stopifnot(ncol(predict(amod, which="x1")) == 2 && all(rowSums(predict(amod, which="x1")) + attr(coef(amod), "offset") - predict(amod) < sqrt(.Machine$double.eps)))
+> print(ncol(predict(amod, which="x1")) == 2 && all(rowSums(predict(amod, which="x1")) + attr(coef(amod), "offset") - predict(amod) < sqrt(.Machine$double.eps)))
+[1] TRUE
 > 
 > 
 > amod <- glmboost(y ~ 1+ x1 + x2, data = DF, center = FALSE)
@@ -353,13 +410,115 @@ Warning message:
 > foo <- DF
 > foo$x2 <- 0
 > pr2 <- predict(amod, aggre = "sum", newdata=foo)
-> stopifnot(rowSums(pr1) + attr(coef(amod),"offset") - pr2 < sqrt(.Machine$double.eps))
+> print(rowSums(pr1) + attr(coef(amod),"offset") - pr2 < sqrt(.Machine$double.eps))
+    [,1]
+1   TRUE
+2   TRUE
+3   TRUE
+4   TRUE
+5   TRUE
+6   TRUE
+7   TRUE
+8   TRUE
+9   TRUE
+10  TRUE
+11  TRUE
+12  TRUE
+13  TRUE
+14  TRUE
+15  TRUE
+16  TRUE
+17  TRUE
+18  TRUE
+19  TRUE
+20  TRUE
+21  TRUE
+22  TRUE
+23  TRUE
+24  TRUE
+25  TRUE
+26  TRUE
+27  TRUE
+28  TRUE
+29  TRUE
+30  TRUE
+31  TRUE
+32  TRUE
+33  TRUE
+34  TRUE
+35  TRUE
+36  TRUE
+37  TRUE
+38  TRUE
+39  TRUE
+40  TRUE
+41  TRUE
+42  TRUE
+43  TRUE
+44  TRUE
+45  TRUE
+46  TRUE
+47  TRUE
+48  TRUE
+49  TRUE
+50  TRUE
+51  TRUE
+52  TRUE
+53  TRUE
+54  TRUE
+55  TRUE
+56  TRUE
+57  TRUE
+58  TRUE
+59  TRUE
+60  TRUE
+61  TRUE
+62  TRUE
+63  TRUE
+64  TRUE
+65  TRUE
+66  TRUE
+67  TRUE
+68  TRUE
+69  TRUE
+70  TRUE
+71  TRUE
+72  TRUE
+73  TRUE
+74  TRUE
+75  TRUE
+76  TRUE
+77  TRUE
+78  TRUE
+79  TRUE
+80  TRUE
+81  TRUE
+82  TRUE
+83  TRUE
+84  TRUE
+85  TRUE
+86  TRUE
+87  TRUE
+88  TRUE
+89  TRUE
+90  TRUE
+91  TRUE
+92  TRUE
+93  TRUE
+94  TRUE
+95  TRUE
+96  TRUE
+97  TRUE
+98  TRUE
+99  TRUE
+100 TRUE
 > newData <- as.data.frame(rbind(colMeans(DF)[-1], colMeans(DF)[-2]+1*sapply(DF, sd)[-1]))
 > if (!is.list(pr <- predict(amod, newdata=newData, which=1:2)))
 +     warning("predict(amod, newdata=newData, which=1:2) does not return a list") # no list but a matrix is returned!
 Warning message:
 predict(amod, newdata=newData, which=1:2) does not return a list 
-> stopifnot(is.list(pr <- predict(amod, newdata=newData, aggregate="cumsum", which=1:2)))
+> print(is.list(pr <- predict(amod, newdata=newData, aggregate="cumsum", which=1:2)))
+[1] TRUE
 > amod[10]
 
 	 Generalized Linear Models Fitted via Gradient Boosting
@@ -384,7 +543,8 @@ attr(,"offset")
 [1] 0.0511
 
 > pr <- predict(amod, which=1:3)
-> stopifnot(ncol(pr) == 3 || all(pr[,c(1,ncol)] == 0))
+> print(ncol(pr) == 3 || all(pr[,c(1,ncol)] == 0))
+[1] TRUE
 > amod[100]
 
 	 Generalized Linear Models Fitted via Gradient Boosting
@@ -429,25 +589,41 @@ attr(,"offset")
 +     }
 +     if (i == 1){
 +         ## checks for amod
-+         stopifnot(max(abs(preda[[i]][[2]] - preda[[i]][[3]][,ncol(preda[[i]][[3]])]))  < sqrt(.Machine$double.eps))
++         print(max(abs(preda[[i]][[2]] - preda[[i]][[3]][,ncol(preda[[i]][[3]])]))  < sqrt(.Machine$double.eps))
 +         if ((preda[[i]][[2]] - rowSums(preda[[i]][[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
 +             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
-+         stopifnot(max(abs(preda[[i]][[2]] - rowSums(preda[[i]][[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
++         print(max(abs(preda[[i]][[2]] - rowSums(preda[[i]][[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
 +         ## same for bmod
-+         stopifnot(max(abs(predb[[i]][[2]] - predb[[i]][[3]][,ncol(predb[[i]][[3]])]))  < sqrt(.Machine$double.eps))
++         print(max(abs(predb[[i]][[2]] - predb[[i]][[3]][,ncol(predb[[i]][[3]])]))  < sqrt(.Machine$double.eps))
 +         if ((predb[[i]][[2]] - rowSums(predb[[i]][[1]]))[1] < sqrt(.Machine$double.eps))
 +             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
 +         ## here, the offset is not used in both cases!
-+         stopifnot(max(abs(predb[[i]][[2]] - rowSums(predb[[i]][[1]])))   < sqrt(.Machine$double.eps))
++         print(max(abs(predb[[i]][[2]] - rowSums(predb[[i]][[1]])))   < sqrt(.Machine$double.eps))
 +     } else {
 +         ## checks for amod
-+         stopifnot(max(abs(preda[[i]][[2]] - sapply(preda[[i]][[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
-+         stopifnot(max(abs(preda[[i]][[2]] - sapply(preda[[i]][[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
++         print(max(abs(preda[[i]][[2]] - sapply(preda[[i]][[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
++         print(max(abs(preda[[i]][[2]] - sapply(preda[[i]][[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
 +         ## same for bmod
-+         stopifnot(max(abs(predb[[i]][[2]] - sapply(predb[[i]][[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
-+         stopifnot(max(abs(predb[[i]][[2]] - sapply(predb[[i]][[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
++         print(max(abs(predb[[i]][[2]] - sapply(predb[[i]][[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
++         print(max(abs(predb[[i]][[2]] - sapply(predb[[i]][[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
 +     }
 + }
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
+[1] TRUE
 Warning messages:
 1: In object$predict(newdata = newdata, which = which, aggregate = aggregate) :
   User-specified offset is not a scalar, thus it cannot be used for predictions when 'newdata' is specified.
@@ -458,21 +634,29 @@ Warning messages:
 > ## compare which = NULL and which == c(1, 2);
 > ## The offset should be always dropped for bmod, but kept for amod
 > # type = "none"
-> stopifnot(.all.equal(preda[[1]][[1]], preda[[4]][[1]]$x1 + preda[[4]][[1]]$x2, check.attributes = FALSE))
-> stopifnot(.all.equal(predb[[1]][[1]], predb[[4]][[1]]$x1 + predb[[4]][[1]]$x2, check.attributes = FALSE))
+> print(.all.equal(preda[[1]][[1]], preda[[4]][[1]]$x1 + preda[[4]][[1]]$x2, check.attributes = FALSE))
+[1] TRUE
+> print(.all.equal(predb[[1]][[1]], predb[[4]][[1]]$x1 + predb[[4]][[1]]$x2, check.attributes = FALSE))
+[1] TRUE
 > # type = "sum"
 > predictionsA <- as.matrix(newdata[, c("x1", "x2")]) %*% matrix(coef(amod), ncol = 1) +
 +     attr(coef(amod), "offset")
 > predictionsB <- as.matrix(newdata[, c("x1", "x2")]) %*% matrix(coef(bmod), ncol = 1)
-> stopifnot(.all.equal(preda[[1]][[2]], predictionsA, check.attributes = FALSE))
-> stopifnot(.all.equal(predb[[1]][[2]], predictionsB, check.attributes = FALSE))
-> stopifnot(.all.equal(c(preda[[1]][[2]]), rowSums(preda[[4]][[2]]) + attr(coef(amod), "offset"),
+> print(.all.equal(preda[[1]][[2]], predictionsA, check.attributes = FALSE))
+[1] TRUE
+> print(.all.equal(predb[[1]][[2]], predictionsB, check.attributes = FALSE))
+[1] TRUE
+> print(.all.equal(c(preda[[1]][[2]]), rowSums(preda[[4]][[2]]) + attr(coef(amod), "offset"),
 +                     check.attributes = FALSE))
-> stopifnot(.all.equal(c(predb[[1]][[2]]), rowSums(predb[[4]][[2]]),
+[1] TRUE
+> print(.all.equal(c(predb[[1]][[2]]), rowSums(predb[[4]][[2]]),
 +                     check.attributes = FALSE))
+[1] TRUE
 > # type = "cumsum"
-> stopifnot(.all.equal(predb[[1]][[3]], predb[[4]][[3]]$x1 + predb[[4]][[3]]$x2))
-> stopifnot(.all.equal(predb[[1]][[3]], predb[[4]][[3]]$x1 + predb[[4]][[3]]$x2))
+> print(.all.equal(predb[[1]][[3]], predb[[4]][[3]]$x1 + predb[[4]][[3]]$x2))
+[1] TRUE
+> print(.all.equal(predb[[1]][[3]], predb[[4]][[3]]$x1 + predb[[4]][[3]]$x2))
+[1] TRUE
 > 
 > ### compare predictions with gamboost
 > mod1 <- glmboost(y ~ -1 + x1 + x2 + x3, data = DF, center=FALSE)
@@ -481,9 +665,12 @@ Warning messages:
 > pr2_2 <- predict(mod2, aggre = "none")
 > pr3_2 <- predict(mod2, aggre = "sum")
 > 
-> stopifnot(max(abs(predict(mod1) - predict(mod2))) < sqrt(.Machine$double.eps))
-> stopifnot(max(abs(predict(mod1, aggre = "none") - predict(mod2, aggre = "none"))) < sqrt(.Machine$double.eps))
-> stopifnot(max(abs(predict(mod1, aggre = "cumsum") - predict(mod2, aggre = "cumsum"))) < sqrt(.Machine$double.eps))
+> print(max(abs(predict(mod1) - predict(mod2))) < sqrt(.Machine$double.eps))
+[1] TRUE
+> print(max(abs(predict(mod1, aggre = "none") - predict(mod2, aggre = "none"))) < sqrt(.Machine$double.eps))
+[1] TRUE
+> print(max(abs(predict(mod1, aggre = "cumsum") - predict(mod2, aggre = "cumsum"))) < sqrt(.Machine$double.eps))
+[1] TRUE
 > 
 > # check type argument
 > set.seed(1907)
@@ -495,25 +682,230 @@ Warning messages:
 > logitBoost <- glmboost(y ~ x1, family = Binomial(), center = FALSE,
 +                  data = DF,  control=boost_control(mstop=5000))
 > logit <- glm(y ~ x1, data=DF, family=binomial)
-> stopifnot(coef(logitBoost)[2]*2 - coef(logit)[2] < 1e-5) # * 2 as we use y = {-1, 1}
+> print(coef(logitBoost)[2]*2 - coef(logit)[2] < 1e-5) # * 2 as we use y = {-1, 1}
 
 NOTE: Coefficients from a Binomial model are half the size of coefficients
  from a model fitted via glm(... , family = 'binomial').
 See Warning section in ?coef.mboost
 
+  x1 
+TRUE 
 > 
 > pr <- predict(logitBoost)
 > pr2 <- predict(logit)
-> stopifnot(pr * 2 - pr2 < 1e-5)  # * 2 as we use y = {-1, 1}
+> print(pr * 2 - pr2 < 1e-5)  # * 2 as we use y = {-1, 1}
+    [,1]
+1   TRUE
+2   TRUE
+3   TRUE
+4   TRUE
+5   TRUE
+6   TRUE
+7   TRUE
+8   TRUE
+9   TRUE
+10  TRUE
+11  TRUE
+12  TRUE
+13  TRUE
+14  TRUE
+15  TRUE
+16  TRUE
+17  TRUE
+18  TRUE
+19  TRUE
+20  TRUE
+21  TRUE
+22  TRUE
+23  TRUE
+24  TRUE
+25  TRUE
+26  TRUE
+27  TRUE
+28  TRUE
+29  TRUE
+30  TRUE
+31  TRUE
+32  TRUE
+33  TRUE
+34  TRUE
+35  TRUE
+36  TRUE
+37  TRUE
+38  TRUE
+39  TRUE
+40  TRUE
+41  TRUE
+42  TRUE
+43  TRUE
+44  TRUE
+45  TRUE
+46  TRUE
+47  TRUE
+48  TRUE
+49  TRUE
+50  TRUE
+51  TRUE
+52  TRUE
+53  TRUE
+54  TRUE
+55  TRUE
+56  TRUE
+57  TRUE
+58  TRUE
+59  TRUE
+60  TRUE
+61  TRUE
+62  TRUE
+63  TRUE
+64  TRUE
+65  TRUE
+66  TRUE
+67  TRUE
+68  TRUE
+69  TRUE
+70  TRUE
+71  TRUE
+72  TRUE
+73  TRUE
+74  TRUE
+75  TRUE
+76  TRUE
+77  TRUE
+78  TRUE
+79  TRUE
+80  TRUE
+81  TRUE
+82  TRUE
+83  TRUE
+84  TRUE
+85  TRUE
+86  TRUE
+87  TRUE
+88  TRUE
+89  TRUE
+90  TRUE
+91  TRUE
+92  TRUE
+93  TRUE
+94  TRUE
+95  TRUE
+96  TRUE
+97  TRUE
+98  TRUE
+99  TRUE
+100 TRUE
 > 
 > pr <- predict(logitBoost, type="class")
 > pr2 <- predict(logit, type="response") > 0.5
 > foo <- table(pr, pr2)
-> stopifnot(foo[1,2] + foo[2,1] == 0)
+> print(foo[1,2] + foo[2,1] == 0)
+[1] TRUE
 > 
 > pr <- predict(logitBoost, type="response")
 > pr2 <- predict(logit, type="response")
-> stopifnot(pr - pr2 < sqrt(.Machine$double.eps))
+> print(pr - pr2 < sqrt(.Machine$double.eps))
+    [,1]
+1   TRUE
+2   TRUE
+3   TRUE
+4   TRUE
+5   TRUE
+6   TRUE
+7   TRUE
+8   TRUE
+9   TRUE
+10  TRUE
+11  TRUE
+12  TRUE
+13  TRUE
+14  TRUE
+15  TRUE
+16  TRUE
+17  TRUE
+18  TRUE
+19  TRUE
+20  TRUE
+21  TRUE
+22  TRUE
+23  TRUE
+24  TRUE
+25  TRUE
+26  TRUE
+27  TRUE
+28  TRUE
+29  TRUE
+30  TRUE
+31  TRUE
+32  TRUE
+33  TRUE
+34  TRUE
+35  TRUE
+36  TRUE
+37  TRUE
+38  TRUE
+39  TRUE
+40  TRUE
+41  TRUE
+42  TRUE
+43  TRUE
+44  TRUE
+45  TRUE
+46  TRUE
+47  TRUE
+48  TRUE
+49  TRUE
+50  TRUE
+51  TRUE
+52  TRUE
+53  TRUE
+54  TRUE
+55  TRUE
+56  TRUE
+57  TRUE
+58  TRUE
+59  TRUE
+60  TRUE
+61  TRUE
+62  TRUE
+63  TRUE
+64  TRUE
+65  TRUE
+66  TRUE
+67  TRUE
+68  TRUE
+69  TRUE
+70  TRUE
+71  TRUE
+72  TRUE
+73  TRUE
+74  TRUE
+75  TRUE
+76  TRUE
+77  TRUE
+78  TRUE
+79  TRUE
+80  TRUE
+81  TRUE
+82  TRUE
+83  TRUE
+84  TRUE
+85  TRUE
+86  TRUE
+87  TRUE
+88  TRUE
+89  TRUE
+90  TRUE
+91  TRUE
+92  TRUE
+93  TRUE
+94  TRUE
+95  TRUE
+96  TRUE
+97  TRUE
+98  TRUE
+99  TRUE
+100 TRUE
 > 
 > ################################################################################
 > ### Check coefficients
@@ -527,7 +919,8 @@ See Warning section in ?coef.mboost
 > DF <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
 > amod <- glmboost(y ~ x1 + x2 + x3, data = DF, center = FALSE)
 > 
-> stopifnot(length(coef(amod)) == 4)
+> print(length(coef(amod)) == 4)
+[1] TRUE
 > amod[10]
 
 	 Generalized Linear Models Fitted via Gradient Boosting
@@ -551,8 +944,10 @@ Coefficients:
 attr(,"offset")
 [1] 0.0511
 
-> stopifnot(length(coef(amod)) == 1)
-> stopifnot(length(coef(amod, which=1:3)) == 3)
+> print(length(coef(amod)) == 1)
+[1] TRUE
+> print(length(coef(amod, which=1:3)) == 3)
+[1] TRUE
 > 
 > ### check with logical design matrices
 > n <- 1000
@@ -571,7 +966,8 @@ In glmboost.matrix(x = X, y = y) :
 Warning message:
 In glmboost.matrix(x = Xd, y = y) :
   model with centered covariates does not contain intercept
-> stopifnot(.all.equal(coef(modd), coef(mod)))
+> print(.all.equal(coef(modd), coef(mod)))
+[1] TRUE
 > 
 > ### probit models
 > set.seed(29)
@@ -597,12 +993,13 @@ See Warning section in ?coef.mboost
 
 (Intercept)           x 
      0.0921      3.1005 
-> stopifnot(.all.equal(round(coef(mod), 2), round(coef(mod2, off2int = TRUE), 2)))
+> print(.all.equal(round(coef(mod), 2), round(coef(mod2, off2int = TRUE), 2)))
 
 NOTE: Coefficients from a Binomial model are half the size of coefficients
  from a model fitted via glm(... , family = 'binomial').
 See Warning section in ?coef.mboost
 
+[1] TRUE
 > 
 > data("GlaucomaM", package = "TH.data")
 > coef(mod3 <- glm(Class ~ varg, data = GlaucomaM, family = binomial(link = "probit")))
@@ -618,14 +1015,15 @@ See Warning section in ?coef.mboost
       -1.86        6.69 
 attr(,"offset")
 [1] 0
-> stopifnot(.all.equal(round(coef(mod3), 3), round(coef(mod4, off2int = TRUE), 3)))
+> print(.all.equal(round(coef(mod3), 3), round(coef(mod4, off2int = TRUE), 3)))
 
 NOTE: Coefficients from a Binomial model are half the size of coefficients
  from a model fitted via glm(... , family = 'binomial').
 See Warning section in ?coef.mboost
 
+[1] TRUE
 > 
 > 
 > proc.time()
    user  system elapsed 
-  4.035   0.126   4.155 
+  4.097   0.115   4.198 

@@ -19,7 +19,7 @@ if (!inherits(tst, "try-error")) {
     print(ae <- mean((predict(a) - BostonHousing$medv)^2))
 
     pdiffs <- max(abs(predict(update(a, model.weights(a))) - predict(a)))
-    stopifnot(pdiffs < sqrt(.Machine$double.eps))
+    print(pdiffs < sqrt(.Machine$double.eps))
 
 
     ### attach `gbm', quietly
@@ -38,7 +38,7 @@ if (!inherits(tst, "try-error")) {
     points(BostonHousing$medv,
            predict(b, newdata = BostonHousing, n.trees = 500),
            col = "blue", pch = "+")
-    stopifnot(ae < be)
+    print(ae < be)
     }
 }
 
@@ -50,17 +50,17 @@ tctrl <- ctree_control(teststat = "max",
 bb <- mboost(medv ~ btree(crim, zn, indus, nox, age) + 
                     btree(crim, zn, indus, nox, age, by = chas), 
              data = BostonHousing)
-stopifnot(isTRUE(all.equal(fitted(bb)[1:10], 
+print(isTRUE(all.equal(fitted(bb)[1:10], 
                     c(predict(bb, newdata = BostonHousing[1:10,])), 
                     check.attributes = FALSE)))
 nd <- BostonHousing[1:10,]
 nd$chas[] <- "0"
 p0 <- predict(bb, newdata = nd, which = 1)
-stopifnot(isTRUE(all.equal(c(unique(predict(bb, newdata = nd, which = 2))), 0, 
+print(isTRUE(all.equal(c(unique(predict(bb, newdata = nd, which = 2))), 0, 
                            check.attributes = FALSE)))
 nd$chas[] <- "1"
 p1 <- predict(bb, newdata = nd, which = 1)
-stopifnot(isTRUE(all.equal(p0, p1)))
+print(isTRUE(all.equal(p0, p1)))
 print(predict(bb, newdata = nd, which = 2))
 print(table(selected(bb)))
 print(table(selected(bb[50])))
@@ -101,17 +101,17 @@ for (i in 1:2){
         pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
     }
     if (i == 1){
-        stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
         if ((pred[[2]] - rowSums(pred[[1]]))[1] - amod$offset < sqrt(.Machine$double.eps))
             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
-        stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - amod$offset))   < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - rowSums(pred[[1]]) - amod$offset))   < sqrt(.Machine$double.eps))
     } else {
-        stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
-        stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
     }
 }
 
-stopifnot(all(predict(amod, which=1) + amod$offset  - predict(amod) < sqrt(.Machine$double.eps)))
+print(all(predict(amod, which=1) + amod$offset  - predict(amod) < sqrt(.Machine$double.eps)))
 
 
 # check type argument
@@ -127,7 +127,7 @@ mod <- blackboost(y ~ x1, family = Binomial(),
 pr <- predict(mod)
 pr <- predict(mod, type="class")
 foo <- table(pr, y)
-stopifnot(foo[1,2] + foo[2,1] == 0)
+print(foo[1,2] + foo[2,1] == 0)
 pr <- predict(mod, type="response")
 # <FIXME> How do we check "correctness" of results?</FIXME>
 

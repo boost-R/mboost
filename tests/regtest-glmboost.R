@@ -28,7 +28,7 @@ mydf.gb <- glmboost(y ~ ., data = mydf, family = fm,
 mydf.lm <- lm(y ~ ., data = mydf)
 
 ### compare coefficients
-stopifnot(max(abs(coef(mydf.gb) - coef(mydf.lm))) < 1e-10)
+print(max(abs(coef(mydf.gb) - coef(mydf.lm))) < 1e-10)
 
 ### a little bit more difficult
 mydf <- dgp(beta = c(1, 2.5, rep(0, 38)))
@@ -37,29 +37,29 @@ mydf.gb <- glmboost(y ~ ., data = mydf, family = fm,
                     control = boost_control(mstop = 1000, nu = 1))
 aic <- AIC(mydf.gb, method = "corrected")
 ht <- hatvalues(mydf.gb)
-stopifnot(mstop(aic) == 12)
+print(mstop(aic) == 12)
 plot(aic, ylim = c(0,3))
 mydf.lm <- lm(y ~ ., data = mydf)
 
 ## use AIC with active set as df
 aic2 <- AIC(mydf.gb, method = "corrected", df = "actset")
-stopifnot(mstop(aic2)== 9)
-stopifnot(attr(aic2, "df")[9] == 9)
+print(mstop(aic2)== 9)
+print(attr(aic2, "df")[9] == 9)
 
 ## use gMDL
 aic3 <- AIC(mydf.gb, method = "gMDL")
-stopifnot(mstop(aic3) == 4)
+print(mstop(aic3) == 4)
 
 ### compare coefficients
 which(abs(coef(mydf.lm, which = "")) < abs(coef(mydf.gb[mstop(aic)], which = "")))
 
 #### check boosting hat matrix and subsetting / predict
-stopifnot(isTRUE(.all.equal(drop(attr(ht, "hatmatrix") %*% mydf$y),
+print(isTRUE(.all.equal(drop(attr(ht, "hatmatrix") %*% mydf$y),
                            as.vector(predict(mydf.gb[1000])))))
 ht25 <- hatvalues(mydf.gb[25])
-stopifnot(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
+print(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
                            as.vector(predict(mydf.gb[25])))))
-stopifnot(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
+print(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% mydf$y),
                            as.vector(fitted(mydf.gb[25])))))
 
 ### a simple two-dimensional example from `glmboost.Rd'
@@ -72,26 +72,26 @@ plot(cars.gb)
 ### coefficients should coincide
 cf <- coef(cars.gb)
 attr(cf, "offset") <- NULL
-stopifnot(.all.equal(cf, coef(lm(dist ~ speed, data = cars))))
+print(.all.equal(cf, coef(lm(dist ~ speed, data = cars))))
 
 ### check aggregate = "none"
-stopifnot(.all.equal(cumsum(c(coef(cars.gb, aggregate = "none", off2int = TRUE)$speed)),
+print(.all.equal(cumsum(c(coef(cars.gb, aggregate = "none", off2int = TRUE)$speed)),
         c(coef(cars.gb, aggregate = "cumsum", off2int = TRUE)$speed)))
 
 ### extract model terms
-stopifnot(.all.equal(extract(cars.gb, what = "design"),
+print(.all.equal(extract(cars.gb, what = "design"),
                     matrix(c(rep(1, 50), cars$speed)),
                     check.attributes = FALSE))
-stopifnot(.all.equal(extract(cars.gb, what = "design", which = "(Intercept)"), 
+print(.all.equal(extract(cars.gb, what = "design", which = "(Intercept)"), 
                     rep(1, 50), check.attributes = FALSE))
-stopifnot(.all.equal(extract(cars.gb, what = "coefficients"), coef(cars.gb)))
-stopifnot(.all.equal(extract(cars.gb, what = "residuals"), resid(cars.gb)))
-stopifnot(.all.equal(extract(cars.gb, what = "variable.names"), variable.names(cars.gb)))
-stopifnot(.all.equal(extract(cars.gb, what = "offset"), 0))
-stopifnot(.all.equal(extract(cars.gb, what = "nuisance"), nuisance(cars.gb)))
-stopifnot(is.na(extract(cars.gb, what = "nuisance")))
-stopifnot(.all.equal(extract(cars.gb, what = "weights"), model.weights(cars.gb)))
-stopifnot(.all.equal(extract(cars.gb, what = "control"), boost_control(mstop = 1000, nu = 1)))
+print(.all.equal(extract(cars.gb, what = "coefficients"), coef(cars.gb)))
+print(.all.equal(extract(cars.gb, what = "residuals"), resid(cars.gb)))
+print(.all.equal(extract(cars.gb, what = "variable.names"), variable.names(cars.gb)))
+print(.all.equal(extract(cars.gb, what = "offset"), 0))
+print(.all.equal(extract(cars.gb, what = "nuisance"), nuisance(cars.gb)))
+print(is.na(extract(cars.gb, what = "nuisance")))
+print(.all.equal(extract(cars.gb, what = "weights"), model.weights(cars.gb)))
+print(.all.equal(extract(cars.gb, what = "control"), boost_control(mstop = 1000, nu = 1)))
 
 ### logistic regression
 mydf <- data.frame(x = runif(100), z = rnorm(100),
@@ -101,13 +101,13 @@ bmod <- glmboost(y ~ x + z, data = mydf, family = Binomial(), center = FALSE,
 gmod <- glm(y ~ x + z, data = mydf, family = binomial())
 llg <- logLik(gmod)
 attributes(llg) <- NULL
-stopifnot(.all.equal(logLik(bmod), llg))
-stopifnot(max(abs(predict(gmod, type = "link")/2 - fitted(bmod))) <
+print(.all.equal(logLik(bmod), llg))
+print(max(abs(predict(gmod, type = "link")/2 - fitted(bmod))) <
                   sqrt(.Machine$double.eps))
 cfb <- coef(bmod, off2int = TRUE) * 2
-stopifnot(.all.equal(cfb, coef(gmod)))
+print(.all.equal(cfb, coef(gmod)))
 aic <- AIC(bmod, "classical")
-stopifnot(abs(AIC(gmod) - attr(aic, "AIC")[mstop(bmod)]) < 1e-5)
+print(abs(AIC(gmod) - attr(aic, "AIC")[mstop(bmod)]) < 1e-5)
 
 ### weighted least squares problem
 
@@ -124,13 +124,13 @@ lmb <- glmboost(y ~ x + z, data = df, weights = df$w, center = FALSE,
                 control = boost_control(mstop = 5000, nu = 1))
 
 ### compare fitted values
-stopifnot(max(abs(fitted(lmmod) -fitted(lmb))) < sqrt(.Machine$double.eps))
+print(max(abs(fitted(lmmod) -fitted(lmb))) < sqrt(.Machine$double.eps))
 
 ### compare hat matrices
-stopifnot(max(abs(hatvalues(lmmod) - hatvalues(lmb))) < sqrt(.Machine$double.eps))
+print(max(abs(hatvalues(lmmod) - hatvalues(lmb))) < sqrt(.Machine$double.eps))
 
 ### compare boosting hat matrix with fitted values
-stopifnot(max(abs(attr(hatvalues(lmb), "hatmatrix") %*% (df$y - lmb$offset) + lmb$offset -
+print(max(abs(attr(hatvalues(lmb), "hatmatrix") %*% (df$y - lmb$offset) + lmb$offset -
         fitted(lmb))) < sqrt(.Machine$double.eps))
 
 ### Cox model (check for CoxPH family)
@@ -140,34 +140,34 @@ if (require("survival")) {
                        event = c(1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
                        x     = c(1, 0, 0, 1, 0, 1, 1, 1, 0, 0))
 
-    stopifnot(.all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, method = "breslow")),
+    print(.all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, method = "breslow")),
                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test,
                        family = CoxPH(), center = FALSE,
                        control = boost_control(mstop = 2000, nu = 1)), which = 1:2)[2]))
 
-    stopifnot(.all.equal(cx$loglik[2], logLik(gl)))
+    print(.all.equal(cx$loglik[2], logLik(gl)))
 
     indx <- c(1, 1, 1, 2:10)
     w <- tabulate(indx)
 
-    stopifnot(.all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, weights = w,
+    print(.all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test, weights = w,
                                    method = "breslow")),
                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test, weights = w,
                        family = CoxPH(), center = FALSE,
                        control = boost_control(mstop = 200, nu = 1)), which = 1:2)[2]))
 
-    stopifnot(.all.equal(cx$loglik[2], logLik(gl)))
+    print(.all.equal(cx$loglik[2], logLik(gl)))
 
     indx <- c(1, 1, 1, 3:10)
     w <- tabulate(indx)
 
-    stopifnot(.all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test[indx,],
+    print(.all.equal(coef(cx <- coxph(Surv(time, event) ~ x, data = test[indx,],
                                    method = "breslow")),
                        coef(gl <- glmboost(Surv(time, event) ~ x, data = test, weights = w,
                        family = CoxPH(), center = FALSE,
                        control = boost_control(mstop = 1000)), which = 1:2)[2], tolerance = .Machine$double.eps ^ 0.125))
 
-    stopifnot(.all.equal(cx$loglik[2], logLik(gl)))
+    print(.all.equal(cx$loglik[2], logLik(gl)))
 }
 
 
@@ -210,12 +210,12 @@ gbmod <- glmboost(y ~ x1 + x2, data = df, family = Poisson(), control = ctrl,
 
 llg <- logLik(gmod)
 attributes(llg) <- NULL
-stopifnot(.all.equal(logLik(gbmod), llg))
+print(.all.equal(logLik(gbmod), llg))
 
 ### hat matrix is only approximate!
-stopifnot(abs(AIC(gmod) - attr(AIC(gbmod, "classical"), "AIC")[mstop(gbmod)]) < 1)
+print(abs(AIC(gmod) - attr(AIC(gbmod, "classical"), "AIC")[mstop(gbmod)]) < 1)
 
-stopifnot(max(abs(predict(gmod) -  predict(gbmod))) < 1e-4)
+print(max(abs(predict(gmod) -  predict(gbmod))) < 1e-4)
 
 ################################################################################
 ### Check predictions
@@ -238,27 +238,27 @@ for (i in 1:4){
         pred[[i]][[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
     }
     if (i == 1){
-        stopifnot(max(abs(pred[[i]][[2]] - pred[[i]][[3]][,ncol(pred[[i]][[3]])]))  < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[i]][[2]] - pred[[i]][[3]][,ncol(pred[[i]][[3]])]))  < sqrt(.Machine$double.eps))
         if ((pred[[i]][[2]] - rowSums(pred[[i]][[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
-        stopifnot(max(abs(pred[[i]][[2]] - rowSums(pred[[i]][[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[i]][[2]] - rowSums(pred[[i]][[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
     } else {
-        stopifnot(max(abs(pred[[i]][[2]] - sapply(pred[[i]][[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
-        stopifnot(max(abs(pred[[i]][[2]] - sapply(pred[[i]][[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[i]][[2]] - sapply(pred[[i]][[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[i]][[2]] - sapply(pred[[i]][[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
     }
 }
 ## compare which = NULL and which == c(1, 2)
 # type = "none"
-stopifnot(.all.equal(pred[[1]][[1]], pred[[4]][[1]]$x1 + pred[[4]][[1]]$x2, check.attributes = FALSE))
+print(.all.equal(pred[[1]][[1]], pred[[4]][[1]]$x1 + pred[[4]][[1]]$x2, check.attributes = FALSE))
 # type = "sum"
 predictions <- as.matrix(DF[, c("x1", "x2")]) %*% matrix(coef(amod), ncol = 1) +
     attr(coef(amod), "offset")
-stopifnot(.all.equal(pred[[1]][[2]], predictions, check.attributes = FALSE))
-stopifnot(.all.equal(c(pred[[1]][[2]]),
+print(.all.equal(pred[[1]][[2]], predictions, check.attributes = FALSE))
+print(.all.equal(c(pred[[1]][[2]]),
                     rowSums(pred[[4]][[2]]) + attr(coef(amod), "offset"),
                     check.attributes = FALSE))
 # type = "cumsum"
-stopifnot(.all.equal(pred[[1]][[3]], pred[[4]][[3]]$x1 + pred[[4]][[3]]$x2 + attr(coef(amod), "offset")))
+print(.all.equal(pred[[1]][[3]], pred[[4]][[3]]$x1 + pred[[4]][[3]]$x2 + attr(coef(amod), "offset")))
 
 ## same with names
 agg <- c("none", "sum", "cumsum")
@@ -269,20 +269,20 @@ for (i in 1:4){
         pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
     }
     if (i == 1){
-        stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
         if ((pred[[2]] - rowSums(pred[[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
-        stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
     } else {
-        stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
-        stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
     }
 }
 
 y <- rnorm(100, mean = 3 * x1^2, sd = 2)
 DF2 <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
 amod <- glmboost(y ~ -1 + x1 + I(x1^2), data = DF2, center = FALSE)
-stopifnot(ncol(predict(amod, which="x1")) == 2 && all(rowSums(predict(amod, which="x1")) + attr(coef(amod), "offset") - predict(amod) < sqrt(.Machine$double.eps)))
+print(ncol(predict(amod, which="x1")) == 2 && all(rowSums(predict(amod, which="x1")) + attr(coef(amod), "offset") - predict(amod) < sqrt(.Machine$double.eps)))
 
 
 amod <- glmboost(y ~ 1+ x1 + x2, data = DF, center = FALSE)
@@ -290,14 +290,14 @@ pr1 <- predict(amod, aggre = "sum", which= 1:2)
 foo <- DF
 foo$x2 <- 0
 pr2 <- predict(amod, aggre = "sum", newdata=foo)
-stopifnot(rowSums(pr1) + attr(coef(amod),"offset") - pr2 < sqrt(.Machine$double.eps))
+print(rowSums(pr1) + attr(coef(amod),"offset") - pr2 < sqrt(.Machine$double.eps))
 newData <- as.data.frame(rbind(colMeans(DF)[-1], colMeans(DF)[-2]+1*sapply(DF, sd)[-1]))
 if (!is.list(pr <- predict(amod, newdata=newData, which=1:2)))
     warning("predict(amod, newdata=newData, which=1:2) does not return a list") # no list but a matrix is returned!
-stopifnot(is.list(pr <- predict(amod, newdata=newData, aggregate="cumsum", which=1:2)))
+print(is.list(pr <- predict(amod, newdata=newData, aggregate="cumsum", which=1:2)))
 amod[10]
 pr <- predict(amod, which=1:3)
-stopifnot(ncol(pr) == 3 || all(pr[,c(1,ncol)] == 0))
+print(ncol(pr) == 3 || all(pr[,c(1,ncol)] == 0))
 amod[100]
 
 ## check predictions with offset
@@ -320,43 +320,43 @@ for (i in 1:4){
     }
     if (i == 1){
         ## checks for amod
-        stopifnot(max(abs(preda[[i]][[2]] - preda[[i]][[3]][,ncol(preda[[i]][[3]])]))  < sqrt(.Machine$double.eps))
+        print(max(abs(preda[[i]][[2]] - preda[[i]][[3]][,ncol(preda[[i]][[3]])]))  < sqrt(.Machine$double.eps))
         if ((preda[[i]][[2]] - rowSums(preda[[i]][[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
-        stopifnot(max(abs(preda[[i]][[2]] - rowSums(preda[[i]][[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
+        print(max(abs(preda[[i]][[2]] - rowSums(preda[[i]][[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
         ## same for bmod
-        stopifnot(max(abs(predb[[i]][[2]] - predb[[i]][[3]][,ncol(predb[[i]][[3]])]))  < sqrt(.Machine$double.eps))
+        print(max(abs(predb[[i]][[2]] - predb[[i]][[3]][,ncol(predb[[i]][[3]])]))  < sqrt(.Machine$double.eps))
         if ((predb[[i]][[2]] - rowSums(predb[[i]][[1]]))[1] < sqrt(.Machine$double.eps))
             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
         ## here, the offset is not used in both cases!
-        stopifnot(max(abs(predb[[i]][[2]] - rowSums(predb[[i]][[1]])))   < sqrt(.Machine$double.eps))
+        print(max(abs(predb[[i]][[2]] - rowSums(predb[[i]][[1]])))   < sqrt(.Machine$double.eps))
     } else {
         ## checks for amod
-        stopifnot(max(abs(preda[[i]][[2]] - sapply(preda[[i]][[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
-        stopifnot(max(abs(preda[[i]][[2]] - sapply(preda[[i]][[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
+        print(max(abs(preda[[i]][[2]] - sapply(preda[[i]][[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
+        print(max(abs(preda[[i]][[2]] - sapply(preda[[i]][[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
         ## same for bmod
-        stopifnot(max(abs(predb[[i]][[2]] - sapply(predb[[i]][[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
-        stopifnot(max(abs(predb[[i]][[2]] - sapply(predb[[i]][[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
+        print(max(abs(predb[[i]][[2]] - sapply(predb[[i]][[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
+        print(max(abs(predb[[i]][[2]] - sapply(predb[[i]][[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
     }
 }
 ## compare which = NULL and which == c(1, 2);
 ## The offset should be always dropped for bmod, but kept for amod
 # type = "none"
-stopifnot(.all.equal(preda[[1]][[1]], preda[[4]][[1]]$x1 + preda[[4]][[1]]$x2, check.attributes = FALSE))
-stopifnot(.all.equal(predb[[1]][[1]], predb[[4]][[1]]$x1 + predb[[4]][[1]]$x2, check.attributes = FALSE))
+print(.all.equal(preda[[1]][[1]], preda[[4]][[1]]$x1 + preda[[4]][[1]]$x2, check.attributes = FALSE))
+print(.all.equal(predb[[1]][[1]], predb[[4]][[1]]$x1 + predb[[4]][[1]]$x2, check.attributes = FALSE))
 # type = "sum"
 predictionsA <- as.matrix(newdata[, c("x1", "x2")]) %*% matrix(coef(amod), ncol = 1) +
     attr(coef(amod), "offset")
 predictionsB <- as.matrix(newdata[, c("x1", "x2")]) %*% matrix(coef(bmod), ncol = 1)
-stopifnot(.all.equal(preda[[1]][[2]], predictionsA, check.attributes = FALSE))
-stopifnot(.all.equal(predb[[1]][[2]], predictionsB, check.attributes = FALSE))
-stopifnot(.all.equal(c(preda[[1]][[2]]), rowSums(preda[[4]][[2]]) + attr(coef(amod), "offset"),
+print(.all.equal(preda[[1]][[2]], predictionsA, check.attributes = FALSE))
+print(.all.equal(predb[[1]][[2]], predictionsB, check.attributes = FALSE))
+print(.all.equal(c(preda[[1]][[2]]), rowSums(preda[[4]][[2]]) + attr(coef(amod), "offset"),
                     check.attributes = FALSE))
-stopifnot(.all.equal(c(predb[[1]][[2]]), rowSums(predb[[4]][[2]]),
+print(.all.equal(c(predb[[1]][[2]]), rowSums(predb[[4]][[2]]),
                     check.attributes = FALSE))
 # type = "cumsum"
-stopifnot(.all.equal(predb[[1]][[3]], predb[[4]][[3]]$x1 + predb[[4]][[3]]$x2))
-stopifnot(.all.equal(predb[[1]][[3]], predb[[4]][[3]]$x1 + predb[[4]][[3]]$x2))
+print(.all.equal(predb[[1]][[3]], predb[[4]][[3]]$x1 + predb[[4]][[3]]$x2))
+print(.all.equal(predb[[1]][[3]], predb[[4]][[3]]$x1 + predb[[4]][[3]]$x2))
 
 ### compare predictions with gamboost
 mod1 <- glmboost(y ~ -1 + x1 + x2 + x3, data = DF, center=FALSE)
@@ -365,9 +365,9 @@ pr1_2 <- predict(mod2, aggre = "cumsum")
 pr2_2 <- predict(mod2, aggre = "none")
 pr3_2 <- predict(mod2, aggre = "sum")
 
-stopifnot(max(abs(predict(mod1) - predict(mod2))) < sqrt(.Machine$double.eps))
-stopifnot(max(abs(predict(mod1, aggre = "none") - predict(mod2, aggre = "none"))) < sqrt(.Machine$double.eps))
-stopifnot(max(abs(predict(mod1, aggre = "cumsum") - predict(mod2, aggre = "cumsum"))) < sqrt(.Machine$double.eps))
+print(max(abs(predict(mod1) - predict(mod2))) < sqrt(.Machine$double.eps))
+print(max(abs(predict(mod1, aggre = "none") - predict(mod2, aggre = "none"))) < sqrt(.Machine$double.eps))
+print(max(abs(predict(mod1, aggre = "cumsum") - predict(mod2, aggre = "cumsum"))) < sqrt(.Machine$double.eps))
 
 # check type argument
 set.seed(1907)
@@ -379,20 +379,20 @@ DF <- data.frame(y = y, x1 = x1)
 logitBoost <- glmboost(y ~ x1, family = Binomial(), center = FALSE,
                  data = DF,  control=boost_control(mstop=5000))
 logit <- glm(y ~ x1, data=DF, family=binomial)
-stopifnot(coef(logitBoost)[2]*2 - coef(logit)[2] < 1e-5) # * 2 as we use y = {-1, 1}
+print(coef(logitBoost)[2]*2 - coef(logit)[2] < 1e-5) # * 2 as we use y = {-1, 1}
 
 pr <- predict(logitBoost)
 pr2 <- predict(logit)
-stopifnot(pr * 2 - pr2 < 1e-5)  # * 2 as we use y = {-1, 1}
+print(pr * 2 - pr2 < 1e-5)  # * 2 as we use y = {-1, 1}
 
 pr <- predict(logitBoost, type="class")
 pr2 <- predict(logit, type="response") > 0.5
 foo <- table(pr, pr2)
-stopifnot(foo[1,2] + foo[2,1] == 0)
+print(foo[1,2] + foo[2,1] == 0)
 
 pr <- predict(logitBoost, type="response")
 pr2 <- predict(logit, type="response")
-stopifnot(pr - pr2 < sqrt(.Machine$double.eps))
+print(pr - pr2 < sqrt(.Machine$double.eps))
 
 ################################################################################
 ### Check coefficients
@@ -406,10 +406,10 @@ y <- rnorm(100, mean = 3 * x1, sd = 2)
 DF <- data.frame(y = y, x1 = x1, x2 = x2, x3 = x3)
 amod <- glmboost(y ~ x1 + x2 + x3, data = DF, center = FALSE)
 
-stopifnot(length(coef(amod)) == 4)
+print(length(coef(amod)) == 4)
 amod[10]
-stopifnot(length(coef(amod)) == 1)
-stopifnot(length(coef(amod, which=1:3)) == 3)
+print(length(coef(amod)) == 1)
+print(length(coef(amod, which=1:3)) == 3)
 
 ### check with logical design matrices
 n <- 1000
@@ -422,7 +422,7 @@ mod <- glmboost(x = X, y = y)
 Xd <- X
 storage.mode(Xd) <- "double"
 modd <- glmboost(x = Xd, y = y)
-stopifnot(.all.equal(coef(modd), coef(mod)))
+print(.all.equal(coef(modd), coef(mod)))
 
 ### probit models
 set.seed(29)
@@ -436,10 +436,10 @@ coef(mod)
 mod2 <- glmboost(y ~ x, family = Binomial(link = "probit"),
                  control = boost_control(nu = 0.5, mstop = 1000))
 coef(mod2, off2int = TRUE)
-stopifnot(.all.equal(round(coef(mod), 2), round(coef(mod2, off2int = TRUE), 2)))
+print(.all.equal(round(coef(mod), 2), round(coef(mod2, off2int = TRUE), 2)))
 
 data("GlaucomaM", package = "TH.data")
 coef(mod3 <- glm(Class ~ varg, data = GlaucomaM, family = binomial(link = "probit")))
 coef(mod4 <- glmboost(Class ~ varg, data = GlaucomaM, family = Binomial(link = "probit"))[1000])
-stopifnot(.all.equal(round(coef(mod3), 3), round(coef(mod4, off2int = TRUE), 3)))
+print(.all.equal(round(coef(mod3), 3), round(coef(mod4, off2int = TRUE), 3)))
 

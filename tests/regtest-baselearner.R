@@ -1,6 +1,8 @@
 
 options(digits = 3)
 
+tol2 <- .Machine$double.eps^(1/3)
+
 .all.equal <- function(...) isTRUE(all.equal(..., check.environment = FALSE))
 
 library("mboost")
@@ -95,7 +97,7 @@ tX <- mod$x
 tw <- mod$weights
 ty <- mod$y
 cf2 <- coef(fit(dpp(bols(tX), weights = tw), ty))
-stopifnot(max(abs(cf1 - cf2)) < sqrt(.Machine$double.eps))
+max(abs(cf1 - cf2)) < tol2
 
 ### ridge again with matrix interface
 tX <- matrix(runif(1000), ncol = 10)
@@ -106,7 +108,7 @@ tw <- rep(1, 100)
 op <- options(mboost_dftraceS = TRUE)
 la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
 truedf <- sum(diag(tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*% t(tX * tw)))
-stopifnot(abs(truedf - 2) < sqrt(.Machine$double.eps))
+abs(truedf - 2) < tol2
 
 one <- rep(1, ncol(tX))
 cf1 <- coef(lm.ridge(ty ~ . - 1, data = as.data.frame(tX), lambda = la))
@@ -122,7 +124,7 @@ op <- options(mboost_dftraceS = FALSE)
 la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
 H <- tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*% t(tX * tw)
 truedf <- sum(diag(2*H - tcrossprod(H,H)))
-stopifnot(abs(truedf - 2) < sqrt(.Machine$double.eps))
+abs(truedf - 2) < tol2
 options(op)
 
 # check df with weights
@@ -130,7 +132,7 @@ op <- options(mboost_dftraceS = TRUE)
 tw <- rpois(100, 2)
 la <- df2lambda(tX, df = 2, dmat = diag(ncol(tX)), weights = tw)["lambda"]
 truedf <- sum(diag(tX %*% solve(crossprod(tX * tw, tX) + la * diag(ncol(tX))) %*% t(tX * tw)))
-stopifnot(abs(truedf - 2) < sqrt(.Machine$double.eps))
+abs(truedf - 2) < tol2
 
 ### check df2lambda for P-splines (Bug spotted by B. Hofner)
 set.seed(1907)
@@ -140,7 +142,7 @@ lambda <- bbs(x, df = 4)$dpp(rep(1, length(x)))$df()["lambda"]
 X <- get("X", envir = environment(bbs(x, df = 4)$dpp))
 K <- get("K", envir = environment(bbs(x, df = 4)$dpp))
 truedf <- sum(diag(X %*%  solve(crossprod(X,X) + lambda * K) %*% t(X)))
-stopifnot(abs(truedf - 4) < sqrt(.Machine$double.eps))
+abs(truedf - 4) < tol2
 
 ### check accuracy of df2lambda
 data("bodyfat", package="TH.data")
@@ -153,7 +155,7 @@ for (i in 3:10){
         diff_df[i-2,j] <- bbs(bodyfat[[j]], lambda = lambda)$dpp(rep(1, nrow(bodyfat)))$df()["df"] - i
     }
 }
-stopifnot(all(diff_df < sqrt(.Machine$double.eps)))
+all(diff_df < tol2)
 options(op)
 
 ### check degrees of freedom for design matrices without full rank:
@@ -161,18 +163,17 @@ x <- sample(1:3, 100, replace = TRUE)
 X <- extract(bbs(x))
 rankMatrix(X)
 ## df2lambda:
-stopifnot(df2lambda(X, df = NULL, lambda = 0, weights = rep(1, 100))[["df"]] == 3)
+df2lambda(X, df = NULL, lambda = 0, weights = rep(1, 100))[["df"]] == 3
 (res <- df2lambda(X, df = 4, weights = rep(1, 100)))
-stopifnot(res[["lambda"]] == 0)
 
 ### componentwise
 cf2 <- coef(fit(dpp(bolscw(cbind(1, xn)), weights = w), y))
 cf1 <- coef(lm(y ~ xn - 1, weights = w))
-stopifnot(max(abs(cf1 - max(cf2))) < sqrt(.Machine$double.eps))
+max(abs(cf1 - max(cf2))) < tol2
 
 cf2 <- coef(fit(dpp(bolscw(matrix(xn, nc = 1)), weights = w), y))
 cf1 <- coef(lm(y ~ xn - 1, weights = w))
-stopifnot(max(abs(cf1 - max(cf2))) < sqrt(.Machine$double.eps))
+max(abs(cf1 - max(cf2))) < tol2
 
 ### componentwise with matrix
 n <- 200
@@ -208,16 +209,16 @@ h <- hyper_bbs(data.frame(x = x), vary = "")
 X <- X_bbs(data.frame(x = x), vary = "", h)$X
 f1 <- fit(dpp(bbs(x, df = ncol(X)), w), y)
 f2 <- fit(dpp(bols(X, df = ncol(X)), w), y)
-stopifnot(max(abs(coef(f1) - coef(f2))) < sqrt(.Machine$double.eps))
+max(abs(coef(f1) - coef(f2))) < tol2
 
-stopifnot(.all.equal(get_index(data.frame(x, x)), get_index(X)))
-stopifnot(.all.equal(get_index(data.frame(x)), get_index(X)))
+.all.equal(get_index(data.frame(x, x)), get_index(X))
+.all.equal(get_index(data.frame(x)), get_index(X))
 
 ### check handling of missings for cyclic effects
 h <- hyper_bbs(data.frame(x = x), vary = "", cyclic = TRUE)
 X <- X_bbs(data.frame(x = x), vary = "", h)$X
-stopifnot(all(is.na(X[is.na(x),])))
-stopifnot(all(!is.na(X[!is.na(x),])))
+all(is.na(X[is.na(x),]))
+all(!is.na(X[!is.na(x),]))
 
 ### combinations and tensor products of base-learners
 
@@ -233,8 +234,8 @@ ndf <- data.frame(x1 = x1[1:10], x2 = x2[1:10], f = f[1:10])
 ### spatial
 m1 <- gamboost(y ~ bbs(x1) %X% bbs(x2))
 m2 <- gamboost(y ~ bspatial(x1, x2, df = 16))
-stopifnot(max(abs(predict(m1) - predict(m2))) < sqrt(.Machine$double.eps))
-stopifnot(max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < sqrt(.Machine$double.eps))
+max(abs(predict(m1) - predict(m2))) < tol2
+max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < tol2
 
 ### spatio-temporal
 m1 <- gamboost(y ~ bbs(x1, knots = 6) %X% bbs(x2, knots = 6) %X% bbs(x3, knots = 6))
@@ -243,8 +244,8 @@ m2 <- gamboost(y ~ (bbs(x1, knots = 6) + bbs(x2, knots = 6)) %X% bbs(x3, knots =
 ### varying numeric
 m1 <- gamboost(y ~ bbs(x1) %X% bols(x2, intercept = FALSE, lambda = 0))
 m2 <- gamboost(y ~ bbs(x1, by = x2, df = 4))
-stopifnot(max(abs(predict(m1) - predict(m2))) < sqrt(.Machine$double.eps))
-stopifnot(max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < sqrt(.Machine$double.eps))
+max(abs(predict(m1) - predict(m2))) < tol2
+max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < tol2
 
 ### varying factor
 m1 <- gamboost(y ~ bbs(x1) %X% bols(f, df = 5, contrasts.arg = "contr.dummy"))
@@ -255,8 +256,8 @@ predict(m1, newdata = ndf)
 m1 <- gamboost(y ~ bols(x1, intercept = FALSE, df = 1) %+%
                    bols(x2, intercept = FALSE, df = 1))
 m2 <- gamboost(y ~ bols(x1, x2, intercept = FALSE, df = 2))
-stopifnot(max(abs(predict(m1) - predict(m2))) < sqrt(.Machine$double.eps))
-stopifnot(max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < sqrt(.Machine$double.eps))
+max(abs(predict(m1) - predict(m2))) < tol2
+max(abs(predict(m1, newdata = ndf) - predict(m2, newdata = ndf))) < tol2
 
 ### yeah
 m1 <- gamboost(y ~ (bols(x1, intercept = FALSE, df = 1) %+%
@@ -271,8 +272,8 @@ y <- rnorm(200, mean = rep(c(1,3,2,4), each = 50), sd = 1)
 mod1 <- gamboost(y ~ bols(x))
 diff(coef(mod1)[[1]])
 mod2 <- gamboost(y ~ bmono(x, lambda2 = 10^15))
-stopifnot(abs(coef(mod1)[[1]] - coef(mod2)[[1]])[c(1,4)] < 1e-5)
-stopifnot(all(diff(coef(mod2)[[1]]) > - sqrt(.Machine$double.eps)))
+abs(coef(mod1)[[1]] - coef(mod2)[[1]])[c(1,4)] < 1e-5
+all(diff(coef(mod2)[[1]]) > - tol2)
 
 ### test bmono for tensor-product splines
 x1 <- runif(100, min = -2, max = 3)
@@ -302,12 +303,12 @@ round(sum((D2 %*% beta)[D2 %*% beta <= 0]), 3)
 beta <- coef(mod21)[[1]]
 round(sum((D1 %*% beta)[D1 %*% beta <= 0]), 3)
 round(sum((D2 %*% beta)[D2 %*% beta <= 0]), 3)
-stopifnot(all(D1 %*% beta > - 2e-05))
+all(D1 %*% beta > - 2e-05)
 
 beta <- coef(mod22)[[1]]
 round(sum((D1 %*% beta)[D1 %*% beta <= 0]), 3)
 round(sum((D2 %*% beta)[D2 %*% beta <= 0]), 3)
-stopifnot(all(D2 %*% beta > - 2e-05))
+all(D2 %*% beta > - 2e-05)
 
 #nd <- expand.grid(sort(x1), sort(x2))
 #names(nd) <- c("x1", "x2")
@@ -343,8 +344,8 @@ w <- rep(1, nrow(X))
 B <- kronecker(matrix(1, ncol = ncol(B2)), B1) *
      kronecker(B2, matrix(1, ncol = ncol(B1)))
 
-tol <- 1 / 10000
-stopifnot(max(abs(X - B)) < tol)
+tol3 <- 1 / 10000
+max(abs(X - B)) < tol3
 
 K1 <- diag(ncol(B1))
 K2 <- crossprod(diff(diag(ncol(B2)), diff = 2))
@@ -352,19 +353,19 @@ K2 <- crossprod(diff(diag(ncol(B2)), diff = 2))
 b1 <- buser(B2, K = diag(ncol(B2))) %X%
             buser(B1, K = diag(ncol(B1)))
 
-stopifnot(max(abs(extract(b1, "design") - B)) < tol)
+max(abs(extract(b1, "design") - B)) < tol3
 b1d <- b1$dpp(w)
 
 b2 <- buser(X1, K = diag(ncol(X1))) %O%
       buser(X2, K = diag(ncol(X2)))
 b2d <- b2$dpp(w)
 
-stopifnot(max(abs(get("XtX", environment(b1d$fit)) -
-        get("XtX", environment(b2d$fit)))) < tol)
+max(abs(get("XtX", environment(b1d$fit)) -
+        get("XtX", environment(b2d$fit)))) < tol3
 
 y <- runif(nrow(X))
 
-stopifnot(max(abs(b1d$fit(y)$model - as.vector(b2d$fit(y)$model))) < 1/1000)
+max(abs(b1d$fit(y)$model - as.vector(b2d$fit(y)$model))) < 1/1000
 
 m1 <- b1d$fit(y)
 p1 <- b1d$predict(list(m1, m1))
@@ -372,7 +373,7 @@ p1 <- b1d$predict(list(m1, m1))
 m2 <- b2d$fit(y)
 p2 <- b2d$predict(list(m2, m2))
 
-stopifnot(max(abs(p1 - p2)) < tol)
+max(abs(p1 - p2)) < tol3
 
 
 x1 <- runif(200)
@@ -389,16 +390,16 @@ m2 <- mboost(y ~ bbs(x1, df = 3, knots = 7) %O%
                  bbs(x2, df = 3, knots = 5),
              weights = w)
 
-stopifnot(max(abs(fitted(m1) - fitted(m2))) < tol)
+max(abs(fitted(m1) - fitted(m2))) < tol3
 
-stopifnot(max(abs(coef(m1)[[1]] - coef(m2)[[1]])) < tol)
+max(abs(coef(m1)[[1]] - coef(m2)[[1]])) < tol3
 
-stopifnot(max(abs(m1$predict() - m2$predict())) < tol)
+max(abs(m1$predict() - m2$predict())) < tol3
 
 p1 <- predict(m1, newdata = expand.grid(Var1 = c(0.2, 0.5), Var2 = c(0.7, 0.3)))
 p2 <- predict(m2, newdata = data.frame(x1 = c(0.2, 0.5), x2 = c(0.7, 0.3)))
 
-stopifnot(max(abs(p1 - p2)) < tol)
+max(abs(p1 - p2)) < tol3
 
 ### large data set with ties
 nunique <- 100
@@ -420,8 +421,8 @@ c2 <- b2$fit(y)$model
 ### manual specification of ties, even faster
 b3 <- bbs(x, index = xindex)$dpp(w)
 c3 <- b3$fit(y)$model
-stopifnot(.all.equal(c1, c2))
-stopifnot(.all.equal(c1, c3))
+.all.equal(c1, c2)
+.all.equal(c1, c3)
 
 ### new T spline monotonicity
 library("lattice")

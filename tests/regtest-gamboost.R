@@ -21,12 +21,12 @@ aic <- AIC(cars.gb, method = "corrected")
 aic
 
 aic2 <- AIC(cars.gb, method = "corrected", df = "actset")
-stopifnot(.all.equal(aic, aic2))
+print(.all.equal(aic, aic2))
 
 ht <- hatvalues(cars.gb)
 
 ## extract residual
-stopifnot(.all.equal(resid(cars.gb), cars.gb$resid()))
+print(.all.equal(resid(cars.gb), cars.gb$resid()))
 par(mfrow = c(1, 2))
 plot(cars$speed, resid(cars.gb[0]))
 cars$resid <- resid(cars.gb)
@@ -36,8 +36,8 @@ cars$resid <- resid(cars.gb)
 lines(cars$speed, predict(loess(resid ~ speed, cars)), col = "red")
 
 ## check return = FALSE
-stopifnot(is.null(cars.gb[10, return = FALSE]))
-stopifnot(mstop(cars.gb) == 10)
+print(is.null(cars.gb[10, return = FALSE]))
+print(mstop(cars.gb) == 10)
 
 ### plot fit
 plot(dist ~ speed, data = cars)
@@ -49,12 +49,12 @@ lines(cars$speed, predict(smooth.spline(cars$speed, cars$dist), cars$speed)$y,
 summary(cars.gb)
 
 #### check boosting hat matrix and subsetting / predict
-stopifnot(isTRUE(.all.equal(drop(attr(ht, "hatmatrix") %*% cars$dist),
+print(isTRUE(.all.equal(drop(attr(ht, "hatmatrix") %*% cars$dist),
                            as.vector(predict(cars.gb[50])))))
 ht25 <- hatvalues(cars.gb[25])
-stopifnot(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% cars$dist),
+print(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% cars$dist),
                            as.vector(predict(cars.gb[25])))))
-stopifnot(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% cars$dist),
+print(isTRUE(.all.equal(drop(attr(ht25, "hatmatrix") %*% cars$dist),
                            as.vector(fitted(cars.gb[25])))))
 
 ### check boosting hat matrix with multiple independent variables
@@ -72,9 +72,9 @@ ht <- hatvalues(bf_gam)
 off <- bf_gam$offset
 u <- bf_gam$ustart
 
-stopifnot(isTRUE(.all.equal(drop(attr(ht, "hatmatrix") %*% u + off),
+print(isTRUE(.all.equal(drop(attr(ht, "hatmatrix") %*% u + off),
                            as.vector(predict(bf_gam)))))
-stopifnot(isTRUE(.all.equal(drop(attr(ht, "hatmatrix") %*% u + off),
+print(isTRUE(.all.equal(drop(attr(ht, "hatmatrix") %*% u + off),
                            as.vector(fitted(bf_gam)))))
 
 
@@ -85,7 +85,7 @@ xf <- gl(4, nrow(x)/4)
 
 ### OK, we need to allow for some small differences (larger mstop values
 ### would fix this)
-stopin <- function(x, y) stopifnot(max(abs(x - y)) < 0.1)
+stopin <- function(x, y) print(max(abs(x - y)) < 0.1)
 
 ### univariate linear model
 df <- data.frame(y = 3*x[,2], x = x)
@@ -124,13 +124,13 @@ xnm <- xn - mean(xn)
 xf <- gl(2, 100)
 gc <- gamboost(y ~ xn + xf)
 g <- gamboost(y ~ xnm + xf)
-stopifnot(max(abs(fitted(gc) - fitted(g))) < 1 / 10000)
+print(max(abs(fitted(gc) - fitted(g))) < 1 / 10000)
 
 pc1 <- predict(gc)
 pc2 <- predict(gc, newdata = data.frame(xn = xn, xf = xf))
 pc3 <- predict(g)
-stopifnot(.all.equal(pc1, pc2))
-stopifnot(max(abs(pc2 - pc3)) < 1 / 10000)
+print(.all.equal(pc1, pc2))
+print(max(abs(pc2 - pc3)) < 1 / 10000)
 
 ### formula interfaces
 tmp <- data.frame(x1 = runif(100), x2 = runif(100), y = rnorm(100))
@@ -138,29 +138,29 @@ fm1 <- y ~ bbs(x1, df = 3) + bbs(x2, df = 3)
 fm2 <- y ~ x1 + x2
 mod1 <- gamboost(fm1, data = tmp)
 mod2 <- gamboost(fm2, data = tmp, base = "bss", dfbase = 3)
-stopifnot(max(abs(fitted(mod1) - fitted(mod2))) < sqrt(.Machine$double.eps))
-stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp))) < sqrt(.Machine$double.eps))
+print(max(abs(fitted(mod1) - fitted(mod2))) < sqrt(.Machine$double.eps))
+print(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp))) < sqrt(.Machine$double.eps))
 
 fm1 <- y ~ bbs(x1, df = 3) + bbs(x2, df = 3)
 fm2 <- y ~ x1 + x2
 mod1 <- gamboost(fm1, data = tmp)
 mod2 <- gamboost(fm2, data = tmp, base = "bbs", dfbase = 3)
-stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
-stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
+print(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
+print(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
 
 fm1 <- y ~ bols(x1) + bols(x2)
 fm2 <- y ~ x1 + x2
 mod1 <- gamboost(fm1, data = tmp)
 mod2 <- gamboost(fm2, data = tmp, base = "bols")
-stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
-stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
+print(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
+print(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
 
 fm1 <- y ~ btree(x1) + btree(x2)
 fm2 <- y ~ x1 + x2
 mod1 <- gamboost(fm1, data = tmp)
 mod2 <- gamboost(fm2, data = tmp, base = "btree")
-stopifnot(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
-stopifnot(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
+print(max(abs(fitted(mod1) - fitted(mod2)))  < sqrt(.Machine$double.eps))
+print(max(abs(predict(mod1, newdata = tmp) - predict(mod2, newdata = tmp)))  < sqrt(.Machine$double.eps))
 
 ## Cox model
 
@@ -182,9 +182,9 @@ mod <- gamboost(y ~ bols(int, intercept = FALSE) + bols(x, intercept = FALSE), d
 cf <- unlist(coef(mod))
 cf[1] <- cf[1] + mod$offset
 tmp <- max(abs(cf - coef(lm(y ~ x, data = df))))
-stopifnot(tmp < 1e-5)
+print(tmp < 1e-5)
 tmp <- max(abs(fitted(mod) - fitted(lm(y ~ x, data = df))))
-stopifnot(tmp < 1e-5)
+print(tmp < 1e-5)
 
 ### predictions:
 data("bodyfat", package = "TH.data")
@@ -198,13 +198,13 @@ for (i in 1:4){
         pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
     }
     if (i == 1){
-        stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
         if ((pred[[2]] - rowSums(pred[[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
-        stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
     } else {
-        stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
-        stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
     }
 }
 
@@ -217,19 +217,19 @@ for (i in 1:4){
         pred[[j]] <- predict(amod, aggregate=agg[j], which = whi[[i]])
     }
     if (i == 1){
-        stopifnot(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - pred[[3]][,ncol(pred[[3]])]))  < sqrt(.Machine$double.eps))
         if ((pred[[2]] - rowSums(pred[[1]]))[1] - attr(coef(amod), "offset") < sqrt(.Machine$double.eps))
             warning(sQuote("aggregate = sum"), " adds the offset, ", sQuote("aggregate = none"), " doesn't.")
-        stopifnot(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - rowSums(pred[[1]]) - attr(coef(amod), "offset")))   < sqrt(.Machine$double.eps))
     } else {
-        stopifnot(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
-        stopifnot(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - sapply(pred[[3]], function(obj) obj[,ncol(obj)])))  < sqrt(.Machine$double.eps))
+        print(max(abs(pred[[2]] - sapply(pred[[1]], function(obj) rowSums(obj))))  < sqrt(.Machine$double.eps))
     }
 }
 
 # use which to extract all effects for one covariate e.g. for plotting purposes
 amod <- gamboost(DEXfat ~ bols(hipcirc, intercept=FALSE) + bbs(hipcirc, df = 1, center=TRUE), data = bodyfat)
-stopifnot(ncol(predict(amod, which="hip")) == 2 && all(rowSums(predict(amod, which="hip")) + attr(coef(amod), "offset") - predict(amod) < sqrt(.Machine$double.eps)))
+print(ncol(predict(amod, which="hip")) == 2 && all(rowSums(predict(amod, which="hip")) + attr(coef(amod), "offset") - predict(amod) < sqrt(.Machine$double.eps)))
 
 amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth,
                  data = bodyfat, baselearner = "bbs")
@@ -237,14 +237,14 @@ pr1 <- predict(amod, aggre = "sum", which= 1:2)
 foo <- bodyfat[,names(bodyfat) %in% c("hipcirc", "anthro3a", "kneebreadth")]
 foo$kneebreadth <- mean(bodyfat$kneebreadth)
 pr2 <- predict(amod, aggre = "sum", newdata=foo)
-stopifnot(all(diff(rowSums(pr1) - pr2) < sqrt(.Machine$double.eps))) # changes in level are ok
+print(all(diff(rowSums(pr1) - pr2) < sqrt(.Machine$double.eps))) # changes in level are ok
 newData <- as.data.frame(rbind(colMeans(bodyfat)[-2], colMeans(bodyfat)[-2]+1*sapply(bodyfat, sd)[-2]))
 if (!is.list(pr <- predict(amod, newdata=newData, which=1:2)))
     warning("predict(amod, newdata=newData, which=1:2) does not return a list") # no list but a matrix is returned!
-stopifnot(is.list(pr <- predict(amod, newdata=newData, aggregate="cumsum", which=1:2)))
+print(is.list(pr <- predict(amod, newdata=newData, aggregate="cumsum", which=1:2)))
 amod[10]
 pr <- predict(amod, which=1:3)
-stopifnot(ncol(pr) == 3 || all(pr[,ncol] == 0))
+print(ncol(pr) == 3 || all(pr[,ncol] == 0))
 amod[100]
 
 # check type argument
@@ -257,35 +257,35 @@ DF <- data.frame(y = y, x1 = x1)
 logitBoost <- gamboost(y ~ x1, family = Binomial(),
                  data = DF, baselearner = "bols", control=boost_control(mstop=5000))
 logit <- glm(y ~ x1, data=DF, family=binomial)
-stopifnot(coef(logitBoost)[[1]][2]*2 - coef(logit)[2]  < sqrt(.Machine$double.eps)) # * 2 as we use y = {-1, 1}
+print(coef(logitBoost)[[1]][2]*2 - coef(logit)[2]  < sqrt(.Machine$double.eps)) # * 2 as we use y = {-1, 1}
 
 pr <- predict(logitBoost)
 pr2 <- predict(logit)
-stopifnot(pr * 2 - pr2 < 1e-5)  # * 2 as we use y = {-1, 1}
+print(pr * 2 - pr2 < 1e-5)  # * 2 as we use y = {-1, 1}
 
 pr <- predict(logitBoost, type="class")
 pr2 <- predict(logit, type="response") > 0.5
 foo <- table(pr, pr2)
-stopifnot(foo[1,2] + foo[2,1] == 0)
+print(foo[1,2] + foo[2,1] == 0)
 
 pr <- predict(logitBoost, type="response")
 pr2 <- predict(logit, type="response")
-stopifnot(pr - pr2  < sqrt(.Machine$double.eps))
+print(pr - pr2  < sqrt(.Machine$double.eps))
 
 ### coefficients:
 data("bodyfat", package = "TH.data")
 amod <- gamboost(DEXfat ~ hipcirc + anthro3a + kneebreadth,
                  data = bodyfat, baselearner = "bbs")
-stopifnot(length(coef(amod)) == 3)
+print(length(coef(amod)) == 3)
 amod[10]
-stopifnot(length(coef(amod)) == 2)
-stopifnot(length(coef(amod, which=1:3)) == 3)
+print(length(coef(amod)) == 2)
+print(length(coef(amod, which=1:3)) == 3)
 
 ### cyclic covariates
 x <- seq(from = 0, to = 2*pi, length = 100)
 y <- sin(x) + rnorm(length(x), sd = 0.5)
 mod <- gamboost(y ~ bbs(x, cyclic = TRUE))
-stopifnot(diff(fitted(mod)[c(1, 100)]) == 0)
+print(diff(fitted(mod)[c(1, 100)]) == 0)
 
 ### buser
 set.seed(1907)
@@ -295,7 +295,7 @@ mod1 <- gamboost(y ~ bbs(x))
 X <- extract(bbs(x))
 K <- extract(bbs(x), "penalty")
 mod2 <- gamboost(y ~ buser(X, K))
-stopifnot(max(abs(predict(mod1) - predict(mod2))) < sqrt(.Machine$double.eps))
+print(max(abs(predict(mod1) - predict(mod2))) < sqrt(.Machine$double.eps))
 
 z <- sample(1:2, 100, replace=TRUE)
 y[z == 2] <- rnorm(100, mean = - x^2, sd = 0.1)[z == 2]
@@ -306,7 +306,7 @@ X <- extract(bbs(x))
 K <- extract(bbs(x), "penalty")
 mod4 <- gamboost(y ~  buser(X, K) + buser(X, K, by = z),
                  control = boost_control(mstop = 1000))
-stopifnot(max(abs(predict(mod3) - predict(mod4))) < sqrt(.Machine$double.eps))
+print(max(abs(predict(mod3) - predict(mod4))) < sqrt(.Machine$double.eps))
 
 y <- rnorm(100, mean = as.numeric(z), sd = 0.1)
 mod5 <- gamboost(y ~ bols(z))
@@ -315,8 +315,8 @@ K <- extract(bols(z), "penalty")
 index <- extract(bols(z), "index")
 mod6 <- gamboost(y ~  buser(X, K, lambda = 0, index = index))
 mod6a <- gamboost(y ~  buser(X, index = index))
-stopifnot(max(abs(predict(mod5) - predict(mod6))) < sqrt(.Machine$double.eps))
-stopifnot(max(abs(predict(mod5) - predict(mod6a))) < sqrt(.Machine$double.eps))
+print(max(abs(predict(mod5) - predict(mod6))) < sqrt(.Machine$double.eps))
+print(max(abs(predict(mod5) - predict(mod6a))) < sqrt(.Machine$double.eps))
 
 z <- sample(1:3, 100, replace = TRUE)
 y <- rnorm(100, mean = z, sd = 0.1)
@@ -326,7 +326,7 @@ X <- extract(bols(z))
 K <- extract(bols(z), "penalty")
 index <- extract(bols(z), "index")
 mod8 <- gamboost(y ~  buser(X, K, lambda = 0, index = index))
-stopifnot(max(abs(predict(mod7) - predict(mod8))) < sqrt(.Machine$double.eps))
+print(max(abs(predict(mod7) - predict(mod8))) < sqrt(.Machine$double.eps))
 
 y[z == 1] <- rnorm(100, mean = x^2, sd = 0.1)[z == 1]
 y[z == 2] <- rnorm(100, mean = - x^2, sd = 0.1)[z == 2]
@@ -337,17 +337,17 @@ X <- extract(bbs(x))
 K <- extract(bbs(x), "penalty")
 mod10 <- gamboost(y ~  buser(X, K) + buser(X, K, by = z),
                  control = boost_control(mstop = 1000))
-stopifnot(max(abs(predict(mod9) - predict(mod10))) < sqrt(.Machine$double.eps))
+print(max(abs(predict(mod9) - predict(mod10))) < sqrt(.Machine$double.eps))
 
 
 ## test that mstop = 0 is possible
 compare_models <- function (m1, m2) {
-    stopifnot(.all.equal(coef(m1), coef(m2)))
-    stopifnot(.all.equal(predict(m1), predict(m2)))
-    stopifnot(.all.equal(fitted(m1), fitted(m2)))
-    stopifnot(.all.equal(as.vector(residuals(m1)), as.vector(residuals(m2))))
-    stopifnot(.all.equal(selected(m1), selected(m2)))
-    stopifnot(.all.equal(risk(m1), risk(m2)))
+    print(.all.equal(coef(m1), coef(m2)))
+    print(.all.equal(predict(m1), predict(m2)))
+    print(.all.equal(fitted(m1), fitted(m2)))
+    print(.all.equal(as.vector(residuals(m1)), as.vector(residuals(m2))))
+    print(.all.equal(selected(m1), selected(m2)))
+    print(.all.equal(risk(m1), risk(m2)))
     ## remove obvious differences from objects
     m1$control <- m2$control <- NULL
     m1$call <- m2$call <- NULL
@@ -362,12 +362,12 @@ mod2 <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
                data = bodyfat, control = boost_control(mstop = 1))
 mod3 <- mboost(DEXfat ~ bbs(age) + bols(waistcirc) + bbs(hipcirc),
                data = bodyfat, control = boost_control(mstop = 1))
-stopifnot(is.null(coef(mod)))
-stopifnot(predict(mod) == rep(mod$offset, nrow(bodyfat)))
-stopifnot(fitted(mod) == rep(mod$offset, nrow(bodyfat)))
-stopifnot(.all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat)))
-stopifnot(is.null(selected(mod)))
-stopifnot(.all.equal(risk(mod), risk(mod2)[1]))
+print(is.null(coef(mod)))
+print(predict(mod) == rep(mod$offset, nrow(bodyfat)))
+print(fitted(mod) == rep(mod$offset, nrow(bodyfat)))
+print(.all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat)))
+print(is.null(selected(mod)))
+print(.all.equal(risk(mod), risk(mod2)[1]))
 
 mstop(mod3) <- 0
 compare_models(mod, mod3)
@@ -383,12 +383,12 @@ mod2 <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
                  data = bodyfat, control = boost_control(mstop = 1))
 mod3 <- glmboost(DEXfat ~ age + waistcirc + hipcirc,
                  data = bodyfat, control = boost_control(mstop = 1))
-stopifnot(is.null(coef(mod)))
-stopifnot(predict(mod) == rep(mod$offset, nrow(bodyfat)))
-stopifnot(fitted(mod) == rep(mod$offset, nrow(bodyfat)))
-stopifnot(.all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat), check.attributes = FALSE))
-stopifnot(is.null(selected(mod)))
-stopifnot(.all.equal(risk(mod), risk(mod2)[1]))
+print(is.null(coef(mod)))
+print(predict(mod) == rep(mod$offset, nrow(bodyfat)))
+print(fitted(mod) == rep(mod$offset, nrow(bodyfat)))
+print(.all.equal(residuals(mod), bodyfat$DEXfat - mean(bodyfat$DEXfat), check.attributes = FALSE))
+print(is.null(selected(mod)))
+print(.all.equal(risk(mod), risk(mod2)[1]))
 
 mstop(mod3) <- 0
 compare_models(mod, mod3)

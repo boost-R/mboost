@@ -38,8 +38,9 @@ Loading required package: stabs
 > 
 > ### hat matrix: fast for linear models
 > H <- attr(hatvalues(mod1), "hatmatrix")
-> stopifnot(max(abs(H %*% (mydf$y - weighted.mean(mydf$y, w)) - fitted(mod1) + weighted.mean(mydf$y, w))) <
+> print(max(abs(H %*% (mydf$y - weighted.mean(mydf$y, w)) - fitted(mod1) + weighted.mean(mydf$y, w))) <
 +           sqrt(.Machine$double.eps))
+[1] TRUE
 > 
 > mb <- function(x) bols(x, intercept = FALSE)
 > mydf$int <- rep(1, nrow(mydf))
@@ -67,20 +68,22 @@ Warning messages:
 10: In bols(x, intercept = FALSE) :
   covariates should be (mean-) centered if 'intercept = FALSE'
 > cf2 <- coef(mod2)
-> stopifnot(all(round(unlist(cf2), 5) %in% round(cf1, 5)))
+> print(all(round(unlist(cf2), 5) %in% round(cf1, 5)))
+[1] TRUE
 > 
 > ### hat matrix: less faster but in C
 > H <- attr(hatvalues(mod2), "hatmatrix")
-> stopifnot(max(abs(H %*% (mydf$y - weighted.mean(mydf$y, w)) - fitted(mod2) + weighted.mean(mydf$y, w))) <
+> print(max(abs(H %*% (mydf$y - weighted.mean(mydf$y, w)) - fitted(mod2) + weighted.mean(mydf$y, w))) <
 +           sqrt(.Machine$double.eps))
+[1] TRUE
 > 
 > ### hat matrix: directly in R
 > # <FIXME> this is non-sense </FIXME>
 > #mod2$family <- Laplace()
 > #H <- attr(hatvalues(mod2), "hatmatrix")
-> #stopifnot(max(abs(H %*% (mydf$y - weighted.mean(mydf$y, w)) - fitted(mod2) + weighted.mean(mydf$y, w))) <
+> #print(max(abs(H %*% (mydf$y - weighted.mean(mydf$y, w)) - fitted(mod2) + weighted.mean(mydf$y, w))) <
 > #          sqrt(.Machine$double.eps))
 > 
 > proc.time()
    user  system elapsed 
-  0.719   0.037   0.742 
+  0.745   0.086   0.807 

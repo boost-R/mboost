@@ -1,6 +1,14 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
+\section{Changes in mboost version 2.9-13 (2026-07-16)}{
+  \subsection{Other}{
+    \itemize{
+      \item Handle M1/ARM precision issues in \file{tests}.
+    }
+  }
+}
+
 \section{Changes in mboost version 2.9-12 (2026-07-14)}{
   \subsection{Bug-fixes}{
     \itemize{
