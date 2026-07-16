@@ -6,7 +6,7 @@ tol2 <- .Machine$double.eps^(1/3)
 .all.equal <- function(...) isTRUE(all.equal(..., check.environment = FALSE))
 
 library("mboost")
-attach(asNamespace("mboost"))
+attach(asNamespace("mboost"), warn.conflicts = FALSE)
 library("MASS")
 library("Matrix")
 
