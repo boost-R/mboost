@@ -23,7 +23,7 @@
 \details{
 
   If \code{newdata = NULL}, the survivor function of the Cox proportional
-  hazards model is computed for the mean of the covariates used in the
+  hazards model is computed for a centered linear predictor from the
   \code{\link{blackboost}}, \code{\link{gamboost}}, or \code{\link{glmboost}}
   call. The Breslow estimator is used for computing the baseline survivor
   function. If \code{newdata} is a data frame, the \code{\link{predict}} method
