@@ -5,20 +5,25 @@ survFit <- function(object, ...)
 survFit.mboost <- function(object, newdata = NULL, ...)
 {
 
-    n <- length(w <- model.weights(object))
-    if (!isTRUE(all.equal(w,rep(1,n))))
-        stop("survFit cannot (yet) deal with weights")
+    w <- model.weights(object)
     y <- object$response
     stopifnot(inherits(y, "Surv"))
+
+    pr <- predict(object)
+    ### center linear predictor around its weighted mean such that the
+    ### baseline curve corresponds to the (weighted) "average" observation
+    lpc <- weighted.mean(pr, w)
 
     ord <- order(y[,1])
     time <- y[ord,1]
     event <- y[ord,2]
-    n.event <- aggregate(event, by = list(time), sum)[,2]
+    w <- w[ord]
+    ### weighted number of events at each time point
+    n.event <- aggregate(w * event, by = list(time), sum)[,2]
 
-    pr <- predict(object)
-    linpred <- (pr - mean(pr))[ord]
-    R <- rev(cumsum(rev(exp(linpred))))
+    linpred <- (pr - lpc)[ord]
+    ### weighted Breslow estimator of the cumulative baseline hazard
+    R <- rev(cumsum(rev(w * exp(linpred))))
     R[R<1e-6] <- Inf
 
     d <- c(1,diff(time)) != 0
@@ -29,7 +34,7 @@ survFit.mboost <- function(object, newdata = NULL, ...)
     devent <- n.event > 0
     if (!is.null(newdata)){
         S <- exp( tcrossprod( -H, exp(as.numeric(predict(object,
-        newdata=newdata)- mean(predict(object)))) ))[devent,]
+        newdata=newdata) - lpc)) ))[devent, , drop = FALSE]
         colnames(S) <- rownames(newdata)
     } else S <- matrix(exp(-H)[devent], ncol = 1)
 

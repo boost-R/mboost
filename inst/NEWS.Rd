@@ -2,6 +2,13 @@
 \title{News for Package 'mboost'}
 
 \section{Changes in mboost version 2.9-13 (2026-07-16)}{
+  \subsection{User-visible changes}{
+    \itemize{
+      \item \code{survFit} can now deal with models fitted with case
+      weights by using the weighted Breslow estimator
+      (\url{https://github.com/boost-R/mboost/issues/121}).
+    }
+  }
   \subsection{Other}{
     \itemize{
       \item Handle M1/ARM precision issues in \file{tests}.

@@ -30,6 +30,13 @@
   of \code{object}, along with the Breslow estimator, is used for computing the
   predicted survivor function for each row in \code{newdata}.
 
+  If the model was fitted with case weights, the weighted Breslow
+  estimator is used for computing the baseline survivor function, i.e.,
+  each observation contributes to the number of events and to the risk
+  sets according to its weight, and the survivor function for
+  \code{newdata = NULL} is computed at the weighted mean of the linear
+  predictor.
+
 }
 \value{
  An object of class \code{survFit} containing the following components:
@@ -38,7 +45,8 @@
   \item{time}{ the time points at which the survivor functions are
                evaluated. }
   \item{n.event}{ the number of events observed at each time point given
-                  in \code{time}.}
+                  in \code{time}. For models fitted with case weights,
+                  this is the weighted number of events.}
 }
 \seealso{ \code{\link{gamboost}}, \code{\link{glmboost}} and
   \code{\link{blackboost}} for model fitting.}
