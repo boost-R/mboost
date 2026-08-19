@@ -197,8 +197,7 @@ bl1 \%O\% bl2
     determines how the constrained least squares problem should be
     solved. If \code{type = "quad.prog"}, a numeric quadratic
     programming method
-    %%% PROBLEM: mboost::Goldfarb:1982
-    \bibcitep{mboost::Goldfarb:1983} is used
+    \bibcitep{mboost::Goldfarb:1982,mboost::Goldfarb:1983} is used
     (see \code{\link[quadprog]{solve.QP}} in package \pkg{quadprog}). If
     \code{type = "iterative"}, the iterative procedure described in
     \bibcitet{mboost::Hofner+Mueller+Hothorn_2011}. 
