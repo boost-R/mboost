@@ -1,6 +1,14 @@
 \name{NEWS}
 \title{News for Package 'mboost'}
 
+\section{Changes in mboost version 2.9-14 (2026-09-03)}{
+  \subsection{Other}{
+    \itemize{
+      \item Unify warnings.
+    }
+  }
+}
+
 \section{Changes in mboost version 2.9-13 (2026-07-16)}{
   \subsection{Other}{
     \itemize{
