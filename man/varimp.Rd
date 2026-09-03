@@ -9,6 +9,7 @@
 In-bag risk reduction per base-learner as variable importance for boosting.
 }
 \usage{
+varimp(object, ...)
 \method{varimp}{mboost}(object, ...)
 
 \method{plot}{varimp}(x, percent = TRUE, type = c("variable", "blearner"), 

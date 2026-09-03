@@ -7,6 +7,7 @@
   Computes the predicted survivor function for a Cox proportional hazards model.
 }
 \usage{
+survFit(object, ...)
 \method{survFit}{mboost}(object, newdata = NULL, ...)
 \method{plot}{survFit}(x, xlab = "Time", ylab = "Probability", \dots)
 }

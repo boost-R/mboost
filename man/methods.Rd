@@ -74,6 +74,7 @@ mstop(x) <- value
 \method{AIC}{mboost}(object, method = c("corrected", "classical", "gMDL"),
     df = c("trace", "actset"), ..., k = 2)
 
+mstop(object, ...)
 \method{mstop}{mboost}(object, ...)
 \method{mstop}{gbAIC}(object, ...)
 \method{mstop}{cvrisk}(object, ...)
@@ -93,6 +94,7 @@ mstop(x) <- value
 \method{variable.names}{glmboost}(object, which = NULL, usedonly = FALSE, ...)
 \method{variable.names}{mboost}(object, which = NULL, usedonly = FALSE, ...)
 
+extract(object, ...)
 \method{extract}{mboost}(object, what = c("design", "penalty", "lambda", "df",
                          "coefficients", "residuals",
                          "variable.names", "bnames", "offset",
@@ -111,8 +113,10 @@ mstop(x) <- value
 
 \method{selected}{mboost}(object, ...)
 
+risk(object, ...)
 \method{risk}{mboost}(object, ...)
 
+nuisance(object)
 \method{nuisance}{mboost}(object)
 
 downstream.test(object, ...)

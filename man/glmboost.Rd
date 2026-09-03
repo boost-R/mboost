@@ -10,6 +10,7 @@
   linear models are utilized as base-learners.
 }
 \usage{
+glmboost(x, ...)
 \method{glmboost}{formula}(formula, data = list(), weights = NULL,
           offset = NULL, family = Gaussian(),
           na.action = na.pass, contrasts.arg = NULL,

@@ -12,8 +12,6 @@
 \alias{bmono}
 \alias{bmrf}
 \alias{buser}
-\alias{bns}
-\alias{bss}
 \alias{\%+\%}
 \alias{\%X\%}
 \alias{\%O\%}
@@ -441,11 +439,6 @@ bl1 \%O\% bl2
   \code{\link{blackboost}} is more efficient for boosting stumps. For
   further references see \bibcitet{mboost::Hothorn:2006:JCGS} and 
   \bibcitet{mboost::Hothorn+Buehlmann+Kneib+Schmid+Hofner_2010}.
-
-  Note that the base-learners \code{bns} and \code{bss} are deprecated
-  (and no longer available). Please use \code{bbs} instead, which
-  results in qualitatively the same models but is computationally much
-  more attractive.
 
 }
 \section{Global Options}{

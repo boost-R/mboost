@@ -10,17 +10,18 @@
   Cross-validated estimation of the empirical risk for hyper-parameter selection.
 }
 \usage{
+cvrisk(object, \dots)
 \method{cvrisk}{mboost}(object, folds = cv(model.weights(object)),
        grid = 0:mstop(object),
        papply = mclapply,
-       fun = NULL, mc.preschedule = FALSE, ...)
+       fun = NULL, mc.preschedule = FALSE, \dots)
 cv(weights, type = c("bootstrap", "kfold", "subsampling"),
    B = ifelse(type == "kfold", 10, 25), prob = 0.5, strata = NULL)
 
 ## Plot cross-valiation results   
 \method{plot}{cvrisk}(x, 
      xlab = "Number of boosting iterations", ylab = attr(x, "risk"),
-     ylim = range(x), main = attr(x, "type"), ...)
+     ylim = range(x), main = attr(x, "type"), \dots)
 }
 \arguments{
   \item{object}{ an object of class \code{mboost}.}
