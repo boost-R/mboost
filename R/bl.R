@@ -8,10 +8,7 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
         rank_X <- rankMatrix(X, method = 'qr', warn.t = FALSE)
         if (df >= rank_X) {
             if (df > rank_X)
-                warning(sQuote("df"),
-                        " too large:\n  Degrees of freedom cannot be larger",
-                        " than the rank of the design matrix.\n",
-                        "  Unpenalized base-learner with df = ",
+                warning(sQuote("df"), " too large: Degrees of freedom cannot be larger than the rank of the design matrix. Unpenalized base-learner with df = ",
                         rank_X, " used. Re-consider model specification.")
             return(c(df = df, lambda = 0))
         }
@@ -68,9 +65,9 @@ df2lambda <- function(X, df = 4, lambda = NULL, dmat = NULL, weights,
     if (df2l(lambdaMax) > 0){
         if (df2l(lambdaMax) > sqrt(.Machine$double.eps))
             warning("lambda needs to be larger than ", lambdaMax, " for given ",
-                    sQuote("df"), ";\n  setting lambda = ", lambdaMax,
+                    sQuote("df"), "; setting lambda = ", lambdaMax,
                     " leeds to an deviation from ", sQuote("df"), " of ",
-                    df2l(lambdaMax), ";\n  You can increase lambda_max via ",
+                    df2l(lambdaMax), ";You can increase lambda_max via ",
                     sQuote("options(mboost_lambdaMax = value)"))
         return(c(df = df, lambda = lambdaMax))
     }
@@ -119,8 +116,7 @@ X_ols <- function(mf, vary, args) {
                 ## if contrasts are given as list check if "contr.dummy" is specified
                 if (any(args$contrasts.arg == "contr.dummy"))
                     stop('"contr.dummy"',
-                         " can only be used for all factors at the same time.\n",
-                         "Use ", sQuote('contrasts.arg = "contr.dummy"'),
+                         " can only be used for all factors at the same time. Use ", sQuote('contrasts.arg = "contr.dummy"'),
                          " to achieve this.")
             }
         } else {
@@ -382,13 +378,11 @@ X_bbs <- function(mf, vary, args) {
         rns <- ncol(K) - qr(as.matrix(K))$rank # compute rank of null space
         if (rns == args$df)
             warning( sQuote("df"), " equal to rank of null space ",
-                    "(unpenalized part of P-spline);\n  ",
-                    "Consider larger value for ", sQuote("df"),
+                    "(unpenalized part of P-spline); Consider larger value for ", sQuote("df"),
                     " or set ", sQuote("center != FALSE"), ".", immediate.=TRUE)
         if (rns > args$df)
             stop("not possible to specify ", sQuote("df"),
-                 " smaller than the rank of the null space\n  ",
-                 "(unpenalized part of P-spline). Use larger value for ",
+                 " smaller than the rank of the null space (unpenalized part of P-spline). Use larger value for ",
                  sQuote("df"), " or set ", sQuote("center != FALSE"), ".")
     }
     return(list(X = X, K = K))
@@ -450,10 +444,7 @@ bols <- function(..., by = NULL, index = NULL, intercept = TRUE, df = NULL,
 
     CC <- all(Complete.cases(mf))
     if (!CC)
-        warning("base-learner contains missing values;\n",
-                "missing values are excluded per base-learner, ",
-                "i.e., base-learners may depend on different",
-                " numbers of observations.")
+        warning("base-learner contains missing values; missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.")
     ### option
     DOINDEX <- is.data.frame(mf) &&
         (nrow(mf) > options("mboost_indexmin")[[1]] || is.factor(mf[[1]]))
@@ -520,8 +511,7 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
     constraint <- match.arg(constraint)
     if (constraint != "none")
         warning("Using ", sQuote('bbs()'), ' with constraint != "none" is discouraged. Preferably use ', 
-                sQuote('bmono()'), " instead.\n",
-                "See section ", sQuote("Details"), " of ?bbs for more information.")
+                sQuote('bmono()'), " instead. See section ", sQuote("Details"), " of ?bbs for more information.")
 
     mf <- list(...)
     if (is.null(by)) {
@@ -560,10 +550,7 @@ bbs <- function(..., by = NULL, index = NULL, knots = 20, boundary.knots = NULL,
 
     CC <- all(Complete.cases(mf))
     if (!CC)
-        warning("base-learner contains missing values;\n",
-                "missing values are excluded per base-learner, ",
-                "i.e., base-learners may depend on different",
-                " numbers of observations.")
+        warning("base-learner contains missing values; missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.")
     ### option
     DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]])
     if (is.null(index)) {
@@ -981,10 +968,7 @@ fit.bl <- function(object, y)
 
     CC <- all(Complete.cases(mf))
     if (!CC)
-        warning("base-learner contains missing values;\n",
-                "missing values are excluded per base-learner, ",
-                "i.e., base-learners may depend on different",
-                " numbers of observations.")
+        warning("base-learner contains missing values; missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.")
     ### option
     DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]])
     if (is.null(index)) {
@@ -1091,10 +1075,7 @@ fit.bl <- function(object, y)
 
     CC <- all(Complete.cases(mf))
     if (!CC)
-        warning("base-learner contains missing values;\n",
-                "missing values are excluded per base-learner, ",
-                "i.e., base-learners may depend on different",
-                " numbers of observations.")
+        warning("base-learner contains missing values; missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.")
     ### option
     DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]])
     if (is.null(index)) {
@@ -1180,11 +1161,3 @@ fit.bl <- function(object, y)
 
     return(ret)
 }
-
-bns <- function(...)
-    stop("Base-learner ",  sQuote("bns"), " has ben removed. Consider ",
-         sQuote("bbs"), " instead.")
-
-bss <- function(...)
-    stop("Base-learner ",  sQuote("bss"), " has ben removed. Consider ",
-         sQuote("bbs"), " instead.")

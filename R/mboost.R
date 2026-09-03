@@ -36,9 +36,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
     if (any(yna)) {
         weights[yna] <- 0
         y[is.na(y)] <- y[!yna][1] # use first non-missing value
-        warning("response contains missing values;\n",
-                " weights of corresponding observations are set to zero",
-                " and thus these observations are not used for fitting")
+        warning("response contains missing values; weights of corresponding observations are set to zero and thus these observations are not used for fitting")
     }
     y <- check_y_family(y, family)
     if (!family@weights(weights))
@@ -64,7 +62,7 @@ mboost_fit <- function(blg, response, weights = rep(1, NROW(response)),
         stop(sQuote("family = Multinomial()"), " only works with Kronecker prodcut base-learners, ",
              "i.e., combined base-learners of the form ", sQuote("bl1 %O% bl2"), " fitted via ",
              sQuote("gamboost()"), " or ", sQuote("mboost()"),
-             ".\n See ", sQuote("?Multinomial"), " for details.")
+             ". See ", sQuote("?Multinomial"), " for details.")
         
     xselect <- NULL
     ens <- vector(mode = "list", length = control$mstop)

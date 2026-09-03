@@ -78,8 +78,7 @@ X_kernel <- function(mf, vary, args) {
     ## compute inverse of the square root of the penalty matrix (always use knots)
     e <- eigen(K)
     if (any(e$values < 0)) {
-        warning("Kernel should be positiv semidefinit, yet some eigenvalues are < 0.\n",
-                "These eigenvalues were set to 0.")
+        warning("Kernel should be positiv semidefinit, yet some eigenvalues are < 0. These eigenvalues were set to 0.")
         e$values[e$values < 0] <- 0
     }
 

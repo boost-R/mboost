@@ -57,8 +57,7 @@ coef.mboost <- function(object, which = NULL,
     if (length(args) > 0)
         warning("Arguments ", paste(names(args), sep = ", "), " unknown")
     if (grepl("Negative Binomial Likelihood (logit link)", object$family@name))
-        message("\nNOTE: Coefficients from a Binomial model are half the size of ",
-                "coefficients\n from a model fitted via ",
+        message("\nNOTE: Coefficients from a Binomial model are half the size of coefficients\n from a model fitted via ",
                 "glm(... , family = 'binomial').\n",
                 "See Warning section in ?coef.mboost\n")
     ### NOTE: This is only the case for type = "adaboost" and link = "logit" ! 
@@ -95,7 +94,7 @@ hatvalues.gamboost <- function(model, ...) {
 
 hatvalues.mboost <- function(model, ...) {
     stop("hatvalues are not implemented for models fitted via function ",
-         sQuote("mboost"), ".\n Please use functions ", sQuote("gamboost"),
+         sQuote("mboost"), ". Please use functions ", sQuote("gamboost"),
          " or ", sQuote("glmboost"), " instead.")
 }
 

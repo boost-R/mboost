@@ -57,10 +57,7 @@ bmono <- function(..., constraint = c("increasing", "decreasing",
 
     CC <- all(Complete.cases(mf))
     if (!CC)
-        warning("base-learner contains missing values;\n",
-                "missing values are excluded per base-learner, ",
-                "i.e., base-learners may depend on different",
-                " numbers of observations.")
+        warning("base-learner contains missing values; missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.")
     ### option
     DOINDEX <- (nrow(mf) > options("mboost_indexmin")[[1]] ||
                 is.factor(mf[[1]]))
@@ -230,8 +227,7 @@ bl_mono <- function(blg, Xfun, args) {
         ## <FIXME> Boundary constraints for bivariate smooths are currently not
         ## implemented
         if (args$boundary.constraints)
-            warning("Boundary constraints for bivariate smooths",
-                    "are currently not implemented")
+            warning("Boundary constraints for bivariate smooths are currently not implemented")
         lambda3 <- 0
     }
 
@@ -286,8 +282,7 @@ bl_mono <- function(blg, Xfun, args) {
                     if (lambda2[[2]] != 0)
                         V[[2]] <- tmp2
                     if (i == args$niter)
-                        warning("no convergence of coef in bmono\n",
-                                "You could try increasing ", sQuote("niter"),
+                        warning("no convergence of coef in bmono. You could try increasing ", sQuote("niter"),
                                 " or ", sQuote("lambda2"))
                 }
             } else {  ## i.e. type == "quad.prog"
@@ -309,8 +304,7 @@ bl_mono <- function(blg, Xfun, args) {
         }
 
         hatvalues <- function() {
-            warning("hatvalues might be a very poor approximation",
-                    "for monotonic base-learners.")
+            warning("hatvalues might be a very poor approximation for monotonic base-learners.")
             if(lambda2[[2]] == 0)
                 pen2 <- lambda2[[1]] * crossprod(D[[1]], V[[1]] %*% D[[1]])
             else

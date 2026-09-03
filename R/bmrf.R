@@ -28,10 +28,7 @@ bmrf <- function (..., by = NULL, index = NULL, bnd = NULL, df = 4,
     }
     CC <- all(complete.cases(mf))
     if (!CC)
-        warning("base-learner contains missing values;\n",
-                "missing values are excluded per base-learner, ",
-                "i.e., base-learners may depend on different",
-                " numbers of observations.")
+        warning("base-learner contains missing values; missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.")
     DOINDEX <- (nrow(mf) > 10000)
     if (is.null(index)) {
         if (!CC || DOINDEX) {
