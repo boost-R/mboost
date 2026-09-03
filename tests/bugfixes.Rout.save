@@ -1,5 +1,5 @@
 
-R version 4.6.1 (2026-06-24) -- "Happy Hop"
+R Under development (unstable) (2026-09-02 r90470) -- "Unsuffered Consequences"
 Copyright (C) 2026 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu
 
@@ -889,8 +889,7 @@ attr(,"offset")
 [1] 0.086
 Warning message:
 In mboost_fit(bl, response = response, weights = weights, offset = offset,  :
-  response contains missing values;
- weights of corresponding observations are set to zero and thus these observations are not used for fitting
+  response contains missing values; weights of corresponding observations are set to zero and thus these observations are not used for fitting
 > 
 > yNa <- y
 > yNa[2] <- NaN
@@ -907,8 +906,7 @@ attr(,"offset")
 [1] 0.0762
 Warning message:
 In mboost_fit(bl, response = response, weights = weights, offset = offset,  :
-  response contains missing values;
- weights of corresponding observations are set to zero and thus these observations are not used for fitting
+  response contains missing values; weights of corresponding observations are set to zero and thus these observations are not used for fitting
 > 
 > x1[1] <- NA
 > z1[1] <- NA
@@ -917,23 +915,22 @@ In mboost_fit(bl, response = response, weights = weights, offset = offset,  :
 +                   bmono(x1) +  buser(x1, K = 1, lambda = 0) + x2)
 Loading required namespace: fields
 Warning messages:
-1: In bols(x1) : base-learner contains missing values;
-missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
-2: In bbs(x1) : base-learner contains missing values;
-missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
+1: In bols(x1) :
+  base-learner contains missing values; missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
+2: In bbs(x1) :
+  base-learner contains missing values; missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 3: In bols(z1, df = 4, contrasts.arg = "contr.dummy") :
-  base-learner contains missing values;
-missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
-4: In bbs(x1, x2, df = 6) : base-learner contains missing values;
-missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
-5: In brad(x1, x2, knots = 20) : base-learner contains missing values;
-missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
+  base-learner contains missing values; missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
+4: In bbs(x1, x2, df = 6) :
+  base-learner contains missing values; missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
+5: In brad(x1, x2, knots = 20) :
+  base-learner contains missing values; missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 6: In fields::cover.design(R = unique(x), nd = knots) :
   Number of nearst neighbors (nn) reduced to the actual number of candidates
-7: In bmono(x1) : base-learner contains missing values;
-missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
-8: In buser(x1, K = 1, lambda = 0) : base-learner contains missing values;
-missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
+7: In bmono(x1) :
+  base-learner contains missing values; missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
+8: In buser(x1, K = 1, lambda = 0) :
+  base-learner contains missing values; missing values are excluded per base-learner, i.e., base-learners may depend on different numbers of observations.
 > 
 > ## check handling of lists without names
 > n <- 100
@@ -1222,4 +1219,4 @@ Number of baselearners:  1
 > 
 > proc.time()
    user  system elapsed 
- 17.738   0.146  17.898 
+ 21.263   0.139  20.366 

@@ -1,5 +1,5 @@
 
-R version 4.6.1 (2026-06-24) -- "Happy Hop"
+R Under development (unstable) (2026-09-02 r90470) -- "Unsuffered Consequences"
 Copyright (C) 2026 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu
 
@@ -786,8 +786,7 @@ TRUE
 > mod9 <- gamboost(y ~ bbs(x) + bbs(x, by = z),
 +                  control = boost_control(mstop = 1000))
 Warning in Xfun(mf, vary, args) :
-  'df' equal to rank of null space (unpenalized part of P-spline);
-  Consider larger value for 'df' or set 'center != FALSE'.
+  'df' equal to rank of null space (unpenalized part of P-spline); Consider larger value for 'df' or set 'center != FALSE'.
 > X <- extract(bbs(x))
 > K <- extract(bbs(x), "penalty")
 > mod10 <- gamboost(y ~  buser(X, K) + buser(X, K, by = z),
@@ -940,4 +939,4 @@ TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 > 
 > proc.time()
    user  system elapsed 
-  2.324   0.106   2.419 
+  3.631   0.088   2.657 
