@@ -197,6 +197,36 @@ A3 <- survFit(fit3, newdata = newdata)
 max(A1$surv-A2$surv)
 max(A1$surv-A3$surv)
 
+## survFit for models fitted with case weights
+## see https://github.com/boost-R/mboost/issues/121
+
+## integer case weights: same results as fitting on the expanded data
+w <- rep(1:2, length.out = nrow(ovarian))
+fit4 <- glmboost(fm, data = ovarian, family = CoxPH(), weights = w,
+    control = boost_control(mstop = 1000), center = FALSE)
+fit5 <- glmboost(fm, data = ovarian[rep(1:nrow(ovarian), w),], family = CoxPH(),
+    control = boost_control(mstop = 1000), center = FALSE)
+A4 <- survFit(fit4)
+A5 <- survFit(fit5)
+print(.all.equal(A4$surv, A5$surv))
+print(.all.equal(A4$time, A5$time))
+print(.all.equal(A4$n.event, A5$n.event))
+A4 <- survFit(fit4, newdata = newdata)
+A5 <- survFit(fit5, newdata = newdata)
+print(.all.equal(A4$surv, A5$surv))
+
+## non-integer case weights: compare with weighted coxph fit
+wts <- seq(0.5, 1.5, length.out = nrow(ovarian))
+fitw <- coxph(fmSurv, data = ovarian, weights = wts)
+fit6 <- glmboost(fm, data = ovarian, family = CoxPH(), weights = wts,
+    control = boost_control(mstop = 1000), center = TRUE)
+A1 <- survfit(fitw, censor = FALSE)
+A6 <- survFit(fit6)
+print(max(abs(A1$surv - A6$surv)) < 0.001)
+A1 <- survfit(fitw, newdata = newdata, censor = FALSE)
+A6 <- survFit(fit6, newdata = newdata)
+print(max(abs(A1$surv - A6$surv)) < 0.001)
+
 ### Poisson models
 
 df <- data.frame(x1 = runif(100), x2 = runif(100))

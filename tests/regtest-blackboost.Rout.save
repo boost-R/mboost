@@ -104,6 +104,15 @@ Loading required package: stabs
 + A2 <- survFit(fit2, newdata = newdata)
 + print(A2)
 + 
++ ## survFit also works for models fitted with case weights
++ ## see https://github.com/boost-R/mboost/issues/121
++ w <- seq(0.5, 1.5, length.out = nrow(ovarian))
++ fit2w <- blackboost(Surv(futime,fustat) ~ age + resid.ds + rx + ecog.ps,
++     data = ovarian, family = CoxPH(), weights = w,
++     control = boost_control(mstop = 100))
++ A2w <- survFit(fit2w, newdata = newdata)
++ stopifnot(all(A2w$surv >= 0), all(A2w$surv <= 1))
++ 
 + ### predictions:
 + set.seed(1907)
 + x1 <- rnorm(100)
